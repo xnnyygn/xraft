@@ -1,0 +1,53 @@
+package in.xnnyygn.xraft.node;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+public class RaftNodeGroup implements Iterable<AbstractRaftNode> {
+
+    private Map<RaftNodeId, AbstractRaftNode> nodeMap;
+
+    public RaftNodeGroup() {
+        this.nodeMap = new HashMap<>();
+    }
+
+    public void addNode(AbstractRaftNode node) {
+        this.nodeMap.put(node.getId(), node);
+    }
+
+    public int getNodeCount() {
+        return this.nodeMap.size();
+    }
+
+    @Deprecated
+    public RaftNodeId getSelfId() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void startAll() {
+        for (AbstractRaftNode node : nodeMap.values()) {
+            if (node instanceof RaftNode) {
+                ((RaftNode) node).start();
+            }
+        }
+    }
+
+    public void stopAll() {
+        for (AbstractRaftNode node : nodeMap.values()) {
+            if (node instanceof RaftNode) {
+                ((RaftNode) node).stop();
+            }
+        }
+    }
+
+    @Override
+    public Iterator<AbstractRaftNode> iterator() {
+        return this.nodeMap.values().iterator();
+    }
+
+    public AbstractRaftNode findNode(RaftNodeId nodeId) {
+        return this.nodeMap.get(nodeId);
+    }
+
+}
