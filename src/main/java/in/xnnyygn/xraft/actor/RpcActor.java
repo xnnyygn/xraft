@@ -57,17 +57,17 @@ public class RpcActor extends AbstractActor {
         }
     }
 
-    private void forwardToElectionActor(RaftMessage msg) {
+    private void forwardToElectionActor(Message msg) {
         getElectionActor().tell(msg, getSelf());
     }
 
-    private void sendMessageToPeers(RaftMessage msg) {
+    private void sendMessageToPeers(Message msg) {
         for (AbstractServer server : serverGroup) {
             this.sendMessageToServer(server, msg);
         }
     }
 
-    private void sendMessageToServer(AbstractServer server, RaftMessage msg) {
+    private void sendMessageToServer(AbstractServer server, Message msg) {
         if (!server.getId().equals(this.selfServerId) && (server instanceof Server)) {
             logger.debug("Server {}, send {} to peer {}", this.selfServerId, msg, server.getId());
             ((Server) server).getRpcEndpoint().tell(msg, getSelf());

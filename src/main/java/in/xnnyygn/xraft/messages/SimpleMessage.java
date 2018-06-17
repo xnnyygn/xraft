@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.messages;
 
-public class SimpleMessage implements RaftMessage {
+public class SimpleMessage implements Message {
 
     public enum Kind {
         START_UP,

@@ -3,7 +3,7 @@ package in.xnnyygn.xraft.messages;
 import in.xnnyygn.xraft.server.ServerId;
 import in.xnnyygn.xraft.rpc.RequestVoteRpc;
 
-public class RequestVoteRpcMessage implements RaftMessage {
+public class RequestVoteRpcMessage implements Message {
 
     private final RequestVoteRpc rpc;
 

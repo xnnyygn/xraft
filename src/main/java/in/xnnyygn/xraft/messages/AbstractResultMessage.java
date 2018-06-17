@@ -2,7 +2,7 @@ package in.xnnyygn.xraft.messages;
 
 import in.xnnyygn.xraft.server.ServerId;
 
-public abstract class AbstractResultMessage<T> implements RaftMessage {
+public abstract class AbstractResultMessage<T> implements Message {
 
     private final T result;
     private ServerId senderServerId; // TODO rename to sourceServerId

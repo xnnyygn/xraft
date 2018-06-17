@@ -124,7 +124,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
     }
 
     @Override
-    public void sendRpcOrResultMessage(RaftMessage message) {
+    public void sendRpcOrResultMessage(Message message) {
         getRpcActor().tell(message, getSelf());
     }
 

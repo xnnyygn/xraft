@@ -3,7 +3,7 @@ package in.xnnyygn.xraft.messages;
 import in.xnnyygn.xraft.server.ServerId;
 import in.xnnyygn.xraft.rpc.AppendEntriesRpc;
 
-public class AppendEntriesRpcMessage implements RaftMessage {
+public class AppendEntriesRpcMessage implements Message {
 
     private final AppendEntriesRpc rpc;
 
