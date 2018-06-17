@@ -12,16 +12,16 @@ public class ElectionTimeout {
     private static final Logger logger = LoggerFactory.getLogger(ElectionTimeout.class);
     private final ScheduledFuture<?> scheduledFuture;
     private final ElectionTimeoutScheduler electionTimeoutScheduler;
-    private final ServerId selfNodeId;
+    private final ServerId selfServerId;
 
-    public ElectionTimeout(ScheduledFuture<?> scheduledFuture, ElectionTimeoutScheduler electionTimeoutScheduler, ServerId selfNodeId) {
+    public ElectionTimeout(ScheduledFuture<?> scheduledFuture, ElectionTimeoutScheduler electionTimeoutScheduler, ServerId selfServerId) {
         this.scheduledFuture = scheduledFuture;
         this.electionTimeoutScheduler = electionTimeoutScheduler;
-        this.selfNodeId = selfNodeId;
+        this.selfServerId = selfServerId;
     }
 
     public void cancel() {
-        logger.debug("Node {}, cancel election timeout", this.selfNodeId);
+        logger.debug("Node {}, cancel election timeout", this.selfServerId);
         this.scheduledFuture.cancel(false);
     }
 

@@ -20,12 +20,12 @@ public class Scheduler implements ElectionTimeoutScheduler {
     private final Random electionTimeoutRandom;
     private final ScheduledExecutorService scheduledExecutor;
     private final ActorSystem actorSystem;
-    private final ServerId selfNodeId;
+    private final ServerId selfServerId;
 
-    public Scheduler(ServerId selfNodeId, ActorSystem actorSystem) {
+    public Scheduler(ServerId selfServerId, ActorSystem actorSystem) {
         this.electionTimeoutRandom = new Random();
         this.scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
-        this.selfNodeId = selfNodeId;
+        this.selfServerId = selfServerId;
         this.actorSystem = actorSystem;
     }
 
@@ -34,24 +34,24 @@ public class Scheduler implements ElectionTimeoutScheduler {
     }
 
     public LogReplicationTask scheduleLogReplicationTask() {
-        logger.debug("Node {}, schedule log replication task", this.selfNodeId);
+        logger.debug("Node {}, schedule log replication task", this.selfServerId);
         ScheduledFuture<?> scheduledFuture = scheduledExecutor.scheduleWithFixedDelay(
                 () -> {
                     getElectionActor().tell(new SimpleMessage(SimpleMessage.Kind.LOG_REPLICATION), ActorRef.noSender());
                 }, 0, 1000, TimeUnit.MILLISECONDS);
-        return new LogReplicationTask(scheduledFuture, this.selfNodeId);
+        return new LogReplicationTask(scheduledFuture, this.selfServerId);
     }
 
     // TODO use runner as parameter
     @Override
     public ElectionTimeout scheduleElectionTimeout() {
-        logger.debug("Node {}, schedule election timeout", this.selfNodeId);
+        logger.debug("Node {}, schedule election timeout", this.selfServerId);
         int timeout = electionTimeoutRandom.nextInt(2000) + 3000;
         ScheduledFuture<?> scheduledFuture = scheduledExecutor.schedule(
                 () -> {
                     getElectionActor().tell(new SimpleMessage(SimpleMessage.Kind.ELECTION_TIMEOUT), ActorRef.noSender());
                 }, timeout, TimeUnit.MILLISECONDS);
-        return new ElectionTimeout(scheduledFuture, this, this.selfNodeId);
+        return new ElectionTimeout(scheduledFuture, this, this.selfServerId);
     }
 
     public void stop() throws InterruptedException {

@@ -11,15 +11,15 @@ public class LogReplicationTask {
 
     private static final Logger logger = LoggerFactory.getLogger(LogReplicationTask.class);
     private final ScheduledFuture<?> scheduledFuture;
-    private final ServerId selfNodeId;
+    private final ServerId selfServerId;
 
-    public LogReplicationTask(ScheduledFuture<?> scheduledFuture, ServerId selfNodeId) {
+    public LogReplicationTask(ScheduledFuture<?> scheduledFuture, ServerId selfServerId) {
         this.scheduledFuture = scheduledFuture;
-        this.selfNodeId = selfNodeId;
+        this.selfServerId = selfServerId;
     }
 
     public void cancel() {
-        logger.debug("Node {}, cancel log replication task", this.selfNodeId);
+        logger.debug("Node {}, cancel log replication task", this.selfServerId);
         this.scheduledFuture.cancel(false);
     }
 
