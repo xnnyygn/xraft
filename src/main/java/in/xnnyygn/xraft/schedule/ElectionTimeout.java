@@ -11,12 +11,12 @@ public class ElectionTimeout {
 
     private static final Logger logger = LoggerFactory.getLogger(ElectionTimeout.class);
     private final ScheduledFuture<?> scheduledFuture;
-    private final ElectionTimeoutScheduler electionTimeoutScheduler;
+    private final ElectionTimeoutScheduler schedulerCallback;
     private final ServerId selfServerId;
 
-    public ElectionTimeout(ScheduledFuture<?> scheduledFuture, ElectionTimeoutScheduler electionTimeoutScheduler, ServerId selfServerId) {
+    public ElectionTimeout(ScheduledFuture<?> scheduledFuture, ElectionTimeoutScheduler schedulerCallback, ServerId selfServerId) {
         this.scheduledFuture = scheduledFuture;
-        this.electionTimeoutScheduler = electionTimeoutScheduler;
+        this.schedulerCallback = schedulerCallback;
         this.selfServerId = selfServerId;
     }
 
@@ -27,7 +27,7 @@ public class ElectionTimeout {
 
     public ElectionTimeout reset() {
         this.cancel();
-        return electionTimeoutScheduler.scheduleElectionTimeout();
+        return schedulerCallback.scheduleElectionTimeout();
     }
 
     @Override

@@ -34,7 +34,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
         this.selfServerId = selfServerId;
         this.serverStore = serverStore;
 
-        this.scheduler = new Scheduler(selfServerId, getContext().getSystem());
+        this.scheduler = new Scheduler(selfServerId);
     }
 
     @Override
@@ -68,8 +68,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
     }
 
     private void startUp() {
-        ElectionTimeout electionTimeout = this.scheduler.scheduleElectionTimeout();
-        this.serverState = new FollowerServerState(this.serverStore, electionTimeout);
+        this.serverState = new FollowerServerState(this.serverStore, this.scheduleElectionTimeout());
         logger.debug("Server {}, start with state {}", this.selfServerId, this.serverState);
         serverStateChanged(this.serverState.takeSnapshot());
     }
@@ -131,7 +130,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
 
     @Override
     public ElectionTimeout scheduleElectionTimeout() {
-        return this.scheduler.scheduleElectionTimeout();
+        return this.scheduler.scheduleElectionTimeout(this::onElectionTimeout);
     }
 
     ///////////////
