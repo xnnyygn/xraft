@@ -1,18 +1,21 @@
 package in.xnnyygn.xraft.actor;
 
 import akka.actor.AbstractActor;
-import akka.actor.ActorSelection;
-import in.xnnyygn.xraft.serverstate.*;
-import in.xnnyygn.xraft.schedule.ElectionTimeout;
-import in.xnnyygn.xraft.schedule.LogReplicationTask;
-import in.xnnyygn.xraft.schedule.Scheduler;
-import in.xnnyygn.xraft.messages.*;
-import in.xnnyygn.xraft.server.ServerGroup;
-import in.xnnyygn.xraft.server.ServerId;
-import in.xnnyygn.xraft.server.ServerStore;
+import in.xnnyygn.xraft.messages.AppendEntriesRpcMessage;
+import in.xnnyygn.xraft.messages.RequestVoteResultMessage;
+import in.xnnyygn.xraft.messages.RequestVoteRpcMessage;
+import in.xnnyygn.xraft.messages.SimpleMessage;
 import in.xnnyygn.xraft.rpc.AppendEntriesRpc;
 import in.xnnyygn.xraft.rpc.RequestVoteResult;
 import in.xnnyygn.xraft.rpc.RequestVoteRpc;
+import in.xnnyygn.xraft.rpc.Router;
+import in.xnnyygn.xraft.schedule.ElectionTimeout;
+import in.xnnyygn.xraft.schedule.LogReplicationTask;
+import in.xnnyygn.xraft.schedule.Scheduler;
+import in.xnnyygn.xraft.server.ServerGroup;
+import in.xnnyygn.xraft.server.ServerId;
+import in.xnnyygn.xraft.server.ServerStore;
+import in.xnnyygn.xraft.serverstate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +28,16 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
     private final ServerGroup serverGroup;
     private final ServerId selfServerId;
     private final ServerStore serverStore;
+    private final Router rpcRouter;
 
     private final Scheduler scheduler;
 
-    public ElectionActor(ServerGroup serverGroup, ServerId selfServerId, ServerStore serverStore) {
+    public ElectionActor(ServerGroup serverGroup, ServerId selfServerId, ServerStore serverStore, Router rpcRouter) {
         super();
         this.serverGroup = serverGroup;
         this.selfServerId = selfServerId;
         this.serverStore = serverStore;
+        this.rpcRouter = rpcRouter;
 
         this.scheduler = new Scheduler(selfServerId);
     }
@@ -63,10 +68,6 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
         this.scheduler.stop();
     }
 
-    private ActorSelection getRpcActor() {
-        return getContext().actorSelection(RaftActorPaths.ACTOR_PATH_RPC);
-    }
-
     private void startUp() {
         this.serverState = new FollowerServerState(this.serverStore, this.scheduleElectionTimeout());
         logger.debug("Server {}, start with state {}", this.selfServerId, this.serverState);
@@ -83,7 +84,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setTerm(this.serverState.getTerm());
         rpc.setLeaderId(this.selfServerId);
-        getRpcActor().tell(new AppendEntriesRpcMessage(rpc), getSelf());
+        getRpcRouter().sendRpc(rpc);
     }
 
     private void onReceiveRequestVoteResult(RequestVoteResult result, ServerId senderServerId) {
@@ -124,8 +125,8 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
     }
 
     @Override
-    public void sendRpcOrResultMessage(Message message) {
-        getRpcActor().tell(message, getSelf());
+    public Router getRpcRouter() {
+        return this.rpcRouter;
     }
 
     @Override

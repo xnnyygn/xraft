@@ -4,13 +4,15 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import in.xnnyygn.xraft.actor.ElectionActor;
-import in.xnnyygn.xraft.actor.RpcActor;
+import in.xnnyygn.xraft.actor.ElectionActorRpcChannelListener;
+import in.xnnyygn.xraft.rpc.EmbeddedChannel;
+import in.xnnyygn.xraft.rpc.Router;
 
 public class ServerBuilder {
 
     private String actionSystemName = "raft";
     private String serverId;
-    private ServerGroup group;
+    private ServerGroup serverGroup;
     private ServerStore serverState = new ServerStore();
 
     public ServerBuilder withActorSystemName(String actorSystemName) {
@@ -19,7 +21,7 @@ public class ServerBuilder {
     }
 
     public ServerBuilder withGroup(ServerGroup group) {
-        this.group = group;
+        this.serverGroup = group;
         return this;
     }
 
@@ -29,7 +31,7 @@ public class ServerBuilder {
     }
 
     public Server build() {
-        if (this.group == null) {
+        if (this.serverGroup == null) {
             throw new IllegalArgumentException("group is required");
         }
 
@@ -38,11 +40,17 @@ public class ServerBuilder {
         }
 
         ServerId selfServerId = new ServerId(this.serverId);
+        Router rpcRouter = new Router(this.serverGroup, selfServerId);
         ActorSystem actorSystem = ActorSystem.create(this.actionSystemName);
-        ActorRef electionActor = actorSystem.actorOf(Props.create(ElectionActor.class, this.group, selfServerId, this.serverState), "election");
-        ActorRef rpcActor = actorSystem.actorOf(Props.create(RpcActor.class, this.group, selfServerId), "rpc");
-        Server server = new Server(selfServerId, actorSystem);
-        group.addServer(server);
+        ActorRef electionActor = actorSystem.actorOf(
+                Props.create(ElectionActor.class, this.serverGroup, selfServerId, this.serverState, rpcRouter),
+                "election"
+        );
+
+        EmbeddedChannel rpcChannel = new EmbeddedChannel();
+        rpcChannel.addListener(new ElectionActorRpcChannelListener(actorSystem));
+        Server server = new Server(selfServerId, actorSystem, rpcChannel);
+        serverGroup.addServer(server);
         return server;
     }
 

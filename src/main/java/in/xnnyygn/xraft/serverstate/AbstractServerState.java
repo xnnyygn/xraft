@@ -1,8 +1,5 @@
 package in.xnnyygn.xraft.serverstate;
 
-import in.xnnyygn.xraft.messages.AppendEntriesResultMessage;
-import in.xnnyygn.xraft.messages.RequestVoteResultMessage;
-import in.xnnyygn.xraft.messages.RequestVoteRpcMessage;
 import in.xnnyygn.xraft.rpc.AppendEntriesResult;
 import in.xnnyygn.xraft.rpc.AppendEntriesRpc;
 import in.xnnyygn.xraft.rpc.RequestVoteResult;
@@ -78,7 +75,7 @@ public abstract class AbstractServerState {
         RequestVoteRpc rpc = new RequestVoteRpc();
         rpc.setTerm(newTerm);
         rpc.setCandidateId(context.getSelfServerId());
-        context.sendRpcOrResultMessage(new RequestVoteRpcMessage(rpc));
+        context.getRpcRouter().sendRpc(rpc);
     }
 
     /**
@@ -113,9 +110,7 @@ public abstract class AbstractServerState {
             result = new RequestVoteResult(rpc.getTerm(), true);
         }
 
-        RequestVoteResultMessage message = new RequestVoteResultMessage(result);
-        message.setDestinationServerId(rpc.getCandidateId());
-        context.sendRpcOrResultMessage(message);
+        context.getRpcRouter().sendResult(result, rpc.getCandidateId());
     }
 
     /**
@@ -150,9 +145,7 @@ public abstract class AbstractServerState {
             result = new AppendEntriesResult(rpc.getTerm(), true);
         }
 
-        AppendEntriesResultMessage msg = new AppendEntriesResultMessage(result);
-        msg.setDestinationServerId(rpc.getLeaderId());
-        context.sendRpcOrResultMessage(msg);
+        context.getRpcRouter().sendResult(result, rpc.getLeaderId());
     }
 
     /**
