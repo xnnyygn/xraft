@@ -33,12 +33,10 @@ public class Scheduler implements ElectionTimeoutScheduler {
         return this.actorSystem.actorSelection("/user/election");
     }
 
-    public LogReplicationTask scheduleLogReplicationTask() {
+    public LogReplicationTask scheduleLogReplicationTask(Runnable task) {
         logger.debug("Server {}, schedule log replication task", this.selfServerId);
-        ScheduledFuture<?> scheduledFuture = scheduledExecutor.scheduleWithFixedDelay(
-                () -> {
-                    getElectionActor().tell(new SimpleMessage(SimpleMessage.Kind.LOG_REPLICATION), ActorRef.noSender());
-                }, 0, 1000, TimeUnit.MILLISECONDS);
+        ScheduledFuture<?> scheduledFuture = this.scheduledExecutor.scheduleWithFixedDelay(
+                task, 0, 1000, TimeUnit.MILLISECONDS);
         return new LogReplicationTask(scheduledFuture, this.selfServerId);
     }
 

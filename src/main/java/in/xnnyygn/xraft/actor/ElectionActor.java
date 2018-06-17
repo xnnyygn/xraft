@@ -47,9 +47,6 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
                 case ELECTION_TIMEOUT:
                     onElectionTimeout();
                     break;
-                case LOG_REPLICATION:
-                    replicateLog();
-                    break;
             }
         }).match(RequestVoteRpcMessage.class, msg -> {
             onReceiveRequestVoteRpc(msg.getRpc());
@@ -124,7 +121,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
 
     @Override
     public LogReplicationTask scheduleLogReplicationTask() {
-        return this.scheduler.scheduleLogReplicationTask();
+        return this.scheduler.scheduleLogReplicationTask(this::replicateLog);
     }
 
     @Override

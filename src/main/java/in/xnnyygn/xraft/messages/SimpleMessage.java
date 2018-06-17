@@ -4,12 +4,7 @@ public class SimpleMessage implements RaftMessage {
 
     public enum Kind {
         START_UP,
-        ELECTION_TIMEOUT_REGISTRATION,
-        ELECTION_TIMEOUT,
-        ELECTION_TIMEOUT_DEREGISTRATION,
-        ELECTION_TIMEOUT_RESET,
-        LOG_REPLICATION,
-        TEST
+        ELECTION_TIMEOUT
     }
 
     private final Kind kind;
