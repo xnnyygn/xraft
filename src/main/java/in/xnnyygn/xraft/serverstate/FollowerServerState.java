@@ -17,8 +17,8 @@ public class FollowerServerState extends AbstractServerState {
     private final ServerId leaderId;
     private final ElectionTimeout electionTimeout;
 
-    public FollowerServerState(ServerStore nodeSave, ElectionTimeout electionTimeout) {
-        this(nodeSave.getCurrentTerm(), nodeSave.getVotedFor(), null, electionTimeout);
+    public FollowerServerState(ServerStore serverStore, ElectionTimeout electionTimeout) {
+        this(serverStore.getCurrentTerm(), serverStore.getVotedFor(), null, electionTimeout);
     }
 
     public FollowerServerState(int term, ServerId votedFor, ServerId leaderId, ElectionTimeout electionTimeout) {

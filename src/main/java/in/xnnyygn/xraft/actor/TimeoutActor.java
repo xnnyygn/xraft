@@ -30,7 +30,6 @@ public class TimeoutActor extends AbstractActor {
 
     @Override
     public void postStop() throws Exception {
-//        logger.debug("Node {}, stop scheduler", this.selfServerId);
         this.scheduler.shutdown();
         this.scheduler.awaitTermination(1, TimeUnit.SECONDS);
     }

@@ -12,7 +12,7 @@ public class ServerBuilder {
     private String actionSystemName = "raft";
     private String serverId;
     private ServerGroup group;
-    private ServerStore nodeState = new ServerStore();
+    private ServerStore serverState = new ServerStore();
 
     public ServerBuilder withActorSystemName(String actorSystemName) {
         this.actionSystemName = actorSystemName;
@@ -38,15 +38,15 @@ public class ServerBuilder {
             throw new IllegalArgumentException("serverId required");
         }
 
-        ServerId selfNodeId = new ServerId(this.serverId);
+        ServerId selfServerId = new ServerId(this.serverId);
         ActorSystem actorSystem = ActorSystem.create(this.actionSystemName);
-        ActorRef electionActor = actorSystem.actorOf(Props.create(ElectionActor.class, this.group, selfNodeId, this.nodeState), "election");
+        ActorRef electionActor = actorSystem.actorOf(Props.create(ElectionActor.class, this.group, selfServerId, this.serverState), "election");
         // TODO remove timeout actor
-        ActorRef timeoutActor = actorSystem.actorOf(Props.create(TimeoutActor.class, selfNodeId), "timeout");
-        ActorRef rpcActor = actorSystem.actorOf(Props.create(RpcActor.class, this.group, selfNodeId), "rpc");
-        Server node = new Server(selfNodeId, actorSystem);
-        group.addNode(node);
-        return node;
+        ActorRef timeoutActor = actorSystem.actorOf(Props.create(TimeoutActor.class, selfServerId), "timeout");
+        ActorRef rpcActor = actorSystem.actorOf(Props.create(RpcActor.class, this.group, selfServerId), "rpc");
+        Server server = new Server(selfServerId, actorSystem);
+        group.addServer(server);
+        return server;
     }
 
 }

@@ -12,7 +12,7 @@ public interface ServerStateContext extends ElectionTimeoutScheduler {
 
     int getServerCount();
 
-    void setServerState(AbstractServerState nodeState);
+    void setServerState(AbstractServerState serverState);
 
     LogReplicationTask scheduleLogReplicationTask();
 
