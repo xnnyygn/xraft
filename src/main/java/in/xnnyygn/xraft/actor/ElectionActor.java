@@ -62,7 +62,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
 
     @Override
     public void postStop() throws Exception {
-        logger.debug("Node {}, stop scheduler", this.selfServerId);
+        logger.debug("Server {}, stop scheduler", this.selfServerId);
         this.scheduler.stop();
     }
 
@@ -73,17 +73,17 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
     private void startUp() {
         ElectionTimeout electionTimeout = this.scheduler.scheduleElectionTimeout();
         this.serverState = new FollowerServerState(this.serverStore, electionTimeout);
-        logger.debug("Node {}, start with state {}", this.selfServerId, this.serverState);
+        logger.debug("Server {}, start with state {}", this.selfServerId, this.serverState);
         serverStateChanged(this.serverState.takeSnapshot());
     }
 
     private void onElectionTimeout() {
-        logger.debug("Node {}, election timeout", this.selfServerId);
+        logger.debug("Server {}, election timeout", this.selfServerId);
         this.serverState.onElectionTimeout(this);
     }
 
     private void replicateLog() {
-        logger.debug("Node {}, replicate log", this.selfServerId);
+        logger.debug("Server {}, replicate log", this.selfServerId);
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setTerm(this.serverState.getTerm());
         rpc.setLeaderId(this.selfServerId);
@@ -91,17 +91,17 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
     }
 
     private void onReceiveRequestVoteResult(RequestVoteResult result, ServerId senderServerId) {
-        logger.debug("Node {}, receive {} from peer {}", this.selfServerId, result, senderServerId);
+        logger.debug("Server {}, receive {} from peer {}", this.selfServerId, result, senderServerId);
         this.serverState.onReceiveRequestVoteResult(this, result);
     }
 
     private void onReceiveRequestVoteRpc(RequestVoteRpc rpc) {
-        logger.debug("Node {}, receive {} from peer {}", this.selfServerId, rpc, rpc.getCandidateId());
+        logger.debug("Server {}, receive {} from peer {}", this.selfServerId, rpc, rpc.getCandidateId());
         this.serverState.onReceiveRequestVoteRpc(this, rpc);
     }
 
     private void onReceiveAppendEntriesRpc(AppendEntriesRpc rpc) {
-        logger.debug("Node {}, receive {} from leader {}", this.selfServerId, rpc, rpc.getLeaderId());
+        logger.debug("Server {}, receive {} from leader {}", this.selfServerId, rpc, rpc.getLeaderId());
         this.serverState.onReceiveAppendEntriesRpc(this, rpc);
     }
 
@@ -143,7 +143,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
 
     private void serverStateChanged(ServerStateSnapshot snapshot) {
         if (lastServerState == null || !isStable(lastServerState, snapshot)) {
-            logger.info("Node {}, state changed -> {}", this.selfServerId, snapshot);
+            logger.info("Server {}, state changed -> {}", this.selfServerId, snapshot);
             lastServerState = snapshot;
         }
     }

@@ -19,7 +19,7 @@ public class LogReplicationTask {
     }
 
     public void cancel() {
-        logger.debug("Node {}, cancel log replication task", this.selfServerId);
+        logger.debug("Server {}, cancel log replication task", this.selfServerId);
         this.scheduledFuture.cancel(false);
     }
 

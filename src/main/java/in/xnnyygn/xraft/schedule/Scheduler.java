@@ -34,7 +34,7 @@ public class Scheduler implements ElectionTimeoutScheduler {
     }
 
     public LogReplicationTask scheduleLogReplicationTask() {
-        logger.debug("Node {}, schedule log replication task", this.selfServerId);
+        logger.debug("Server {}, schedule log replication task", this.selfServerId);
         ScheduledFuture<?> scheduledFuture = scheduledExecutor.scheduleWithFixedDelay(
                 () -> {
                     getElectionActor().tell(new SimpleMessage(SimpleMessage.Kind.LOG_REPLICATION), ActorRef.noSender());
@@ -45,7 +45,7 @@ public class Scheduler implements ElectionTimeoutScheduler {
     // TODO use runner as parameter
     @Override
     public ElectionTimeout scheduleElectionTimeout() {
-        logger.debug("Node {}, schedule election timeout", this.selfServerId);
+        logger.debug("Server {}, schedule election timeout", this.selfServerId);
         int timeout = electionTimeoutRandom.nextInt(2000) + 3000;
         ScheduledFuture<?> scheduledFuture = scheduledExecutor.schedule(
                 () -> {

@@ -69,7 +69,7 @@ public class RpcActor extends AbstractActor {
 
     private void sendMessageToServer(AbstractServer server, RaftMessage msg) {
         if (!server.getId().equals(this.selfServerId) && (server instanceof Server)) {
-            logger.debug("Node {}, send {} to peer {}", this.selfServerId, msg, server.getId());
+            logger.debug("Server {}, send {} to peer {}", this.selfServerId, msg, server.getId());
             ((Server) server).getRpcEndpoint().tell(msg, getSelf());
         }
     }

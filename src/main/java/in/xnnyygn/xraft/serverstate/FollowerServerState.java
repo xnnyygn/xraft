@@ -43,7 +43,7 @@ public class FollowerServerState extends AbstractServerState {
 
     @Override
     public void onReceiveRequestVoteResult(ServerStateContext context, RequestVoteResult result) {
-        logger.warn("Node {}, current role is FOLLOWER, ignore", context.getSelfServerId());
+        logger.warn("Server {}, current role is FOLLOWER, ignore", context.getSelfServerId());
     }
 
     @Override

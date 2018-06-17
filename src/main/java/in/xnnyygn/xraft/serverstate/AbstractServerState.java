@@ -62,7 +62,7 @@ public abstract class AbstractServerState {
      */
     public void onElectionTimeout(ServerStateContext context) {
         if (this.role == ServerRole.LEADER) {
-            logger.warn("Node {}, current role is LEADER, ignore", context.getSelfServerId());
+            logger.warn("Server {}, current role is LEADER, ignore", context.getSelfServerId());
             return;
         }
 
@@ -107,7 +107,7 @@ public abstract class AbstractServerState {
         } else {
 
             // peer's term > current term
-            logger.debug("Node {}, update to peer {}'s term {} and vote for it", context.getSelfServerId(), rpc.getCandidateId(), rpc.getTerm());
+            logger.debug("Server {}, update to peer {}'s term {} and vote for it", context.getSelfServerId(), rpc.getCandidateId(), rpc.getTerm());
             this.cancelTimeoutOrTask();
             context.setServerState(new FollowerServerState(rpc.getTerm(), rpc.getCandidateId(), null, context.scheduleElectionTimeout()));
             result = new RequestVoteResult(rpc.getTerm(), true);

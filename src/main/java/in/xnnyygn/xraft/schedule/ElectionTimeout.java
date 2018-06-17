@@ -21,7 +21,7 @@ public class ElectionTimeout {
     }
 
     public void cancel() {
-        logger.debug("Node {}, cancel election timeout", this.selfServerId);
+        logger.debug("Server {}, cancel election timeout", this.selfServerId);
         this.scheduledFuture.cancel(false);
     }
 

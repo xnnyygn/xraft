@@ -56,7 +56,7 @@ public class ServerStateSnapshot {
             case LEADER:
                 return "Leader{term=" + this.term + "}";
             default:
-                throw new IllegalStateException("unexpected node role [" + this.role + "]");
+                throw new IllegalStateException("unexpected server role [" + this.role + "]");
         }
     }
 
