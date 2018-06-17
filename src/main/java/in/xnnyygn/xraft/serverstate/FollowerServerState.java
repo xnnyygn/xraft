@@ -2,7 +2,7 @@ package in.xnnyygn.xraft.serverstate;
 
 import in.xnnyygn.xraft.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.server.ServerId;
-import in.xnnyygn.xraft.server.RaftNodeSave;
+import in.xnnyygn.xraft.server.ServerStore;
 import in.xnnyygn.xraft.rpc.AppendEntriesResult;
 import in.xnnyygn.xraft.rpc.AppendEntriesRpc;
 import in.xnnyygn.xraft.rpc.RequestVoteResult;
@@ -17,7 +17,7 @@ public class FollowerServerState extends AbstractServerState {
     private final ServerId leaderId;
     private final ElectionTimeout electionTimeout;
 
-    public FollowerServerState(RaftNodeSave nodeSave, ElectionTimeout electionTimeout) {
+    public FollowerServerState(ServerStore nodeSave, ElectionTimeout electionTimeout) {
         this(nodeSave.getCurrentTerm(), nodeSave.getVotedFor(), null, electionTimeout);
     }
 

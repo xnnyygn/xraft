@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.server;
 
-public class RaftNodeSave {
+public class ServerStore {
 
     private int currentTerm = 0;
     private ServerId votedFor = null;

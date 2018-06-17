@@ -9,7 +9,7 @@ import in.xnnyygn.xraft.schedule.Scheduler;
 import in.xnnyygn.xraft.messages.*;
 import in.xnnyygn.xraft.server.ServerGroup;
 import in.xnnyygn.xraft.server.ServerId;
-import in.xnnyygn.xraft.server.RaftNodeSave;
+import in.xnnyygn.xraft.server.ServerStore;
 import in.xnnyygn.xraft.rpc.AppendEntriesRpc;
 import in.xnnyygn.xraft.rpc.RequestVoteResult;
 import in.xnnyygn.xraft.rpc.RequestVoteRpc;
@@ -24,11 +24,11 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
 
     private final ServerGroup nodeGroup;
     private final ServerId selfNodeId;
-    private final RaftNodeSave nodeSave;
+    private final ServerStore nodeSave;
 
     private final Scheduler scheduler;
 
-    public ElectionActor(ServerGroup nodeGroup, ServerId selfNodeId, RaftNodeSave nodeSave) {
+    public ElectionActor(ServerGroup nodeGroup, ServerId selfNodeId, ServerStore nodeSave) {
         super();
         this.nodeGroup = nodeGroup;
         this.selfNodeId = selfNodeId;

@@ -12,7 +12,7 @@ public class ServerBuilder {
     private String actionSystemName = "raft";
     private String nodeId;
     private ServerGroup group;
-    private RaftNodeSave nodeState = new RaftNodeSave();
+    private ServerStore nodeState = new ServerStore();
 
     public ServerBuilder withActorSystemName(String actorSystemName) {
         this.actionSystemName = actorSystemName;
