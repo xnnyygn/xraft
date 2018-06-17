@@ -20,21 +20,21 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
 
     private static final Logger logger = LoggerFactory.getLogger(ElectionActor.class);
 
-    private AbstractServerState nodeState;
+    private AbstractServerState serverState;
 
-    private final ServerGroup nodeGroup;
-    private final ServerId selfNodeId;
-    private final ServerStore nodeSave;
+    private final ServerGroup serverGroup;
+    private final ServerId selfServerId;
+    private final ServerStore serverStore;
 
     private final Scheduler scheduler;
 
-    public ElectionActor(ServerGroup nodeGroup, ServerId selfNodeId, ServerStore nodeSave) {
+    public ElectionActor(ServerGroup serverGroup, ServerId selfServerId, ServerStore serverStore) {
         super();
-        this.nodeGroup = nodeGroup;
-        this.selfNodeId = selfNodeId;
-        this.nodeSave = nodeSave;
+        this.serverGroup = serverGroup;
+        this.selfServerId = selfServerId;
+        this.serverStore = serverStore;
 
-        this.scheduler = new Scheduler(selfNodeId, getContext().getSystem());
+        this.scheduler = new Scheduler(selfServerId, getContext().getSystem());
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
         }).match(RequestVoteRpcMessage.class, msg -> {
             onReceiveRequestVoteRpc(msg.getRpc());
         }).match(RequestVoteResultMessage.class, msg -> {
-            onReceiveRequestVoteResult(msg.getResult(), msg.getSenderNodeId());
+            onReceiveRequestVoteResult(msg.getResult(), msg.getSenderServerId());
         }).match(AppendEntriesRpcMessage.class, msg -> {
             onReceiveAppendEntriesRpc(msg.getRpc());
         }).build();
@@ -62,7 +62,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
 
     @Override
     public void postStop() throws Exception {
-        logger.debug("Node {}, stop scheduler", this.selfNodeId);
+        logger.debug("Node {}, stop scheduler", this.selfServerId);
         this.scheduler.stop();
     }
 
@@ -72,54 +72,54 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
 
     private void startUp() {
         ElectionTimeout electionTimeout = this.scheduler.scheduleElectionTimeout();
-        this.nodeState = new FollowerServerState(this.nodeSave, electionTimeout);
-        logger.debug("Node {}, start with state {}", this.selfNodeId, this.nodeState);
-        nodeStateChanged(this.nodeState.takeSnapshot());
+        this.serverState = new FollowerServerState(this.serverStore, electionTimeout);
+        logger.debug("Node {}, start with state {}", this.selfServerId, this.serverState);
+        serverStateChanged(this.serverState.takeSnapshot());
     }
 
     private void onElectionTimeout() {
-        logger.debug("Node {}, election timeout", this.selfNodeId);
-        this.nodeState.onElectionTimeout(this);
+        logger.debug("Node {}, election timeout", this.selfServerId);
+        this.serverState.onElectionTimeout(this);
     }
 
     private void replicateLog() {
-        logger.debug("Node {}, replicate log", this.selfNodeId);
+        logger.debug("Node {}, replicate log", this.selfServerId);
         AppendEntriesRpc rpc = new AppendEntriesRpc();
-        rpc.setTerm(this.nodeState.getTerm());
-        rpc.setLeaderId(this.selfNodeId);
+        rpc.setTerm(this.serverState.getTerm());
+        rpc.setLeaderId(this.selfServerId);
         getRpcActor().tell(new AppendEntriesRpcMessage(rpc), getSelf());
     }
 
-    private void onReceiveRequestVoteResult(RequestVoteResult result, ServerId senderNodeId) {
-        logger.debug("Node {}, receive {} from peer {}", this.selfNodeId, result, senderNodeId);
-        this.nodeState.onReceiveRequestVoteResult(this, result);
+    private void onReceiveRequestVoteResult(RequestVoteResult result, ServerId senderServerId) {
+        logger.debug("Node {}, receive {} from peer {}", this.selfServerId, result, senderServerId);
+        this.serverState.onReceiveRequestVoteResult(this, result);
     }
 
     private void onReceiveRequestVoteRpc(RequestVoteRpc rpc) {
-        logger.debug("Node {}, receive {} from peer {}", this.selfNodeId, rpc, rpc.getCandidateId());
-        this.nodeState.onReceiveRequestVoteRpc(this, rpc);
+        logger.debug("Node {}, receive {} from peer {}", this.selfServerId, rpc, rpc.getCandidateId());
+        this.serverState.onReceiveRequestVoteRpc(this, rpc);
     }
 
     private void onReceiveAppendEntriesRpc(AppendEntriesRpc rpc) {
-        logger.debug("Node {}, receive {} from leader {}", this.selfNodeId, rpc, rpc.getLeaderId());
-        this.nodeState.onReceiveAppendEntriesRpc(this, rpc);
+        logger.debug("Node {}, receive {} from leader {}", this.selfServerId, rpc, rpc.getLeaderId());
+        this.serverState.onReceiveAppendEntriesRpc(this, rpc);
     }
 
     @Override
-    public ServerId getSelfNodeId() {
-        return this.selfNodeId;
+    public ServerId getSelfServerId() {
+        return this.selfServerId;
     }
 
     @Override
-    public int getNodeCount() {
-        return this.nodeGroup.getNodeCount();
+    public int getServerCount() {
+        return this.serverGroup.getServerCount();
     }
 
     @Override
-    public void setNodeState(AbstractServerState nodeState) {
-        logger.debug("Node {}, state changed {} -> {}", this.selfNodeId, this.nodeState, nodeState);
-        this.nodeState = nodeState;
-        nodeStateChanged(this.nodeState.takeSnapshot());
+    public void setServerState(AbstractServerState serverState) {
+        logger.debug("Server {}, state changed {} -> {}", this.selfServerId, this.serverState, serverState);
+        this.serverState = serverState;
+        serverStateChanged(this.serverState.takeSnapshot());
     }
 
     @Override
@@ -139,12 +139,12 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
 
     ///////////////
 
-    private ServerStateSnapshot lastNodeState;
+    private ServerStateSnapshot lastServerState;
 
-    private void nodeStateChanged(ServerStateSnapshot snapshot) {
-        if (lastNodeState == null || !isStable(lastNodeState, snapshot)) {
-            logger.info("Node {}, state changed -> {}", this.selfNodeId, snapshot);
-            lastNodeState = snapshot;
+    private void serverStateChanged(ServerStateSnapshot snapshot) {
+        if (lastServerState == null || !isStable(lastServerState, snapshot)) {
+            logger.info("Node {}, state changed -> {}", this.selfServerId, snapshot);
+            lastServerState = snapshot;
         }
     }
 

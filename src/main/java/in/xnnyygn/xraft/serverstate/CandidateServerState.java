@@ -40,17 +40,17 @@ public class CandidateServerState extends AbstractServerState {
     public void onReceiveRequestVoteResult(ServerStateContext context, RequestVoteResult result) {
         if (result.isVoteGranted()) {
             int votesCount = this.votedCount + 1;
-            if (votesCount > (context.getNodeCount() / 2)) {
+            if (votesCount > (context.getServerCount() / 2)) {
                 this.electionTimeout.cancel();
-                context.setNodeState(new LeaderServerState(this.term, context.scheduleLogReplicationTask()));
+                context.setServerState(new LeaderServerState(this.term, context.scheduleLogReplicationTask()));
             } else {
-                context.setNodeState(new CandidateServerState(this.term, votedCount, electionTimeout.reset()));
+                context.setServerState(new CandidateServerState(this.term, votedCount, electionTimeout.reset()));
             }
         } else if (result.getTerm() > this.term) {
-            logger.debug("Node {}, update to peer's term", context.getSelfNodeId(), result.getTerm());
+            logger.debug("Node {}, update to peer's term", context.getSelfServerId(), result.getTerm());
 
             // current term is old
-            context.setNodeState(new FollowerServerState(result.getTerm(), null, null, electionTimeout.reset()));
+            context.setServerState(new FollowerServerState(result.getTerm(), null, null, electionTimeout.reset()));
         }
     }
 
@@ -64,7 +64,7 @@ public class CandidateServerState extends AbstractServerState {
     @Override
     protected AppendEntriesResult processAppendEntriesRpc(ServerStateContext context, AppendEntriesRpc rpc) {
         // more than 1 candidate but another node win the election
-        context.setNodeState(new FollowerServerState(this.term, null, rpc.getLeaderId(), electionTimeout.reset()));
+        context.setServerState(new FollowerServerState(this.term, null, rpc.getLeaderId(), electionTimeout.reset()));
         return new AppendEntriesResult(this.term, true);
     }
 

@@ -16,7 +16,7 @@ public class ServerGroup implements Iterable<AbstractServer> {
         this.nodeMap.put(node.getId(), node);
     }
 
-    public int getNodeCount() {
+    public int getServerCount() {
         return this.nodeMap.size();
     }
 

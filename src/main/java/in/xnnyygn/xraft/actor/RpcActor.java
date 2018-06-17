@@ -47,9 +47,9 @@ public class RpcActor extends AbstractActor {
 
     private <T> void processResultMessage(AbstractResultMessage<T> msg) {
         if (msg.isDestinationNodeIdPresent()) {
-            AbstractServer node = this.nodeGroup.findNode(msg.getDestinationNodeId());
-            msg.setDestinationNodeId(null);
-            msg.setSenderNodeId(this.selfNodeId);
+            AbstractServer node = this.nodeGroup.findNode(msg.getDestinationServerId());
+            msg.setDestinationServerId(null);
+            msg.setSenderServerId(this.selfNodeId);
 
             sendMessageToNode(node, msg);
         } else {

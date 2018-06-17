@@ -62,7 +62,7 @@ public abstract class AbstractServerState {
      */
     public void onElectionTimeout(ServerStateContext context) {
         if (this.role == ServerRole.LEADER) {
-            logger.warn("Node {}, current role is LEADER, ignore", context.getSelfNodeId());
+            logger.warn("Node {}, current role is LEADER, ignore", context.getSelfServerId());
             return;
         }
 
@@ -72,12 +72,12 @@ public abstract class AbstractServerState {
 
         // reset election timeout
         this.cancelTimeoutOrTask();
-        context.setNodeState(new CandidateServerState(newTerm, context.scheduleElectionTimeout()));
+        context.setServerState(new CandidateServerState(newTerm, context.scheduleElectionTimeout()));
 
         // rpc
         RequestVoteRpc rpc = new RequestVoteRpc();
         rpc.setTerm(newTerm);
-        rpc.setCandidateId(context.getSelfNodeId());
+        rpc.setCandidateId(context.getSelfServerId());
         context.sendRpcOrResultMessage(new RequestVoteRpcMessage(rpc));
     }
 
@@ -107,14 +107,14 @@ public abstract class AbstractServerState {
         } else {
 
             // peer's term > current term
-            logger.debug("Node {}, update to peer {}'s term {} and vote for it", context.getSelfNodeId(), rpc.getCandidateId(), rpc.getTerm());
+            logger.debug("Node {}, update to peer {}'s term {} and vote for it", context.getSelfServerId(), rpc.getCandidateId(), rpc.getTerm());
             this.cancelTimeoutOrTask();
-            context.setNodeState(new FollowerServerState(rpc.getTerm(), rpc.getCandidateId(), null, context.scheduleElectionTimeout()));
+            context.setServerState(new FollowerServerState(rpc.getTerm(), rpc.getCandidateId(), null, context.scheduleElectionTimeout()));
             result = new RequestVoteResult(rpc.getTerm(), true);
         }
 
         RequestVoteResultMessage message = new RequestVoteResultMessage(result);
-        message.setDestinationNodeId(rpc.getCandidateId());
+        message.setDestinationServerId(rpc.getCandidateId());
         context.sendRpcOrResultMessage(message);
     }
 
@@ -146,12 +146,12 @@ public abstract class AbstractServerState {
 
             // leader's term > current term
             this.cancelTimeoutOrTask();
-            context.setNodeState(new FollowerServerState(rpc.getTerm(), null, rpc.getLeaderId(), context.scheduleElectionTimeout()));
+            context.setServerState(new FollowerServerState(rpc.getTerm(), null, rpc.getLeaderId(), context.scheduleElectionTimeout()));
             result = new AppendEntriesResult(rpc.getTerm(), true);
         }
 
         AppendEntriesResultMessage msg = new AppendEntriesResultMessage(result);
-        msg.setDestinationNodeId(rpc.getLeaderId());
+        msg.setDestinationServerId(rpc.getLeaderId());
         context.sendRpcOrResultMessage(msg);
     }
 

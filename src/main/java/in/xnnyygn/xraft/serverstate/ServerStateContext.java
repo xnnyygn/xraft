@@ -8,11 +8,11 @@ import in.xnnyygn.xraft.server.ServerId;
 // TODO rename to a better one
 public interface ServerStateContext extends ElectionTimeoutScheduler {
 
-    ServerId getSelfNodeId();
+    ServerId getSelfServerId();
 
-    int getNodeCount();
+    int getServerCount();
 
-    void setNodeState(AbstractServerState nodeState);
+    void setServerState(AbstractServerState nodeState);
 
     LogReplicationTask scheduleLogReplicationTask();
 

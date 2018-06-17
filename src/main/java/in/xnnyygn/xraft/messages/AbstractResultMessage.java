@@ -5,8 +5,8 @@ import in.xnnyygn.xraft.server.ServerId;
 public abstract class AbstractResultMessage<T> implements RaftMessage {
 
     private final T result;
-    private ServerId senderNodeId;
-    private ServerId destinationNodeId;
+    private ServerId senderServerId; // TODO rename to sourceServerId
+    private ServerId destinationServerId;
 
     AbstractResultMessage(T result) {
         this.result = result;
@@ -16,32 +16,32 @@ public abstract class AbstractResultMessage<T> implements RaftMessage {
         return result;
     }
 
-    public ServerId getSenderNodeId() {
-        return senderNodeId;
+    public ServerId getSenderServerId() {
+        return senderServerId;
     }
 
-    public void setSenderNodeId(ServerId senderNodeId) {
-        this.senderNodeId = senderNodeId;
+    public void setSenderServerId(ServerId senderServerId) {
+        this.senderServerId = senderServerId;
     }
 
-    public ServerId getDestinationNodeId() {
-        return destinationNodeId;
+    public ServerId getDestinationServerId() {
+        return destinationServerId;
     }
 
     public boolean isDestinationNodeIdPresent() {
-        return this.destinationNodeId != null;
+        return this.destinationServerId != null;
     }
 
-    public void setDestinationNodeId(ServerId destinationNodeId) {
-        this.destinationNodeId = destinationNodeId;
+    public void setDestinationServerId(ServerId destinationServerId) {
+        this.destinationServerId = destinationServerId;
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +
-                "destinationNodeId=" + destinationNodeId +
+                "destinationServerId=" + destinationServerId +
                 ", result=" + result +
-                ", senderNodeId=" + senderNodeId +
+                ", senderServerId=" + senderServerId +
                 '}';
     }
 
