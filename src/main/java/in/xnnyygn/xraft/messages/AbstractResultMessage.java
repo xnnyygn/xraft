@@ -28,7 +28,7 @@ public abstract class AbstractResultMessage<T> implements RaftMessage {
         return destinationServerId;
     }
 
-    public boolean isDestinationNodeIdPresent() {
+    public boolean isDestinationServerIdPresent() {
         return this.destinationServerId != null;
     }
 

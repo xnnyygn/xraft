@@ -15,7 +15,7 @@ public class AppendEntriesRpcMessage implements RaftMessage {
         return rpc;
     }
 
-    public ServerId getSenderNodeId() {
+    public ServerId getSenderServerId() {
         return this.rpc.getLeaderId();
     }
 

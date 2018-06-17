@@ -46,7 +46,7 @@ public class ServerGroup implements Iterable<AbstractServer> {
         return this.nodeMap.values().iterator();
     }
 
-    public AbstractServer findNode(ServerId nodeId) {
+    public AbstractServer findServer(ServerId nodeId) {
         return this.nodeMap.get(nodeId);
     }
 

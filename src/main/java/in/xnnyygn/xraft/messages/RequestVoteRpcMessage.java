@@ -15,7 +15,7 @@ public class RequestVoteRpcMessage implements RaftMessage {
         return rpc;
     }
 
-    public ServerId getSenderNodeId() {
+    public ServerId getSenderServerId() {
         return this.rpc.getCandidateId();
     }
 

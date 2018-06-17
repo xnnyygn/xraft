@@ -13,26 +13,26 @@ import org.slf4j.LoggerFactory;
 public class RpcActor extends AbstractActor {
 
     private static final Logger logger = LoggerFactory.getLogger(RpcActor.class);
-    private final ServerGroup nodeGroup;
-    private final ServerId selfNodeId;
+    private final ServerGroup serverGroup;
+    private final ServerId selfServerId;
 
-    public RpcActor(ServerGroup nodeGroup, ServerId selfNodeId) {
+    public RpcActor(ServerGroup serverGroup, ServerId selfServerId) {
         super();
-        this.nodeGroup = nodeGroup;
-        this.selfNodeId = selfNodeId;
+        this.serverGroup = serverGroup;
+        this.selfServerId = selfServerId;
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder().match(RequestVoteRpcMessage.class, msg -> {
-            if (msg.getSenderNodeId().equals(this.selfNodeId)) {
+            if (msg.getSenderServerId().equals(this.selfServerId)) {
                 sendMessageToPeers(msg);
             } else {
                 forwardToElectionActor(msg);
             }
         }).match(RequestVoteResultMessage.class, this::processResultMessage
         ).match(AppendEntriesRpcMessage.class, msg -> {
-            if (msg.getSenderNodeId().equals(this.selfNodeId)) {
+            if (msg.getSenderServerId().equals(this.selfServerId)) {
                 sendMessageToPeers(msg);
             } else {
                 forwardToElectionActor(msg);
@@ -46,12 +46,12 @@ public class RpcActor extends AbstractActor {
     }
 
     private <T> void processResultMessage(AbstractResultMessage<T> msg) {
-        if (msg.isDestinationNodeIdPresent()) {
-            AbstractServer node = this.nodeGroup.findNode(msg.getDestinationServerId());
+        if (msg.isDestinationServerIdPresent()) {
+            AbstractServer server = this.serverGroup.findServer(msg.getDestinationServerId());
             msg.setDestinationServerId(null);
-            msg.setSenderServerId(this.selfNodeId);
+            msg.setSenderServerId(this.selfServerId);
 
-            sendMessageToNode(node, msg);
+            sendMessageToServer(server, msg);
         } else {
             forwardToElectionActor(msg);
         }
@@ -62,15 +62,15 @@ public class RpcActor extends AbstractActor {
     }
 
     private void sendMessageToPeers(RaftMessage msg) {
-        for (AbstractServer node : nodeGroup) {
-            this.sendMessageToNode(node, msg);
+        for (AbstractServer server : serverGroup) {
+            this.sendMessageToServer(server, msg);
         }
     }
 
-    private void sendMessageToNode(AbstractServer node, RaftMessage msg) {
-        if (!node.getId().equals(this.selfNodeId) && (node instanceof Server)) {
-            logger.debug("Node {}, send {} to peer {}", this.selfNodeId, msg, node.getId());
-            ((Server) node).getRpcEndpoint().tell(msg, getSelf());
+    private void sendMessageToServer(AbstractServer server, RaftMessage msg) {
+        if (!server.getId().equals(this.selfServerId) && (server instanceof Server)) {
+            logger.debug("Node {}, send {} to peer {}", this.selfServerId, msg, server.getId());
+            ((Server) server).getRpcEndpoint().tell(msg, getSelf());
         }
     }
 
