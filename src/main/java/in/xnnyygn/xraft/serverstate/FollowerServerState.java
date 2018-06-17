@@ -22,7 +22,7 @@ public class FollowerServerState extends AbstractServerState {
     }
 
     public FollowerServerState(int term, RaftNodeId votedFor, RaftNodeId leaderId, ElectionTimeout electionTimeout) {
-        super(NodeRole.FOLLOWER, term);
+        super(ServerRole.FOLLOWER, term);
         this.votedFor = votedFor;
         this.leaderId = leaderId;
         this.electionTimeout = electionTimeout;

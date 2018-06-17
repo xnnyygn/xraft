@@ -19,7 +19,7 @@ public class CandidateServerState extends AbstractServerState {
     }
 
     public CandidateServerState(int term, int votedCount, ElectionTimeout electionTimeout) {
-        super(NodeRole.CANDIDATE, term);
+        super(ServerRole.CANDIDATE, term);
         this.votedCount = votedCount;
         this.electionTimeout = electionTimeout;
     }

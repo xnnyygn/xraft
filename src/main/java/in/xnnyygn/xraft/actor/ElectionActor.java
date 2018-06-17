@@ -149,7 +149,7 @@ public class ElectionActor extends AbstractActor implements NodeStateContext {
     }
 
     private boolean isStable(ServerStateSnapshot stateBefore, ServerStateSnapshot stateAfter) {
-        return stateBefore.getRole() == NodeRole.FOLLOWER &&
+        return stateBefore.getRole() == ServerRole.FOLLOWER &&
                 stateAfter.getRole() == stateBefore.getRole() &&
                 stateAfter.getTerm() == stateBefore.getTerm() &&
                 stateAfter.getLeaderId() == stateBefore.getLeaderId() &&

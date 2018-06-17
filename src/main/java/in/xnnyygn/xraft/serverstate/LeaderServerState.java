@@ -14,7 +14,7 @@ public class LeaderServerState extends AbstractServerState {
     private final LogReplicationTask logReplicationTask;
 
     public LeaderServerState(int term, LogReplicationTask logReplicationTask) {
-        super(NodeRole.LEADER, term);
+        super(ServerRole.LEADER, term);
         this.logReplicationTask = logReplicationTask;
     }
 

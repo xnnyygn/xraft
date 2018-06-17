@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractServerState {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractServerState.class);
-    protected final NodeRole role;
+    protected final ServerRole role;
     protected final int term;
 
     /**
@@ -25,7 +25,7 @@ public abstract class AbstractServerState {
      * @param role role
      * @param term term
      */
-    AbstractServerState(NodeRole role, int term) {
+    AbstractServerState(ServerRole role, int term) {
         this.role = role;
         this.term = term;
     }
@@ -35,7 +35,7 @@ public abstract class AbstractServerState {
      *
      * @return role
      */
-    public NodeRole getRole() {
+    public ServerRole getRole() {
         return role;
     }
 
@@ -61,7 +61,7 @@ public abstract class AbstractServerState {
      * @param context context
      */
     public void onElectionTimeout(NodeStateContext context) {
-        if (this.role == NodeRole.LEADER) {
+        if (this.role == ServerRole.LEADER) {
             logger.warn("Node {}, current role is LEADER, ignore", context.getSelfNodeId());
             return;
         }

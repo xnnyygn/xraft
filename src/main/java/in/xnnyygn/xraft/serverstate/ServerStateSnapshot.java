@@ -4,18 +4,18 @@ import in.xnnyygn.xraft.node.RaftNodeId;
 
 public class ServerStateSnapshot {
 
-    private final NodeRole role;
+    private final ServerRole role;
     private final int term;
     private int votesCount;
     private RaftNodeId votedFor;
     private RaftNodeId leaderId;
 
-    public ServerStateSnapshot(NodeRole role, int term) {
+    public ServerStateSnapshot(ServerRole role, int term) {
         this.role = role;
         this.term = term;
     }
 
-    public NodeRole getRole() {
+    public ServerRole getRole() {
         return role;
     }
 

@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.serverstate;
 
-public enum NodeRole {
+public enum ServerRole {
 
     FOLLOWER, CANDIDATE, LEADER;
 
