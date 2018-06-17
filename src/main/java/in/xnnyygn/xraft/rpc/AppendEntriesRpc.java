@@ -1,13 +1,13 @@
 package in.xnnyygn.xraft.rpc;
 
-import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.ServerId;
 
 import java.io.Serializable;
 
 public class AppendEntriesRpc implements Serializable {
 
     private int term;
-    private RaftNodeId leaderId;
+    private ServerId leaderId;
 
     public int getTerm() {
         return term;
@@ -17,11 +17,11 @@ public class AppendEntriesRpc implements Serializable {
         this.term = term;
     }
 
-    public RaftNodeId getLeaderId() {
+    public ServerId getLeaderId() {
         return leaderId;
     }
 
-    public void setLeaderId(RaftNodeId leaderId) {
+    public void setLeaderId(ServerId leaderId) {
         this.leaderId = leaderId;
     }
 

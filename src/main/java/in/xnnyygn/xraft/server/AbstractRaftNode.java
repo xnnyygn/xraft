@@ -2,13 +2,13 @@ package in.xnnyygn.xraft.server;
 
 public abstract class AbstractRaftNode {
 
-    private final RaftNodeId id;
+    private final ServerId id;
 
-    AbstractRaftNode(RaftNodeId id) {
+    AbstractRaftNode(ServerId id) {
         this.id = id;
     }
 
-    public RaftNodeId getId() {
+    public ServerId getId() {
         return id;
     }
 

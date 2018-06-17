@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.serverstate;
 
 import in.xnnyygn.xraft.schedule.ElectionTimeout;
-import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.ServerId;
 import in.xnnyygn.xraft.server.RaftNodeSave;
 import in.xnnyygn.xraft.rpc.AppendEntriesResult;
 import in.xnnyygn.xraft.rpc.AppendEntriesRpc;
@@ -13,15 +13,15 @@ import org.slf4j.LoggerFactory;
 public class FollowerServerState extends AbstractServerState {
 
     private static final Logger logger = LoggerFactory.getLogger(FollowerServerState.class);
-    private final RaftNodeId votedFor;
-    private final RaftNodeId leaderId;
+    private final ServerId votedFor;
+    private final ServerId leaderId;
     private final ElectionTimeout electionTimeout;
 
     public FollowerServerState(RaftNodeSave nodeSave, ElectionTimeout electionTimeout) {
         this(nodeSave.getCurrentTerm(), nodeSave.getVotedFor(), null, electionTimeout);
     }
 
-    public FollowerServerState(int term, RaftNodeId votedFor, RaftNodeId leaderId, ElectionTimeout electionTimeout) {
+    public FollowerServerState(int term, ServerId votedFor, ServerId leaderId, ElectionTimeout electionTimeout) {
         super(ServerRole.FOLLOWER, term);
         this.votedFor = votedFor;
         this.leaderId = leaderId;

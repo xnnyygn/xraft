@@ -8,7 +8,7 @@ import in.xnnyygn.xraft.schedule.LogReplicationTask;
 import in.xnnyygn.xraft.schedule.Scheduler;
 import in.xnnyygn.xraft.messages.*;
 import in.xnnyygn.xraft.server.RaftNodeGroup;
-import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.ServerId;
 import in.xnnyygn.xraft.server.RaftNodeSave;
 import in.xnnyygn.xraft.rpc.AppendEntriesRpc;
 import in.xnnyygn.xraft.rpc.RequestVoteResult;
@@ -23,12 +23,12 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
     private AbstractServerState nodeState;
 
     private final RaftNodeGroup nodeGroup;
-    private final RaftNodeId selfNodeId;
+    private final ServerId selfNodeId;
     private final RaftNodeSave nodeSave;
 
     private final Scheduler scheduler;
 
-    public ElectionActor(RaftNodeGroup nodeGroup, RaftNodeId selfNodeId, RaftNodeSave nodeSave) {
+    public ElectionActor(RaftNodeGroup nodeGroup, ServerId selfNodeId, RaftNodeSave nodeSave) {
         super();
         this.nodeGroup = nodeGroup;
         this.selfNodeId = selfNodeId;
@@ -90,7 +90,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
         getRpcActor().tell(new AppendEntriesRpcMessage(rpc), getSelf());
     }
 
-    private void onReceiveRequestVoteResult(RequestVoteResult result, RaftNodeId senderNodeId) {
+    private void onReceiveRequestVoteResult(RequestVoteResult result, ServerId senderNodeId) {
         logger.debug("Node {}, receive {} from peer {}", this.selfNodeId, result, senderNodeId);
         this.nodeState.onReceiveRequestVoteResult(this, result);
     }
@@ -106,7 +106,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
     }
 
     @Override
-    public RaftNodeId getSelfNodeId() {
+    public ServerId getSelfNodeId() {
         return this.selfNodeId;
     }
 

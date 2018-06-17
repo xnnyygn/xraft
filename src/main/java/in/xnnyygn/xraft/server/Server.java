@@ -12,7 +12,7 @@ public class Server extends AbstractRaftNode {
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
     private final ActorSystem actorSystem;
 
-    public Server(RaftNodeId id, ActorSystem actorSystem) {
+    public Server(ServerId id, ActorSystem actorSystem) {
         super(id);
         this.actorSystem = actorSystem;
     }

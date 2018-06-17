@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.schedule;
 
-import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.ServerId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,9 +12,9 @@ public class ElectionTimeout {
     private static final Logger logger = LoggerFactory.getLogger(ElectionTimeout.class);
     private final ScheduledFuture<?> scheduledFuture;
     private final ElectionTimeoutScheduler electionTimeoutScheduler;
-    private final RaftNodeId selfNodeId;
+    private final ServerId selfNodeId;
 
-    public ElectionTimeout(ScheduledFuture<?> scheduledFuture, ElectionTimeoutScheduler electionTimeoutScheduler, RaftNodeId selfNodeId) {
+    public ElectionTimeout(ScheduledFuture<?> scheduledFuture, ElectionTimeoutScheduler electionTimeoutScheduler, ServerId selfNodeId) {
         this.scheduledFuture = scheduledFuture;
         this.electionTimeoutScheduler = electionTimeoutScheduler;
         this.selfNodeId = selfNodeId;

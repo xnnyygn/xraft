@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.messages;
 
-import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.ServerId;
 import in.xnnyygn.xraft.rpc.RequestVoteRpc;
 
 public class RequestVoteRpcMessage implements RaftMessage {
@@ -15,7 +15,7 @@ public class RequestVoteRpcMessage implements RaftMessage {
         return rpc;
     }
 
-    public RaftNodeId getSenderNodeId() {
+    public ServerId getSenderNodeId() {
         return this.rpc.getCandidateId();
     }
 

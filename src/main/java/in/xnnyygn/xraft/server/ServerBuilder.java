@@ -38,7 +38,7 @@ public class ServerBuilder {
             throw new IllegalArgumentException("nodeId required");
         }
 
-        RaftNodeId selfNodeId = new RaftNodeId(this.nodeId);
+        ServerId selfNodeId = new ServerId(this.nodeId);
         ActorSystem actorSystem = ActorSystem.create(this.actionSystemName);
         ActorRef electionActor = actorSystem.actorOf(Props.create(ElectionActor.class, this.group, selfNodeId, this.nodeState), "election");
         // TODO remove timeout actor

@@ -2,7 +2,7 @@ package in.xnnyygn.xraft.actor;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorSelection;
-import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.ServerId;
 import in.xnnyygn.xraft.messages.SimpleMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +17,11 @@ public class TimeoutActor extends AbstractActor {
 
     private static final Logger logger = LoggerFactory.getLogger(TimeoutActor.class);
     private final ScheduledExecutorService scheduler;
-    private final RaftNodeId selfNodeId;
+    private final ServerId selfNodeId;
     private final Random electionTimeoutRandom;
     private ScheduledFuture<?> electionTimeoutFuture;
 
-    public TimeoutActor(RaftNodeId selfNodeId) {
+    public TimeoutActor(ServerId selfNodeId) {
         super();
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
         this.selfNodeId = selfNodeId;

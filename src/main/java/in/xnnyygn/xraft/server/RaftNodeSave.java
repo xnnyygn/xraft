@@ -3,7 +3,7 @@ package in.xnnyygn.xraft.server;
 public class RaftNodeSave {
 
     private int currentTerm = 0;
-    private RaftNodeId votedFor = null;
+    private ServerId votedFor = null;
 
     public int getCurrentTerm() {
         return currentTerm;
@@ -13,11 +13,11 @@ public class RaftNodeSave {
         this.currentTerm = currentTerm;
     }
 
-    public RaftNodeId getVotedFor() {
+    public ServerId getVotedFor() {
         return votedFor;
     }
 
-    public void setVotedFor(RaftNodeId votedFor) {
+    public void setVotedFor(ServerId votedFor) {
         this.votedFor = votedFor;
     }
 

@@ -5,7 +5,7 @@ import akka.actor.ActorSelection;
 import in.xnnyygn.xraft.server.AbstractRaftNode;
 import in.xnnyygn.xraft.server.Server;
 import in.xnnyygn.xraft.server.RaftNodeGroup;
-import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.ServerId;
 import in.xnnyygn.xraft.messages.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +14,9 @@ public class RpcActor extends AbstractActor {
 
     private static final Logger logger = LoggerFactory.getLogger(RpcActor.class);
     private final RaftNodeGroup nodeGroup;
-    private final RaftNodeId selfNodeId;
+    private final ServerId selfNodeId;
 
-    public RpcActor(RaftNodeGroup nodeGroup, RaftNodeId selfNodeId) {
+    public RpcActor(RaftNodeGroup nodeGroup, ServerId selfNodeId) {
         super();
         this.nodeGroup = nodeGroup;
         this.selfNodeId = selfNodeId;

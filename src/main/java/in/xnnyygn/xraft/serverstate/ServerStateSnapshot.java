@@ -1,14 +1,14 @@
 package in.xnnyygn.xraft.serverstate;
 
-import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.ServerId;
 
 public class ServerStateSnapshot {
 
     private final ServerRole role;
     private final int term;
     private int votesCount;
-    private RaftNodeId votedFor;
-    private RaftNodeId leaderId;
+    private ServerId votedFor;
+    private ServerId leaderId;
 
     public ServerStateSnapshot(ServerRole role, int term) {
         this.role = role;
@@ -31,19 +31,19 @@ public class ServerStateSnapshot {
         this.votesCount = votesCount;
     }
 
-    public RaftNodeId getVotedFor() {
+    public ServerId getVotedFor() {
         return votedFor;
     }
 
-    void setVotedFor(RaftNodeId votedFor) {
+    void setVotedFor(ServerId votedFor) {
         this.votedFor = votedFor;
     }
 
-    public RaftNodeId getLeaderId() {
+    public ServerId getLeaderId() {
         return leaderId;
     }
 
-    void setLeaderId(RaftNodeId leaderId) {
+    void setLeaderId(ServerId leaderId) {
         this.leaderId = leaderId;
     }
 

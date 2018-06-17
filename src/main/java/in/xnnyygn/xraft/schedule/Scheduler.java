@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import in.xnnyygn.xraft.messages.SimpleMessage;
-import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.ServerId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,9 +20,9 @@ public class Scheduler implements ElectionTimeoutScheduler {
     private final Random electionTimeoutRandom;
     private final ScheduledExecutorService scheduledExecutor;
     private final ActorSystem actorSystem;
-    private final RaftNodeId selfNodeId;
+    private final ServerId selfNodeId;
 
-    public Scheduler(RaftNodeId selfNodeId, ActorSystem actorSystem) {
+    public Scheduler(ServerId selfNodeId, ActorSystem actorSystem) {
         this.electionTimeoutRandom = new Random();
         this.scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         this.selfNodeId = selfNodeId;

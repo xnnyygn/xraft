@@ -1,12 +1,12 @@
 package in.xnnyygn.xraft.messages;
 
-import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.ServerId;
 
 public abstract class AbstractResultMessage<T> implements RaftMessage {
 
     private final T result;
-    private RaftNodeId senderNodeId;
-    private RaftNodeId destinationNodeId;
+    private ServerId senderNodeId;
+    private ServerId destinationNodeId;
 
     AbstractResultMessage(T result) {
         this.result = result;
@@ -16,15 +16,15 @@ public abstract class AbstractResultMessage<T> implements RaftMessage {
         return result;
     }
 
-    public RaftNodeId getSenderNodeId() {
+    public ServerId getSenderNodeId() {
         return senderNodeId;
     }
 
-    public void setSenderNodeId(RaftNodeId senderNodeId) {
+    public void setSenderNodeId(ServerId senderNodeId) {
         this.senderNodeId = senderNodeId;
     }
 
-    public RaftNodeId getDestinationNodeId() {
+    public ServerId getDestinationNodeId() {
         return destinationNodeId;
     }
 
@@ -32,7 +32,7 @@ public abstract class AbstractResultMessage<T> implements RaftMessage {
         return this.destinationNodeId != null;
     }
 
-    public void setDestinationNodeId(RaftNodeId destinationNodeId) {
+    public void setDestinationNodeId(ServerId destinationNodeId) {
         this.destinationNodeId = destinationNodeId;
     }
 

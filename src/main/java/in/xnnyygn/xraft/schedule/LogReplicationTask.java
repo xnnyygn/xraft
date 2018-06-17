@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.schedule;
 
-import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.ServerId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,9 +11,9 @@ public class LogReplicationTask {
 
     private static final Logger logger = LoggerFactory.getLogger(LogReplicationTask.class);
     private final ScheduledFuture<?> scheduledFuture;
-    private final RaftNodeId selfNodeId;
+    private final ServerId selfNodeId;
 
-    public LogReplicationTask(ScheduledFuture<?> scheduledFuture, RaftNodeId selfNodeId) {
+    public LogReplicationTask(ScheduledFuture<?> scheduledFuture, ServerId selfNodeId) {
         this.scheduledFuture = scheduledFuture;
         this.selfNodeId = selfNodeId;
     }

@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class RaftNodeGroup implements Iterable<AbstractRaftNode> {
 
-    private Map<RaftNodeId, AbstractRaftNode> nodeMap;
+    private Map<ServerId, AbstractRaftNode> nodeMap;
 
     public RaftNodeGroup() {
         this.nodeMap = new HashMap<>();
@@ -21,7 +21,7 @@ public class RaftNodeGroup implements Iterable<AbstractRaftNode> {
     }
 
     @Deprecated
-    public RaftNodeId getSelfId() {
+    public ServerId getSelfId() {
         throw new UnsupportedOperationException();
     }
 
@@ -46,7 +46,7 @@ public class RaftNodeGroup implements Iterable<AbstractRaftNode> {
         return this.nodeMap.values().iterator();
     }
 
-    public AbstractRaftNode findNode(RaftNodeId nodeId) {
+    public AbstractRaftNode findNode(ServerId nodeId) {
         return this.nodeMap.get(nodeId);
     }
 
