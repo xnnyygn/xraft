@@ -30,7 +30,7 @@ public class RaftScheduler implements ElectionTimeoutScheduler {
     }
 
     private ActorSelection getElectionActor() {
-        return this.actorSystem.actorSelection("/user/nodestate");
+        return this.actorSystem.actorSelection("/user/election");
     }
 
     public LogReplicationTask scheduleLogReplicationTask() {
@@ -44,7 +44,7 @@ public class RaftScheduler implements ElectionTimeoutScheduler {
 
     @Override
     public ElectionTimeout scheduleElectionTimeout() {
-        logger.debug("Node {}, schedule nodestate timeout", this.selfNodeId);
+        logger.debug("Node {}, schedule election timeout", this.selfNodeId);
         int timeout = electionTimeoutRandom.nextInt(2000) + 3000;
         ScheduledFuture<?> scheduledFuture = scheduledExecutor.schedule(
                 () -> {

@@ -40,7 +40,7 @@ public class RaftNodeBuilder {
 
         RaftNodeId selfNodeId = new RaftNodeId(this.nodeId);
         ActorSystem actorSystem = ActorSystem.create(this.actionSystemName);
-        ActorRef electionActor = actorSystem.actorOf(Props.create(ElectionActor.class, this.group, selfNodeId, this.nodeState), "nodestate");
+        ActorRef electionActor = actorSystem.actorOf(Props.create(ElectionActor.class, this.group, selfNodeId, this.nodeState), "election");
         ActorRef timeoutActor = actorSystem.actorOf(Props.create(TimeoutActor.class, selfNodeId), "timeout");
         ActorRef rpcActor = actorSystem.actorOf(Props.create(RpcActor.class, this.group, selfNodeId), "rpc");
         RaftNode node = new RaftNode(selfNodeId, actorSystem);

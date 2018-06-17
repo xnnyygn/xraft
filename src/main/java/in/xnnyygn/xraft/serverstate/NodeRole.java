@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.nodestate;
+package in.xnnyygn.xraft.serverstate;
 
 public enum NodeRole {
 

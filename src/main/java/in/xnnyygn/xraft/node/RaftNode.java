@@ -19,7 +19,7 @@ public class RaftNode extends AbstractRaftNode {
 
     public void start() {
         logger.info("start raft node {}", getId());
-        this.actorSystem.actorSelection("/user/nodestate").tell(new SimpleMessage(SimpleMessage.Kind.START_UP), ActorRef.noSender());
+        this.actorSystem.actorSelection("/user/election").tell(new SimpleMessage(SimpleMessage.Kind.START_UP), ActorRef.noSender());
     }
 
     public void stop() {

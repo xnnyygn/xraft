@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.nodestate;
+package in.xnnyygn.xraft.serverstate;
 
 import in.xnnyygn.xraft.messages.AppendEntriesResultMessage;
 import in.xnnyygn.xraft.messages.RequestVoteResultMessage;
@@ -56,7 +56,7 @@ public abstract class AbstractNodeState {
     protected abstract void cancelTimeoutOrTask();
 
     /**
-     * Called when nodestate timeout.
+     * Called when election timeout.
      *
      * @param context context
      */
@@ -66,11 +66,11 @@ public abstract class AbstractNodeState {
             return;
         }
 
-        // follower: start nodestate
-        // candidate: restart nodestate
+        // follower: start election
+        // candidate: restart election
         int newTerm = this.term + 1;
 
-        // reset nodestate timeout
+        // reset election timeout
         this.cancelTimeoutOrTask();
         context.setNodeState(new CandidateNodeState(newTerm, context.scheduleElectionTimeout()));
 

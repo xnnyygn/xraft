@@ -65,7 +65,7 @@ public class TimeoutActor extends AbstractActor {
 
     private void registerElectionTimeout() {
         int timeout = electionTimeoutRandom.nextInt(2000) + 1000;
-        logger.debug("Node {}, register nodestate timeout, {}ms", this.selfNodeId, timeout);
+        logger.debug("Node {}, register election timeout, {}ms", this.selfNodeId, timeout);
         // TODO check if registered
 
         this.electionTimeoutFuture = this.scheduler.schedule(() -> {
@@ -75,7 +75,7 @@ public class TimeoutActor extends AbstractActor {
 
     private void deregisterElectionTimeout() {
         if (this.electionTimeoutFuture != null) {
-            logger.debug("Node {}, deregister nodestate timeout", this.selfNodeId);
+            logger.debug("Node {}, deregister election timeout", this.selfNodeId);
             this.electionTimeoutFuture.cancel(false);
             this.electionTimeoutFuture = null;
         }

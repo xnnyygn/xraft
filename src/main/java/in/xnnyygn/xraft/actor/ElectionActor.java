@@ -2,7 +2,7 @@ package in.xnnyygn.xraft.actor;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorSelection;
-import in.xnnyygn.xraft.nodestate.*;
+import in.xnnyygn.xraft.serverstate.*;
 import in.xnnyygn.xraft.scheduler.ElectionTimeout;
 import in.xnnyygn.xraft.scheduler.LogReplicationTask;
 import in.xnnyygn.xraft.scheduler.RaftScheduler;
@@ -78,7 +78,7 @@ public class ElectionActor extends AbstractActor implements NodeStateContext {
     }
 
     private void onElectionTimeout() {
-        logger.debug("Node {}, nodestate timeout", this.selfNodeId);
+        logger.debug("Node {}, election timeout", this.selfNodeId);
         this.nodeState.onElectionTimeout(this);
     }
 

@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.nodestate;
+package in.xnnyygn.xraft.serverstate;
 
 import in.xnnyygn.xraft.scheduler.ElectionTimeout;
 import in.xnnyygn.xraft.node.RaftNodeId;

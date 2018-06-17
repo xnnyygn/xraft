@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.nodestate;
+package in.xnnyygn.xraft.serverstate;
 
 import in.xnnyygn.xraft.scheduler.LogReplicationTask;
 import in.xnnyygn.xraft.rpc.AppendEntriesResult;

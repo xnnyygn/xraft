@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.nodestate;
+package in.xnnyygn.xraft.serverstate;
 
 import in.xnnyygn.xraft.scheduler.ElectionTimeout;
 import in.xnnyygn.xraft.rpc.AppendEntriesResult;
@@ -63,7 +63,7 @@ public class CandidateNodeState extends AbstractNodeState {
 
     @Override
     protected AppendEntriesResult processAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
-        // more than 1 candidate but another node win the nodestate
+        // more than 1 candidate but another node win the election
         context.setNodeState(new FollowerNodeState(this.term, null, rpc.getLeaderId(), electionTimeout.reset()));
         return new AppendEntriesResult(this.term, true);
     }
