@@ -139,16 +139,16 @@ public class ElectionActor extends AbstractActor implements NodeStateContext {
 
     ///////////////
 
-    private NodeStateSnapshot lastNodeState;
+    private ServerStateSnapshot lastNodeState;
 
-    private void nodeStateChanged(NodeStateSnapshot snapshot) {
+    private void nodeStateChanged(ServerStateSnapshot snapshot) {
         if (lastNodeState == null || !isStable(lastNodeState, snapshot)) {
             logger.info("Node {}, state changed -> {}", this.selfNodeId, snapshot);
             lastNodeState = snapshot;
         }
     }
 
-    private boolean isStable(NodeStateSnapshot stateBefore, NodeStateSnapshot stateAfter) {
+    private boolean isStable(ServerStateSnapshot stateBefore, ServerStateSnapshot stateAfter) {
         return stateBefore.getRole() == NodeRole.FOLLOWER &&
                 stateAfter.getRole() == stateBefore.getRole() &&
                 stateAfter.getTerm() == stateBefore.getTerm() &&

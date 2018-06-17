@@ -39,7 +39,7 @@ public abstract class AbstractServerState {
         return role;
     }
 
-    public abstract NodeStateSnapshot takeSnapshot();
+    public abstract ServerStateSnapshot takeSnapshot();
 
     /**
      * Get term.

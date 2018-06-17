@@ -25,8 +25,8 @@ public class CandidateServerState extends AbstractServerState {
     }
 
     @Override
-    public NodeStateSnapshot takeSnapshot() {
-        NodeStateSnapshot snapshot = new NodeStateSnapshot(this.role, this.term);
+    public ServerStateSnapshot takeSnapshot() {
+        ServerStateSnapshot snapshot = new ServerStateSnapshot(this.role, this.term);
         snapshot.setVotesCount(this.votedCount);
         return snapshot;
     }

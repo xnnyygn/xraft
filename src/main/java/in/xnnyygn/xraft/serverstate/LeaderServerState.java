@@ -19,8 +19,8 @@ public class LeaderServerState extends AbstractServerState {
     }
 
     @Override
-    public NodeStateSnapshot takeSnapshot() {
-        return new NodeStateSnapshot(this.role, this.term);
+    public ServerStateSnapshot takeSnapshot() {
+        return new ServerStateSnapshot(this.role, this.term);
     }
 
     @Override

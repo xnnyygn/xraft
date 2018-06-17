@@ -2,7 +2,7 @@ package in.xnnyygn.xraft.serverstate;
 
 import in.xnnyygn.xraft.node.RaftNodeId;
 
-public class NodeStateSnapshot {
+public class ServerStateSnapshot {
 
     private final NodeRole role;
     private final int term;
@@ -10,7 +10,7 @@ public class NodeStateSnapshot {
     private RaftNodeId votedFor;
     private RaftNodeId leaderId;
 
-    public NodeStateSnapshot(NodeRole role, int term) {
+    public ServerStateSnapshot(NodeRole role, int term) {
         this.role = role;
         this.term = term;
     }
