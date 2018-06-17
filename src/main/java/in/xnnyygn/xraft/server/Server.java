@@ -1,6 +1,5 @@
 package in.xnnyygn.xraft.server;
 
-import akka.actor.ActorSelection;
 import in.xnnyygn.xraft.rpc.Channel;
 import in.xnnyygn.xraft.serverstate.ServerStateMachine;
 import org.slf4j.Logger;
@@ -27,11 +26,6 @@ public class Server extends AbstractServer {
         logger.info("stop server {}", getId());
         this.serverStateMachine.stop();
         this.rpcChannel.close();
-    }
-
-    @Deprecated
-    public ActorSelection getRpcEndpoint() {
-        throw new UnsupportedOperationException();
     }
 
     public Channel getRpcChannel() {
