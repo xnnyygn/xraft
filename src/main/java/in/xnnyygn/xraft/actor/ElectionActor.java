@@ -16,7 +16,7 @@ import in.xnnyygn.xraft.rpc.RequestVoteRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ElectionActor extends AbstractActor implements NodeStateContext {
+public class ElectionActor extends AbstractActor implements ServerStateContext {
 
     private static final Logger logger = LoggerFactory.getLogger(ElectionActor.class);
 

@@ -42,12 +42,12 @@ public class FollowerServerState extends AbstractServerState {
     }
 
     @Override
-    public void onReceiveRequestVoteResult(NodeStateContext context, RequestVoteResult result) {
+    public void onReceiveRequestVoteResult(ServerStateContext context, RequestVoteResult result) {
         logger.warn("Node {}, current role is FOLLOWER, ignore", context.getSelfNodeId());
     }
 
     @Override
-    protected RequestVoteResult processRequestVoteRpc(NodeStateContext context, RequestVoteRpc rpc) {
+    protected RequestVoteResult processRequestVoteRpc(ServerStateContext context, RequestVoteRpc rpc) {
         if (this.votedFor == null || this.votedFor.equals(rpc.getCandidateId())) {
 
             // vote for candidate
@@ -60,7 +60,7 @@ public class FollowerServerState extends AbstractServerState {
     }
 
     @Override
-    protected AppendEntriesResult processAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
+    protected AppendEntriesResult processAppendEntriesRpc(ServerStateContext context, AppendEntriesRpc rpc) {
         context.setNodeState(new FollowerServerState(this.term, this.votedFor, rpc.getLeaderId(), electionTimeout.reset()));
         return new AppendEntriesResult(this.term, true);
     }

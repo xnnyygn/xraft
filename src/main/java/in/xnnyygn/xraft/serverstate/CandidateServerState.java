@@ -37,7 +37,7 @@ public class CandidateServerState extends AbstractServerState {
     }
 
     @Override
-    public void onReceiveRequestVoteResult(NodeStateContext context, RequestVoteResult result) {
+    public void onReceiveRequestVoteResult(ServerStateContext context, RequestVoteResult result) {
         if (result.isVoteGranted()) {
             int votesCount = this.votedCount + 1;
             if (votesCount > (context.getNodeCount() / 2)) {
@@ -55,14 +55,14 @@ public class CandidateServerState extends AbstractServerState {
     }
 
     @Override
-    protected RequestVoteResult processRequestVoteRpc(NodeStateContext context, RequestVoteRpc rpc) {
+    protected RequestVoteResult processRequestVoteRpc(ServerStateContext context, RequestVoteRpc rpc) {
 
         // voted for self
         return new RequestVoteResult(this.term, false);
     }
 
     @Override
-    protected AppendEntriesResult processAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
+    protected AppendEntriesResult processAppendEntriesRpc(ServerStateContext context, AppendEntriesRpc rpc) {
         // more than 1 candidate but another node win the election
         context.setNodeState(new FollowerServerState(this.term, null, rpc.getLeaderId(), electionTimeout.reset()));
         return new AppendEntriesResult(this.term, true);

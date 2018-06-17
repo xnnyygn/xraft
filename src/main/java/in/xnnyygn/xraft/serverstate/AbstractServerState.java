@@ -60,7 +60,7 @@ public abstract class AbstractServerState {
      *
      * @param context context
      */
-    public void onElectionTimeout(NodeStateContext context) {
+    public void onElectionTimeout(ServerStateContext context) {
         if (this.role == ServerRole.LEADER) {
             logger.warn("Node {}, current role is LEADER, ignore", context.getSelfNodeId());
             return;
@@ -87,7 +87,7 @@ public abstract class AbstractServerState {
      * @param context context
      * @param result  result
      */
-    public abstract void onReceiveRequestVoteResult(NodeStateContext context, RequestVoteResult result);
+    public abstract void onReceiveRequestVoteResult(ServerStateContext context, RequestVoteResult result);
 
     /**
      * Called when receive request vote rpc.
@@ -95,7 +95,7 @@ public abstract class AbstractServerState {
      * @param context context
      * @param rpc     rpc
      */
-    public void onReceiveRequestVoteRpc(NodeStateContext context, RequestVoteRpc rpc) {
+    public void onReceiveRequestVoteRpc(ServerStateContext context, RequestVoteRpc rpc) {
         RequestVoteResult result;
 
         if (rpc.getTerm() < this.term) {
@@ -125,7 +125,7 @@ public abstract class AbstractServerState {
      * @param rpc     rpc
      * @return request vote result
      */
-    protected abstract RequestVoteResult processRequestVoteRpc(NodeStateContext context, RequestVoteRpc rpc);
+    protected abstract RequestVoteResult processRequestVoteRpc(ServerStateContext context, RequestVoteRpc rpc);
 
     /**
      * Called when receive append entries rpc.
@@ -133,7 +133,7 @@ public abstract class AbstractServerState {
      * @param context context
      * @param rpc     rpc
      */
-    public void onReceiveAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
+    public void onReceiveAppendEntriesRpc(ServerStateContext context, AppendEntriesRpc rpc) {
         AppendEntriesResult result;
 
         if (rpc.getTerm() < this.term) {
@@ -162,6 +162,6 @@ public abstract class AbstractServerState {
      * @param rpc     rpc
      * @return append entries result
      */
-    protected abstract AppendEntriesResult processAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc);
+    protected abstract AppendEntriesResult processAppendEntriesRpc(ServerStateContext context, AppendEntriesRpc rpc);
 
 }

@@ -5,7 +5,8 @@ import in.xnnyygn.xraft.scheduler.LogReplicationTask;
 import in.xnnyygn.xraft.messages.RaftMessage;
 import in.xnnyygn.xraft.node.RaftNodeId;
 
-public interface NodeStateContext extends ElectionTimeoutScheduler {
+// TODO rename to a better one
+public interface ServerStateContext extends ElectionTimeoutScheduler {
 
     RaftNodeId getSelfNodeId();
 
