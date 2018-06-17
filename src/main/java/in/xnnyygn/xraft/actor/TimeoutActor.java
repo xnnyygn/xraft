@@ -17,20 +17,20 @@ public class TimeoutActor extends AbstractActor {
 
     private static final Logger logger = LoggerFactory.getLogger(TimeoutActor.class);
     private final ScheduledExecutorService scheduler;
-    private final ServerId selfNodeId;
+    private final ServerId selfServerId;
     private final Random electionTimeoutRandom;
     private ScheduledFuture<?> electionTimeoutFuture;
 
-    public TimeoutActor(ServerId selfNodeId) {
+    public TimeoutActor(ServerId selfServerId) {
         super();
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
-        this.selfNodeId = selfNodeId;
+        this.selfServerId = selfServerId;
         this.electionTimeoutRandom = new Random();
     }
 
     @Override
     public void postStop() throws Exception {
-//        logger.debug("Node {}, stop scheduler", this.selfNodeId);
+//        logger.debug("Node {}, stop scheduler", this.selfServerId);
         this.scheduler.shutdown();
         this.scheduler.awaitTermination(1, TimeUnit.SECONDS);
     }
@@ -65,7 +65,7 @@ public class TimeoutActor extends AbstractActor {
 
     private void registerElectionTimeout() {
         int timeout = electionTimeoutRandom.nextInt(2000) + 1000;
-        logger.debug("Node {}, register election timeout, {}ms", this.selfNodeId, timeout);
+        logger.debug("Node {}, register election timeout, {}ms", this.selfServerId, timeout);
         // TODO check if registered
 
         this.electionTimeoutFuture = this.scheduler.schedule(() -> {
@@ -75,7 +75,7 @@ public class TimeoutActor extends AbstractActor {
 
     private void deregisterElectionTimeout() {
         if (this.electionTimeoutFuture != null) {
-            logger.debug("Node {}, deregister election timeout", this.selfNodeId);
+            logger.debug("Node {}, deregister election timeout", this.selfServerId);
             this.electionTimeoutFuture.cancel(false);
             this.electionTimeoutFuture = null;
         }
