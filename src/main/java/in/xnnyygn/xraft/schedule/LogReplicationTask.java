@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.scheduler;
+package in.xnnyygn.xraft.schedule;
 
 import in.xnnyygn.xraft.node.RaftNodeId;
 import org.slf4j.Logger;

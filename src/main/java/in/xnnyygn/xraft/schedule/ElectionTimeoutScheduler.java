@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.scheduler;
+package in.xnnyygn.xraft.schedule;
 
 public interface ElectionTimeoutScheduler {
 

@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.serverstate;
 
-import in.xnnyygn.xraft.scheduler.LogReplicationTask;
+import in.xnnyygn.xraft.schedule.LogReplicationTask;
 import in.xnnyygn.xraft.rpc.AppendEntriesResult;
 import in.xnnyygn.xraft.rpc.AppendEntriesRpc;
 import in.xnnyygn.xraft.rpc.RequestVoteResult;

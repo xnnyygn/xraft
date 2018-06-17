@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.serverstate;
 
-import in.xnnyygn.xraft.scheduler.ElectionTimeoutScheduler;
-import in.xnnyygn.xraft.scheduler.LogReplicationTask;
+import in.xnnyygn.xraft.schedule.ElectionTimeoutScheduler;
+import in.xnnyygn.xraft.schedule.LogReplicationTask;
 import in.xnnyygn.xraft.messages.RaftMessage;
 import in.xnnyygn.xraft.node.RaftNodeId;
 

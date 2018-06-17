@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.scheduler;
+package in.xnnyygn.xraft.schedule;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
