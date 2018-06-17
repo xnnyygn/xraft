@@ -5,7 +5,6 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import in.xnnyygn.xraft.actor.ElectionActor;
 import in.xnnyygn.xraft.actor.RpcActor;
-import in.xnnyygn.xraft.actor.TimeoutActor;
 
 public class ServerBuilder {
 
@@ -41,8 +40,6 @@ public class ServerBuilder {
         ServerId selfServerId = new ServerId(this.serverId);
         ActorSystem actorSystem = ActorSystem.create(this.actionSystemName);
         ActorRef electionActor = actorSystem.actorOf(Props.create(ElectionActor.class, this.group, selfServerId, this.serverState), "election");
-        // TODO remove timeout actor
-        ActorRef timeoutActor = actorSystem.actorOf(Props.create(TimeoutActor.class, selfServerId), "timeout");
         ActorRef rpcActor = actorSystem.actorOf(Props.create(RpcActor.class, this.group, selfServerId), "rpc");
         Server server = new Server(selfServerId, actorSystem);
         group.addServer(server);
