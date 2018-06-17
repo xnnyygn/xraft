@@ -20,7 +20,7 @@ public class ElectionActor extends AbstractActor implements NodeStateContext {
 
     private static final Logger logger = LoggerFactory.getLogger(ElectionActor.class);
 
-    private AbstractNodeState nodeState;
+    private AbstractServerState nodeState;
 
     private final RaftNodeGroup nodeGroup;
     private final RaftNodeId selfNodeId;
@@ -72,7 +72,7 @@ public class ElectionActor extends AbstractActor implements NodeStateContext {
 
     private void startUp() {
         ElectionTimeout electionTimeout = this.scheduler.scheduleElectionTimeout();
-        this.nodeState = new FollowerNodeState(this.nodeSave, electionTimeout);
+        this.nodeState = new FollowerServerState(this.nodeSave, electionTimeout);
         logger.debug("Node {}, start with state {}", this.selfNodeId, this.nodeState);
         nodeStateChanged(this.nodeState.takeSnapshot());
     }
@@ -116,7 +116,7 @@ public class ElectionActor extends AbstractActor implements NodeStateContext {
     }
 
     @Override
-    public void setNodeState(AbstractNodeState nodeState) {
+    public void setNodeState(AbstractServerState nodeState) {
         logger.debug("Node {}, state changed {} -> {}", this.selfNodeId, this.nodeState, nodeState);
         this.nodeState = nodeState;
         nodeStateChanged(this.nodeState.takeSnapshot());

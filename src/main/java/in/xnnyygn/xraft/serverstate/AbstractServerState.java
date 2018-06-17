@@ -11,11 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract node state.
+ * Abstract server state.
  */
-public abstract class AbstractNodeState {
+public abstract class AbstractServerState {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractNodeState.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractServerState.class);
     protected final NodeRole role;
     protected final int term;
 
@@ -25,7 +25,7 @@ public abstract class AbstractNodeState {
      * @param role role
      * @param term term
      */
-    AbstractNodeState(NodeRole role, int term) {
+    AbstractServerState(NodeRole role, int term) {
         this.role = role;
         this.term = term;
     }
@@ -72,7 +72,7 @@ public abstract class AbstractNodeState {
 
         // reset election timeout
         this.cancelTimeoutOrTask();
-        context.setNodeState(new CandidateNodeState(newTerm, context.scheduleElectionTimeout()));
+        context.setNodeState(new CandidateServerState(newTerm, context.scheduleElectionTimeout()));
 
         // rpc
         RequestVoteRpc rpc = new RequestVoteRpc();
@@ -109,7 +109,7 @@ public abstract class AbstractNodeState {
             // peer's term > current term
             logger.debug("Node {}, update to peer {}'s term {} and vote for it", context.getSelfNodeId(), rpc.getCandidateId(), rpc.getTerm());
             this.cancelTimeoutOrTask();
-            context.setNodeState(new FollowerNodeState(rpc.getTerm(), rpc.getCandidateId(), null, context.scheduleElectionTimeout()));
+            context.setNodeState(new FollowerServerState(rpc.getTerm(), rpc.getCandidateId(), null, context.scheduleElectionTimeout()));
             result = new RequestVoteResult(rpc.getTerm(), true);
         }
 
@@ -146,7 +146,7 @@ public abstract class AbstractNodeState {
 
             // leader's term > current term
             this.cancelTimeoutOrTask();
-            context.setNodeState(new FollowerNodeState(rpc.getTerm(), null, rpc.getLeaderId(), context.scheduleElectionTimeout()));
+            context.setNodeState(new FollowerServerState(rpc.getTerm(), null, rpc.getLeaderId(), context.scheduleElectionTimeout()));
             result = new AppendEntriesResult(rpc.getTerm(), true);
         }
 

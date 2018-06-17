@@ -8,12 +8,12 @@ import in.xnnyygn.xraft.rpc.RequestVoteRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LeaderNodeState extends AbstractNodeState {
+public class LeaderServerState extends AbstractServerState {
 
-    private static final Logger logger = LoggerFactory.getLogger(LeaderNodeState.class);
+    private static final Logger logger = LoggerFactory.getLogger(LeaderServerState.class);
     private final LogReplicationTask logReplicationTask;
 
-    public LeaderNodeState(int term, LogReplicationTask logReplicationTask) {
+    public LeaderServerState(int term, LogReplicationTask logReplicationTask) {
         super(NodeRole.LEADER, term);
         this.logReplicationTask = logReplicationTask;
     }
@@ -47,7 +47,7 @@ public class LeaderNodeState extends AbstractNodeState {
 
     @Override
     public String toString() {
-        return "Leader{" +
+        return "LeaderServerState{" +
                 logReplicationTask +
                 ", term=" + term +
                 '}';

@@ -8,17 +8,17 @@ import in.xnnyygn.xraft.rpc.RequestVoteRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CandidateNodeState extends AbstractNodeState {
+public class CandidateServerState extends AbstractServerState {
 
-    private static final Logger logger = LoggerFactory.getLogger(CandidateNodeState.class);
+    private static final Logger logger = LoggerFactory.getLogger(CandidateServerState.class);
     private final int votedCount;
     private final ElectionTimeout electionTimeout;
 
-    public CandidateNodeState(int term, ElectionTimeout electionTimeout) {
+    public CandidateServerState(int term, ElectionTimeout electionTimeout) {
         this(term, 1, electionTimeout);
     }
 
-    public CandidateNodeState(int term, int votedCount, ElectionTimeout electionTimeout) {
+    public CandidateServerState(int term, int votedCount, ElectionTimeout electionTimeout) {
         super(NodeRole.CANDIDATE, term);
         this.votedCount = votedCount;
         this.electionTimeout = electionTimeout;
@@ -42,15 +42,15 @@ public class CandidateNodeState extends AbstractNodeState {
             int votesCount = this.votedCount + 1;
             if (votesCount > (context.getNodeCount() / 2)) {
                 this.electionTimeout.cancel();
-                context.setNodeState(new LeaderNodeState(this.term, context.scheduleLogReplicationTask()));
+                context.setNodeState(new LeaderServerState(this.term, context.scheduleLogReplicationTask()));
             } else {
-                context.setNodeState(new CandidateNodeState(this.term, votedCount, electionTimeout.reset()));
+                context.setNodeState(new CandidateServerState(this.term, votedCount, electionTimeout.reset()));
             }
         } else if (result.getTerm() > this.term) {
             logger.debug("Node {}, update to peer's term", context.getSelfNodeId(), result.getTerm());
 
             // current term is old
-            context.setNodeState(new FollowerNodeState(result.getTerm(), null, null, electionTimeout.reset()));
+            context.setNodeState(new FollowerServerState(result.getTerm(), null, null, electionTimeout.reset()));
         }
     }
 
@@ -64,13 +64,13 @@ public class CandidateNodeState extends AbstractNodeState {
     @Override
     protected AppendEntriesResult processAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
         // more than 1 candidate but another node win the election
-        context.setNodeState(new FollowerNodeState(this.term, null, rpc.getLeaderId(), electionTimeout.reset()));
+        context.setNodeState(new FollowerServerState(this.term, null, rpc.getLeaderId(), electionTimeout.reset()));
         return new AppendEntriesResult(this.term, true);
     }
 
     @Override
     public String toString() {
-        return "Candidate{" +
+        return "CandidateServerState{" +
                 electionTimeout +
                 ", term=" + term +
                 ", votedCount=" + votedCount +

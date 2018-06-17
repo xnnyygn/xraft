@@ -10,18 +10,18 @@ import in.xnnyygn.xraft.rpc.RequestVoteRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FollowerNodeState extends AbstractNodeState {
+public class FollowerServerState extends AbstractServerState {
 
-    private static final Logger logger = LoggerFactory.getLogger(FollowerNodeState.class);
+    private static final Logger logger = LoggerFactory.getLogger(FollowerServerState.class);
     private final RaftNodeId votedFor;
     private final RaftNodeId leaderId;
     private final ElectionTimeout electionTimeout;
 
-    public FollowerNodeState(RaftNodeSave nodeSave, ElectionTimeout electionTimeout) {
+    public FollowerServerState(RaftNodeSave nodeSave, ElectionTimeout electionTimeout) {
         this(nodeSave.getCurrentTerm(), nodeSave.getVotedFor(), null, electionTimeout);
     }
 
-    public FollowerNodeState(int term, RaftNodeId votedFor, RaftNodeId leaderId, ElectionTimeout electionTimeout) {
+    public FollowerServerState(int term, RaftNodeId votedFor, RaftNodeId leaderId, ElectionTimeout electionTimeout) {
         super(NodeRole.FOLLOWER, term);
         this.votedFor = votedFor;
         this.leaderId = leaderId;
@@ -51,7 +51,7 @@ public class FollowerNodeState extends AbstractNodeState {
         if (this.votedFor == null || this.votedFor.equals(rpc.getCandidateId())) {
 
             // vote for candidate
-            context.setNodeState(new FollowerNodeState(this.term, rpc.getCandidateId(), null, electionTimeout.reset()));
+            context.setNodeState(new FollowerServerState(this.term, rpc.getCandidateId(), null, electionTimeout.reset()));
             return new RequestVoteResult(this.term, true);
         }
 
@@ -61,13 +61,13 @@ public class FollowerNodeState extends AbstractNodeState {
 
     @Override
     protected AppendEntriesResult processAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
-        context.setNodeState(new FollowerNodeState(this.term, this.votedFor, rpc.getLeaderId(), electionTimeout.reset()));
+        context.setNodeState(new FollowerServerState(this.term, this.votedFor, rpc.getLeaderId(), electionTimeout.reset()));
         return new AppendEntriesResult(this.term, true);
     }
 
     @Override
     public String toString() {
-        return "FollowerNodeState{" +
+        return "FollowerServerState{" +
                 electionTimeout +
                 ", leaderId=" + leaderId +
                 ", term=" + term +

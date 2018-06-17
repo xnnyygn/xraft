@@ -11,7 +11,7 @@ public interface NodeStateContext extends ElectionTimeoutScheduler {
 
     int getNodeCount();
 
-    void setNodeState(AbstractNodeState nodeState);
+    void setNodeState(AbstractServerState nodeState);
 
     LogReplicationTask scheduleLogReplicationTask();
 
