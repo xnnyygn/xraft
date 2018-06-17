@@ -11,7 +11,7 @@ public class ServerBuilder {
 
     private String actionSystemName = "raft";
     private String nodeId;
-    private RaftNodeGroup group;
+    private ServerGroup group;
     private RaftNodeSave nodeState = new RaftNodeSave();
 
     public ServerBuilder withActorSystemName(String actorSystemName) {
@@ -19,7 +19,7 @@ public class ServerBuilder {
         return this;
     }
 
-    public ServerBuilder withGroup(RaftNodeGroup group) {
+    public ServerBuilder withGroup(ServerGroup group) {
         this.group = group;
         return this;
     }

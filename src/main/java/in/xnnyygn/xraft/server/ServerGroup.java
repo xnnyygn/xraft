@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class RaftNodeGroup implements Iterable<AbstractRaftNode> {
+public class ServerGroup implements Iterable<AbstractRaftNode> {
 
     private Map<ServerId, AbstractRaftNode> nodeMap;
 
-    public RaftNodeGroup() {
+    public ServerGroup() {
         this.nodeMap = new HashMap<>();
     }
 
