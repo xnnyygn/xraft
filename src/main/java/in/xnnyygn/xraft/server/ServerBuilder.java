@@ -20,7 +20,7 @@ public class ServerBuilder {
         Router rpcRouter = new Router(this.serverGroup, selfServerId);
         ServerStateMachine serverStateMachine = new ServerStateMachine(this.serverGroup, selfServerId, this.serverStore, rpcRouter);
         Server server = new Server(selfServerId, serverStateMachine, new EmbeddedChannel(selfServerId, serverStateMachine));
-        serverGroup.addServer(server);
+        serverGroup.add(server);
         return server;
     }
 

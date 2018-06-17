@@ -12,19 +12,12 @@ public class ServerGroup implements Iterable<AbstractServer> {
         this.serverMap = new HashMap<>();
     }
 
-    // TODO rename to add
-    public void addServer(AbstractServer server) {
+    public void add(AbstractServer server) {
         this.serverMap.put(server.getId(), server);
     }
 
-    // TODO rename to getCount
-    public int getServerCount() {
+    public int getCount() {
         return this.serverMap.size();
-    }
-
-    @Deprecated
-    public ServerId getSelfId() {
-        throw new UnsupportedOperationException();
     }
 
     public void startAll() {
@@ -48,8 +41,7 @@ public class ServerGroup implements Iterable<AbstractServer> {
         return this.serverMap.values().iterator();
     }
 
-    // TODO rename to find
-    public AbstractServer findServer(ServerId serverId) {
+    public AbstractServer find(ServerId serverId) {
         return this.serverMap.get(serverId);
     }
 

@@ -74,7 +74,7 @@ public class ServerStateMachine implements ServerStateContext {
 
     @Override
     public int getServerCount() {
-        return this.serverGroup.getServerCount();
+        return this.serverGroup.getCount();
     }
 
     @Override

@@ -22,14 +22,14 @@ public class Server extends AbstractServer {
         this.serverStateMachine.start();
     }
 
+    public Channel getRpcChannel() {
+        return this.rpcChannel;
+    }
+
     public void stop() throws Exception {
         logger.info("stop server {}", getId());
         this.serverStateMachine.stop();
         this.rpcChannel.close();
-    }
-
-    public Channel getRpcChannel() {
-        return this.rpcChannel;
     }
 
 }
