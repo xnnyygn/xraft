@@ -29,7 +29,7 @@ public class RaftNodeBuilder {
         return this;
     }
 
-    public RaftNode build() {
+    public Server build() {
         if (this.group == null) {
             throw new IllegalArgumentException("group is required");
         }
@@ -44,7 +44,7 @@ public class RaftNodeBuilder {
         // TODO remove timeout actor
         ActorRef timeoutActor = actorSystem.actorOf(Props.create(TimeoutActor.class, selfNodeId), "timeout");
         ActorRef rpcActor = actorSystem.actorOf(Props.create(RpcActor.class, this.group, selfNodeId), "rpc");
-        RaftNode node = new RaftNode(selfNodeId, actorSystem);
+        Server node = new Server(selfNodeId, actorSystem);
         group.addNode(node);
         return node;
     }

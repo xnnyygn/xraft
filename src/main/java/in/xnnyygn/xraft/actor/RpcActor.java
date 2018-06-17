@@ -3,7 +3,7 @@ package in.xnnyygn.xraft.actor;
 import akka.actor.AbstractActor;
 import akka.actor.ActorSelection;
 import in.xnnyygn.xraft.server.AbstractRaftNode;
-import in.xnnyygn.xraft.server.RaftNode;
+import in.xnnyygn.xraft.server.Server;
 import in.xnnyygn.xraft.server.RaftNodeGroup;
 import in.xnnyygn.xraft.server.RaftNodeId;
 import in.xnnyygn.xraft.messages.*;
@@ -68,9 +68,9 @@ public class RpcActor extends AbstractActor {
     }
 
     private void sendMessageToNode(AbstractRaftNode node, RaftMessage msg) {
-        if (!node.getId().equals(this.selfNodeId) && (node instanceof RaftNode)) {
+        if (!node.getId().equals(this.selfNodeId) && (node instanceof Server)) {
             logger.debug("Node {}, send {} to peer {}", this.selfNodeId, msg, node.getId());
-            ((RaftNode) node).getRpcEndpoint().tell(msg, getSelf());
+            ((Server) node).getRpcEndpoint().tell(msg, getSelf());
         }
     }
 

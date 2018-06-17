@@ -27,16 +27,16 @@ public class RaftNodeGroup implements Iterable<AbstractRaftNode> {
 
     public void startAll() {
         for (AbstractRaftNode node : nodeMap.values()) {
-            if (node instanceof RaftNode) {
-                ((RaftNode) node).start();
+            if (node instanceof Server) {
+                ((Server) node).start();
             }
         }
     }
 
     public void stopAll() {
         for (AbstractRaftNode node : nodeMap.values()) {
-            if (node instanceof RaftNode) {
-                ((RaftNode) node).stop();
+            if (node instanceof Server) {
+                ((Server) node).stop();
             }
         }
     }
