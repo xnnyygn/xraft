@@ -28,6 +28,18 @@ public class FollowerServerState extends AbstractServerState {
         this.electionTimeout = electionTimeout;
     }
 
+    public ServerId getVotedFor() {
+        return votedFor;
+    }
+
+    public ServerId getLeaderId() {
+        return leaderId;
+    }
+
+    public static boolean isStableBetween(FollowerServerState before, FollowerServerState after) {
+        return before.term == after.term && before.votedFor == after.votedFor && before.leaderId == after.leaderId;
+    }
+
     @Override
     public ServerStateSnapshot takeSnapshot() {
         ServerStateSnapshot snapshot = new ServerStateSnapshot(this.role, this.term);
