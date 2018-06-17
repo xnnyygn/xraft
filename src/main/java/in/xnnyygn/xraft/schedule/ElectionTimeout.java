@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.schedule;
 
-import in.xnnyygn.xraft.node.RaftNodeId;
+import in.xnnyygn.xraft.server.RaftNodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

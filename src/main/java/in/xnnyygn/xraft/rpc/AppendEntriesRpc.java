@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.rpc;
 
-import in.xnnyygn.xraft.node.RaftNodeId;
+import in.xnnyygn.xraft.server.RaftNodeId;
 
 import java.io.Serializable;
 

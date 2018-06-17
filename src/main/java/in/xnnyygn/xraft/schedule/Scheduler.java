@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import in.xnnyygn.xraft.messages.SimpleMessage;
-import in.xnnyygn.xraft.node.RaftNodeId;
+import in.xnnyygn.xraft.server.RaftNodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

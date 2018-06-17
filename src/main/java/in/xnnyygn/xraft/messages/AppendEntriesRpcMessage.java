@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.messages;
 
-import in.xnnyygn.xraft.node.RaftNodeId;
+import in.xnnyygn.xraft.server.RaftNodeId;
 import in.xnnyygn.xraft.rpc.AppendEntriesRpc;
 
 public class AppendEntriesRpcMessage implements RaftMessage {

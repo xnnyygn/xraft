@@ -1,8 +1,8 @@
 package in.xnnyygn.xraft.serverstate;
 
 import in.xnnyygn.xraft.schedule.ElectionTimeout;
-import in.xnnyygn.xraft.node.RaftNodeId;
-import in.xnnyygn.xraft.node.RaftNodeSave;
+import in.xnnyygn.xraft.server.RaftNodeId;
+import in.xnnyygn.xraft.server.RaftNodeSave;
 import in.xnnyygn.xraft.rpc.AppendEntriesResult;
 import in.xnnyygn.xraft.rpc.AppendEntriesRpc;
 import in.xnnyygn.xraft.rpc.RequestVoteResult;

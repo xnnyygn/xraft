@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.serverstate;
 
-import in.xnnyygn.xraft.node.RaftNodeId;
+import in.xnnyygn.xraft.server.RaftNodeId;
 
 public class ServerStateSnapshot {
 

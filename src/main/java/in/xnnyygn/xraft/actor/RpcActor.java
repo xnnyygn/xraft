@@ -2,10 +2,10 @@ package in.xnnyygn.xraft.actor;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorSelection;
-import in.xnnyygn.xraft.node.AbstractRaftNode;
-import in.xnnyygn.xraft.node.RaftNode;
-import in.xnnyygn.xraft.node.RaftNodeGroup;
-import in.xnnyygn.xraft.node.RaftNodeId;
+import in.xnnyygn.xraft.server.AbstractRaftNode;
+import in.xnnyygn.xraft.server.RaftNode;
+import in.xnnyygn.xraft.server.RaftNodeGroup;
+import in.xnnyygn.xraft.server.RaftNodeId;
 import in.xnnyygn.xraft.messages.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

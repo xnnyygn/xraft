@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.node;
+package in.xnnyygn.xraft.server;
 
 public abstract class AbstractRaftNode {
 

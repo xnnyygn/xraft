@@ -1,8 +1,8 @@
 package in.xnnyygn.xraft;
 
-import in.xnnyygn.xraft.node.RaftNode;
-import in.xnnyygn.xraft.node.RaftNodeBuilder;
-import in.xnnyygn.xraft.node.RaftNodeGroup;
+import in.xnnyygn.xraft.server.RaftNode;
+import in.xnnyygn.xraft.server.RaftNodeBuilder;
+import in.xnnyygn.xraft.server.RaftNodeGroup;
 
 public class Launcher {
 

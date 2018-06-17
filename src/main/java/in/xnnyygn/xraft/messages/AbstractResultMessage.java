@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.messages;
 
-import in.xnnyygn.xraft.node.RaftNodeId;
+import in.xnnyygn.xraft.server.RaftNodeId;
 
 public abstract class AbstractResultMessage<T> implements RaftMessage {
 
