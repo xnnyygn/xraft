@@ -12,10 +12,12 @@ public class ServerGroup implements Iterable<AbstractServer> {
         this.serverMap = new HashMap<>();
     }
 
+    // TODO rename to add
     public void addServer(AbstractServer server) {
         this.serverMap.put(server.getId(), server);
     }
 
+    // TODO rename to getCount
     public int getServerCount() {
         return this.serverMap.size();
     }
@@ -33,7 +35,7 @@ public class ServerGroup implements Iterable<AbstractServer> {
         }
     }
 
-    public void stopAll() {
+    public void stopAll() throws Exception {
         for (AbstractServer server : serverMap.values()) {
             if (server instanceof Server) {
                 ((Server) server).stop();
@@ -46,6 +48,7 @@ public class ServerGroup implements Iterable<AbstractServer> {
         return this.serverMap.values().iterator();
     }
 
+    // TODO rename to find
     public AbstractServer findServer(ServerId serverId) {
         return this.serverMap.get(serverId);
     }

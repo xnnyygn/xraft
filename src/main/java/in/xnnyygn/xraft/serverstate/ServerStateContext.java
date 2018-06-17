@@ -3,7 +3,6 @@ package in.xnnyygn.xraft.serverstate;
 import in.xnnyygn.xraft.rpc.Router;
 import in.xnnyygn.xraft.schedule.ElectionTimeoutScheduler;
 import in.xnnyygn.xraft.schedule.LogReplicationTask;
-import in.xnnyygn.xraft.messages.Message;
 import in.xnnyygn.xraft.server.ServerId;
 
 // TODO rename to a better one

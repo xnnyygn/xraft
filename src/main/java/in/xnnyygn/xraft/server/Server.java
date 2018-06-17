@@ -1,38 +1,37 @@
 package in.xnnyygn.xraft.server;
 
-import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
-import akka.actor.ActorSystem;
-import in.xnnyygn.xraft.messages.SimpleMessage;
 import in.xnnyygn.xraft.rpc.Channel;
+import in.xnnyygn.xraft.serverstate.ServerStateMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Server extends AbstractServer {
 
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
-    private final ActorSystem actorSystem;
+    private final ServerStateMachine serverStateMachine;
     private final Channel rpcChannel;
 
-    public Server(ServerId id, ActorSystem actorSystem, Channel rpcChannel) {
+    public Server(ServerId id, ServerStateMachine serverStateMachine, Channel rpcChannel) {
         super(id);
-        this.actorSystem = actorSystem;
+        this.serverStateMachine = serverStateMachine;
         this.rpcChannel = rpcChannel;
     }
 
     public void start() {
         logger.info("start server {}", getId());
-        this.actorSystem.actorSelection("/user/election").tell(new SimpleMessage(SimpleMessage.Kind.START_UP), ActorRef.noSender());
+        this.serverStateMachine.start();
     }
 
-    public void stop() {
+    public void stop() throws Exception {
         logger.info("stop server {}", getId());
-        this.actorSystem.terminate();
+        this.serverStateMachine.stop();
+        this.rpcChannel.close();
     }
 
     @Deprecated
     public ActorSelection getRpcEndpoint() {
-        return this.actorSystem.actorSelection("/user/rpc");
+        throw new UnsupportedOperationException();
     }
 
     public Channel getRpcChannel() {

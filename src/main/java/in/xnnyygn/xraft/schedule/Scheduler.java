@@ -5,10 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class Scheduler {
 
@@ -19,8 +16,9 @@ public class Scheduler {
 
     public Scheduler(ServerId selfServerId) {
         this.electionTimeoutRandom = new Random();
-        this.scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         this.selfServerId = selfServerId;
+        this.scheduledExecutor = Executors.newSingleThreadScheduledExecutor(
+                r -> new Thread(r, "scheduler-" + this.selfServerId));
     }
 
     public LogReplicationTask scheduleLogReplicationTask(Runnable task) {
@@ -38,6 +36,7 @@ public class Scheduler {
     }
 
     public void stop() throws InterruptedException {
+        logger.debug("Server {}, stop scheduler", this.selfServerId);
         this.scheduledExecutor.shutdown();
         this.scheduledExecutor.awaitTermination(1, TimeUnit.SECONDS);
     }
