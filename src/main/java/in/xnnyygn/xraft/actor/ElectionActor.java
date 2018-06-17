@@ -5,7 +5,7 @@ import akka.actor.ActorSelection;
 import in.xnnyygn.xraft.serverstate.*;
 import in.xnnyygn.xraft.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.schedule.LogReplicationTask;
-import in.xnnyygn.xraft.schedule.RaftScheduler;
+import in.xnnyygn.xraft.schedule.Scheduler;
 import in.xnnyygn.xraft.messages.*;
 import in.xnnyygn.xraft.node.RaftNodeGroup;
 import in.xnnyygn.xraft.node.RaftNodeId;
@@ -26,7 +26,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
     private final RaftNodeId selfNodeId;
     private final RaftNodeSave nodeSave;
 
-    private final RaftScheduler scheduler;
+    private final Scheduler scheduler;
 
     public ElectionActor(RaftNodeGroup nodeGroup, RaftNodeId selfNodeId, RaftNodeSave nodeSave) {
         super();
@@ -34,7 +34,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
         this.selfNodeId = selfNodeId;
         this.nodeSave = nodeSave;
 
-        this.scheduler = new RaftScheduler(selfNodeId, getContext().getSystem());
+        this.scheduler = new Scheduler(selfNodeId, getContext().getSystem());
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ElectionActor extends AbstractActor implements ServerStateContext {
     @Override
     public void postStop() throws Exception {
         logger.debug("Node {}, stop scheduler", this.selfNodeId);
-        this.scheduler.terminate();
+        this.scheduler.stop();
     }
 
     private ActorSelection getRpcActor() {

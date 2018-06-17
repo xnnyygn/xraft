@@ -14,15 +14,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class RaftScheduler implements ElectionTimeoutScheduler {
+public class Scheduler implements ElectionTimeoutScheduler {
 
-    private static final Logger logger = LoggerFactory.getLogger(RaftScheduler.class);
+    private static final Logger logger = LoggerFactory.getLogger(Scheduler.class);
     private final Random electionTimeoutRandom;
     private final ScheduledExecutorService scheduledExecutor;
     private final ActorSystem actorSystem;
     private final RaftNodeId selfNodeId;
 
-    public RaftScheduler(RaftNodeId selfNodeId, ActorSystem actorSystem) {
+    public Scheduler(RaftNodeId selfNodeId, ActorSystem actorSystem) {
         this.electionTimeoutRandom = new Random();
         this.scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
         this.selfNodeId = selfNodeId;
@@ -42,6 +42,7 @@ public class RaftScheduler implements ElectionTimeoutScheduler {
         return new LogReplicationTask(scheduledFuture, this.selfNodeId);
     }
 
+    // TODO use runner as parameter
     @Override
     public ElectionTimeout scheduleElectionTimeout() {
         logger.debug("Node {}, schedule election timeout", this.selfNodeId);
@@ -53,7 +54,7 @@ public class RaftScheduler implements ElectionTimeoutScheduler {
         return new ElectionTimeout(scheduledFuture, this, this.selfNodeId);
     }
 
-    public void terminate() throws InterruptedException {
+    public void stop() throws InterruptedException {
         this.scheduledExecutor.shutdown();
         this.scheduledExecutor.awaitTermination(1, TimeUnit.SECONDS);
     }
