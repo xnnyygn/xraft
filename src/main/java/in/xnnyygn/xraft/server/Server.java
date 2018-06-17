@@ -7,7 +7,7 @@ import in.xnnyygn.xraft.messages.SimpleMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Server extends AbstractRaftNode {
+public class Server extends AbstractServer {
 
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
     private final ActorSystem actorSystem;

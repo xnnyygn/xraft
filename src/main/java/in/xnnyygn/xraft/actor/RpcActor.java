@@ -2,7 +2,7 @@ package in.xnnyygn.xraft.actor;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorSelection;
-import in.xnnyygn.xraft.server.AbstractRaftNode;
+import in.xnnyygn.xraft.server.AbstractServer;
 import in.xnnyygn.xraft.server.Server;
 import in.xnnyygn.xraft.server.ServerGroup;
 import in.xnnyygn.xraft.server.ServerId;
@@ -47,7 +47,7 @@ public class RpcActor extends AbstractActor {
 
     private <T> void processResultMessage(AbstractResultMessage<T> msg) {
         if (msg.isDestinationNodeIdPresent()) {
-            AbstractRaftNode node = this.nodeGroup.findNode(msg.getDestinationNodeId());
+            AbstractServer node = this.nodeGroup.findNode(msg.getDestinationNodeId());
             msg.setDestinationNodeId(null);
             msg.setSenderNodeId(this.selfNodeId);
 
@@ -62,12 +62,12 @@ public class RpcActor extends AbstractActor {
     }
 
     private void sendMessageToPeers(RaftMessage msg) {
-        for (AbstractRaftNode node : nodeGroup) {
+        for (AbstractServer node : nodeGroup) {
             this.sendMessageToNode(node, msg);
         }
     }
 
-    private void sendMessageToNode(AbstractRaftNode node, RaftMessage msg) {
+    private void sendMessageToNode(AbstractServer node, RaftMessage msg) {
         if (!node.getId().equals(this.selfNodeId) && (node instanceof Server)) {
             logger.debug("Node {}, send {} to peer {}", this.selfNodeId, msg, node.getId());
             ((Server) node).getRpcEndpoint().tell(msg, getSelf());

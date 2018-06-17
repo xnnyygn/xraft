@@ -7,15 +7,15 @@ import in.xnnyygn.xraft.server.ServerGroup;
 public class Launcher {
 
     public static void main(String[] args) throws Exception {
-        ServerGroup nodeGroup = new ServerGroup();
-        Server node1 = new ServerBuilder().withNodeId("A").withActorSystemName("raft1").withGroup(nodeGroup).build();
-        Server node2 = new ServerBuilder().withNodeId("B").withActorSystemName("raft2").withGroup(nodeGroup).build();
-        Server node3 = new ServerBuilder().withNodeId("C").withActorSystemName("raft3").withGroup(nodeGroup).build();
+        ServerGroup serverGroup = new ServerGroup();
+        Server server1 = new ServerBuilder().withServerId("A").withActorSystemName("raft1").withGroup(serverGroup).build();
+        Server server2 = new ServerBuilder().withServerId("B").withActorSystemName("raft2").withGroup(serverGroup).build();
+        Server server3 = new ServerBuilder().withServerId("C").withActorSystemName("raft3").withGroup(serverGroup).build();
         try {
-            nodeGroup.startAll();
+            serverGroup.startAll();
             System.in.read();
         } finally {
-            nodeGroup.stopAll();
+            serverGroup.stopAll();
         }
     }
 }

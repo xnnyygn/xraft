@@ -10,7 +10,7 @@ import in.xnnyygn.xraft.actor.TimeoutActor;
 public class ServerBuilder {
 
     private String actionSystemName = "raft";
-    private String nodeId;
+    private String serverId;
     private ServerGroup group;
     private ServerStore nodeState = new ServerStore();
 
@@ -24,8 +24,8 @@ public class ServerBuilder {
         return this;
     }
 
-    public ServerBuilder withNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public ServerBuilder withServerId(String serverId) {
+        this.serverId = serverId;
         return this;
     }
 
@@ -34,11 +34,11 @@ public class ServerBuilder {
             throw new IllegalArgumentException("group is required");
         }
 
-        if (this.nodeId == null) {
-            throw new IllegalArgumentException("nodeId required");
+        if (this.serverId == null) {
+            throw new IllegalArgumentException("serverId required");
         }
 
-        ServerId selfNodeId = new ServerId(this.nodeId);
+        ServerId selfNodeId = new ServerId(this.serverId);
         ActorSystem actorSystem = ActorSystem.create(this.actionSystemName);
         ActorRef electionActor = actorSystem.actorOf(Props.create(ElectionActor.class, this.group, selfNodeId, this.nodeState), "election");
         // TODO remove timeout actor

@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class ServerGroup implements Iterable<AbstractRaftNode> {
+public class ServerGroup implements Iterable<AbstractServer> {
 
-    private Map<ServerId, AbstractRaftNode> nodeMap;
+    private Map<ServerId, AbstractServer> nodeMap;
 
     public ServerGroup() {
         this.nodeMap = new HashMap<>();
     }
 
-    public void addNode(AbstractRaftNode node) {
+    public void addNode(AbstractServer node) {
         this.nodeMap.put(node.getId(), node);
     }
 
@@ -26,7 +26,7 @@ public class ServerGroup implements Iterable<AbstractRaftNode> {
     }
 
     public void startAll() {
-        for (AbstractRaftNode node : nodeMap.values()) {
+        for (AbstractServer node : nodeMap.values()) {
             if (node instanceof Server) {
                 ((Server) node).start();
             }
@@ -34,7 +34,7 @@ public class ServerGroup implements Iterable<AbstractRaftNode> {
     }
 
     public void stopAll() {
-        for (AbstractRaftNode node : nodeMap.values()) {
+        for (AbstractServer node : nodeMap.values()) {
             if (node instanceof Server) {
                 ((Server) node).stop();
             }
@@ -42,11 +42,11 @@ public class ServerGroup implements Iterable<AbstractRaftNode> {
     }
 
     @Override
-    public Iterator<AbstractRaftNode> iterator() {
+    public Iterator<AbstractServer> iterator() {
         return this.nodeMap.values().iterator();
     }
 
-    public AbstractRaftNode findNode(ServerId nodeId) {
+    public AbstractServer findNode(ServerId nodeId) {
         return this.nodeMap.get(nodeId);
     }
 

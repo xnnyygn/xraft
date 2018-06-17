@@ -1,10 +1,10 @@
 package in.xnnyygn.xraft.server;
 
-public abstract class AbstractRaftNode {
+public abstract class AbstractServer {
 
     private final ServerId id;
 
-    AbstractRaftNode(ServerId id) {
+    AbstractServer(ServerId id) {
         this.id = id;
     }
 
