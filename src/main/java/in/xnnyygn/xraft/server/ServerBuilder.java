@@ -7,24 +7,24 @@ import in.xnnyygn.xraft.actor.ElectionActor;
 import in.xnnyygn.xraft.actor.RpcActor;
 import in.xnnyygn.xraft.actor.TimeoutActor;
 
-public class RaftNodeBuilder {
+public class ServerBuilder {
 
     private String actionSystemName = "raft";
     private String nodeId;
     private RaftNodeGroup group;
     private RaftNodeSave nodeState = new RaftNodeSave();
 
-    public RaftNodeBuilder withActorSystemName(String actorSystemName) {
+    public ServerBuilder withActorSystemName(String actorSystemName) {
         this.actionSystemName = actorSystemName;
         return this;
     }
 
-    public RaftNodeBuilder withGroup(RaftNodeGroup group) {
+    public ServerBuilder withGroup(RaftNodeGroup group) {
         this.group = group;
         return this;
     }
 
-    public RaftNodeBuilder withNodeId(String nodeId) {
+    public ServerBuilder withNodeId(String nodeId) {
         this.nodeId = nodeId;
         return this;
     }
