@@ -63,7 +63,7 @@ public class CandidateNodeState extends AbstractNodeState {
 
     @Override
     protected AppendEntriesResult processAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
-        // more than 1 candidate but another server win the election
+        // more than 1 candidate but another node win the election
         context.setNodeState(new FollowerNodeState(this.term, null, rpc.getLeaderId(), electionTimeout.reset()));
         return new AppendEntriesResult(this.term, true);
     }

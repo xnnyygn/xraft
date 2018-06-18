@@ -23,7 +23,7 @@ public class Node extends AbstractNode {
         this.nodeStateMachine.start();
     }
 
-    public NodeStateSnapshot getServerState() {
+    public NodeStateSnapshot getNodeState() {
         return this.nodeStateMachine.takeSnapshot();
     }
 

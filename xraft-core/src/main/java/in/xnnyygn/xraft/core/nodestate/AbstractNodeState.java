@@ -75,7 +75,7 @@ public abstract class AbstractNodeState {
         RequestVoteRpc rpc = new RequestVoteRpc();
         rpc.setTerm(newTerm);
         rpc.setCandidateId(context.getSelfNodeId());
-        context.getRpcRouter().sendRpc(rpc);
+        context.getRpcConnector().sendRpc(rpc);
     }
 
     /**
@@ -110,7 +110,7 @@ public abstract class AbstractNodeState {
             result = new RequestVoteResult(rpc.getTerm(), true);
         }
 
-        context.getRpcRouter().sendResult(result, rpc.getCandidateId());
+        context.getRpcConnector().sendResult(result, rpc.getCandidateId());
     }
 
     /**
@@ -145,7 +145,7 @@ public abstract class AbstractNodeState {
             result = new AppendEntriesResult(rpc.getTerm(), true);
         }
 
-        context.getRpcRouter().sendResult(result, rpc.getLeaderId());
+        context.getRpcConnector().sendResult(result, rpc.getLeaderId());
     }
 
     /**

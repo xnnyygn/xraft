@@ -12,8 +12,8 @@ public class NodeGroup implements Iterable<AbstractNode> {
         this.nodeMap = new HashMap<>();
     }
 
-    public void add(AbstractNode server) {
-        this.nodeMap.put(server.getId(), server);
+    public void add(AbstractNode node) {
+        this.nodeMap.put(node.getId(), node);
     }
 
     public int getCount() {
@@ -29,9 +29,9 @@ public class NodeGroup implements Iterable<AbstractNode> {
     }
 
     public void stopAll() throws Exception {
-        for (AbstractNode server : nodeMap.values()) {
-            if (server instanceof Node) {
-                ((Node) server).stop();
+        for (AbstractNode node : nodeMap.values()) {
+            if (node instanceof Node) {
+                ((Node) node).stop();
             }
         }
     }

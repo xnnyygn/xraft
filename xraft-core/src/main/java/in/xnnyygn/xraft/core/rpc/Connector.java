@@ -5,12 +5,12 @@ import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
 
 // TODO rename to Connector
-public class Router {
+public class Connector {
 
     private final NodeGroup nodeGroup;
     private final NodeId selfNodeId;
 
-    public Router(NodeGroup nodeGroup, NodeId selfNodeId) {
+    public Connector(NodeGroup nodeGroup, NodeId selfNodeId) {
         this.nodeGroup = nodeGroup;
         this.selfNodeId = selfNodeId;
     }

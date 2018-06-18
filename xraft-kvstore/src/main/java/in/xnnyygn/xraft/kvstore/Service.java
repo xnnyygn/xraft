@@ -39,7 +39,7 @@ public class Service {
     }
 
     private void checkLeadership() {
-        NodeStateSnapshot state = this.node.getServerState();
+        NodeStateSnapshot state = this.node.getNodeState();
         if (state.getRole() == NodeRole.FOLLOWER) {
             throw new NodeStateException(NodeRole.FOLLOWER, state.getLeaderId());
         }
