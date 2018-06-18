@@ -1,9 +1,9 @@
 package in.xnnyygn.xraft.kvstore;
 
 import in.xnnyygn.xraft.core.server.Server;
-import in.xnnyygn.xraft.core.serverstate.ServerRole;
-import in.xnnyygn.xraft.core.serverstate.ServerStateSnapshot;
-import in.xnnyygn.xraft.core.service.ServerStateException;
+import in.xnnyygn.xraft.core.nodestate.NodeRole;
+import in.xnnyygn.xraft.core.nodestate.NodeStateSnapshot;
+import in.xnnyygn.xraft.core.service.NodeStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +39,12 @@ public class Service {
     }
 
     private void checkLeadership() {
-        ServerStateSnapshot state = this.server.getServerState();
-        if (state.getRole() == ServerRole.FOLLOWER) {
-            throw new ServerStateException(ServerRole.FOLLOWER, state.getLeaderId());
+        NodeStateSnapshot state = this.server.getServerState();
+        if (state.getRole() == NodeRole.FOLLOWER) {
+            throw new NodeStateException(NodeRole.FOLLOWER, state.getLeaderId());
         }
-        if (state.getRole() == ServerRole.CANDIDATE) {
-            throw new ServerStateException(ServerRole.CANDIDATE, null);
+        if (state.getRole() == NodeRole.CANDIDATE) {
+            throw new NodeStateException(NodeRole.CANDIDATE, null);
         }
     }
 

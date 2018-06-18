@@ -1,21 +1,21 @@
-package in.xnnyygn.xraft.core.serverstate;
+package in.xnnyygn.xraft.core.nodestate;
 
 import in.xnnyygn.xraft.core.server.ServerId;
 
-public class ServerStateSnapshot {
+public class NodeStateSnapshot {
 
-    private final ServerRole role;
+    private final NodeRole role;
     private final int term;
     private int votesCount;
     private ServerId votedFor;
     private ServerId leaderId;
 
-    public ServerStateSnapshot(ServerRole role, int term) {
+    public NodeStateSnapshot(NodeRole role, int term) {
         this.role = role;
         this.term = term;
     }
 
-    public ServerRole getRole() {
+    public NodeRole getRole() {
         return role;
     }
 

@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.core.rpc;
 
 import in.xnnyygn.xraft.core.server.ServerId;
-import in.xnnyygn.xraft.core.serverstate.ServerStateMachine;
+import in.xnnyygn.xraft.core.nodestate.NodeStateMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,9 +14,9 @@ public class EmbeddedChannel implements Channel {
     private static final Logger logger = LoggerFactory.getLogger(EmbeddedChannel.class);
     private final ExecutorService executorService;
     private final ServerId selfServerId;
-    private final ServerStateMachine serverStateMachine;
+    private final NodeStateMachine serverStateMachine;
 
-    public EmbeddedChannel(ServerId selfServerId, ServerStateMachine serverStateMachine) {
+    public EmbeddedChannel(ServerId selfServerId, NodeStateMachine serverStateMachine) {
         this.executorService = Executors.newSingleThreadExecutor(r -> new Thread(r, "embedded-channel-" + selfServerId));
         this.selfServerId = selfServerId;
         this.serverStateMachine = serverStateMachine;

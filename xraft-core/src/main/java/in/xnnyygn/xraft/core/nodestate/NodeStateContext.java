@@ -1,18 +1,17 @@
-package in.xnnyygn.xraft.core.serverstate;
+package in.xnnyygn.xraft.core.nodestate;
 
 import in.xnnyygn.xraft.core.rpc.Router;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeoutScheduler;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
 import in.xnnyygn.xraft.core.server.ServerId;
 
-// TODO rename to a better one
-public interface ServerStateContext extends ElectionTimeoutScheduler {
+public interface NodeStateContext extends ElectionTimeoutScheduler {
 
-    ServerId getSelfServerId();
+    ServerId getSelfNodeId();
 
-    int getServerCount();
+    int getNodeCount();
 
-    void setServerState(AbstractServerState serverState);
+    void setNodeState(AbstractNodeState nodeState);
 
     LogReplicationTask scheduleLogReplicationTask();
 

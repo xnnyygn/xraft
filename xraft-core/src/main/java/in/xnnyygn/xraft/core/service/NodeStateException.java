@@ -1,24 +1,24 @@
 package in.xnnyygn.xraft.core.service;
 
 import in.xnnyygn.xraft.core.server.ServerId;
-import in.xnnyygn.xraft.core.serverstate.ServerRole;
+import in.xnnyygn.xraft.core.nodestate.NodeRole;
 
-public class ServerStateException extends RuntimeException {
+public class NodeStateException extends RuntimeException {
 
-    private final ServerRole role;
+    private final NodeRole role;
     private final ServerId leaderId;
 
-    public ServerStateException(ServerRole role, ServerId leaderId) {
+    public NodeStateException(NodeRole role, ServerId leaderId) {
         this.role = role;
         this.leaderId = leaderId;
     }
 
     @Override
     public String getMessage() {
-        return "unexpected server state, role " + this.role + ", leader id " + this.leaderId;
+        return "unexpected node state, role " + this.role + ", leader id " + this.leaderId;
     }
 
-    public ServerRole getRole() {
+    public NodeRole getRole() {
         return role;
     }
 

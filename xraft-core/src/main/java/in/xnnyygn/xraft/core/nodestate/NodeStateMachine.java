@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.serverstate;
+package in.xnnyygn.xraft.core.nodestate;
 
 import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.rpc.RequestVoteResult;
@@ -16,10 +16,10 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServerStateMachine implements ServerStateContext {
+public class NodeStateMachine implements NodeStateContext {
 
-    private static final Logger logger = LoggerFactory.getLogger(ServerStateMachine.class);
-    private AbstractServerState serverState;
+    private static final Logger logger = LoggerFactory.getLogger(NodeStateMachine.class);
+    private AbstractNodeState serverState;
 
     private final ServerGroup serverGroup;
     private final ServerId selfServerId;
@@ -27,9 +27,9 @@ public class ServerStateMachine implements ServerStateContext {
     private final Router rpcRouter;
 
     private final Scheduler scheduler;
-    private final List<ServerStateListener> serverStateListeners = new ArrayList<>();
+    private final List<NodeStateListener> nodeStateListeners = new ArrayList<>();
 
-    public ServerStateMachine(ServerGroup serverGroup, ServerId selfServerId, ServerStore serverStore, Router rpcRouter) {
+    public NodeStateMachine(ServerGroup serverGroup, ServerId selfServerId, ServerStore serverStore, Router rpcRouter) {
         this.serverGroup = serverGroup;
         this.selfServerId = selfServerId;
         this.serverStore = serverStore;
@@ -39,7 +39,7 @@ public class ServerStateMachine implements ServerStateContext {
     }
 
     public synchronized void start() {
-        this.serverState = new FollowerServerState(this.serverStore, this.scheduleElectionTimeout());
+        this.serverState = new FollowerNodeState(this.serverStore, this.scheduleElectionTimeout());
         logger.debug("Server {}, start with state {}", this.selfServerId, this.serverState);
     }
 
@@ -72,44 +72,44 @@ public class ServerStateMachine implements ServerStateContext {
     }
 
     /**
-     * Take snapshot of current server state(without null check).
+     * Take snapshot of current node state(without null check).
      * DON'T call before startup or you will get NPE.
      *
-     * @return server state snapshot
+     * @return node state snapshot
      */
-    public ServerStateSnapshot takeSnapshot() {
+    public NodeStateSnapshot takeSnapshot() {
         return this.serverState.takeSnapshot();
     }
 
     @Override
-    public ServerId getSelfServerId() {
+    public ServerId getSelfNodeId() {
         return this.selfServerId;
     }
 
     @Override
-    public int getServerCount() {
+    public int getNodeCount() {
         return this.serverGroup.getCount();
     }
 
     @Override
-    public void setServerState(AbstractServerState serverState) {
-        logger.debug("Server {}, state changed {} -> {}", this.selfServerId, this.serverState, serverState);
+    public void setNodeState(AbstractNodeState nodeState) {
+        logger.debug("Server {}, state changed {} -> {}", this.selfServerId, this.serverState, nodeState);
 
         // notify listener if not stable
-        if (!isStableBetween(this.serverState, serverState)) {
-            ServerStateSnapshot snapshot = serverState.takeSnapshot();
-            this.serverStateListeners.forEach((l) -> {
-                l.serverStateChanged(snapshot);
+        if (!isStableBetween(this.serverState, nodeState)) {
+            NodeStateSnapshot snapshot = nodeState.takeSnapshot();
+            this.nodeStateListeners.forEach((l) -> {
+                l.nodeStateChanged(snapshot);
             });
         }
 
-        this.serverState = serverState;
+        this.serverState = nodeState;
     }
 
-    private boolean isStableBetween(AbstractServerState before, AbstractServerState after) {
+    private boolean isStableBetween(AbstractNodeState before, AbstractNodeState after) {
         return before != null &&
-                before.getRole() == ServerRole.FOLLOWER && after.getRole() == ServerRole.FOLLOWER &&
-                FollowerServerState.isStableBetween((FollowerServerState) before, (FollowerServerState) after);
+                before.getRole() == NodeRole.FOLLOWER && after.getRole() == NodeRole.FOLLOWER &&
+                FollowerNodeState.isStableBetween((FollowerNodeState) before, (FollowerNodeState) after);
     }
 
     @Override
@@ -131,8 +131,8 @@ public class ServerStateMachine implements ServerStateContext {
         this.scheduler.stop();
     }
 
-    public void addServerStateListener(ServerStateListener listener) {
-        this.serverStateListeners.add(listener);
+    public void addServerStateListener(NodeStateListener listener) {
+        this.nodeStateListeners.add(listener);
     }
 
 }

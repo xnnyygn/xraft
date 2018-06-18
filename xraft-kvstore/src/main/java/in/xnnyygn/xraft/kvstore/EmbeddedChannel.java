@@ -1,9 +1,9 @@
 package in.xnnyygn.xraft.kvstore;
 
-import in.xnnyygn.xraft.core.serverstate.ServerRole;
+import in.xnnyygn.xraft.core.nodestate.NodeRole;
 import in.xnnyygn.xraft.core.service.Channel;
 import in.xnnyygn.xraft.core.service.RedirectException;
-import in.xnnyygn.xraft.core.service.ServerStateException;
+import in.xnnyygn.xraft.core.service.NodeStateException;
 import in.xnnyygn.xraft.kvstore.command.GetCommand;
 import in.xnnyygn.xraft.kvstore.command.SetCommand;
 
@@ -28,8 +28,8 @@ public class EmbeddedChannel implements Channel {
                 return this.service.get(command.getKey());
             }
             throw new IllegalArgumentException("unexpected payload type " + payload.getClass());
-        } catch (ServerStateException e) {
-            if (e.getRole() == ServerRole.FOLLOWER && e.isLeaderIdPresent()) {
+        } catch (NodeStateException e) {
+            if (e.getRole() == NodeRole.FOLLOWER && e.isLeaderIdPresent()) {
                 throw new RedirectException(e.getLeaderId());
             }
             throw e;

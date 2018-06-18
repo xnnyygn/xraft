@@ -1,18 +1,18 @@
 package in.xnnyygn.xraft.core.server;
 
-import in.xnnyygn.xraft.core.serverstate.ServerStateMachine;
+import in.xnnyygn.xraft.core.nodestate.NodeStateMachine;
 import in.xnnyygn.xraft.core.rpc.Channel;
-import in.xnnyygn.xraft.core.serverstate.ServerStateSnapshot;
+import in.xnnyygn.xraft.core.nodestate.NodeStateSnapshot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Server extends AbstractServer {
 
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
-    private final ServerStateMachine serverStateMachine;
+    private final NodeStateMachine serverStateMachine;
     private final Channel rpcChannel;
 
-    public Server(ServerId id, ServerStateMachine serverStateMachine, Channel rpcChannel) {
+    public Server(ServerId id, NodeStateMachine serverStateMachine, Channel rpcChannel) {
         super(id);
         this.serverStateMachine = serverStateMachine;
         this.rpcChannel = rpcChannel;
@@ -23,7 +23,7 @@ public class Server extends AbstractServer {
         this.serverStateMachine.start();
     }
 
-    public ServerStateSnapshot getServerState() {
+    public NodeStateSnapshot getServerState() {
         return this.serverStateMachine.takeSnapshot();
     }
 

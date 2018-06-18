@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.core.server;
 
-import in.xnnyygn.xraft.core.serverstate.LoggingServerStateListener;
-import in.xnnyygn.xraft.core.serverstate.ServerStateMachine;
+import in.xnnyygn.xraft.core.nodestate.LoggingNodeStateListener;
+import in.xnnyygn.xraft.core.nodestate.NodeStateMachine;
 import in.xnnyygn.xraft.core.rpc.EmbeddedChannel;
 import in.xnnyygn.xraft.core.rpc.Router;
 
@@ -19,8 +19,8 @@ public class ServerBuilder {
     public Server build() {
         ServerId selfServerId = new ServerId(this.serverId);
         Router rpcRouter = new Router(this.serverGroup, selfServerId);
-        ServerStateMachine serverStateMachine = new ServerStateMachine(this.serverGroup, selfServerId, this.serverStore, rpcRouter);
-        serverStateMachine.addServerStateListener(new LoggingServerStateListener(selfServerId));
+        NodeStateMachine serverStateMachine = new NodeStateMachine(this.serverGroup, selfServerId, this.serverStore, rpcRouter);
+        serverStateMachine.addServerStateListener(new LoggingNodeStateListener(selfServerId));
         Server server = new Server(selfServerId, serverStateMachine, new EmbeddedChannel(selfServerId, serverStateMachine));
         serverGroup.add(server);
         return server;
