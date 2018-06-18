@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.server;
 
 import in.xnnyygn.xraft.core.serverstate.ServerStateMachine;
 import in.xnnyygn.xraft.core.rpc.Channel;
+import in.xnnyygn.xraft.core.serverstate.ServerStateSnapshot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,11 @@ public class Server extends AbstractServer {
         this.serverStateMachine.start();
     }
 
+    public ServerStateSnapshot getServerState() {
+        return this.serverStateMachine.takeSnapshot();
+    }
+
+    // TODO internal channel, change to package visible
     public Channel getRpcChannel() {
         return this.rpcChannel;
     }
