@@ -1,6 +1,8 @@
 package in.xnnyygn.xraft.kvstore.command;
 
-public class GetCommand {
+import java.io.Serializable;
+
+public class GetCommand implements Serializable {
 
     private final String key;
 

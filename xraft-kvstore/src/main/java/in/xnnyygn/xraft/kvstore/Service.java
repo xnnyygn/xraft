@@ -3,6 +3,7 @@ package in.xnnyygn.xraft.kvstore;
 import in.xnnyygn.xraft.core.server.Server;
 import in.xnnyygn.xraft.core.serverstate.ServerRole;
 import in.xnnyygn.xraft.core.serverstate.ServerStateSnapshot;
+import in.xnnyygn.xraft.core.service.ServerStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,7 @@ public class Service {
 
     private static final Logger logger = LoggerFactory.getLogger(Service.class);
     private final Server server;
+
     private final Map<String, Object> map = new HashMap<>();
 
     public Service(Server server) {
@@ -21,6 +23,7 @@ public class Service {
 
     public void start() {
         this.server.start();
+
     }
 
     public void set(String key, Object value) {

@@ -1,8 +1,9 @@
-package in.xnnyygn.xraft.kvstore.client;
+package in.xnnyygn.xraft.kvstore;
 
 import in.xnnyygn.xraft.core.serverstate.ServerRole;
-import in.xnnyygn.xraft.kvstore.ServerStateException;
-import in.xnnyygn.xraft.kvstore.Service;
+import in.xnnyygn.xraft.core.service.Channel;
+import in.xnnyygn.xraft.core.service.RedirectException;
+import in.xnnyygn.xraft.core.service.ServerStateException;
 import in.xnnyygn.xraft.kvstore.command.GetCommand;
 import in.xnnyygn.xraft.kvstore.command.SetCommand;
 

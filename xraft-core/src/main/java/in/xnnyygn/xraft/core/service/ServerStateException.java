@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.kvstore;
+package in.xnnyygn.xraft.core.service;
 
 import in.xnnyygn.xraft.core.server.ServerId;
 import in.xnnyygn.xraft.core.serverstate.ServerRole;

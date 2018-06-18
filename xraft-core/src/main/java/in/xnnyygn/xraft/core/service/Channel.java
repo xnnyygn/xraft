@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.kvstore.client;
+package in.xnnyygn.xraft.core.service;
 
 public interface Channel {
 

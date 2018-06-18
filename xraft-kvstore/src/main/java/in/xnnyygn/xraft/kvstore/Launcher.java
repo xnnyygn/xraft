@@ -3,9 +3,7 @@ package in.xnnyygn.xraft.kvstore;
 import in.xnnyygn.xraft.core.server.Server;
 import in.xnnyygn.xraft.core.server.ServerBuilder;
 import in.xnnyygn.xraft.core.server.ServerGroup;
-import in.xnnyygn.xraft.kvstore.client.Client;
-import in.xnnyygn.xraft.kvstore.client.EmbeddedChannel;
-import in.xnnyygn.xraft.kvstore.client.Selector;
+import in.xnnyygn.xraft.core.service.ServerRouter;
 
 public class Launcher {
 
@@ -16,11 +14,11 @@ public class Launcher {
         Server server2 = new ServerBuilder("B", serverGroup).build();
         Server server3 = new ServerBuilder("C", serverGroup).build();
 
-        Selector selector = new Selector();
-        selector.add(server1.getId(), new EmbeddedChannel(new Service(server1)));
-        selector.add(server2.getId(), new EmbeddedChannel(new Service(server2)));
-        selector.add(server3.getId(), new EmbeddedChannel(new Service(server3)));
-        Client client = new Client(selector);
+        ServerRouter router = new ServerRouter();
+        router.add(server1.getId(), new EmbeddedChannel(new Service(server1)));
+        router.add(server2.getId(), new EmbeddedChannel(new Service(server2)));
+        router.add(server3.getId(), new EmbeddedChannel(new Service(server3)));
+        Client client = new Client(router);
 
         Thread clientThread;
         try {

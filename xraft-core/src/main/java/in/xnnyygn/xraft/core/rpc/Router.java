@@ -4,6 +4,7 @@ import in.xnnyygn.xraft.core.server.AbstractServer;
 import in.xnnyygn.xraft.core.server.ServerGroup;
 import in.xnnyygn.xraft.core.server.ServerId;
 
+// TODO rename to Connector
 public class Router {
 
     private final ServerGroup serverGroup;

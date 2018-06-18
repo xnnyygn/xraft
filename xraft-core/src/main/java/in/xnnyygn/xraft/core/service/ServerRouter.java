@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.kvstore.client;
+package in.xnnyygn.xraft.core.service;
 
 import in.xnnyygn.xraft.core.server.ServerId;
 import org.slf4j.Logger;
@@ -6,11 +6,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
 
-public class Selector {
+public class ServerRouter {
 
-    private static Logger logger = LoggerFactory.getLogger(Selector.class);
+    private static Logger logger = LoggerFactory.getLogger(ServerRouter.class);
     private final Map<ServerId, Channel> available = new HashMap<>();
     private ServerId leaderId;
 
@@ -26,6 +25,7 @@ public class Selector {
 
     private ServerId getCurrentLeaderId() {
         if (this.leaderId != null) return this.leaderId;
+
         if (this.available.isEmpty()) {
             throw new IllegalStateException("no available server");
         }
