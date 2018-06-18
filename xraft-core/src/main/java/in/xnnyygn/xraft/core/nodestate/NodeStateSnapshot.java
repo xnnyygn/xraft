@@ -1,14 +1,14 @@
 package in.xnnyygn.xraft.core.nodestate;
 
-import in.xnnyygn.xraft.core.server.ServerId;
+import in.xnnyygn.xraft.core.node.NodeId;
 
 public class NodeStateSnapshot {
 
     private final NodeRole role;
     private final int term;
     private int votesCount;
-    private ServerId votedFor;
-    private ServerId leaderId;
+    private NodeId votedFor;
+    private NodeId leaderId;
 
     public NodeStateSnapshot(NodeRole role, int term) {
         this.role = role;
@@ -31,19 +31,19 @@ public class NodeStateSnapshot {
         this.votesCount = votesCount;
     }
 
-    public ServerId getVotedFor() {
+    public NodeId getVotedFor() {
         return votedFor;
     }
 
-    void setVotedFor(ServerId votedFor) {
+    void setVotedFor(NodeId votedFor) {
         this.votedFor = votedFor;
     }
 
-    public ServerId getLeaderId() {
+    public NodeId getLeaderId() {
         return leaderId;
     }
 
-    void setLeaderId(ServerId leaderId) {
+    void setLeaderId(NodeId leaderId) {
         this.leaderId = leaderId;
     }
 

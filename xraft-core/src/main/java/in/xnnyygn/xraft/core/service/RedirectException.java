@@ -1,16 +1,16 @@
 package in.xnnyygn.xraft.core.service;
 
-import in.xnnyygn.xraft.core.server.ServerId;
+import in.xnnyygn.xraft.core.node.NodeId;
 
 public class RedirectException extends RuntimeException {
 
-    private final ServerId leaderId;
+    private final NodeId leaderId;
 
-    public RedirectException(ServerId leaderId) {
+    public RedirectException(NodeId leaderId) {
         this.leaderId = leaderId;
     }
 
-    public ServerId getLeaderId() {
+    public NodeId getLeaderId() {
         return leaderId;
     }
 

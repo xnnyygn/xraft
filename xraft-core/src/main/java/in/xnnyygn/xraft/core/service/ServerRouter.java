@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.core.service;
 
-import in.xnnyygn.xraft.core.server.ServerId;
+import in.xnnyygn.xraft.core.node.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,8 +10,8 @@ import java.util.Map;
 public class ServerRouter {
 
     private static Logger logger = LoggerFactory.getLogger(ServerRouter.class);
-    private final Map<ServerId, Channel> available = new HashMap<>();
-    private ServerId leaderId;
+    private final Map<NodeId, Channel> available = new HashMap<>();
+    private NodeId leaderId;
 
     public Object send(Object payload) {
         try {
@@ -23,7 +23,7 @@ public class ServerRouter {
         }
     }
 
-    private ServerId getCurrentLeaderId() {
+    private NodeId getCurrentLeaderId() {
         if (this.leaderId != null) return this.leaderId;
 
         if (this.available.isEmpty()) {
@@ -32,7 +32,7 @@ public class ServerRouter {
         return this.available.keySet().iterator().next();
     }
 
-    private Object doSend(ServerId id, Object payload) {
+    private Object doSend(NodeId id, Object payload) {
         Channel channel = this.available.get(id);
         if (channel == null) {
             throw new IllegalStateException("no such channel to server " + id);
@@ -41,7 +41,7 @@ public class ServerRouter {
         return channel.send(payload);
     }
 
-    public void add(ServerId id, Channel channel) {
+    public void add(NodeId id, Channel channel) {
         this.available.put(id, channel);
     }
 

@@ -1,28 +1,28 @@
 package in.xnnyygn.xraft.kvstore;
 
-import in.xnnyygn.xraft.core.server.Server;
-import in.xnnyygn.xraft.core.server.ServerBuilder;
-import in.xnnyygn.xraft.core.server.ServerGroup;
+import in.xnnyygn.xraft.core.node.Node;
+import in.xnnyygn.xraft.core.node.NodeBuilder;
+import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.service.ServerRouter;
 
 public class Launcher {
 
     public static void main(String[] args) throws Exception {
-        ServerGroup serverGroup = new ServerGroup();
+        NodeGroup nodeGroup = new NodeGroup();
 
-        Server server1 = new ServerBuilder("A", serverGroup).build();
-        Server server2 = new ServerBuilder("B", serverGroup).build();
-        Server server3 = new ServerBuilder("C", serverGroup).build();
+        Node node1 = new NodeBuilder("A", nodeGroup).build();
+        Node node2 = new NodeBuilder("B", nodeGroup).build();
+        Node node3 = new NodeBuilder("C", nodeGroup).build();
 
         ServerRouter router = new ServerRouter();
-        router.add(server1.getId(), new EmbeddedChannel(new Service(server1)));
-        router.add(server2.getId(), new EmbeddedChannel(new Service(server2)));
-        router.add(server3.getId(), new EmbeddedChannel(new Service(server3)));
+        router.add(node1.getId(), new EmbeddedChannel(new Service(node1)));
+        router.add(node2.getId(), new EmbeddedChannel(new Service(node2)));
+        router.add(node3.getId(), new EmbeddedChannel(new Service(node3)));
         Client client = new Client(router);
 
         Thread clientThread;
         try {
-            serverGroup.startAll();
+            nodeGroup.startAll();
 
             clientThread = new Thread(() -> {
                 try {
@@ -35,7 +35,7 @@ public class Launcher {
 
             System.in.read();
         } finally {
-            serverGroup.stopAll();
+            nodeGroup.stopAll();
         }
     }
 }

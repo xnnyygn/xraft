@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.core.schedule;
 
-import in.xnnyygn.xraft.core.server.ServerId;
+import in.xnnyygn.xraft.core.node.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,31 +12,31 @@ public class Scheduler {
     private static final Logger logger = LoggerFactory.getLogger(Scheduler.class);
     private final Random electionTimeoutRandom;
     private final ScheduledExecutorService scheduledExecutor;
-    private final ServerId selfServerId;
+    private final NodeId selfNodeId;
 
-    public Scheduler(ServerId selfServerId) {
+    public Scheduler(NodeId selfNodeId) {
         this.electionTimeoutRandom = new Random();
-        this.selfServerId = selfServerId;
+        this.selfNodeId = selfNodeId;
         this.scheduledExecutor = Executors.newSingleThreadScheduledExecutor(
-                r -> new Thread(r, "scheduler-" + this.selfServerId));
+                r -> new Thread(r, "scheduler-" + this.selfNodeId));
     }
 
     public LogReplicationTask scheduleLogReplicationTask(Runnable task) {
-        logger.debug("Server {}, schedule log replication task", this.selfServerId);
+        logger.debug("Node {}, schedule log replication task", this.selfNodeId);
         ScheduledFuture<?> scheduledFuture = this.scheduledExecutor.scheduleWithFixedDelay(
                 task, 0, 1000, TimeUnit.MILLISECONDS);
-        return new LogReplicationTask(scheduledFuture, this.selfServerId);
+        return new LogReplicationTask(scheduledFuture, this.selfNodeId);
     }
 
     public ElectionTimeout scheduleElectionTimeout(Runnable task) {
-        logger.debug("Server {}, schedule election timeout", this.selfServerId);
+        logger.debug("Node {}, schedule election timeout", this.selfNodeId);
         int timeout = electionTimeoutRandom.nextInt(2000) + 3000;
         ScheduledFuture<?> scheduledFuture = scheduledExecutor.schedule(task, timeout, TimeUnit.MILLISECONDS);
-        return new ElectionTimeout(scheduledFuture, () -> scheduleElectionTimeout(task), this.selfServerId);
+        return new ElectionTimeout(scheduledFuture, () -> scheduleElectionTimeout(task), this.selfNodeId);
     }
 
     public void stop() throws InterruptedException {
-        logger.debug("Server {}, stop scheduler", this.selfServerId);
+        logger.debug("Node {}, stop scheduler", this.selfNodeId);
         this.scheduledExecutor.shutdown();
         this.scheduledExecutor.awaitTermination(1, TimeUnit.SECONDS);
     }

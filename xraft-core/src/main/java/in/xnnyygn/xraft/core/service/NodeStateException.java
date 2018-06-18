@@ -1,14 +1,14 @@
 package in.xnnyygn.xraft.core.service;
 
-import in.xnnyygn.xraft.core.server.ServerId;
+import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.nodestate.NodeRole;
 
 public class NodeStateException extends RuntimeException {
 
     private final NodeRole role;
-    private final ServerId leaderId;
+    private final NodeId leaderId;
 
-    public NodeStateException(NodeRole role, ServerId leaderId) {
+    public NodeStateException(NodeRole role, NodeId leaderId) {
         this.role = role;
         this.leaderId = leaderId;
     }
@@ -22,7 +22,7 @@ public class NodeStateException extends RuntimeException {
         return role;
     }
 
-    public ServerId getLeaderId() {
+    public NodeId getLeaderId() {
         return leaderId;
     }
 

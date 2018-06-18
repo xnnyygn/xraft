@@ -30,18 +30,18 @@ public class LeaderNodeState extends AbstractNodeState {
 
     @Override
     public void onReceiveRequestVoteResult(NodeStateContext context, RequestVoteResult result) {
-        logger.debug("Server {}, current role is LEADER, ignore", context.getSelfNodeId());
+        logger.debug("Node {}, current role is LEADER, ignore", context.getSelfNodeId());
     }
 
     @Override
     protected RequestVoteResult processRequestVoteRpc(NodeStateContext context, RequestVoteRpc rpc) {
-        logger.debug("Server {}, current role is LEADER, ignore", context.getSelfNodeId());
+        logger.debug("Node {}, current role is LEADER, ignore", context.getSelfNodeId());
         return new RequestVoteResult(this.term, false);
     }
 
     @Override
     protected AppendEntriesResult processAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
-        logger.warn("Server {}, receive AppendEntries RPC from another leader, source {}", context.getSelfNodeId(), rpc.getLeaderId());
+        logger.warn("Node {}, receive AppendEntries RPC from another leader, source {}", context.getSelfNodeId(), rpc.getLeaderId());
         return new AppendEntriesResult(this.term, false);
     }
 

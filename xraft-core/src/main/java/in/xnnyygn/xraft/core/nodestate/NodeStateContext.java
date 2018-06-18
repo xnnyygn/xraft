@@ -3,11 +3,11 @@ package in.xnnyygn.xraft.core.nodestate;
 import in.xnnyygn.xraft.core.rpc.Router;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeoutScheduler;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
-import in.xnnyygn.xraft.core.server.ServerId;
+import in.xnnyygn.xraft.core.node.NodeId;
 
 public interface NodeStateContext extends ElectionTimeoutScheduler {
 
-    ServerId getSelfNodeId();
+    NodeId getSelfNodeId();
 
     int getNodeCount();
 

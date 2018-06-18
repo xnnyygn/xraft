@@ -1,8 +1,8 @@
 package in.xnnyygn.xraft.core.nodestate;
 
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
-import in.xnnyygn.xraft.core.server.ServerId;
-import in.xnnyygn.xraft.core.server.ServerStore;
+import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.node.NodeStore;
 import in.xnnyygn.xraft.core.rpc.AppendEntriesResult;
 import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.rpc.RequestVoteResult;
@@ -13,26 +13,26 @@ import org.slf4j.LoggerFactory;
 public class FollowerNodeState extends AbstractNodeState {
 
     private static final Logger logger = LoggerFactory.getLogger(FollowerNodeState.class);
-    private final ServerId votedFor;
-    private final ServerId leaderId;
+    private final NodeId votedFor;
+    private final NodeId leaderId;
     private final ElectionTimeout electionTimeout;
 
-    public FollowerNodeState(ServerStore serverStore, ElectionTimeout electionTimeout) {
-        this(serverStore.getCurrentTerm(), serverStore.getVotedFor(), null, electionTimeout);
+    public FollowerNodeState(NodeStore nodeStore, ElectionTimeout electionTimeout) {
+        this(nodeStore.getCurrentTerm(), nodeStore.getVotedFor(), null, electionTimeout);
     }
 
-    public FollowerNodeState(int term, ServerId votedFor, ServerId leaderId, ElectionTimeout electionTimeout) {
+    public FollowerNodeState(int term, NodeId votedFor, NodeId leaderId, ElectionTimeout electionTimeout) {
         super(NodeRole.FOLLOWER, term);
         this.votedFor = votedFor;
         this.leaderId = leaderId;
         this.electionTimeout = electionTimeout;
     }
 
-    public ServerId getVotedFor() {
+    public NodeId getVotedFor() {
         return votedFor;
     }
 
-    public ServerId getLeaderId() {
+    public NodeId getLeaderId() {
         return leaderId;
     }
 
@@ -55,7 +55,7 @@ public class FollowerNodeState extends AbstractNodeState {
 
     @Override
     public void onReceiveRequestVoteResult(NodeStateContext context, RequestVoteResult result) {
-        logger.warn("Server {}, current role is FOLLOWER, ignore", context.getSelfNodeId());
+        logger.warn("Node {}, current role is FOLLOWER, ignore", context.getSelfNodeId());
     }
 
     @Override

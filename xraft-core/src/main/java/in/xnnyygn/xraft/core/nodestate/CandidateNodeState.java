@@ -47,7 +47,7 @@ public class CandidateNodeState extends AbstractNodeState {
                 context.setNodeState(new CandidateNodeState(this.term, votedCount, electionTimeout.reset()));
             }
         } else if (result.getTerm() > this.term) {
-            logger.debug("Server {}, update to peer's term", context.getSelfNodeId(), result.getTerm());
+            logger.debug("Node {}, update to peer's term", context.getSelfNodeId(), result.getTerm());
 
             // current term is old
             context.setNodeState(new FollowerNodeState(result.getTerm(), null, null, electionTimeout.reset()));

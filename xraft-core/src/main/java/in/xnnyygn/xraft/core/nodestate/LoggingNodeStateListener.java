@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.core.nodestate;
 
-import in.xnnyygn.xraft.core.server.ServerId;
+import in.xnnyygn.xraft.core.node.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,15 +8,15 @@ public class LoggingNodeStateListener implements NodeStateListener {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingNodeStateListener.class);
 
-    private final ServerId selfServerId;
+    private final NodeId selfNodeId;
 
-    public LoggingNodeStateListener(ServerId selfServerId) {
-        this.selfServerId = selfServerId;
+    public LoggingNodeStateListener(NodeId selfNodeId) {
+        this.selfNodeId = selfNodeId;
     }
 
     @Override
     public void nodeStateChanged(NodeStateSnapshot snapshot) {
-        logger.info("Server {}, state changed -> {}", this.selfServerId, snapshot);
+        logger.info("Node {}, state changed -> {}", this.selfNodeId, snapshot);
     }
 
 }

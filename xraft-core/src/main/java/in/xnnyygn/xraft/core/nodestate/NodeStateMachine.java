@@ -7,9 +7,9 @@ import in.xnnyygn.xraft.core.rpc.Router;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
 import in.xnnyygn.xraft.core.schedule.Scheduler;
-import in.xnnyygn.xraft.core.server.ServerGroup;
-import in.xnnyygn.xraft.core.server.ServerId;
-import in.xnnyygn.xraft.core.server.ServerStore;
+import in.xnnyygn.xraft.core.node.NodeGroup;
+import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.node.NodeStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,53 +21,53 @@ public class NodeStateMachine implements NodeStateContext {
     private static final Logger logger = LoggerFactory.getLogger(NodeStateMachine.class);
     private AbstractNodeState serverState;
 
-    private final ServerGroup serverGroup;
-    private final ServerId selfServerId;
-    private final ServerStore serverStore;
+    private final NodeGroup nodeGroup;
+    private final NodeId selfNodeId;
+    private final NodeStore nodeStore;
     private final Router rpcRouter;
 
     private final Scheduler scheduler;
     private final List<NodeStateListener> nodeStateListeners = new ArrayList<>();
 
-    public NodeStateMachine(ServerGroup serverGroup, ServerId selfServerId, ServerStore serverStore, Router rpcRouter) {
-        this.serverGroup = serverGroup;
-        this.selfServerId = selfServerId;
-        this.serverStore = serverStore;
+    public NodeStateMachine(NodeGroup nodeGroup, NodeId selfNodeId, NodeStore nodeStore, Router rpcRouter) {
+        this.nodeGroup = nodeGroup;
+        this.selfNodeId = selfNodeId;
+        this.nodeStore = nodeStore;
         this.rpcRouter = rpcRouter;
 
-        this.scheduler = new Scheduler(selfServerId);
+        this.scheduler = new Scheduler(selfNodeId);
     }
 
     public synchronized void start() {
-        this.serverState = new FollowerNodeState(this.serverStore, this.scheduleElectionTimeout());
-        logger.debug("Server {}, start with state {}", this.selfServerId, this.serverState);
+        this.serverState = new FollowerNodeState(this.nodeStore, this.scheduleElectionTimeout());
+        logger.debug("Node {}, start with state {}", this.selfNodeId, this.serverState);
     }
 
-    public synchronized void onReceiveRequestVoteResult(RequestVoteResult result, ServerId senderServerId) {
-        logger.debug("Server {}, receive {} from peer {}", this.selfServerId, result, senderServerId);
+    public synchronized void onReceiveRequestVoteResult(RequestVoteResult result, NodeId senderNodeId) {
+        logger.debug("Node {}, receive {} from peer {}", this.selfNodeId, result, senderNodeId);
         this.serverState.onReceiveRequestVoteResult(this, result);
     }
 
     public synchronized void onReceiveRequestVoteRpc(RequestVoteRpc rpc) {
-        logger.debug("Server {}, receive {} from peer {}", this.selfServerId, rpc, rpc.getCandidateId());
+        logger.debug("Node {}, receive {} from peer {}", this.selfNodeId, rpc, rpc.getCandidateId());
         this.serverState.onReceiveRequestVoteRpc(this, rpc);
     }
 
     public synchronized void onReceiveAppendEntriesRpc(AppendEntriesRpc rpc) {
-        logger.debug("Server {}, receive {} from leader {}", this.selfServerId, rpc, rpc.getLeaderId());
+        logger.debug("Node {}, receive {} from leader {}", this.selfNodeId, rpc, rpc.getLeaderId());
         this.serverState.onReceiveAppendEntriesRpc(this, rpc);
     }
 
     private synchronized void onElectionTimeout() {
-        logger.debug("Server {}, election timeout", this.selfServerId);
+        logger.debug("Node {}, election timeout", this.selfNodeId);
         this.serverState.onElectionTimeout(this);
     }
 
     private synchronized void replicateLog() {
-        logger.debug("Server {}, replicate log", this.selfServerId);
+        logger.debug("Node {}, replicate log", this.selfNodeId);
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setTerm(this.serverState.getTerm());
-        rpc.setLeaderId(this.selfServerId);
+        rpc.setLeaderId(this.selfNodeId);
         this.rpcRouter.sendRpc(rpc);
     }
 
@@ -82,18 +82,18 @@ public class NodeStateMachine implements NodeStateContext {
     }
 
     @Override
-    public ServerId getSelfNodeId() {
-        return this.selfServerId;
+    public NodeId getSelfNodeId() {
+        return this.selfNodeId;
     }
 
     @Override
     public int getNodeCount() {
-        return this.serverGroup.getCount();
+        return this.nodeGroup.getCount();
     }
 
     @Override
     public void setNodeState(AbstractNodeState nodeState) {
-        logger.debug("Server {}, state changed {} -> {}", this.selfServerId, this.serverState, nodeState);
+        logger.debug("Node {}, state changed {} -> {}", this.selfNodeId, this.serverState, nodeState);
 
         // notify listener if not stable
         if (!isStableBetween(this.serverState, nodeState)) {
@@ -131,7 +131,7 @@ public class NodeStateMachine implements NodeStateContext {
         this.scheduler.stop();
     }
 
-    public void addServerStateListener(NodeStateListener listener) {
+    public void addNodeStateListener(NodeStateListener listener) {
         this.nodeStateListeners.add(listener);
     }
 

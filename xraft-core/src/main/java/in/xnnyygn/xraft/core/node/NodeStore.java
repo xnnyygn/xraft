@@ -1,9 +1,9 @@
-package in.xnnyygn.xraft.core.server;
+package in.xnnyygn.xraft.core.node;
 
-public class ServerStore {
+public class NodeStore {
 
     private int currentTerm = 0;
-    private ServerId votedFor = null;
+    private NodeId votedFor = null;
 
     public int getCurrentTerm() {
         return currentTerm;
@@ -13,11 +13,11 @@ public class ServerStore {
         this.currentTerm = currentTerm;
     }
 
-    public ServerId getVotedFor() {
+    public NodeId getVotedFor() {
         return votedFor;
     }
 
-    public void setVotedFor(ServerId votedFor) {
+    public void setVotedFor(NodeId votedFor) {
         this.votedFor = votedFor;
     }
 

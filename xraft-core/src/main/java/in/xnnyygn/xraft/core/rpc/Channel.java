@@ -1,11 +1,11 @@
 package in.xnnyygn.xraft.core.rpc;
 
-import in.xnnyygn.xraft.core.server.ServerId;
+import in.xnnyygn.xraft.core.node.NodeId;
 
 public interface Channel {
 
     // TODO rename to send
-    void write(Object payload, ServerId senderId);
+    void write(Object payload, NodeId senderId);
 
     void close() throws Exception;
 

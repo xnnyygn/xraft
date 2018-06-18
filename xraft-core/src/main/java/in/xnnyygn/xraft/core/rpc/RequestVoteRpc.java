@@ -1,13 +1,13 @@
 package in.xnnyygn.xraft.core.rpc;
 
-import in.xnnyygn.xraft.core.server.ServerId;
+import in.xnnyygn.xraft.core.node.NodeId;
 
 import java.io.Serializable;
 
 public class RequestVoteRpc implements Serializable {
 
     private int term;
-    private ServerId candidateId;
+    private NodeId candidateId;
 
     public int getTerm() {
         return term;
@@ -17,11 +17,11 @@ public class RequestVoteRpc implements Serializable {
         this.term = term;
     }
 
-    public ServerId getCandidateId() {
+    public NodeId getCandidateId() {
         return candidateId;
     }
 
-    public void setCandidateId(ServerId candidateId) {
+    public void setCandidateId(NodeId candidateId) {
         this.candidateId = candidateId;
     }
 

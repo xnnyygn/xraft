@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.server;
+package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.nodestate.NodeStateMachine;
 import in.xnnyygn.xraft.core.rpc.Channel;
@@ -6,25 +6,25 @@ import in.xnnyygn.xraft.core.nodestate.NodeStateSnapshot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Server extends AbstractServer {
+public class Node extends AbstractNode {
 
-    private static final Logger logger = LoggerFactory.getLogger(Server.class);
-    private final NodeStateMachine serverStateMachine;
+    private static final Logger logger = LoggerFactory.getLogger(Node.class);
+    private final NodeStateMachine nodeStateMachine;
     private final Channel rpcChannel;
 
-    public Server(ServerId id, NodeStateMachine serverStateMachine, Channel rpcChannel) {
+    public Node(NodeId id, NodeStateMachine nodeStateMachine, Channel rpcChannel) {
         super(id);
-        this.serverStateMachine = serverStateMachine;
+        this.nodeStateMachine = nodeStateMachine;
         this.rpcChannel = rpcChannel;
     }
 
     public void start() {
-        logger.info("start server {}", getId());
-        this.serverStateMachine.start();
+        logger.info("start node {}", getId());
+        this.nodeStateMachine.start();
     }
 
     public NodeStateSnapshot getServerState() {
-        return this.serverStateMachine.takeSnapshot();
+        return this.nodeStateMachine.takeSnapshot();
     }
 
     // TODO internal channel, change to package visible
@@ -33,8 +33,8 @@ public class Server extends AbstractServer {
     }
 
     public void stop() throws Exception {
-        logger.info("stop server {}", getId());
-        this.serverStateMachine.stop();
+        logger.info("stop node {}", getId());
+        this.nodeStateMachine.stop();
         this.rpcChannel.close();
     }
 

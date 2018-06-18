@@ -1,21 +1,21 @@
-package in.xnnyygn.xraft.core.server;
+package in.xnnyygn.xraft.core.node;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-public class ServerId implements Serializable {
+public class NodeId implements Serializable {
 
     private final String value;
 
-    public ServerId(String value) {
+    public NodeId(String value) {
         this.value = value;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ServerId)) return false;
-        ServerId id = (ServerId) o;
+        if (!(o instanceof NodeId)) return false;
+        NodeId id = (NodeId) o;
         return Objects.equals(value, id.value);
     }
 
