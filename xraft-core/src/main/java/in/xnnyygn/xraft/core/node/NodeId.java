@@ -19,6 +19,10 @@ public class NodeId implements Serializable {
         return Objects.equals(value, id.value);
     }
 
+    public String getValue() {
+        return value;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(value);

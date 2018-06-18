@@ -4,7 +4,6 @@ import in.xnnyygn.xraft.core.node.AbstractNode;
 import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
 
-// TODO rename to Connector
 public class Connector {
 
     private final NodeGroup nodeGroup;

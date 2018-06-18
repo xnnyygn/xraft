@@ -30,4 +30,12 @@ public class NodeStateException extends RuntimeException {
         return this.leaderId != null;
     }
 
+    @Override
+    public String toString() {
+        return "NodeStateException{" +
+                "leaderId=" + leaderId +
+                ", role=" + role +
+                '}';
+    }
+
 }

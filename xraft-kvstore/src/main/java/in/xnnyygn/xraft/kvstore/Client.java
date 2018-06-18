@@ -12,12 +12,12 @@ public class Client {
         this.serverRouter = serverRouter;
     }
 
-    public void set(String key, Object value) {
+    public void set(String key, String value) {
         this.serverRouter.send(new SetCommand(key, value));
     }
 
-    public Object get(String key) {
-        return this.serverRouter.send(new GetCommand(key));
+    public String get(String key) {
+        return (String) this.serverRouter.send(new GetCommand(key));
     }
 
 }

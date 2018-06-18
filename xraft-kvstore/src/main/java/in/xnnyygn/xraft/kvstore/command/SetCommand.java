@@ -5,9 +5,9 @@ import java.io.Serializable;
 public class SetCommand implements Serializable {
 
     private final String key;
-    private final Object value;
+    private final String value;
 
-    public SetCommand(String key, Object value) {
+    public SetCommand(String key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -16,8 +16,16 @@ public class SetCommand implements Serializable {
         return key;
     }
 
-    public Object getValue() {
+    public String getValue() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return "SetCommand{" +
+                "key='" + key + '\'' +
+                ", value='" + value + '\'' +
+                '}';
     }
 
 }

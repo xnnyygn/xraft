@@ -9,31 +9,32 @@ import in.xnnyygn.xraft.kvstore.command.SetCommand;
 
 public class EmbeddedChannel implements Channel {
 
-    private final Service service;
+    private final Server server;
 
-    public EmbeddedChannel(Service service) {
-        this.service = service;
+    public EmbeddedChannel(Server server) {
+        this.server = server;
     }
 
     @Override
     public Object send(Object payload) {
-        try {
-            if (payload instanceof SetCommand) {
-                SetCommand command = (SetCommand) payload;
-                this.service.set(command.getKey(), command.getValue());
-                return null;
-            }
-            if (payload instanceof GetCommand) {
-                GetCommand command = (GetCommand) payload;
-                return this.service.get(command.getKey());
-            }
-            throw new IllegalArgumentException("unexpected payload type " + payload.getClass());
-        } catch (NodeStateException e) {
-            if (e.getRole() == NodeRole.FOLLOWER && e.isLeaderIdPresent()) {
-                throw new RedirectException(e.getLeaderId());
-            }
-            throw e;
-        }
+//        try {
+//            if (payload instanceof SetCommand) {
+//                SetCommand command = (SetCommand) payload;
+//                this.server.set(command.getKey(), command.getValue());
+//                return null;
+//            }
+//            if (payload instanceof GetCommand) {
+//                GetCommand command = (GetCommand) payload;
+//                return this.server.get(command.getKey());
+//            }
+//            throw new IllegalArgumentException("unexpected payload type " + payload.getClass());
+//        } catch (NodeStateException e) {
+//            if (e.getRole() == NodeRole.FOLLOWER && e.isLeaderIdPresent()) {
+//                throw new RedirectException(e.getLeaderId());
+//            }
+//            throw e;
+//        }
+        return null;
     }
 
 }

@@ -14,4 +14,11 @@ public class GetCommand implements Serializable {
         return key;
     }
 
+    @Override
+    public String toString() {
+        return "GetCommand{" +
+                "key='" + key + '\'' +
+                '}';
+    }
+
 }

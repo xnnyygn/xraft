@@ -1,10 +1,12 @@
 package in.xnnyygn.xraft.kvstore;
 
+import in.xnnyygn.xraft.core.nodestate.NodeRole;
 import in.xnnyygn.xraft.core.service.Channel;
 import in.xnnyygn.xraft.core.service.ChannelException;
+import in.xnnyygn.xraft.core.service.NodeStateException;
+import in.xnnyygn.xraft.core.service.RedirectException;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class SocketChannel implements Channel {
@@ -20,10 +22,18 @@ public class SocketChannel implements Channel {
 
     @Override
     public Object send(Object payload) {
-        try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(this.host, this.port));
+        try (Socket socket = new Socket(this.host, this.port)) {
             protocol.toWire(payload, socket.getOutputStream());
-            return protocol.fromWire(socket.getInputStream());
+            Object result = protocol.fromWire(socket.getInputStream());
+            protocol.toWire(Protocol.PAYLOAD_QUIT, socket.getOutputStream());
+            if (result instanceof NodeStateException) {
+                NodeStateException exception = (NodeStateException) result;
+                if (exception.getRole() == NodeRole.FOLLOWER && exception.isLeaderIdPresent()) {
+                    throw new RedirectException(exception.getLeaderId());
+                }
+                throw exception;
+            }
+            return result;
         } catch (IOException e) {
             throw new ChannelException("failed to send", e);
         }
