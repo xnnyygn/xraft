@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft;
+package in.xnnyygn.xraft.kvstore;
 
 import in.xnnyygn.xraft.server.Server;
 import in.xnnyygn.xraft.server.ServerBuilder;

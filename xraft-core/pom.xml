@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>in.xnnyygn.xraft</groupId>
+  <artifactId>xraft-core</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+
+  <name>xraft-core</name>
+
+  <parent>
+    <groupId>in.xnnyygn.xraft</groupId>
+    <artifactId>xraft-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <!--<dependency>-->
+      <!--<groupId>com.typesafe.akka</groupId>-->
+      <!--<artifactId>akka-actor_2.12</artifactId>-->
+      <!--<version>2.5.13</version>-->
+    <!--</dependency>-->
+    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.25</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.7.25</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
