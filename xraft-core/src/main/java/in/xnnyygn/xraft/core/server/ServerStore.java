@@ -1,0 +1,24 @@
+package in.xnnyygn.xraft.core.server;
+
+public class ServerStore {
+
+    private int currentTerm = 0;
+    private ServerId votedFor = null;
+
+    public int getCurrentTerm() {
+        return currentTerm;
+    }
+
+    public void setCurrentTerm(int currentTerm) {
+        this.currentTerm = currentTerm;
+    }
+
+    public ServerId getVotedFor() {
+        return votedFor;
+    }
+
+    public void setVotedFor(ServerId votedFor) {
+        this.votedFor = votedFor;
+    }
+
+}

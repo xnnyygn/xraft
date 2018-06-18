@@ -1,8 +1,8 @@
 package in.xnnyygn.xraft.kvstore;
 
-import in.xnnyygn.xraft.server.Server;
-import in.xnnyygn.xraft.server.ServerBuilder;
-import in.xnnyygn.xraft.server.ServerGroup;
+import in.xnnyygn.xraft.core.server.Server;
+import in.xnnyygn.xraft.core.server.ServerBuilder;
+import in.xnnyygn.xraft.core.server.ServerGroup;
 
 public class Launcher {
 
