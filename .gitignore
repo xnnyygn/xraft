@@ -27,3 +27,4 @@ hs_err_pid*
 /xraft-kvstore/target
 /xraft.iml
 /.idea
+/xraft-kvstore/xraft-kvstore.iml

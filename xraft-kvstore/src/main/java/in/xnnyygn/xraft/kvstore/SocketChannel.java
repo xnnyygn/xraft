@@ -1,19 +1,21 @@
 package in.xnnyygn.xraft.kvstore;
 
-import in.xnnyygn.xraft.core.nodestate.NodeRole;
+import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.service.Channel;
 import in.xnnyygn.xraft.core.service.ChannelException;
-import in.xnnyygn.xraft.core.service.NodeStateException;
 import in.xnnyygn.xraft.core.service.RedirectException;
-
-import java.io.IOException;
-import java.net.Socket;
+import in.xnnyygn.xraft.kvstore.command.GetCommand;
+import in.xnnyygn.xraft.kvstore.command.SetCommand;
+import org.apache.thrift.TException;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
 
 public class SocketChannel implements Channel {
 
     private final String host;
     private final int port;
-    private Protocol protocol = new Protocol();
 
     public SocketChannel(String host, int port) {
         this.host = host;
@@ -22,20 +24,28 @@ public class SocketChannel implements Channel {
 
     @Override
     public Object send(Object payload) {
-        try (Socket socket = new Socket(this.host, this.port)) {
-            protocol.toWire(payload, socket.getOutputStream());
-            Object result = protocol.fromWire(socket.getInputStream());
-            protocol.toWire(Protocol.PAYLOAD_QUIT, socket.getOutputStream());
-            if (result instanceof NodeStateException) {
-                NodeStateException exception = (NodeStateException) result;
-                if (exception.getRole() == NodeRole.FOLLOWER && exception.isLeaderIdPresent()) {
-                    throw new RedirectException(exception.getLeaderId());
-                }
-                throw exception;
+        TTransport transport = new TSocket(this.host, this.port);
+        TProtocol protocol = new TBinaryProtocol(transport);
+        KVStore.Iface client = new KVStore.Client(protocol);
+        try {
+            transport.open();
+            if (payload instanceof SetCommand) {
+                SetCommand command = (SetCommand) payload;
+                client.Set(command.getKey(), command.getValue());
+                return null;
+            } else if (payload instanceof GetCommand) {
+                return client.Get(((GetCommand) payload).getKey());
             }
-            return result;
-        } catch (IOException e) {
+            throw new ChannelException("unexpected payload type " + payload.getClass());
+        } catch (Redirect redirect) {
+            if (redirect.getLeaderId() != null) {
+                throw new RedirectException(new NodeId(redirect.getLeaderId()));
+            }
+            throw new ChannelException("redirect", redirect);
+        } catch (TException e) {
             throw new ChannelException("failed to send", e);
+        } finally {
+            transport.close();
         }
     }
 
