@@ -17,14 +17,14 @@ public class Connector {
     public void sendRpc(Object rpc) {
         for (AbstractNode node : nodeGroup) {
             if (node.getId() != this.selfNodeId) {
-                node.getRpcChannel().write(rpc, this.selfNodeId);
+                node.getRpcChannel().send(rpc, this.selfNodeId);
             }
         }
     }
 
     public void sendResult(Object result, NodeId destination) {
         AbstractNode node = this.nodeGroup.find(destination);
-        node.getRpcChannel().write(result, this.selfNodeId);
+        node.getRpcChannel().send(result, this.selfNodeId);
     }
 
 }

@@ -41,7 +41,7 @@ public class KVStore {
 
     public void Set(String key, String value) throws Redirect, org.apache.thrift.TException;
 
-    public String Get(String key) throws Redirect, org.apache.thrift.TException;
+    public GetResult Get(String key) throws Redirect, org.apache.thrift.TException;
 
   }
 
@@ -97,7 +97,7 @@ public class KVStore {
       return;
     }
 
-    public String Get(String key) throws Redirect, org.apache.thrift.TException
+    public GetResult Get(String key) throws Redirect, org.apache.thrift.TException
     {
       send_Get(key);
       return recv_Get();
@@ -110,7 +110,7 @@ public class KVStore {
       sendBase("Get", args);
     }
 
-    public String recv_Get() throws Redirect, org.apache.thrift.TException
+    public GetResult recv_Get() throws Redirect, org.apache.thrift.TException
     {
       Get_result result = new Get_result();
       receiveBase(result, "Get");
@@ -198,7 +198,7 @@ public class KVStore {
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws Redirect, org.apache.thrift.TException {
+      public GetResult getResult() throws Redirect, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -348,7 +348,7 @@ public class KVStore {
       }
     }
 
-    public static class Get<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, Get_args, String> {
+    public static class Get<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, Get_args, GetResult> {
       public Get() {
         super("Get");
       }
@@ -357,10 +357,10 @@ public class KVStore {
         return new Get_args();
       }
 
-      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<GetResult> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<String>() { 
-          public void onComplete(String o) {
+        return new AsyncMethodCallback<GetResult>() { 
+          public void onComplete(GetResult o) {
             Get_result result = new Get_result();
             result.success = o;
             try {
@@ -400,7 +400,7 @@ public class KVStore {
         return false;
       }
 
-      public void start(I iface, Get_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+      public void start(I iface, Get_args args, org.apache.thrift.async.AsyncMethodCallback<GetResult> resultHandler) throws TException {
         iface.Get(args.key,resultHandler);
       }
     }
@@ -1600,7 +1600,7 @@ public class KVStore {
   public static class Get_result implements org.apache.thrift.TBase<Get_result, Get_result._Fields>, java.io.Serializable, Cloneable, Comparable<Get_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Get_result");
 
-    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField REDIRECT_FIELD_DESC = new org.apache.thrift.protocol.TField("redirect", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -1609,7 +1609,7 @@ public class KVStore {
       schemes.put(TupleScheme.class, new Get_resultTupleSchemeFactory());
     }
 
-    public String success; // required
+    public GetResult success; // required
     public Redirect redirect; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -1678,7 +1678,7 @@ public class KVStore {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, GetResult.class)));
       tmpMap.put(_Fields.REDIRECT, new org.apache.thrift.meta_data.FieldMetaData("redirect", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -1689,7 +1689,7 @@ public class KVStore {
     }
 
     public Get_result(
-      String success,
+      GetResult success,
       Redirect redirect)
     {
       this();
@@ -1702,7 +1702,7 @@ public class KVStore {
      */
     public Get_result(Get_result other) {
       if (other.isSetSuccess()) {
-        this.success = other.success;
+        this.success = new GetResult(other.success);
       }
       if (other.isSetRedirect()) {
         this.redirect = new Redirect(other.redirect);
@@ -1719,11 +1719,11 @@ public class KVStore {
       this.redirect = null;
     }
 
-    public String getSuccess() {
+    public GetResult getSuccess() {
       return this.success;
     }
 
-    public Get_result setSuccess(String success) {
+    public Get_result setSuccess(GetResult success) {
       this.success = success;
       return this;
     }
@@ -1773,7 +1773,7 @@ public class KVStore {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((String)value);
+          setSuccess((GetResult)value);
         }
         break;
 
@@ -1936,6 +1936,9 @@ public class KVStore {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -1973,8 +1976,9 @@ public class KVStore {
           }
           switch (schemeField.id) {
             case 0: // SUCCESS
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.success = iprot.readString();
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new GetResult();
+                struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -2006,7 +2010,7 @@ public class KVStore {
         oprot.writeStructBegin(STRUCT_DESC);
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
-          oprot.writeString(struct.success);
+          struct.success.write(oprot);
           oprot.writeFieldEnd();
         }
         if (struct.redirect != null) {
@@ -2040,7 +2044,7 @@ public class KVStore {
         }
         oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
-          oprot.writeString(struct.success);
+          struct.success.write(oprot);
         }
         if (struct.isSetRedirect()) {
           struct.redirect.write(oprot);
@@ -2052,7 +2056,8 @@ public class KVStore {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = iprot.readString();
+          struct.success = new GetResult();
+          struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {

@@ -11,6 +11,7 @@ public class ClientLauncher {
         serverRouter.add(new NodeId("B"), new SocketChannel("127.0.0.1", 3334));
         serverRouter.add(new NodeId("C"), new SocketChannel("127.0.0.1", 3335));
         Client client = new Client(serverRouter);
+        System.out.println(client.get("x"));
         client.set("x", "1");
         System.out.println(client.get("x"));
     }

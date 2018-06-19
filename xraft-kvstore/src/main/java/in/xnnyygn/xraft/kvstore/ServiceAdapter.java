@@ -23,9 +23,14 @@ public class ServiceAdapter implements KVStore.Iface {
     }
 
     @Override
-    public String Get(String key) throws TException {
+    public GetResult Get(String key) throws TException {
         checkLeadership();
-        return this.service.get(key);
+        String value = this.service.get(key);
+
+        GetResult result = new GetResult();
+        result.setFound(value != null);
+        result.setValue(value);
+        return result;
     }
 
     private void checkLeadership() throws Redirect {

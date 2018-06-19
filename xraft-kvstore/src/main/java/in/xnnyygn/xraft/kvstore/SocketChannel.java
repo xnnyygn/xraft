@@ -34,7 +34,8 @@ public class SocketChannel implements Channel {
                 client.Set(command.getKey(), command.getValue());
                 return null;
             } else if (payload instanceof GetCommand) {
-                return client.Get(((GetCommand) payload).getKey());
+                GetResult result = client.Get(((GetCommand) payload).getKey());
+                return result.isFound() ? result.getValue() : null;
             }
             throw new ChannelException("unexpected payload type " + payload.getClass());
         } catch (Redirect redirect) {

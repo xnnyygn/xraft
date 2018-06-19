@@ -23,7 +23,7 @@ public class EmbeddedChannel implements Channel {
     }
 
     @Override
-    public void write(Object payload, NodeId senderId) {
+    public void send(Object payload, NodeId senderId) {
         this.executorService.submit(() -> this.dispatch(payload, senderId));
     }
 

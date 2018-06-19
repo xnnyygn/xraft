@@ -27,7 +27,6 @@ public class Node extends AbstractNode {
         return this.nodeStateMachine.takeSnapshot();
     }
 
-    // TODO internal channel, change to package visible
     public Channel getRpcChannel() {
         return this.rpcChannel;
     }
