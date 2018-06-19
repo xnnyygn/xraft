@@ -29,15 +29,7 @@ public class SocketChannel implements Channel {
         KVStore.Iface client = new KVStore.Client(protocol);
         try {
             transport.open();
-            if (payload instanceof SetCommand) {
-                SetCommand command = (SetCommand) payload;
-                client.Set(command.getKey(), command.getValue());
-                return null;
-            } else if (payload instanceof GetCommand) {
-                GetResult result = client.Get(((GetCommand) payload).getKey());
-                return result.isFound() ? result.getValue() : null;
-            }
-            throw new ChannelException("unexpected payload type " + payload.getClass());
+            return dispatch(payload, client);
         } catch (Redirect redirect) {
             if (redirect.getLeaderId() != null) {
                 throw new RedirectException(new NodeId(redirect.getLeaderId()));
@@ -48,6 +40,18 @@ public class SocketChannel implements Channel {
         } finally {
             transport.close();
         }
+    }
+
+    private Object dispatch(Object payload, KVStore.Iface client) throws TException {
+        if (payload instanceof SetCommand) {
+            SetCommand command = (SetCommand) payload;
+            client.Set(command.getKey(), command.getValue());
+            return null;
+        } else if (payload instanceof GetCommand) {
+            GetResult result = client.Get(((GetCommand) payload).getKey());
+            return result.isFound() ? result.getValue() : null;
+        }
+        throw new ChannelException("unexpected payload type " + payload.getClass());
     }
 
 }

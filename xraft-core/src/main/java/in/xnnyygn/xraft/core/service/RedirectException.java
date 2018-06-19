@@ -2,7 +2,7 @@ package in.xnnyygn.xraft.core.service;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
-public class RedirectException extends RuntimeException {
+public class RedirectException extends ChannelException {
 
     private final NodeId leaderId;
 
