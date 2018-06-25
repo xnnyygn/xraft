@@ -1,29 +1,37 @@
 package in.xnnyygn.xraft.core.node;
 
+import com.google.common.eventbus.EventBus;
+import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.nodestate.LoggingNodeStateListener;
 import in.xnnyygn.xraft.core.nodestate.NodeStateMachine;
-import in.xnnyygn.xraft.core.rpc.Connector;
-import in.xnnyygn.xraft.core.rpc.EmbeddedChannel;
 import in.xnnyygn.xraft.core.rpc.DefaultConnector;
+import in.xnnyygn.xraft.core.rpc.EmbeddedChannel;
+import in.xnnyygn.xraft.core.schedule.Scheduler;
 
 public class NodeBuilder {
 
-    private final String nodeId;
-    private final NodeGroup nodeGroup;
-    private NodeStore nodeStore = new NodeStore();
+    private final String id;
+    private final NodeGroup group;
 
-    public NodeBuilder(String nodeId, NodeGroup nodeGroup) {
-        this.nodeId = nodeId;
-        this.nodeGroup = nodeGroup;
+    public NodeBuilder(String id, NodeGroup group) {
+        this.id = id;
+        this.group = group;
     }
 
     public Node build() {
-        NodeId selfNodeId = new NodeId(this.nodeId);
-        Connector rpcConnector = new DefaultConnector(this.nodeGroup, selfNodeId);
-        NodeStateMachine nodeStateMachine = new NodeStateMachine(this.nodeGroup, selfNodeId, this.nodeStore, rpcConnector);
-        nodeStateMachine.addNodeStateListener(new LoggingNodeStateListener(selfNodeId));
-        Node node = new Node(selfNodeId, nodeStateMachine, new EmbeddedChannel(selfNodeId, nodeStateMachine));
-        nodeGroup.add(node);
+        NodeId nodeId = new NodeId(id);
+        EventBus eventBus = new EventBus(id);
+
+        NodeContext context = new NodeContext(nodeId, group, new NodeStore());
+        context.setEventBus(eventBus);
+        context.setLog(new MemoryLog(eventBus));
+        context.setScheduler(new Scheduler(nodeId));
+        context.setConnector(new DefaultConnector(group, nodeId));
+
+        NodeStateMachine stateMachine = new NodeStateMachine(context);
+        stateMachine.addNodeStateListener(new LoggingNodeStateListener());
+        Node node = new Node(context, stateMachine, new EmbeddedChannel(nodeId, eventBus));
+        this.group.add(node);
         return node;
     }
 

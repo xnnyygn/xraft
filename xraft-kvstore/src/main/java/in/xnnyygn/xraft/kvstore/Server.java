@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.kvstore;
 
-import in.xnnyygn.xraft.core.node.Node2;
+import in.xnnyygn.xraft.core.node.Node;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -12,7 +12,7 @@ public class Server {
 
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
-    private final Node2 node;
+    private final Node node;
     private final Service service;
     private final int port;
 
@@ -20,7 +20,7 @@ public class Server {
     private TServerTransport transport;
     private TServer server;
 
-    public Server(Node2 node, Service service, int port) {
+    public Server(Node node, Service service, int port) {
         this.node = node;
         this.service = service;
         this.port = port;

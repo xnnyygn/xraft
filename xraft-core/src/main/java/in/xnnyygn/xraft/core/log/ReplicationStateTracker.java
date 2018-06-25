@@ -17,8 +17,11 @@ public class ReplicationStateTracker {
     }
 
     public ReplicationState get(NodeId id) {
-        // TODO check if exists
-        return this.replicationStateMap.get(id);
+        ReplicationState state = this.replicationStateMap.get(id);
+        if (state == null) {
+            throw new IllegalStateException("replication state of node " + id + " not found");
+        }
+        return state;
     }
 
     public int getMajorMatchIndex() {

@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.kvstore;
 
 import in.xnnyygn.xraft.core.log.CommandApplyListener;
-import in.xnnyygn.xraft.core.node.Node2;
+import in.xnnyygn.xraft.core.node.Node;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.nodestate.NodeRole;
 import in.xnnyygn.xraft.core.nodestate.NodeStateSnapshot;
@@ -12,10 +12,10 @@ import java.util.concurrent.CountDownLatch;
 
 public class ServiceAdapter implements KVStore.Iface, CommandApplyListener {
 
-    private final Node2 node;
+    private final Node node;
     private final Service service;
 
-    public ServiceAdapter(Node2 node, Service service) {
+    ServiceAdapter(Node node, Service service) {
         this.node = node;
         this.service = service;
         this.node.setCommandApplyListener(this);
@@ -25,9 +25,7 @@ public class ServiceAdapter implements KVStore.Iface, CommandApplyListener {
     public void Set(String key, String value) throws TException {
         checkLeadership();
         CountDownLatch latch = new CountDownLatch(1);
-        this.node.appendLog(new SetCommand(key, value).toBytes(), (commandBytes) -> {
-            latch.countDown();
-        });
+        this.node.appendLog(new SetCommand(key, value).toBytes(), (commandBytes) -> latch.countDown());
         try {
             latch.await();
         } catch (InterruptedException ignored) {
