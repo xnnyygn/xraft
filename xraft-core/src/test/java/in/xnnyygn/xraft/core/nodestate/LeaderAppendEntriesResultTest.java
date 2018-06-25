@@ -1,6 +1,5 @@
 package in.xnnyygn.xraft.core.nodestate;
 
-import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.log.ReplicationState;
@@ -28,7 +27,7 @@ public class LeaderAppendEntriesResultTest {
     public void setUp() throws Exception {
         this.nodeId = new NodeId("F1");
 
-        this.log = new MemoryLog(new EventBus());
+        this.log = new MemoryLog();
         this.mockConnector = new MockConnector();
 
         this.mockNodeStateContext = new MockNodeStateContext();

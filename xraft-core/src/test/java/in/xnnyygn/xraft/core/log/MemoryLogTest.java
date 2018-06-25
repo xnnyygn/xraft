@@ -1,6 +1,5 @@
 package in.xnnyygn.xraft.core.log;
 
-import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
 import org.junit.Assert;
@@ -9,15 +8,14 @@ import org.junit.Test;
 
 public class MemoryLogTest {
 
-    private ApplyEntryRecorder applyEntryRecorder;
+    private EntryApplyRecorder entryApplyRecorder;
     private MemoryLog log;
 
     @Before
     public void setUp() throws Exception {
-        EventBus eventBus = new EventBus();
-        applyEntryRecorder = new ApplyEntryRecorder();
-        eventBus.register(applyEntryRecorder);
-        log = new MemoryLog(eventBus);
+        entryApplyRecorder = new EntryApplyRecorder();
+        log = new MemoryLog();
+        log.setEntryApplier(entryApplyRecorder);
     }
 
     @Test

@@ -1,8 +1,7 @@
 package in.xnnyygn.xraft.core.node;
 
-import in.xnnyygn.xraft.core.log.CommandApplyAdapter;
-import in.xnnyygn.xraft.core.log.CommandApplyListener;
-import in.xnnyygn.xraft.core.log.EntryAppliedListener;
+import in.xnnyygn.xraft.core.log.EntryApplierAdapter;
+import in.xnnyygn.xraft.core.log.CommandApplier;
 import in.xnnyygn.xraft.core.nodestate.NodeRole;
 import in.xnnyygn.xraft.core.nodestate.NodeStateMachine;
 import in.xnnyygn.xraft.core.nodestate.NodeStateSnapshot;
@@ -16,7 +15,6 @@ public class Node extends AbstractNode {
     private final NodeContext context;
     private final NodeStateMachine stateMachine;
     private final Channel channel;
-    private CommandApplyAdapter commandApplyAdapter;
 
     public Node(NodeContext context, NodeStateMachine stateMachine, Channel channel) {
         super(context.getSelfNodeId());
@@ -38,15 +36,14 @@ public class Node extends AbstractNode {
         return this.stateMachine.getNodeState();
     }
 
-    public void appendLog(byte[] command, EntryAppliedListener listener) {
-        assert this.stateMachine.getNodeState().getRole() == NodeRole.LEADER;
-
-        this.stateMachine.appendLog(command, listener);
+    public void setCommandApplier(CommandApplier applier) {
+        this.context.getLog().setEntryApplier(new EntryApplierAdapter(applier));
     }
 
-    public void setCommandApplyListener(CommandApplyListener listener) {
-        this.commandApplyAdapter = new CommandApplyAdapter(listener);
-        this.context.register(this.commandApplyAdapter);
+    public void appendLog(byte[] command, CommandApplier applier) {
+        assert this.stateMachine.getNodeState().getRole() == NodeRole.LEADER;
+
+        this.stateMachine.appendLog(command, new EntryApplierAdapter(applier));
     }
 
     public void stop() throws InterruptedException {

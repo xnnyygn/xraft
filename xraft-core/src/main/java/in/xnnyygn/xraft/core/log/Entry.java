@@ -1,24 +1,21 @@
 package in.xnnyygn.xraft.core.log;
 
-import java.util.Collections;
-import java.util.List;
-
 public class Entry {
 
     private final int index;
     private final int term;
     private final byte[] command;
-    private List<EntryAppliedListener> entryAppliedListeners;
+    private EntryApplier applier;
 
     public Entry(int index, int term, byte[] command) {
         this(index, term, command, null);
     }
 
-    public Entry(int index, int term, byte[] command, EntryAppliedListener listener) {
+    public Entry(int index, int term, byte[] command, EntryApplier applier) {
         this.index = index;
         this.term = term;
         this.command = command;
-        this.entryAppliedListeners = listener != null ? Collections.singletonList(listener) : Collections.emptyList();
+        this.applier = applier;
     }
 
     public int getIndex() {
@@ -33,10 +30,10 @@ public class Entry {
         return command;
     }
 
-    public void notifyApplied() {
-        for (EntryAppliedListener listener : this.entryAppliedListeners) {
-            listener.entryApplied(this);
-        }
+    public void apply(EntryApplier fallback) {
+        assert fallback != null;
+        EntryApplier applier = (this.applier != null ? this.applier : fallback);
+        applier.applyEntry(this);
     }
 
     public Entry copy() {

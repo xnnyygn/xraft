@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.core.log;
 
-public interface CommandApplyListener {
+public interface CommandApplier {
 
     void applyCommand(int index, byte[] command);
 

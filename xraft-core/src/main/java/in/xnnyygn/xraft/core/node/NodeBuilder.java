@@ -24,7 +24,7 @@ public class NodeBuilder {
 
         NodeContext context = new NodeContext(nodeId, group, new NodeStore());
         context.setEventBus(eventBus);
-        context.setLog(new MemoryLog(eventBus));
+        context.setLog(new MemoryLog());
         context.setScheduler(new Scheduler(nodeId));
         context.setConnector(new DefaultConnector(group, nodeId));
 

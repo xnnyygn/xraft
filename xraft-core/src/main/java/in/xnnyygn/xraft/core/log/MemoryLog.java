@@ -1,6 +1,5 @@
 package in.xnnyygn.xraft.core.log;
 
-import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
 import org.slf4j.Logger;
@@ -12,15 +11,11 @@ import java.util.stream.Collectors;
 public class MemoryLog implements Log {
 
     private static Logger logger = LoggerFactory.getLogger(MemoryLog.class);
-    private final EventBus eventBus;
 
     private EntrySequence entrySequence = new EntrySequence();
+    private EntryApplier entryApplier = new NullEntryApplier();
     private int commitIndex = 0;
     private int lastApplied = 0;
-
-    public MemoryLog(EventBus eventBus) {
-        this.eventBus = eventBus;
-    }
 
     @Override
     public void appendEntry(int term, byte[] command) {
@@ -28,9 +23,9 @@ public class MemoryLog implements Log {
     }
 
     @Override
-    public void appendEntry(int term, byte[] command, EntryAppliedListener listener) {
+    public void appendEntry(int term, byte[] command, EntryApplier applier) {
         logger.info("append entry, term {}", term);
-        this.entrySequence.append(term, command, listener);
+        this.entrySequence.append(term, command, applier);
     }
 
     @Override
@@ -70,8 +65,7 @@ public class MemoryLog implements Log {
 
             logger.debug("apply log from {} to {}", this.lastApplied + 1, this.commitIndex);
             for (Entry entry : this.entrySequence.subList(this.lastApplied + 1, this.commitIndex + 1)) {
-                eventBus.post(new ApplyEntryMessage(entry));
-                entry.notifyApplied();
+                entry.apply(this.entryApplier);
                 this.lastApplied = entry.getIndex();
             }
         }
@@ -88,6 +82,11 @@ public class MemoryLog implements Log {
         if (lastEntry == null) return false;
 
         return lastEntry.getTerm() > lastLogTerm || lastEntry.getIndex() > lastLogIndex;
+    }
+
+    @Override
+    public void setEntryApplier(EntryApplier applier) {
+        this.entryApplier = applier;
     }
 
     private void mergeEntries(int fromIndex, List<Entry> leaderEntries) {

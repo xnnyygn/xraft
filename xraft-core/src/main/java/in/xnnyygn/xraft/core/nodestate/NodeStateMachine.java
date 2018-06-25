@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.core.nodestate;
 
 import com.google.common.eventbus.Subscribe;
-import in.xnnyygn.xraft.core.log.EntryAppliedListener;
+import in.xnnyygn.xraft.core.log.EntryApplier;
 import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.log.ReplicationStateTracker;
 import in.xnnyygn.xraft.core.node.NodeContext;
@@ -37,12 +37,12 @@ public class NodeStateMachine implements NodeStateContext {
         return this.nodeState.takeSnapshot();
     }
 
-    public void appendLog(byte[] command, EntryAppliedListener listener) {
+    public void appendLog(byte[] command, EntryApplier applier) {
         if (this.nodeState.getRole() != NodeRole.LEADER) {
             throw new IllegalStateException("only leader can append log");
         }
 
-        this.nodeContext.getLog().appendEntry(this.nodeState.getTerm(), command, listener);
+        this.nodeContext.getLog().appendEntry(this.nodeState.getTerm(), command, applier);
         this.nodeState.replicateLog(this);
     }
 

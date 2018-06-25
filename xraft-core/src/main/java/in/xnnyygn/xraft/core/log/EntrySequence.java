@@ -18,8 +18,8 @@ public class EntrySequence {
         this.nextLogIndex = logIndexOffset;
     }
 
-    public void append(int term, byte[] command, EntryAppliedListener listener) {
-        this.entries.add(new Entry(this.nextLogIndex++, term, command, listener));
+    public void append(int term, byte[] command, EntryApplier applier) {
+        this.entries.add(new Entry(this.nextLogIndex++, term, command, applier));
     }
 
     public void appendEntries(List<Entry> entries) {

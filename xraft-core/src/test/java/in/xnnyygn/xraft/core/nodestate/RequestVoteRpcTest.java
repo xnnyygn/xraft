@@ -1,6 +1,5 @@
 package in.xnnyygn.xraft.core.nodestate;
 
-import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.node.NodeId;
@@ -18,8 +17,8 @@ public class RequestVoteRpcTest {
     private MockNodeStateContext mockNodeStateContext;
 
     @Before
-    public void setUp() throws Exception {
-        this.log = new MemoryLog(new EventBus());
+    public void setUp() {
+        this.log = new MemoryLog();
         this.mockConnector = new MockConnector();
 
         this.mockNodeStateContext = new MockNodeStateContext();

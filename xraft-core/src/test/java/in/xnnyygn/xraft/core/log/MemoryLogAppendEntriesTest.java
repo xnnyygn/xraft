@@ -1,6 +1,5 @@
 package in.xnnyygn.xraft.core.log;
 
-import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,15 +9,14 @@ import java.util.Arrays;
 
 public class MemoryLogAppendEntriesTest {
 
-    private ApplyEntryRecorder applyEntryRecorder;
+    private EntryApplyRecorder entryApplyRecorder;
     private MemoryLog log;
 
     @Before
-    public void setUp() throws Exception {
-        EventBus eventBus = new EventBus();
-        applyEntryRecorder = new ApplyEntryRecorder();
-        eventBus.register(applyEntryRecorder);
-        log = new MemoryLog(eventBus);
+    public void setUp() {
+        this.entryApplyRecorder = new EntryApplyRecorder();
+        log = new MemoryLog();
+        log.setEntryApplier(this.entryApplyRecorder);
     }
 
     @Test
@@ -135,7 +133,7 @@ public class MemoryLogAppendEntriesTest {
         Assert.assertTrue(log.appendEntries(rpc));
 
         // 1, 2
-        Assert.assertEquals(2, applyEntryRecorder.getMessages().size());
+        Assert.assertEquals(2, entryApplyRecorder.getEntries().size());
     }
 
     @Test
@@ -153,7 +151,7 @@ public class MemoryLogAppendEntriesTest {
         Assert.assertTrue(log.appendEntries(rpc));
 
         // 1, 2, 3
-        Assert.assertEquals(3, applyEntryRecorder.getMessages().size());
+        Assert.assertEquals(3, entryApplyRecorder.getEntries().size());
     }
 
 }

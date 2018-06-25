@@ -7,7 +7,7 @@ public interface Log {
 
     void appendEntry(int term, byte[] command);
 
-    void appendEntry(int term, byte[] command, EntryAppliedListener listener);
+    void appendEntry(int term, byte[] command, EntryApplier applier);
 
     boolean appendEntries(AppendEntriesRpc rpc);
 
@@ -18,5 +18,7 @@ public interface Log {
     int getLastLogIndex();
 
     boolean isNewerThan(int lastLogIndex, int lastLogTerm);
+
+    void setEntryApplier(EntryApplier callback);
 
 }
