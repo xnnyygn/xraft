@@ -48,6 +48,12 @@
                 <artifactId>guava</artifactId>
                 <version>25.1-jre</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>3.6.0</version>
+            </dependency>
             <dependency>
                 <groupId>org.jmock</groupId>
                 <artifactId>jmock-junit4</artifactId>
