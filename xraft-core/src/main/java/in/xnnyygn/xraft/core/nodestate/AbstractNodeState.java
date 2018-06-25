@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.nodestate;
 
+import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.AppendEntriesResult;
 import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.rpc.RequestVoteResult;
@@ -11,6 +12,8 @@ import org.slf4j.LoggerFactory;
  * Abstract node state.
  */
 public abstract class AbstractNodeState {
+
+    public static final int ALL_ENTRIES = -1;
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractNodeState.class);
     protected final NodeRole role;
@@ -57,9 +60,9 @@ public abstract class AbstractNodeState {
      *
      * @param context context
      */
-    public void onElectionTimeout(NodeStateContext context) {
+    public void electionTimeout(NodeStateContext context) {
         if (this.role == NodeRole.LEADER) {
-            logger.warn("Node {}, current role is LEADER, ignore", context.getSelfNodeId());
+            logger.warn("Node {}, current role is LEADER, ignore election timeout", context.getSelfNodeId());
             return;
         }
 
@@ -69,22 +72,22 @@ public abstract class AbstractNodeState {
 
         // reset election timeout
         this.cancelTimeoutOrTask();
-        context.setNodeState(new CandidateNodeState(newTerm, context.scheduleElectionTimeout()));
+        context.changeToNodeState(new CandidateNodeState(newTerm, context.scheduleElectionTimeout()));
 
         // rpc
         RequestVoteRpc rpc = new RequestVoteRpc();
         rpc.setTerm(newTerm);
         rpc.setCandidateId(context.getSelfNodeId());
-        context.getRpcConnector().sendRpc(rpc);
+        context.getConnector().sendRpc(rpc);
     }
 
-    /**
-     * Called when receive request vote result.
-     *
-     * @param context context
-     * @param result  result
-     */
-    public abstract void onReceiveRequestVoteResult(NodeStateContext context, RequestVoteResult result);
+    public void replicateLog(NodeStateContext context) {
+        this.replicateLog(context, ALL_ENTRIES);
+    }
+
+    public void replicateLog(NodeStateContext context, int maxEntries) {
+        // do nothing
+    }
 
     /**
      * Called when receive request vote rpc.
@@ -95,22 +98,18 @@ public abstract class AbstractNodeState {
     public void onReceiveRequestVoteRpc(NodeStateContext context, RequestVoteRpc rpc) {
         RequestVoteResult result;
 
-        if (rpc.getTerm() < this.term) {
-
-            // peer's term is old
-            result = new RequestVoteResult(this.term, false);
+        if (rpc.getTerm() > this.term) {
+            boolean voteForCandidate = !context.getLog().isNewerThan(rpc.getLastLogIndex(), rpc.getLastLogTerm());
+            this.cancelTimeoutOrTask();
+            context.changeToNodeState(new FollowerNodeState(rpc.getTerm(), (voteForCandidate ? rpc.getCandidateId() : null), null, context.scheduleElectionTimeout()));
+            result = new RequestVoteResult(rpc.getTerm(), voteForCandidate);
         } else if (rpc.getTerm() == this.term) {
             result = processRequestVoteRpc(context, rpc);
         } else {
-
-            // peer's term > current term
-            logger.debug("Node {}, update to peer {}'s term {} and vote for it", context.getSelfNodeId(), rpc.getCandidateId(), rpc.getTerm());
-            this.cancelTimeoutOrTask();
-            context.setNodeState(new FollowerNodeState(rpc.getTerm(), rpc.getCandidateId(), null, context.scheduleElectionTimeout()));
-            result = new RequestVoteResult(rpc.getTerm(), true);
+            result = new RequestVoteResult(this.term, false);
         }
 
-        context.getRpcConnector().sendResult(result, rpc.getCandidateId());
+        context.getConnector().sendResult(result, rpc.getCandidateId());
     }
 
     /**
@@ -123,6 +122,25 @@ public abstract class AbstractNodeState {
     protected abstract RequestVoteResult processRequestVoteRpc(NodeStateContext context, RequestVoteRpc rpc);
 
     /**
+     * Called when receive request vote result.
+     *
+     * @param context context
+     * @param result  result
+     */
+    public void onReceiveRequestVoteResult(NodeStateContext context, RequestVoteResult result) {
+        if (result.getTerm() > this.term) {
+            this.cancelTimeoutOrTask();
+            context.changeToNodeState(new FollowerNodeState(result.getTerm(), null, null, context.scheduleElectionTimeout()));
+            return;
+        }
+
+        processRequestVoteResult(context, result);
+    }
+
+    protected void processRequestVoteResult(NodeStateContext context, RequestVoteResult result) {
+    }
+
+    /**
      * Called when receive append entries rpc.
      *
      * @param context context
@@ -131,21 +149,17 @@ public abstract class AbstractNodeState {
     public void onReceiveAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
         AppendEntriesResult result;
 
-        if (rpc.getTerm() < this.term) {
-
-            // peer's term is old
-            result = new AppendEntriesResult(this.term, false);
+        if (rpc.getTerm() > this.term) {
+            this.cancelTimeoutOrTask();
+            context.changeToNodeState(new FollowerNodeState(rpc.getTerm(), null, rpc.getLeaderId(), context.scheduleElectionTimeout()));
+            result = new AppendEntriesResult(rpc.getTerm(), true);
         } else if (rpc.getTerm() == this.term) {
             result = processAppendEntriesRpc(context, rpc);
         } else {
-
-            // leader's term > current term
-            this.cancelTimeoutOrTask();
-            context.setNodeState(new FollowerNodeState(rpc.getTerm(), null, rpc.getLeaderId(), context.scheduleElectionTimeout()));
-            result = new AppendEntriesResult(rpc.getTerm(), true);
+            result = new AppendEntriesResult(this.term, false);
         }
 
-        context.getRpcConnector().sendResult(result, rpc.getLeaderId());
+        context.getConnector().sendAppendEntriesResult(result, rpc.getLeaderId(), rpc);
     }
 
     /**
@@ -156,5 +170,19 @@ public abstract class AbstractNodeState {
      * @return append entries result
      */
     protected abstract AppendEntriesResult processAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc);
+
+    public void onReceiveAppendEntriesResult(NodeStateContext context, AppendEntriesResult result, NodeId sourceNodeId, AppendEntriesRpc rpc) {
+        if (result.getTerm() > this.term) {
+            this.cancelTimeoutOrTask();
+            context.changeToNodeState(new FollowerNodeState(result.getTerm(), null, null, context.scheduleElectionTimeout()));
+            return;
+        }
+
+        processAppendEntriesResult(context, result, sourceNodeId, rpc);
+    }
+
+    protected void processAppendEntriesResult(NodeStateContext context, AppendEntriesResult result, NodeId sourceNodeId, AppendEntriesRpc rpc) {
+    }
+
 
 }

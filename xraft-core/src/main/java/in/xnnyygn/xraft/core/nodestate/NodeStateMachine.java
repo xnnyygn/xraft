@@ -1,9 +1,8 @@
 package in.xnnyygn.xraft.core.nodestate;
 
-import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
-import in.xnnyygn.xraft.core.rpc.RequestVoteResult;
-import in.xnnyygn.xraft.core.rpc.RequestVoteRpc;
-import in.xnnyygn.xraft.core.rpc.Connector;
+import in.xnnyygn.xraft.core.log.Log;
+import in.xnnyygn.xraft.core.log.ReplicationStateTracker;
+import in.xnnyygn.xraft.core.rpc.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
 import in.xnnyygn.xraft.core.schedule.Scheduler;
@@ -60,7 +59,7 @@ public class NodeStateMachine implements NodeStateContext {
 
     private synchronized void onElectionTimeout() {
         logger.debug("Node {}, election timeout", this.selfNodeId);
-        this.nodeState.onElectionTimeout(this);
+        this.nodeState.electionTimeout(this);
     }
 
     private synchronized void replicateLog() {
@@ -92,18 +91,26 @@ public class NodeStateMachine implements NodeStateContext {
     }
 
     @Override
-    public void setNodeState(AbstractNodeState nodeState) {
-        logger.debug("Node {}, state changed {} -> {}", this.selfNodeId, this.nodeState, nodeState);
+    public ReplicationStateTracker createReplicationStateTracker() {
+//        Set<NodeId> nodeIds = this.nodeGroup.getNodeIds();
+//        nodeIds.remove(this.selfNodeId);
+//        return new ReplicationStateTracker(nodeIds, this.nodeContext);
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void changeToNodeState(AbstractNodeState newNodeState) {
+        logger.debug("Node {}, state changed {} -> {}", this.selfNodeId, this.nodeState, newNodeState);
 
         // notify listener if not stable
-        if (!isStableBetween(this.nodeState, nodeState)) {
-            NodeStateSnapshot snapshot = nodeState.takeSnapshot();
+        if (!isStableBetween(this.nodeState, newNodeState)) {
+            NodeStateSnapshot snapshot = newNodeState.takeSnapshot();
             this.nodeStateListeners.forEach((l) -> {
                 l.nodeStateChanged(snapshot);
             });
         }
 
-        this.nodeState = nodeState;
+        this.nodeState = newNodeState;
     }
 
     private boolean isStableBetween(AbstractNodeState before, AbstractNodeState after) {
@@ -118,11 +125,6 @@ public class NodeStateMachine implements NodeStateContext {
     }
 
     @Override
-    public Connector getRpcConnector() {
-        return this.rpcConnector;
-    }
-
-    @Override
     public ElectionTimeout scheduleElectionTimeout() {
         return this.scheduler.scheduleElectionTimeout(this::onElectionTimeout);
     }
@@ -133,6 +135,16 @@ public class NodeStateMachine implements NodeStateContext {
 
     public void addNodeStateListener(NodeStateListener listener) {
         this.nodeStateListeners.add(listener);
+    }
+
+    @Override
+    public Log getLog() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Connector getConnector() {
+        return null;
     }
 
 }

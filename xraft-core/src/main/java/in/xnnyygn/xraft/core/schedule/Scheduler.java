@@ -14,6 +14,7 @@ public class Scheduler {
     private final ScheduledExecutorService scheduledExecutor;
     private final NodeId selfNodeId;
 
+    // TODO remove node id from constructor
     public Scheduler(NodeId selfNodeId) {
         this.electionTimeoutRandom = new Random();
         this.selfNodeId = selfNodeId;
@@ -25,14 +26,14 @@ public class Scheduler {
         logger.debug("Node {}, schedule log replication task", this.selfNodeId);
         ScheduledFuture<?> scheduledFuture = this.scheduledExecutor.scheduleWithFixedDelay(
                 task, 0, 1000, TimeUnit.MILLISECONDS);
-        return new LogReplicationTask(scheduledFuture, this.selfNodeId);
+        return new LogReplicationTask(scheduledFuture);
     }
 
     public ElectionTimeout scheduleElectionTimeout(Runnable task) {
         logger.debug("Node {}, schedule election timeout", this.selfNodeId);
         int timeout = electionTimeoutRandom.nextInt(2000) + 3000;
         ScheduledFuture<?> scheduledFuture = scheduledExecutor.schedule(task, timeout, TimeUnit.MILLISECONDS);
-        return new ElectionTimeout(scheduledFuture, () -> scheduleElectionTimeout(task), this.selfNodeId);
+        return new ElectionTimeout(scheduledFuture, () -> scheduleElectionTimeout(task));
     }
 
     public void stop() throws InterruptedException {

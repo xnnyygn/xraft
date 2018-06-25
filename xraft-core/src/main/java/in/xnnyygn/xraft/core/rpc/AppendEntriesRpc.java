@@ -1,13 +1,20 @@
 package in.xnnyygn.xraft.core.rpc;
 
+import in.xnnyygn.xraft.core.log.Entry;
 import in.xnnyygn.xraft.core.node.NodeId;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 public class AppendEntriesRpc implements Serializable {
 
     private int term;
     private NodeId leaderId;
+    private int prevLogIndex = 0;
+    private int prevLogTerm;
+    private List<Entry> entries = Collections.emptyList();
+    private int leaderCommit;
 
     public int getTerm() {
         return term;
@@ -25,12 +32,55 @@ public class AppendEntriesRpc implements Serializable {
         this.leaderId = leaderId;
     }
 
+    public int getPrevLogIndex() {
+        return prevLogIndex;
+    }
+
+    public void setPrevLogIndex(int prevLogIndex) {
+        this.prevLogIndex = prevLogIndex;
+    }
+
+    public int getPrevLogTerm() {
+        return prevLogTerm;
+    }
+
+    public void setPrevLogTerm(int prevLogTerm) {
+        this.prevLogTerm = prevLogTerm;
+    }
+
+    public List<Entry> getEntries() {
+        return entries;
+    }
+
+    public void setEntries(List<Entry> entries) {
+        this.entries = entries;
+    }
+
+    public int getLeaderCommit() {
+        return leaderCommit;
+    }
+
+    public void setLeaderCommit(int leaderCommit) {
+        this.leaderCommit = leaderCommit;
+    }
+
+    public boolean hasEntry() {
+        return !this.entries.isEmpty();
+    }
+
+    public int getLastEntryIndex() {
+        return this.entries.isEmpty() ? this.prevLogIndex : this.entries.get(this.entries.size() - 1).getIndex();
+    }
+
     @Override
     public String toString() {
         return "AppendEntriesRpc{" +
-                "leaderId=" + leaderId +
+                "entries.size=" + entries.size() +
+                ", leaderCommit=" + leaderCommit +
+                ", leaderId=" + leaderId +
+                ", prevLogIndex=" + prevLogIndex +
+                ", prevLogTerm=" + prevLogTerm +
                 ", term=" + term +
                 '}';
     }
-
 }

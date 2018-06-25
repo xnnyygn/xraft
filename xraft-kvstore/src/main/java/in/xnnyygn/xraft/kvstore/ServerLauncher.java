@@ -1,21 +1,18 @@
 package in.xnnyygn.xraft.kvstore;
 
-import in.xnnyygn.xraft.core.node.Node;
-import in.xnnyygn.xraft.core.node.NodeBuilder;
-import in.xnnyygn.xraft.core.node.NodeGroup;
+import in.xnnyygn.xraft.core.node.*;
 
 public class ServerLauncher {
 
     public static void main(String[] args) throws Exception {
         NodeGroup nodeGroup = new NodeGroup();
-        Node nodeA = new NodeBuilder("A", nodeGroup).build();
-        Node nodeB = new NodeBuilder("B", nodeGroup).build();
-        Node nodeC = new NodeBuilder("C", nodeGroup).build();
+        Node2 nodeA = new NodeBuilder2("A", nodeGroup).build();
+        Node2 nodeB = new NodeBuilder2("B", nodeGroup).build();
+        Node2 nodeC = new NodeBuilder2("C", nodeGroup).build();
 
-        Service service = new Service();
-        Server serverA = new Server(nodeA, service, 3333);
-        Server serverB = new Server(nodeB, service, 3334);
-        Server serverC = new Server(nodeC, service, 3335);
+        Server serverA = new Server(nodeA, new Service(), 3333);
+        Server serverB = new Server(nodeB, new Service(), 3334);
+        Server serverC = new Server(nodeC, new Service(), 3335);
         try {
             serverA.start();
             serverB.start();

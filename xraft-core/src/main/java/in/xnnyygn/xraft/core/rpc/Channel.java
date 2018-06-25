@@ -6,6 +6,6 @@ public interface Channel {
 
     void send(Object payload, NodeId senderId);
 
-    void close() throws Exception;
+    void close();
 
 }

@@ -10,6 +10,8 @@ import in.xnnyygn.xraft.core.rpc.RequestVoteRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 public class FollowerNodeState extends AbstractNodeState {
 
     private static final Logger logger = LoggerFactory.getLogger(FollowerNodeState.class);
@@ -54,27 +56,29 @@ public class FollowerNodeState extends AbstractNodeState {
     }
 
     @Override
-    public void onReceiveRequestVoteResult(NodeStateContext context, RequestVoteResult result) {
-        logger.warn("Node {}, current role is FOLLOWER, ignore", context.getSelfNodeId());
-    }
-
-    @Override
     protected RequestVoteResult processRequestVoteRpc(NodeStateContext context, RequestVoteRpc rpc) {
-        if (this.votedFor == null || this.votedFor.equals(rpc.getCandidateId())) {
+        assert rpc.getTerm() == this.term;
+        assert rpc.getCandidateId() != null;
+
+        if ((this.votedFor == null && !context.getLog().isNewerThan(rpc.getLastLogIndex(), rpc.getLastLogTerm())) ||
+                Objects.equals(this.votedFor, rpc.getCandidateId())) {
 
             // vote for candidate
-            context.setNodeState(new FollowerNodeState(this.term, rpc.getCandidateId(), null, electionTimeout.reset()));
-            return new RequestVoteResult(this.term, true);
+            context.changeToNodeState(new FollowerNodeState(rpc.getTerm(), rpc.getCandidateId(), null, electionTimeout.reset()));
+            return new RequestVoteResult(rpc.getTerm(), true);
         }
 
-        // voted for other peer
-        return new RequestVoteResult(this.term, false);
+        // 1. voted for other peer
+        // 2. candidate's log is not up-to-date
+        return new RequestVoteResult(rpc.getTerm(), false);
     }
 
     @Override
     protected AppendEntriesResult processAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
-        context.setNodeState(new FollowerNodeState(this.term, this.votedFor, rpc.getLeaderId(), electionTimeout.reset()));
-        return new AppendEntriesResult(this.term, true);
+        assert rpc.getTerm() == this.term;
+
+        context.changeToNodeState(new FollowerNodeState(this.term, this.votedFor, rpc.getLeaderId(), electionTimeout.reset()));
+        return new AppendEntriesResult(this.term, context.getLog().appendEntries(rpc));
     }
 
     @Override

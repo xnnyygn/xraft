@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.nodestate;
 
+import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.core.rpc.AppendEntriesResult;
 import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
@@ -37,25 +38,23 @@ public class CandidateNodeState extends AbstractNodeState {
     }
 
     @Override
-    public void onReceiveRequestVoteResult(NodeStateContext context, RequestVoteResult result) {
+    protected void processRequestVoteResult(NodeStateContext context, RequestVoteResult result) {
+        assert result.getTerm() <= this.term;
+
         if (result.isVoteGranted()) {
             int votesCount = this.votedCount + 1;
             if (votesCount > (context.getNodeCount() / 2)) {
                 this.electionTimeout.cancel();
-                context.setNodeState(new LeaderNodeState(this.term, context.scheduleLogReplicationTask()));
+                context.changeToNodeState(new LeaderNodeState(this.term, context.scheduleLogReplicationTask(), context.createReplicationStateTracker()));
             } else {
-                context.setNodeState(new CandidateNodeState(this.term, votedCount, electionTimeout.reset()));
+                context.changeToNodeState(new CandidateNodeState(this.term, votedCount, electionTimeout.reset()));
             }
-        } else if (result.getTerm() > this.term) {
-            logger.debug("Node {}, update to peer's term", context.getSelfNodeId(), result.getTerm());
-
-            // current term is old
-            context.setNodeState(new FollowerNodeState(result.getTerm(), null, null, electionTimeout.reset()));
         }
     }
 
     @Override
     protected RequestVoteResult processRequestVoteRpc(NodeStateContext context, RequestVoteRpc rpc) {
+        assert rpc.getTerm() == this.term;
 
         // voted for self
         return new RequestVoteResult(this.term, false);
@@ -63,9 +62,11 @@ public class CandidateNodeState extends AbstractNodeState {
 
     @Override
     protected AppendEntriesResult processAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
+        assert rpc.getTerm() == this.term;
+
         // more than 1 candidate but another node win the election
-        context.setNodeState(new FollowerNodeState(this.term, null, rpc.getLeaderId(), electionTimeout.reset()));
-        return new AppendEntriesResult(this.term, true);
+        context.changeToNodeState(new FollowerNodeState(this.term, null, rpc.getLeaderId(), electionTimeout.reset()));
+        return new AppendEntriesResult(this.term, context.getLog().appendEntries(rpc));
     }
 
     @Override

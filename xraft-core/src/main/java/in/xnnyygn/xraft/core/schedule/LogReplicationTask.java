@@ -1,6 +1,5 @@
 package in.xnnyygn.xraft.core.schedule;
 
-import in.xnnyygn.xraft.core.node.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,15 +10,13 @@ public class LogReplicationTask {
 
     private static final Logger logger = LoggerFactory.getLogger(LogReplicationTask.class);
     private final ScheduledFuture<?> scheduledFuture;
-    private final NodeId selfNodeId;
 
-    public LogReplicationTask(ScheduledFuture<?> scheduledFuture, NodeId selfNodeId) {
+    public LogReplicationTask(ScheduledFuture<?> scheduledFuture) {
         this.scheduledFuture = scheduledFuture;
-        this.selfNodeId = selfNodeId;
     }
 
     public void cancel() {
-        logger.debug("Node {}, cancel log replication task", this.selfNodeId);
+        logger.debug("cancel log replication task");
         this.scheduledFuture.cancel(false);
     }
 

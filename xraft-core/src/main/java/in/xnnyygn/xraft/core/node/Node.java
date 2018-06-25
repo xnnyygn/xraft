@@ -6,6 +6,7 @@ import in.xnnyygn.xraft.core.nodestate.NodeStateSnapshot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO replace with node2
 public class Node extends AbstractNode {
 
     private static final Logger logger = LoggerFactory.getLogger(Node.class);
@@ -27,7 +28,7 @@ public class Node extends AbstractNode {
         return this.nodeStateMachine.takeSnapshot();
     }
 
-    public Channel getRpcChannel() {
+    public Channel getChannel() {
         return this.rpcChannel;
     }
 

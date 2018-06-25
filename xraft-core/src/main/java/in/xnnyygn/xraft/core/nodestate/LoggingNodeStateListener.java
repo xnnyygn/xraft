@@ -10,6 +10,7 @@ public class LoggingNodeStateListener implements NodeStateListener {
 
     private final NodeId selfNodeId;
 
+    // TODO remove self node id
     public LoggingNodeStateListener(NodeId selfNodeId) {
         this.selfNodeId = selfNodeId;
     }

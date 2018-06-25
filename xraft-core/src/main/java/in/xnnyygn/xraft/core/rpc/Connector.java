@@ -1,30 +1,17 @@
 package in.xnnyygn.xraft.core.rpc;
 
-import in.xnnyygn.xraft.core.node.AbstractNode;
-import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
 
-public class Connector {
+public interface Connector {
 
-    private final NodeGroup nodeGroup;
-    private final NodeId selfNodeId;
+    void sendRpc(Object rpc);
 
-    public Connector(NodeGroup nodeGroup, NodeId selfNodeId) {
-        this.nodeGroup = nodeGroup;
-        this.selfNodeId = selfNodeId;
-    }
+    void sendRpc(Object rpc, NodeId destinationNodeId);
 
-    public void sendRpc(Object rpc) {
-        for (AbstractNode node : nodeGroup) {
-            if (node.getId() != this.selfNodeId) {
-                node.getRpcChannel().send(rpc, this.selfNodeId);
-            }
-        }
-    }
+    void sendResult(Object result, NodeId destinationNodeId);
 
-    public void sendResult(Object result, NodeId destination) {
-        AbstractNode node = this.nodeGroup.find(destination);
-        node.getRpcChannel().send(result, this.selfNodeId);
-    }
+    void sendAppendEntriesResult(AppendEntriesResult result, NodeId destinationNodeId, AppendEntriesRpc rpc);
+
+    void release();
 
 }

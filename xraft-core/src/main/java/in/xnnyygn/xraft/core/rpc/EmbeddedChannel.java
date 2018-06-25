@@ -13,12 +13,10 @@ public class EmbeddedChannel implements Channel {
 
     private static final Logger logger = LoggerFactory.getLogger(EmbeddedChannel.class);
     private final ExecutorService executorService;
-    private final NodeId selfNodeId;
     private final NodeStateMachine nodeStateMachine;
 
     public EmbeddedChannel(NodeId selfNodeId, NodeStateMachine nodeStateMachine) {
         this.executorService = Executors.newSingleThreadExecutor(r -> new Thread(r, "embedded-channel-" + selfNodeId));
-        this.selfNodeId = selfNodeId;
         this.nodeStateMachine = nodeStateMachine;
     }
 
@@ -37,10 +35,14 @@ public class EmbeddedChannel implements Channel {
         }
     }
 
-    public void close() throws InterruptedException {
-        logger.debug("Node {}, stop embedded channel", this.selfNodeId);
+    public void close() {
+        logger.debug("stop embedded channel");
         this.executorService.shutdown();
-        this.executorService.awaitTermination(1, TimeUnit.SECONDS);
+        try {
+            this.executorService.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new ChannelException("failed to stop channel", e);
+        }
     }
 
 }

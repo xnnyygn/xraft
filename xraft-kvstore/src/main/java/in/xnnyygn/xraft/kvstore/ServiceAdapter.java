@@ -1,25 +1,37 @@
 package in.xnnyygn.xraft.kvstore;
 
-import in.xnnyygn.xraft.core.node.Node;
+import in.xnnyygn.xraft.core.log.CommandApplyListener;
+import in.xnnyygn.xraft.core.node.Node2;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.nodestate.NodeRole;
 import in.xnnyygn.xraft.core.nodestate.NodeStateSnapshot;
+import in.xnnyygn.xraft.kvstore.command.SetCommand;
 import org.apache.thrift.TException;
 
-public class ServiceAdapter implements KVStore.Iface {
+import java.util.concurrent.CountDownLatch;
 
-    private final Node node;
+public class ServiceAdapter implements KVStore.Iface, CommandApplyListener {
+
+    private final Node2 node;
     private final Service service;
 
-    public ServiceAdapter(Node node, Service service) {
+    public ServiceAdapter(Node2 node, Service service) {
         this.node = node;
         this.service = service;
+        this.node.setCommandApplyListener(this);
     }
 
     @Override
     public void Set(String key, String value) throws TException {
         checkLeadership();
-        this.service.set(key, value);
+        CountDownLatch latch = new CountDownLatch(1);
+        this.node.appendLog(new SetCommand(key, value).toBytes(), (commandBytes) -> {
+            latch.countDown();
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException ignored) {
+        }
     }
 
     @Override
@@ -31,6 +43,12 @@ public class ServiceAdapter implements KVStore.Iface {
         result.setFound(value != null);
         result.setValue(value);
         return result;
+    }
+
+    @Override
+    public void applyCommand(int index, byte[] commandBytes) {
+        SetCommand command = SetCommand.fromBytes(commandBytes);
+        this.service.set(command.getKey(), command.getValue());
     }
 
     private void checkLeadership() throws Redirect {

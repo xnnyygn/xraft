@@ -3,6 +3,7 @@ package in.xnnyygn.xraft.core.node;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class NodeGroup implements Iterable<AbstractNode> {
 
@@ -43,6 +44,10 @@ public class NodeGroup implements Iterable<AbstractNode> {
 
     public AbstractNode find(NodeId nodeId) {
         return this.nodeMap.get(nodeId);
+    }
+
+    public Set<NodeId> getNodeIds() {
+        return this.nodeMap.keySet();
     }
 
 }

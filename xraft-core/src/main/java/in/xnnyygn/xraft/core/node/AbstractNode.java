@@ -14,6 +14,6 @@ public abstract class AbstractNode {
         return id;
     }
 
-    public abstract Channel getRpcChannel();
+    public abstract Channel getChannel();
 
 }

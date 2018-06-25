@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.kvstore.command;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 
 public class GetCommand implements Serializable {

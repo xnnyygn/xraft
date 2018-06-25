@@ -1,5 +1,7 @@
 package in.xnnyygn.xraft.core.nodestate;
 
+import in.xnnyygn.xraft.core.log.Log;
+import in.xnnyygn.xraft.core.log.ReplicationStateTracker;
 import in.xnnyygn.xraft.core.rpc.Connector;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeoutScheduler;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
@@ -11,10 +13,14 @@ public interface NodeStateContext extends ElectionTimeoutScheduler {
 
     int getNodeCount();
 
-    void setNodeState(AbstractNodeState nodeState);
+    ReplicationStateTracker createReplicationStateTracker();
+
+    void changeToNodeState(AbstractNodeState newNodeState);
 
     LogReplicationTask scheduleLogReplicationTask();
 
-    Connector getRpcConnector();
+    Log getLog();
+
+    Connector getConnector();
 
 }
