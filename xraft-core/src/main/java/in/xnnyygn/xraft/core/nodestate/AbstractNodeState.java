@@ -1,10 +1,7 @@
 package in.xnnyygn.xraft.core.nodestate;
 
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesResult;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
-import in.xnnyygn.xraft.core.rpc.RequestVoteResult;
-import in.xnnyygn.xraft.core.rpc.RequestVoteRpc;
+import in.xnnyygn.xraft.core.rpc.message.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,10 +72,8 @@ public abstract class AbstractNodeState {
         context.changeToNodeState(new CandidateNodeState(newTerm, context.scheduleElectionTimeout()));
 
         // rpc
-        RequestVoteRpc rpc = new RequestVoteRpc();
-        rpc.setTerm(newTerm);
-        rpc.setCandidateId(context.getSelfNodeId());
-        context.getConnector().sendRpc(rpc);
+        RequestVoteRpc rpc = context.getLog().createRequestVoteRpc(newTerm, context.getSelfNodeId());
+        context.getConnector().sendRequestVote(rpc);
     }
 
     public void replicateLog(NodeStateContext context) {
@@ -92,10 +87,11 @@ public abstract class AbstractNodeState {
     /**
      * Called when receive request vote rpc.
      *
-     * @param context context
-     * @param rpc     rpc
+     * @param context    context
+     * @param rpcMessage rpc message
      */
-    public void onReceiveRequestVoteRpc(NodeStateContext context, RequestVoteRpc rpc) {
+    public void onReceiveRequestVoteRpc(NodeStateContext context, RequestVoteRpcMessage rpcMessage) {
+        RequestVoteRpc rpc = rpcMessage.get();
         RequestVoteResult result;
 
         if (rpc.getTerm() > this.term) {
@@ -109,7 +105,7 @@ public abstract class AbstractNodeState {
             result = new RequestVoteResult(this.term, false);
         }
 
-        context.getConnector().sendResult(result, rpc.getCandidateId());
+        context.getConnector().replyRequestVote(result, rpcMessage);
     }
 
     /**
@@ -143,10 +139,11 @@ public abstract class AbstractNodeState {
     /**
      * Called when receive append entries rpc.
      *
-     * @param context context
-     * @param rpc     rpc
+     * @param context    context
+     * @param rpcMessage rpc message
      */
-    public void onReceiveAppendEntriesRpc(NodeStateContext context, AppendEntriesRpc rpc) {
+    public void onReceiveAppendEntriesRpc(NodeStateContext context, AppendEntriesRpcMessage rpcMessage) {
+        AppendEntriesRpc rpc = rpcMessage.get();
         AppendEntriesResult result;
 
         if (rpc.getTerm() > this.term) {
@@ -159,7 +156,7 @@ public abstract class AbstractNodeState {
             result = new AppendEntriesResult(this.term, false);
         }
 
-        context.getConnector().sendAppendEntriesResult(result, rpc.getLeaderId(), rpc);
+        context.getConnector().replyAppendEntries(result, rpcMessage);
     }
 
     /**

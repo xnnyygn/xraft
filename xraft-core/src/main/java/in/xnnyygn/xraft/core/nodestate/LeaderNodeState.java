@@ -3,10 +3,10 @@ package in.xnnyygn.xraft.core.nodestate;
 import in.xnnyygn.xraft.core.log.ReplicationState;
 import in.xnnyygn.xraft.core.log.ReplicationStateTracker;
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesResult;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
-import in.xnnyygn.xraft.core.rpc.RequestVoteResult;
-import in.xnnyygn.xraft.core.rpc.RequestVoteRpc;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class LeaderNodeState extends AbstractNodeState {
     private void doReplicateLog(NodeStateContext context, NodeId nodeId, int maxEntries) {
         ReplicationState replicationState = this.replicationStateTracker.get(nodeId);
         AppendEntriesRpc rpc = context.getLog().createAppendEntriesRpc(this.term, context.getSelfNodeId(), replicationState.getNextIndex(), maxEntries);
-        context.getConnector().sendRpc(rpc, nodeId);
+        context.getConnector().sendAppendEntries(rpc, nodeId);
     }
 
     @Override

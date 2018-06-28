@@ -1,16 +1,21 @@
 package in.xnnyygn.xraft.core.rpc;
 
 import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.rpc.message.*;
 
 public interface Connector {
 
-    void sendRpc(Object rpc);
+    void initialize();
 
-    void sendRpc(Object rpc, NodeId destinationNodeId);
+    void sendRequestVote(RequestVoteRpc rpc);
 
-    void sendResult(Object result, NodeId destinationNodeId);
+    void replyRequestVote(RequestVoteResult result, RequestVoteRpcMessage rpcMessage);
 
-    void sendAppendEntriesResult(AppendEntriesResult result, NodeId destinationNodeId, AppendEntriesRpc rpc);
+    void sendAppendEntries(AppendEntriesRpc rpc, NodeId destinationNodeId);
+
+    void replyAppendEntries(AppendEntriesResult result, AppendEntriesRpcMessage rpcMessage);
+
+    void resetChannels();
 
     void release();
 

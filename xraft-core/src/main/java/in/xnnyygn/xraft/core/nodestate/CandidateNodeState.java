@@ -1,11 +1,10 @@
 package in.xnnyygn.xraft.core.nodestate;
 
-import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesResult;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
-import in.xnnyygn.xraft.core.rpc.RequestVoteResult;
-import in.xnnyygn.xraft.core.rpc.RequestVoteRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +45,7 @@ public class CandidateNodeState extends AbstractNodeState {
             if (votesCount > (context.getNodeCount() / 2)) {
                 this.electionTimeout.cancel();
                 context.changeToNodeState(new LeaderNodeState(this.term, context.scheduleLogReplicationTask(), context.createReplicationStateTracker()));
+                context.getConnector().resetChannels();
             } else {
                 context.changeToNodeState(new CandidateNodeState(this.term, votedCount, electionTimeout.reset()));
             }

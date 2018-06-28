@@ -1,7 +1,8 @@
 package in.xnnyygn.xraft.core.log;
 
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,19 @@ public class MemoryLog implements Log {
         mergeEntries(rpc.getPrevLogIndex() + 1, rpc.getEntries());
         this.advanceCommitIndexIfAvailable(Math.min(rpc.getLeaderCommit(), rpc.getLastEntryIndex()));
         return true;
+    }
+
+    @Override
+    public RequestVoteRpc createRequestVoteRpc(int term, NodeId selfNodeId) {
+        RequestVoteRpc rpc = new RequestVoteRpc();
+        rpc.setTerm(term);
+        rpc.setCandidateId(selfNodeId);
+        Entry lastEntry = this.entrySequence.getLastEntry();
+        if (lastEntry != null) {
+            rpc.setLastLogIndex(lastEntry.getIndex());
+            rpc.setLastLogTerm(lastEntry.getTerm());
+        }
+        return rpc;
     }
 
     @Override
@@ -79,8 +93,12 @@ public class MemoryLog implements Log {
     @Override
     public boolean isNewerThan(int lastLogIndex, int lastLogTerm) {
         Entry lastEntry = this.entrySequence.getLastEntry();
-        if (lastEntry == null) return false;
+        if (lastEntry == null) {
+            logger.debug("no last entry");
+            return false;
+        }
 
+        logger.debug("last entry ({}, {}), candidate ({}, {})", lastEntry.getIndex(), lastEntry.getTerm(), lastLogIndex, lastLogTerm);
         return lastEntry.getTerm() > lastLogTerm || lastEntry.getIndex() > lastLogIndex;
     }
 

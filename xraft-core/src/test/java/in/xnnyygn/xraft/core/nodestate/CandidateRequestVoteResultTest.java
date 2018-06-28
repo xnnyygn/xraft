@@ -1,6 +1,7 @@
 package in.xnnyygn.xraft.core.nodestate;
 
-import in.xnnyygn.xraft.core.rpc.RequestVoteResult;
+import in.xnnyygn.xraft.core.rpc.MockConnector;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +13,7 @@ public class CandidateRequestVoteResultTest {
     @Before
     public void setUp() throws Exception {
         this.mockNodeStateContext = new MockNodeStateContext();
+        this.mockNodeStateContext.setConnector(new MockConnector());
     }
 
     @Test

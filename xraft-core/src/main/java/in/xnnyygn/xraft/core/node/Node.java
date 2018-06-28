@@ -1,11 +1,11 @@
 package in.xnnyygn.xraft.core.node;
 
-import in.xnnyygn.xraft.core.log.EntryApplierAdapter;
 import in.xnnyygn.xraft.core.log.CommandApplier;
+import in.xnnyygn.xraft.core.log.EntryApplierAdapter;
 import in.xnnyygn.xraft.core.nodestate.NodeRole;
 import in.xnnyygn.xraft.core.nodestate.NodeStateMachine;
 import in.xnnyygn.xraft.core.nodestate.NodeStateSnapshot;
-import in.xnnyygn.xraft.core.rpc.Channel;
+import in.xnnyygn.xraft.core.rpc.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,22 +14,17 @@ public class Node extends AbstractNode {
     private static final Logger logger = LoggerFactory.getLogger(Node.class);
     private final NodeContext context;
     private final NodeStateMachine stateMachine;
-    private final Channel channel;
 
-    public Node(NodeContext context, NodeStateMachine stateMachine, Channel channel) {
-        super(context.getSelfNodeId());
+    public Node(NodeContext context, NodeStateMachine stateMachine, Endpoint endpoint) {
+        super(context.getSelfNodeId(), endpoint);
         this.context = context;
         this.stateMachine = stateMachine;
-        this.channel = channel;
     }
 
     public void start() {
         logger.info("Node {}, start", this.getId());
+        this.context.initialize();
         this.stateMachine.start();
-    }
-
-    public Channel getChannel() {
-        return this.channel;
     }
 
     public NodeStateSnapshot getNodeState() {

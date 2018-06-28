@@ -1,12 +1,18 @@
 package in.xnnyygn.xraft.core.nodestate;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import in.xnnyygn.xraft.core.log.EntryApplier;
 import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.log.ReplicationStateTracker;
 import in.xnnyygn.xraft.core.node.NodeContext;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.*;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResultMessage;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpcMessage;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpcMessage;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
 import org.slf4j.Logger;
@@ -16,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class NodeStateMachine implements NodeStateContext {
 
@@ -23,10 +31,14 @@ public class NodeStateMachine implements NodeStateContext {
     private final NodeContext nodeContext;
     private AbstractNodeState nodeState;
     private final List<NodeStateListener> nodeStateListeners = new ArrayList<>();
+    private final ListeningExecutorService executorService;
 
     public NodeStateMachine(NodeContext nodeContext) {
         this.nodeContext = nodeContext;
         this.nodeContext.register(this);
+        this.executorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor(
+                r -> new Thread(r, "node-state-machine-" + nodeContext.getSelfNodeId()))
+        );
     }
 
     public void start() {
@@ -42,8 +54,10 @@ public class NodeStateMachine implements NodeStateContext {
             throw new IllegalStateException("only leader can append log");
         }
 
-        this.nodeContext.getLog().appendEntry(this.nodeState.getTerm(), command, applier);
-        this.nodeState.replicateLog(this);
+        this.runWithMonitor(() -> {
+            this.nodeContext.getLog().appendEntry(this.nodeState.getTerm(), command, applier);
+            this.nodeState.replicateLog(this);
+        });
     }
 
     public void addNodeStateListener(NodeStateListener listener) {
@@ -52,30 +66,44 @@ public class NodeStateMachine implements NodeStateContext {
 
     public void stop() {
         this.nodeState.cancelTimeoutOrTask();
+
+        this.executorService.shutdown();
+        try {
+            this.executorService.awaitTermination(1L, TimeUnit.SECONDS);
+        } catch (InterruptedException ignored) {
+        }
     }
 
     @Subscribe
-    public void onReceive(RequestVoteRpc rpc) {
-        logger.debug("receive {}", rpc);
-        this.nodeState.onReceiveRequestVoteRpc(this, rpc);
+    public void onReceive(RequestVoteRpcMessage rpcMessage) {
+        this.runWithMonitor(() -> {
+            logger.debug("receive {} from {}", rpcMessage.get(), rpcMessage.getSourceNodeId());
+            this.nodeState.onReceiveRequestVoteRpc(this, rpcMessage);
+        });
     }
 
     @Subscribe
     public void onReceive(RequestVoteResult result) {
-        logger.debug("receive {}", result);
-        this.nodeState.onReceiveRequestVoteResult(this, result);
+        this.runWithMonitor(() -> {
+            logger.debug("receive {}", result);
+            this.nodeState.onReceiveRequestVoteResult(this, result);
+        });
     }
 
     @Subscribe
-    public void onReceive(AppendEntriesRpc rpc) {
-        logger.debug("receive {}", rpc);
-        this.nodeState.onReceiveAppendEntriesRpc(this, rpc);
+    public void onReceive(AppendEntriesRpcMessage rpcMessage) {
+        this.runWithMonitor(() -> {
+            logger.debug("receive {} from {}", rpcMessage.get(), rpcMessage.getSourceNodeId());
+            this.nodeState.onReceiveAppendEntriesRpc(this, rpcMessage);
+        });
     }
 
     @Subscribe
     public void onReceive(AppendEntriesResultMessage message) {
-        logger.debug("receive {}", message.getResult());
-        this.nodeState.onReceiveAppendEntriesResult(this, message.getResult(), message.getSourceNodeId(), message.getRpc());
+        this.runWithMonitor(() -> {
+            logger.debug("receive {} from {}", message.getResult(), message.getSourceNodeId());
+            this.nodeState.onReceiveAppendEntriesResult(this, message.getResult(), message.getSourceNodeId(), message.getRpc());
+        });
     }
 
     @Override
@@ -116,7 +144,9 @@ public class NodeStateMachine implements NodeStateContext {
 
     @Override
     public LogReplicationTask scheduleLogReplicationTask() {
-        return this.nodeContext.getScheduler().scheduleLogReplicationTask(() -> this.nodeState.replicateLog(this));
+        return this.nodeContext.getScheduler().scheduleLogReplicationTask(
+                () -> this.runWithMonitor(() -> this.nodeState.replicateLog(this))
+        );
     }
 
     @Override
@@ -131,7 +161,13 @@ public class NodeStateMachine implements NodeStateContext {
 
     @Override
     public ElectionTimeout scheduleElectionTimeout() {
-        return this.nodeContext.getScheduler().scheduleElectionTimeout(() -> this.nodeState.electionTimeout(this));
+        return this.nodeContext.getScheduler().scheduleElectionTimeout(
+                () -> this.runWithMonitor(() -> this.nodeState.electionTimeout(this))
+        );
+    }
+
+    private void runWithMonitor(Runnable r) {
+        this.nodeContext.runWithMonitor(this.executorService, r);
     }
 
 }

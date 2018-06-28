@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.core.log;
 
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

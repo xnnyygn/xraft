@@ -43,7 +43,11 @@ public class NodeGroup implements Iterable<AbstractNode> {
     }
 
     public AbstractNode find(NodeId nodeId) {
-        return this.nodeMap.get(nodeId);
+        AbstractNode node = this.nodeMap.get(nodeId);
+        if (node == null) {
+            throw new IllegalStateException("node " + nodeId + " not found");
+        }
+        return node;
     }
 
     public Set<NodeId> getNodeIds() {

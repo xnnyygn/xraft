@@ -4,8 +4,9 @@ import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.MockConnector;
-import in.xnnyygn.xraft.core.rpc.RequestVoteResult;
-import in.xnnyygn.xraft.core.rpc.RequestVoteRpc;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpcMessage;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class RequestVoteRpcTest {
         rpc.setTerm(1);
         rpc.setCandidateId(new NodeId("C1"));
 
-        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
 
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(2, result.getTerm());
@@ -49,7 +50,7 @@ public class RequestVoteRpcTest {
         rpc.setTerm(3);
         rpc.setCandidateId(new NodeId("C1"));
 
-        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
 
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(3, result.getTerm());
@@ -69,7 +70,7 @@ public class RequestVoteRpcTest {
         rpc.setLastLogTerm(0);
         rpc.setLastLogIndex(0);
 
-        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
 
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(3, result.getTerm());
@@ -89,7 +90,7 @@ public class RequestVoteRpcTest {
         rpc.setTerm(2);
         rpc.setCandidateId(candidateId);
 
-        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
 
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(2, result.getTerm());
@@ -104,7 +105,7 @@ public class RequestVoteRpcTest {
         rpc.setTerm(2);
         rpc.setCandidateId(candidateId);
 
-        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
 
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(2, result.getTerm());
@@ -124,7 +125,7 @@ public class RequestVoteRpcTest {
         rpc.setLastLogIndex(1);
         rpc.setLastLogTerm(1);
 
-        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
 
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(2, result.getTerm());
@@ -143,7 +144,7 @@ public class RequestVoteRpcTest {
         rpc.setLastLogIndex(2);
         rpc.setLastLogTerm(2);
 
-        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        follower.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
 
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(2, result.getTerm());
@@ -157,7 +158,7 @@ public class RequestVoteRpcTest {
         rpc.setTerm(2);
         rpc.setCandidateId(new NodeId("C1"));
 
-        candidate.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        candidate.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
 
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(2, result.getTerm());
@@ -172,7 +173,7 @@ public class RequestVoteRpcTest {
         rpc.setTerm(3);
         rpc.setCandidateId(candidateId);
 
-        candidate.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        candidate.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
 
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(3, result.getTerm());
@@ -193,7 +194,7 @@ public class RequestVoteRpcTest {
         rpc.setTerm(3);
         rpc.setCandidateId(candidateId);
 
-        candidate.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        candidate.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
 
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(3, result.getTerm());
@@ -211,7 +212,7 @@ public class RequestVoteRpcTest {
         RequestVoteRpc rpc = new RequestVoteRpc();
         rpc.setTerm(3);
         rpc.setCandidateId(candidateId);
-        leader.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        leader.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(3, result.getTerm());
         Assert.assertTrue(result.isVoteGranted());
@@ -226,7 +227,7 @@ public class RequestVoteRpcTest {
         RequestVoteRpc rpc = new RequestVoteRpc();
         rpc.setTerm(3);
         rpc.setCandidateId(candidateId);
-        leader.onReceiveRequestVoteRpc(this.mockNodeStateContext, rpc);
+        leader.onReceiveRequestVoteRpc(this.mockNodeStateContext, new RequestVoteRpcMessage(rpc, rpc.getCandidateId(), null));
         RequestVoteResult result = (RequestVoteResult) this.mockConnector.getResult();
         Assert.assertEquals(3, result.getTerm());
         Assert.assertFalse(result.isVoteGranted());

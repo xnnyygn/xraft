@@ -1,5 +1,6 @@
-package in.xnnyygn.xraft.core.rpc;
+package in.xnnyygn.xraft.core.rpc.message;
 
+import com.google.common.base.Preconditions;
 import in.xnnyygn.xraft.core.node.NodeId;
 
 public class AppendEntriesResultMessage {
@@ -9,6 +10,7 @@ public class AppendEntriesResultMessage {
     private final AppendEntriesRpc rpc;
 
     public AppendEntriesResultMessage(AppendEntriesResult result, NodeId sourceNodeId, AppendEntriesRpc rpc) {
+        Preconditions.checkNotNull(rpc);
         this.result = result;
         this.sourceNodeId = sourceNodeId;
         this.rpc = rpc;

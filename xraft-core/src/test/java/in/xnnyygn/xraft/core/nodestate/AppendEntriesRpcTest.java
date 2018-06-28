@@ -3,8 +3,9 @@ package in.xnnyygn.xraft.core.nodestate;
 import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesResult;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpcMessage;
 import in.xnnyygn.xraft.core.rpc.MockConnector;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,7 +35,7 @@ public class AppendEntriesRpcTest {
         rpc.setTerm(1);
         rpc.setLeaderId(leaderId);
 
-        follower.onReceiveAppendEntriesRpc(this.mockNodeStateContext, rpc);
+        follower.onReceiveAppendEntriesRpc(this.mockNodeStateContext, new AppendEntriesRpcMessage(rpc, leaderId, null));
 
         AppendEntriesResult result = (AppendEntriesResult) this.mockConnector.getResult();
         Assert.assertEquals(2, result.getTerm());
@@ -49,7 +50,7 @@ public class AppendEntriesRpcTest {
         rpc.setTerm(3);
         rpc.setLeaderId(leaderId);
 
-        follower.onReceiveAppendEntriesRpc(this.mockNodeStateContext, rpc);
+        follower.onReceiveAppendEntriesRpc(this.mockNodeStateContext, new AppendEntriesRpcMessage(rpc, leaderId, null));
 
         AppendEntriesResult result = (AppendEntriesResult) this.mockConnector.getResult();
         Assert.assertEquals(3, result.getTerm());
@@ -68,7 +69,7 @@ public class AppendEntriesRpcTest {
         rpc.setTerm(2);
         rpc.setLeaderId(leaderId);
 
-        candidate.onReceiveAppendEntriesRpc(this.mockNodeStateContext, rpc);
+        candidate.onReceiveAppendEntriesRpc(this.mockNodeStateContext, new AppendEntriesRpcMessage(rpc, leaderId, null));
 
         AppendEntriesResult result = (AppendEntriesResult) this.mockConnector.getResult();
         Assert.assertEquals(2, result.getTerm());
@@ -87,7 +88,7 @@ public class AppendEntriesRpcTest {
         rpc.setTerm(2);
         rpc.setLeaderId(leaderId);
 
-        leader.onReceiveAppendEntriesRpc(this.mockNodeStateContext, rpc);
+        leader.onReceiveAppendEntriesRpc(this.mockNodeStateContext, new AppendEntriesRpcMessage(rpc, leaderId, null));
         AppendEntriesResult result = (AppendEntriesResult) this.mockConnector.getResult();
         Assert.assertEquals(2, result.getTerm());
         Assert.assertFalse(result.isSuccess());

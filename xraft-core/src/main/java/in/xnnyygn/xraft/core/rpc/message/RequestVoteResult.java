@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.rpc;
+package in.xnnyygn.xraft.core.rpc.message;
 
 import java.io.Serializable;
 

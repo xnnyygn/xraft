@@ -1,6 +1,7 @@
 package in.xnnyygn.xraft.core.rpc;
 
 import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.rpc.message.*;
 
 public class MockConnector implements Connector {
 
@@ -9,26 +10,34 @@ public class MockConnector implements Connector {
     private NodeId destinationNodeId;
 
     @Override
-    public void sendRpc(Object rpc) {
+    public void initialize() {
+    }
+
+    @Override
+    public void resetChannels() {
+    }
+
+    @Override
+    public void sendRequestVote(RequestVoteRpc rpc) {
         this.rpc = rpc;
     }
 
     @Override
-    public void sendRpc(Object rpc, NodeId destinationNodeId) {
+    public void replyRequestVote(RequestVoteResult result, RequestVoteRpcMessage rpcMessage) {
+        this.result = result;
+        this.destinationNodeId = rpcMessage.getSourceNodeId();
+    }
+
+    @Override
+    public void sendAppendEntries(AppendEntriesRpc rpc, NodeId destinationNodeId) {
         this.rpc = rpc;
         this.destinationNodeId = destinationNodeId;
     }
 
     @Override
-    public void sendResult(Object result, NodeId destinationNodeId) {
+    public void replyAppendEntries(AppendEntriesResult result, AppendEntriesRpcMessage rpcMessage) {
         this.result = result;
-        this.destinationNodeId = destinationNodeId;
-    }
-
-    @Override
-    public void sendAppendEntriesResult(AppendEntriesResult result, NodeId destinationNodeId, AppendEntriesRpc rpc) {
-        this.result = result;
-        this.destinationNodeId = destinationNodeId;
+        this.destinationNodeId = rpcMessage.getSourceNodeId();
     }
 
     public Object getRpc() {

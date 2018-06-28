@@ -15,6 +15,7 @@ public class ServerRouter {
 
     public Object send(Object payload) {
         try {
+//            return doSend(new NodeId("B"), payload);
             return doSend(getCurrentLeaderId(), payload);
         } catch (RedirectException e) {
             logger.info("not a leader server, redirect to server {}", e.getLeaderId());

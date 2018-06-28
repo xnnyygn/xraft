@@ -32,8 +32,12 @@ public class Entry {
 
     public void apply(EntryApplier fallback) {
         assert fallback != null;
-        EntryApplier applier = (this.applier != null ? this.applier : fallback);
-        applier.applyEntry(this);
+        if (this.applier != null) {
+            this.applier.applyEntry(this);
+            this.applier = null;
+        } else {
+            fallback.applyEntry(this);
+        }
     }
 
     public Entry copy() {

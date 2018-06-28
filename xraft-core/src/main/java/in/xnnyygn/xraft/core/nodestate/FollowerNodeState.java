@@ -3,10 +3,10 @@ package in.xnnyygn.xraft.core.nodestate;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.node.NodeStore;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesResult;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
-import in.xnnyygn.xraft.core.rpc.RequestVoteResult;
-import in.xnnyygn.xraft.core.rpc.RequestVoteRpc;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class FollowerNodeState extends AbstractNodeState {
     }
 
     public static boolean isStableBetween(FollowerNodeState before, FollowerNodeState after) {
-        return before.term == after.term && before.votedFor == after.votedFor && before.leaderId == after.leaderId;
+        return before.term == after.term && Objects.equals(before.votedFor, after.votedFor) && Objects.equals(before.leaderId, after.leaderId);
     }
 
     @Override

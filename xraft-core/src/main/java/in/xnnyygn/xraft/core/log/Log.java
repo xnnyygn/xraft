@@ -1,7 +1,8 @@
 package in.xnnyygn.xraft.core.log;
 
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.AppendEntriesRpc;
+import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
+import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 
 public interface Log {
 
@@ -11,6 +12,8 @@ public interface Log {
 
     boolean appendEntries(AppendEntriesRpc rpc);
 
+    RequestVoteRpc createRequestVoteRpc(int term, NodeId selfNodeId);
+
     AppendEntriesRpc createAppendEntriesRpc(int term, NodeId selfNodeId, int nextIndex, int maxEntries);
 
     void advanceCommitIndexIfAvailable(int newCommitIndex);
@@ -19,6 +22,6 @@ public interface Log {
 
     boolean isNewerThan(int lastLogIndex, int lastLogTerm);
 
-    void setEntryApplier(EntryApplier callback);
+    void setEntryApplier(EntryApplier applier);
 
 }
