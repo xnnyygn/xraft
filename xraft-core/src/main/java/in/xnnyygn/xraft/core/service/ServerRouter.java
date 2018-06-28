@@ -4,37 +4,52 @@ import in.xnnyygn.xraft.core.node.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ServerRouter {
 
     private static Logger logger = LoggerFactory.getLogger(ServerRouter.class);
-    private final Map<NodeId, Channel> available = new HashMap<>();
+    private final Map<NodeId, Channel> availableServers = new HashMap<>();
     private NodeId leaderId;
 
     public Object send(Object payload) {
-        try {
-//            return doSend(new NodeId("B"), payload);
-            return doSend(getCurrentLeaderId(), payload);
-        } catch (RedirectException e) {
-            logger.info("not a leader server, redirect to server {}", e.getLeaderId());
-            this.leaderId = e.getLeaderId();
-            return doSend(e.getLeaderId(), payload);
+        for (NodeId nodeId : this.getCandidateNodeIds()) {
+            try {
+                Object result = doSend(nodeId, payload);
+                this.leaderId = nodeId;
+                return result;
+            } catch (RedirectException e) {
+                logger.debug("not a leader server, redirect to server {}", e.getLeaderId());
+                this.leaderId = e.getLeaderId();
+                return doSend(e.getLeaderId(), payload);
+            } catch (Exception e) {
+                logger.warn("failed to process with server " + nodeId + ", cause " + e.getMessage());
+            }
         }
+        throw new IllegalStateException("no available server");
     }
 
-    private NodeId getCurrentLeaderId() {
-        if (this.leaderId != null) return this.leaderId;
-
-        if (this.available.isEmpty()) {
+    private Collection<NodeId> getCandidateNodeIds() {
+        if (this.availableServers.isEmpty()) {
             throw new IllegalStateException("no available server");
         }
-        return this.available.keySet().iterator().next();
+
+        if (this.leaderId != null) {
+            List<NodeId> nodeIds = new ArrayList<>();
+            nodeIds.add(leaderId);
+            for (NodeId nodeId : this.availableServers.keySet()) {
+                if (!nodeId.equals(this.leaderId)) {
+                    nodeIds.add(nodeId);
+                }
+            }
+            return nodeIds;
+        }
+
+        return this.availableServers.keySet();
     }
 
     private Object doSend(NodeId id, Object payload) {
-        Channel channel = this.available.get(id);
+        Channel channel = this.availableServers.get(id);
         if (channel == null) {
             throw new IllegalStateException("no such channel to server " + id);
         }
@@ -43,7 +58,7 @@ public class ServerRouter {
     }
 
     public void add(NodeId id, Channel channel) {
-        this.available.put(id, channel);
+        this.availableServers.put(id, channel);
     }
 
 }
