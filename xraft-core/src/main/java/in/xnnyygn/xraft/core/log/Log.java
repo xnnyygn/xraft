@@ -6,6 +6,13 @@ import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 
 public interface Log {
 
+    /**
+     * Append NO-OP entry.
+     *
+     * @param term term
+     */
+    void appendEntry(int term);
+
     void appendEntry(int term, byte[] command);
 
     void appendEntry(int term, byte[] command, EntryApplier applier);

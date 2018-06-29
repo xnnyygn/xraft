@@ -5,20 +5,17 @@ import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
 import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CandidateNodeState extends AbstractNodeState {
 
-    private static final Logger logger = LoggerFactory.getLogger(CandidateNodeState.class);
     private final int votedCount;
     private final ElectionTimeout electionTimeout;
 
-    public CandidateNodeState(int term, ElectionTimeout electionTimeout) {
+    CandidateNodeState(int term, ElectionTimeout electionTimeout) {
         this(term, 1, electionTimeout);
     }
 
-    public CandidateNodeState(int term, int votedCount, ElectionTimeout electionTimeout) {
+    CandidateNodeState(int term, int votedCount, ElectionTimeout electionTimeout) {
         super(NodeRole.CANDIDATE, term);
         this.votedCount = votedCount;
         this.electionTimeout = electionTimeout;
@@ -45,6 +42,7 @@ public class CandidateNodeState extends AbstractNodeState {
             if (votesCount > (context.getNodeCount() / 2)) {
                 this.electionTimeout.cancel();
                 context.changeToNodeState(new LeaderNodeState(this.term, context.scheduleLogReplicationTask(), context.createReplicationStateTracker()));
+                context.getLog().appendEntry(this.term); // no-op entry
                 context.getConnector().resetChannels();
             } else {
                 context.changeToNodeState(new CandidateNodeState(this.term, votedCount, electionTimeout.reset()));

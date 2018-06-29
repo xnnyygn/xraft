@@ -19,6 +19,12 @@ public class MemoryLog implements Log {
     private int lastApplied = 0;
 
     @Override
+    public void appendEntry(int term) {
+        logger.debug("add no-op entry, term {}", term);
+        this.appendEntry(term, new byte[0], null);
+    }
+
+    @Override
     public void appendEntry(int term, byte[] command) {
         this.appendEntry(term, command, null);
     }
@@ -64,9 +70,10 @@ public class MemoryLog implements Log {
             rpc.setPrevLogIndex(entry.getIndex());
             rpc.setPrevLogTerm(entry.getTerm());
         }
-        rpc.setEntries(this.entrySequence.subList(nextIndex,
+        rpc.setEntries(this.entrySequence.subList(
+                nextIndex,
                 (maxEntries < 0 ? this.getLastLogIndex() + 1 : Math.min(this.getLastLogIndex() + 1, nextIndex + maxEntries))
-        ).stream().map(Entry::copy).collect(Collectors.toList()));
+        ));
         rpc.setLeaderCommit(this.commitIndex);
         return rpc;
     }
@@ -79,10 +86,22 @@ public class MemoryLog implements Log {
 
             logger.debug("apply log from {} to {}", this.lastApplied + 1, this.commitIndex);
             for (Entry entry : this.entrySequence.subList(this.lastApplied + 1, this.commitIndex + 1)) {
-                entry.apply(this.entryApplier);
-                this.lastApplied = entry.getIndex();
+                this.applyEntry(entry);
             }
         }
+    }
+
+    private void applyEntry(Entry entry) {
+        // skip no-op entry
+        if (!entry.isEmpty()) {
+            EntryApplier entryApplier = entry.removeApplier();
+            if (entryApplier != null) {
+                entryApplier.applyEntry(entry);
+            } else {
+                this.entryApplier.applyEntry(entry);
+            }
+        }
+        this.lastApplied = entry.getIndex();
     }
 
     @Override

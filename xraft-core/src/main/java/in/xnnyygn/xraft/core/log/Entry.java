@@ -30,18 +30,14 @@ public class Entry {
         return command;
     }
 
-    public void apply(EntryApplier fallback) {
-        assert fallback != null;
-        if (this.applier != null) {
-            this.applier.applyEntry(this);
-            this.applier = null;
-        } else {
-            fallback.applyEntry(this);
-        }
+    public EntryApplier removeApplier() {
+        EntryApplier applier = this.applier;
+        this.applier = null;
+        return applier;
     }
 
-    public Entry copy() {
-        return new Entry(this.index, this.term, this.command);
+    public boolean isEmpty() {
+        return this.command.length == 0;
     }
 
     @Override
