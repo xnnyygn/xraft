@@ -1,9 +1,6 @@
-package in.xnnyygn.xraft.kvstore.command;
+package in.xnnyygn.xraft.kvstore.message;
 
-import java.io.ByteArrayOutputStream;
-import java.io.Serializable;
-
-public class GetCommand implements Serializable {
+public class GetCommand  {
 
     private final String key;
 

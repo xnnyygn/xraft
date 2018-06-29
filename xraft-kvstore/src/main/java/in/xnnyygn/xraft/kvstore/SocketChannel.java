@@ -1,16 +1,17 @@
 package in.xnnyygn.xraft.kvstore;
 
+import com.google.protobuf.ByteString;
+import com.google.protobuf.MessageLite;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.service.Channel;
 import in.xnnyygn.xraft.core.service.ChannelException;
 import in.xnnyygn.xraft.core.service.RedirectException;
-import in.xnnyygn.xraft.kvstore.command.GetCommand;
-import in.xnnyygn.xraft.kvstore.command.SetCommand;
-import org.apache.thrift.TException;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransport;
+import in.xnnyygn.xraft.kvstore.message.GetCommand;
+import in.xnnyygn.xraft.kvstore.message.SetCommand;
+
+import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 public class SocketChannel implements Channel {
 
@@ -24,34 +25,61 @@ public class SocketChannel implements Channel {
 
     @Override
     public Object send(Object payload) {
-        TTransport transport = new TSocket(this.host, this.port);
-        TProtocol protocol = new TBinaryProtocol(transport);
-        KVStore.Iface client = new KVStore.Client(protocol);
-        try {
-            transport.open();
-            return dispatch(payload, client);
-        } catch (Redirect redirect) {
-            if (redirect.getLeaderId() != null) {
-                throw new RedirectException(new NodeId(redirect.getLeaderId()));
-            }
-            throw new ChannelException("redirect", redirect);
-        } catch (TException e) {
-            throw new ChannelException("failed to send", e);
-        } finally {
-            transport.close();
+        try (Socket socket = new Socket()) {
+            socket.setTcpNoDelay(true);
+            socket.connect(new InetSocketAddress(this.host, this.port));
+            this.write(socket.getOutputStream(), payload);
+            return this.read(socket.getInputStream());
+        } catch (IOException e) {
+            throw new ChannelException("failed to send and receive", e);
         }
     }
 
-    private Object dispatch(Object payload, KVStore.Iface client) throws TException {
-        if (payload instanceof SetCommand) {
-            SetCommand command = (SetCommand) payload;
-            client.Set(command.getKey(), command.getValue());
-            return null;
-        } else if (payload instanceof GetCommand) {
-            GetResult result = client.Get(((GetCommand) payload).getKey());
-            return result.isFound() ? result.getValue() : null;
+    private Object read(InputStream input) throws IOException {
+        DataInputStream dataInput = new DataInputStream(input);
+        int messageType = dataInput.readInt();
+        int payloadLength = dataInput.readInt();
+        byte[] payload = new byte[payloadLength];
+        dataInput.readFully(payload);
+        switch (messageType) {
+            case MessageConstants.MSG_TYPE_SUCCESS:
+                return null;
+            case MessageConstants.MSG_TYPE_FAILURE:
+                Protos.Failure protoFailure = Protos.Failure.parseFrom(payload);
+                throw new ChannelException("error code " + protoFailure.getErrorCode() + ", message " + protoFailure.getMessage());
+            case MessageConstants.MSG_TYPE_REDIRECT:
+                Protos.Redirect protoRedirect = Protos.Redirect.parseFrom(payload);
+                throw new RedirectException(new NodeId(protoRedirect.getLeaderId()));
+            case MessageConstants.MSG_TYPE_GET_COMMAND_RESPONSE:
+                Protos.GetCommandResponse protoGetCommandResponse = Protos.GetCommandResponse.parseFrom(payload);
+                if (!protoGetCommandResponse.getFound()) return null;
+                return protoGetCommandResponse.getValue().toByteArray();
+            default:
+                throw new ChannelException("unexpected message type " + messageType);
         }
-        throw new ChannelException("unexpected payload type " + payload.getClass());
     }
+
+    private void write(OutputStream output, Object payload) throws IOException {
+        if (payload instanceof GetCommand) {
+            Protos.GetCommand protoGetCommand = Protos.GetCommand.newBuilder().setKey(((GetCommand) payload).getKey()).build();
+            this.write(output, MessageConstants.MSG_TYPE_GET_COMMAND, protoGetCommand);
+        } else if (payload instanceof SetCommand) {
+            SetCommand setCommand = (SetCommand) payload;
+            Protos.SetCommand protoSetCommand = Protos.SetCommand.newBuilder()
+                    .setKey(setCommand.getKey())
+                    .setValue(ByteString.copyFrom(setCommand.getValue())).build();
+            this.write(output, MessageConstants.MSG_TYPE_SET_COMMAND, protoSetCommand);
+        }
+    }
+
+    private void write(OutputStream output, int messageType, MessageLite message) throws IOException {
+        DataOutputStream dataOutput = new DataOutputStream(output);
+        byte[] messageBytes = message.toByteArray();
+        dataOutput.writeInt(messageType);
+        dataOutput.writeInt(messageBytes.length);
+        dataOutput.write(messageBytes);
+        dataOutput.flush();
+    }
+
 
 }

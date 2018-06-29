@@ -1,9 +1,30 @@
 syntax = "proto3";
 
 option java_package = "in.xnnyygn.xraft.kvstore";
-option java_outer_classname = "KVStoreProtos";
+option java_outer_classname = "Protos";
+
+message Redirect {
+    string leader_id = 1;
+}
+
+message Success {}
+
+message Failure {
+    int32 error_code = 1;
+    string message = 2;
+}
 
 message SetCommand {
     string key = 1;
-    string value = 2;
+    bytes value = 2;
 }
+
+message GetCommand {
+    string key = 1;
+}
+
+message GetCommandResponse {
+    bool found = 1;
+    bytes value = 2;
+}
+

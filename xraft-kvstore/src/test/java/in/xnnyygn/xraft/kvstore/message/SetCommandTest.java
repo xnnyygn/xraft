@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.kvstore.command;
+package in.xnnyygn.xraft.kvstore.message;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,12 +9,12 @@ public class SetCommandTest {
 
     @Test
     public void test() {
-        SetCommand command = new SetCommand("x", "1");
+        SetCommand command = new SetCommand("x", "1".getBytes());
         byte[] commandBytes = command.toBytes();
         System.out.println(Arrays.toString(commandBytes));
         SetCommand command2 = SetCommand.fromBytes(commandBytes);
         Assert.assertEquals(command.getKey(), command2.getKey());
-        Assert.assertEquals(command.getValue(), command2.getValue());
+        Assert.assertArrayEquals(command.getValue(), command2.getValue());
     }
 
 }

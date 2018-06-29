@@ -43,7 +43,7 @@ public class ServerLauncher {
             nodeGroup.add(new RemoteNode(new NodeId(remoteNodeId), nodeMap.get(remoteNodeId)));
         }
 
-        Server server = new Server(node, new Service(), endpoint.getPort() + 1000);
+        Server server = new Server(node, endpoint.getPort() + 1000);
         try {
             server.start();
 //            node.start();

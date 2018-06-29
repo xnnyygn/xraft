@@ -1,8 +1,8 @@
 package in.xnnyygn.xraft.kvstore;
 
 import in.xnnyygn.xraft.core.service.ServerRouter;
-import in.xnnyygn.xraft.kvstore.command.GetCommand;
-import in.xnnyygn.xraft.kvstore.command.SetCommand;
+import in.xnnyygn.xraft.kvstore.message.GetCommand;
+import in.xnnyygn.xraft.kvstore.message.SetCommand;
 
 public class Client {
 
@@ -12,12 +12,12 @@ public class Client {
         this.serverRouter = serverRouter;
     }
 
-    public void set(String key, String value) {
+    public void set(String key, byte[] value) {
         this.serverRouter.send(new SetCommand(key, value));
     }
 
-    public String get(String key) {
-        return (String) this.serverRouter.send(new GetCommand(key));
+    public byte[] get(String key) {
+        return (byte[]) this.serverRouter.send(new GetCommand(key));
     }
 
 }

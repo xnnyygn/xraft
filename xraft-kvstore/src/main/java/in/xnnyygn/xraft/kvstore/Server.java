@@ -1,10 +1,12 @@
 package in.xnnyygn.xraft.kvstore;
 
 import in.xnnyygn.xraft.core.node.Node;
-import org.apache.thrift.server.TServer;
-import org.apache.thrift.server.TSimpleServer;
-import org.apache.thrift.transport.TServerSocket;
-import org.apache.thrift.transport.TServerTransport;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,38 +15,40 @@ public class Server {
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
     private final Node node;
-    private final Service service;
     private final int port;
+    private final Service service;
+    private final NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
+    private final NioEventLoopGroup workerGroup = new NioEventLoopGroup(4);
 
-    private Thread thread;
-    private TServerTransport transport;
-    private TServer server;
-
-    public Server(Node node, Service service, int port) {
+    public Server(Node node, int port) {
         this.node = node;
-        this.service = service;
+        this.service = new Service(node);
         this.port = port;
     }
 
     public void start() throws Exception {
         this.node.start();
 
-        ServiceAdapter handler = new ServiceAdapter(this.node, this.service);
-        KVStore.Processor<KVStore.Iface> processor = new KVStore.Processor<>(handler);
-        transport = new TServerSocket(this.port);
-        server = new TSimpleServer(new TServer.Args(transport).processor(processor));
-        this.thread = new Thread(() -> {
-            logger.info("Server {}, listen on port {}", node.getId(), port);
-            server.serve();
-        }, "kvstore-server-" + this.node.getId());
-        this.thread.start();
+        ServerBootstrap serverBootstrap = new ServerBootstrap()
+                .group(bossGroup, workerGroup)
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch) throws Exception {
+                        ChannelPipeline pipeline = ch.pipeline();
+                        pipeline.addLast(new Encoder());
+                        pipeline.addLast(new Decoder());
+                        pipeline.addLast(new ServiceHandler(service));
+                    }
+                });
+        logger.info("start server at port {}", this.port);
+        serverBootstrap.bind(this.port);
     }
 
     public void stop() throws Exception {
         this.node.stop();
-        this.transport.close();
-        this.server.stop();
-        this.thread.join();
+        this.workerGroup.shutdownGracefully();
+        this.bossGroup.shutdownGracefully();
     }
 
 }
