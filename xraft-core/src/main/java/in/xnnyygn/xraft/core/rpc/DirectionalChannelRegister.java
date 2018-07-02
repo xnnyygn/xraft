@@ -4,6 +4,7 @@ import in.xnnyygn.xraft.core.node.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,7 +86,7 @@ public class DirectionalChannelRegister {
     }
 
     private void closeChannels(Collection<DirectionalChannel> channels) {
-        for (DirectionalChannel channel : channels) {
+        for (DirectionalChannel channel : new ArrayList<>(channels)) {
             channel.close();
         }
     }

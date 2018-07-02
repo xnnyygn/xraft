@@ -4,32 +4,28 @@ import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.node.AbstractNode;
 import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.*;
+import in.xnnyygn.xraft.core.rpc.AbstractConnector;
 import in.xnnyygn.xraft.core.rpc.Channel;
-import in.xnnyygn.xraft.core.rpc.ChannelException;
 import in.xnnyygn.xraft.core.rpc.socket.SocketEndpoint;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
 
-public class NioConnector extends AbstractConnector implements NioChannelContext {
+public class NioConnector extends AbstractConnector {
 
     private static final Logger logger = LoggerFactory.getLogger(NioConnector.class);
-    private final DirectionalChannelRegister channelRegister = new DirectionalChannelRegister();
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor(r -> new Thread(r, "nio-connector"));
-    private final EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-    private final EventLoopGroup workerGroup = new NioEventLoopGroup(4);
-
+    private final NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
+    private final NioEventLoopGroup workerGroup = new NioEventLoopGroup(4);
+    private final InboundChannelList inboundChannels = new InboundChannelList();
+    private final Map<NodeId, OutboundChannel> outboundChannels = new HashMap<>();
     private final EventBus eventBus;
     private final int port;
 
@@ -41,6 +37,14 @@ public class NioConnector extends AbstractConnector implements NioChannelContext
 
     @Override
     public void initialize() {
+        for (AbstractNode node : this.nodeGroup) {
+            if (node.getId() != this.selfNodeId) {
+                this.outboundChannels.put(node.getId(), new OutboundChannel(
+                        this.workerGroup, this.eventBus, node.getId(), this.selfNodeId, (SocketEndpoint) node.getEndpoint())
+                );
+            }
+        }
+
         ServerBootstrap serverBootstrap = new ServerBootstrap()
                 .group(this.bossGroup, this.workerGroup)
                 .channel(NioServerSocketChannel.class)
@@ -50,7 +54,7 @@ public class NioConnector extends AbstractConnector implements NioChannelContext
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new Decoder());
                         pipeline.addLast(new Encoder());
-                        pipeline.addLast(new FromRemoteHandler(eventBus, NioConnector.this));
+                        pipeline.addLast(new FromRemoteHandler(eventBus, inboundChannels));
                     }
                 });
         logger.debug("start acceptor at port {}", this.port);
@@ -61,71 +65,30 @@ public class NioConnector extends AbstractConnector implements NioChannelContext
     }
 
     @Override
-    protected Channel getChannel(AbstractNode node) {
-        NodeId nodeId = node.getId();
-        DirectionalChannel channel = this.channelRegister.find(nodeId);
-        if (channel != null) return channel;
-
-        Endpoint endpoint = node.getEndpoint();
-        if (!(endpoint instanceof SocketEndpoint)) {
-            throw new IllegalArgumentException("expect socket endpoint");
-        }
-
-        Bootstrap bootstrap = new Bootstrap()
-                .group(this.workerGroup)
-                .channel(NioSocketChannel.class)
-                .option(ChannelOption.TCP_NODELAY, true)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
-                        ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast(new Decoder());
-                        pipeline.addLast(new Encoder());
-                        pipeline.addLast(new ToRemoteHandler(nodeId, eventBus, NioConnector.this));
-                    }
-                });
-        SocketEndpoint socketEndpoint = (SocketEndpoint) endpoint;
-
-        try {
-            ChannelFuture future = bootstrap.connect(socketEndpoint.getHost(), socketEndpoint.getPort()).sync();
-            future.channel().writeAndFlush(this.selfNodeId).sync();
-            channel = new NioChannel(future.channel(), nodeId, DirectionalChannel.Direction.OUTBOUND);
-        } catch (InterruptedException e) {
-            throw new ChannelException(e);
-        }
-        return channel;
-    }
-
-    @Override
-    public void registerNioChannel(NioChannel channel) {
-        this.executorService.submit(() -> {
-            this.channelRegister.register(channel);
-        });
-    }
-
-    @Override
-    public void closeNioChannel(NioChannel channel) {
-        this.executorService.submit(() -> {
-            this.channelRegister.remove(channel);
-        });
-    }
-
-    @Override
     public void resetChannels() {
-        this.channelRegister.closeInboundChannels();
+        logger.debug("close inbound channels");
+        this.inboundChannels.closeAll();
     }
 
     @Override
     public void release() {
-        this.channelRegister.release();
+        logger.debug("close connector");
 
-        this.workerGroup.shutdownGracefully();
-        this.bossGroup.shutdownGracefully();
+        logger.debug("close inbound channels");
+        this.inboundChannels.closeAll();
 
-        this.executorService.shutdown();
-        try {
-            this.executorService.awaitTermination(1L, TimeUnit.SECONDS);
-        } catch (InterruptedException ignored) {
+        logger.debug("close outbound channels");
+        for (OutboundChannel channel : outboundChannels.values()) {
+            channel.close();
         }
+
+        this.bossGroup.shutdownGracefully();
+        this.workerGroup.shutdownGracefully();
     }
+
+    @Override
+    protected Channel getChannel(AbstractNode node) {
+        return this.outboundChannels.get(node.getId());
+    }
+
 }

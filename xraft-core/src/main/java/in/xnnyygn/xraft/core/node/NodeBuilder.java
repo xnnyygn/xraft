@@ -4,12 +4,11 @@ import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.nodestate.LoggingNodeStateListener;
 import in.xnnyygn.xraft.core.nodestate.NodeStateMachine;
-import in.xnnyygn.xraft.core.rpc.*;
+import in.xnnyygn.xraft.core.rpc.Connector;
+import in.xnnyygn.xraft.core.rpc.Endpoint;
 import in.xnnyygn.xraft.core.rpc.embedded.EmbeddedConnector;
 import in.xnnyygn.xraft.core.rpc.embedded.EmbeddedEndpoint;
-import in.xnnyygn.xraft.core.rpc.Endpoint;
 import in.xnnyygn.xraft.core.rpc.nio.NioConnector;
-import in.xnnyygn.xraft.core.rpc.socket.SocketConnector;
 import in.xnnyygn.xraft.core.rpc.socket.SocketEndpoint;
 import in.xnnyygn.xraft.core.schedule.Scheduler;
 

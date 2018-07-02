@@ -10,10 +10,12 @@ public interface Channel {
 
     void writeRequestVoteRpc(RequestVoteRpc rpc, NodeId senderId);
 
+    // TODO remove me
     void writeRequestVoteResult(RequestVoteResult result, NodeId senderId, RequestVoteRpc rpc);
 
     void writeAppendEntriesRpc(AppendEntriesRpc rpc, NodeId senderId);
 
+    // TODO remove me
     void writeAppendEntriesResult(AppendEntriesResult result, NodeId senderId, AppendEntriesRpc rpc);
 
     void close();
