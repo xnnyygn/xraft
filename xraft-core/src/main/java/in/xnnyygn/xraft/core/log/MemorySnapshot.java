@@ -1,35 +1,59 @@
 package in.xnnyygn.xraft.core.log;
 
-public class MemorySnapshot {
+public class MemorySnapshot implements Snapshot {
 
+    private final int lastIncludedIndex;
+    private final int lastIncludedTerm;
     private final byte[] data;
-    private int position = 0;
 
-    public MemorySnapshot(byte[] data) {
+    MemorySnapshot(int lastIncludedIndex, int lastIncludedTerm, byte[] data) {
+        this.lastIncludedIndex = lastIncludedIndex;
+        this.lastIncludedTerm = lastIncludedTerm;
         this.data = data;
+    }
+
+    @Override
+    public int getLastIncludedIndex() {
+        return lastIncludedIndex;
+    }
+
+    @Override
+    public int getLastIncludedTerm() {
+        return lastIncludedTerm;
     }
 
     public int size() {
         return this.data.length;
     }
 
-    public void seek(int position) {
-        if (position < 0 || position >= this.data.length) {
-            throw new IndexOutOfBoundsException("position out of index");
+    @Override
+    public SnapshotChunk read(int offset, int length) {
+        if (offset < 0 || offset >= this.data.length) {
+            throw new IndexOutOfBoundsException("offset " + offset + " out of bound");
         }
-        this.position = position;
+
+        int bufferLength = Math.min(this.data.length - offset, length);
+        byte[] buffer = new byte[bufferLength];
+        System.arraycopy(this.data, offset, buffer, 0, bufferLength);
+        return new MemorySnapshotChunk(buffer, offset + length >= this.data.length);
     }
 
-    public int read(byte[] buffer) {
-        if (this.position >= this.data.length) return -1;
-
-        int length = Math.min(buffer.length, this.data.length - this.position);
-        System.arraycopy(this.data, this.position, buffer, 0, length);
-        this.position += length;
-        return length;
+    @Override
+    public byte[] toByteArray() {
+        return this.data;
     }
 
+    @Override
     public void close() {
+    }
+
+    @Override
+    public String toString() {
+        return "MemorySnapshot{" +
+                "size=" + data.length +
+                ", lastIncludedIndex=" + lastIncludedIndex +
+                ", lastIncludedTerm=" + lastIncludedTerm +
+                '}';
     }
 
 }

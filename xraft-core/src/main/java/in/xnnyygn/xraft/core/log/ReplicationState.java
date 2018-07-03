@@ -35,7 +35,6 @@ public class ReplicationState {
     }
 
     public void backOffNextIndex() {
-        // next index must >= 1
         if (this.nextIndex > 1) {
             this.nextIndex--;
         }

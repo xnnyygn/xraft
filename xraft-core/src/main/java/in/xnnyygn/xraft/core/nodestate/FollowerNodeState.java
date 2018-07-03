@@ -1,12 +1,9 @@
 package in.xnnyygn.xraft.core.nodestate;
 
+import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.node.NodeStore;
-import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
-import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
-import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
-import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +76,11 @@ public class FollowerNodeState extends AbstractNodeState {
 
         context.changeToNodeState(new FollowerNodeState(this.term, this.votedFor, rpc.getLeaderId(), electionTimeout.reset()));
         return new AppendEntriesResult(this.term, context.getLog().appendEntries(rpc));
+    }
+
+    @Override
+    protected void processInstallSnapshotRpc(NodeStateContext context, InstallSnapshotRpcMessage rpcMessage) {
+        context.getLog().installSnapshot(rpcMessage.get());
     }
 
     @Override

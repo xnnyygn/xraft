@@ -50,6 +50,16 @@ public class EntrySequenceTest {
         Assert.assertEquals(0, subList.size());
     }
 
+    @Test
+    public void testSubListEmpty2() {
+        EntrySequence sequence = new EntrySequence(2);
+        sequence.appendEntries(Arrays.asList(
+                new Entry(2, 1, new byte[0]), // 2
+                new Entry(3, 1, new byte[0]) // 3
+        ));
+        List<Entry> subList = sequence.subList(4, 4);
+        Assert.assertEquals(0, subList.size());
+    }
 
     @Test
     public void testSubListOneElement() {
@@ -89,13 +99,13 @@ public class EntrySequenceTest {
     }
 
     @Test
-    public void testClearAfterLastOne() {
+    public void testClearAfterPartial() {
         EntrySequence sequence = new EntrySequence(2);
         sequence.appendEntries(Arrays.asList(
                 new Entry(2, 1, new byte[0]),
                 new Entry(3, 1, new byte[0])
         ));
-        sequence.clearAfter(3);
+        sequence.clearAfter(2);
         Assert.assertEquals(2, sequence.getLastLogIndex());
         Assert.assertEquals(3, sequence.getNextLogIndex());
     }
@@ -104,14 +114,46 @@ public class EntrySequenceTest {
     public void testClearAfterAll() {
         EntrySequence sequence = new EntrySequence(2);
         sequence.appendEntries(Arrays.asList(
-                new Entry(2, 1, new byte[0]),
-                new Entry(3, 1, new byte[0])
+                new Entry(2, 1, new byte[0]), // 2
+                new Entry(3, 1, new byte[0]) // 3
         ));
         Assert.assertNotNull(sequence.getEntry(2));
-        sequence.clearAfter(2);
-        Assert.assertEquals(1, sequence.getLastLogIndex());
+        sequence.clearAfter(1);
+        Assert.assertTrue(sequence.isEmpty());
         Assert.assertEquals(2, sequence.getNextLogIndex());
-        Assert.assertNull(sequence.getEntry(2));
+    }
+
+    @Test
+    public void testClearBeforeFirstLogIndex() {
+        EntrySequence sequence = new EntrySequence(1);
+        sequence.append(1, new byte[0], null); // 1
+        sequence.append(2, new byte[0], null); // 2
+        sequence.append(3, new byte[0], null); // 3
+        sequence.clearBefore(1);
+        Assert.assertEquals(1, sequence.getFirstLogIndex());
+        Assert.assertEquals(3, sequence.getLastLogIndex());
+    }
+
+    @Test
+    public void testClearBeforeMiddle() {
+        EntrySequence sequence = new EntrySequence(1);
+        sequence.append(1, new byte[0], null); // 1
+        sequence.append(2, new byte[0], null); // 2
+        sequence.append(3, new byte[0], null); // 3
+        sequence.clearBefore(2);
+        Assert.assertEquals(2, sequence.getFirstLogIndex());
+        Assert.assertEquals(3, sequence.getLastLogIndex());
+    }
+
+    @Test
+    public void testClearBeforeLastLog() {
+        EntrySequence sequence = new EntrySequence(1);
+        sequence.append(1, new byte[0], null); // 1
+        sequence.append(2, new byte[0], null); // 2
+        sequence.append(3, new byte[0], null); // 3
+        sequence.clearBefore(4);
+        Assert.assertTrue(sequence.isEmpty());
+        Assert.assertEquals(4, sequence.getNextLogIndex());
     }
 
 }

@@ -3298,6 +3298,1404 @@ public final class Protos {
 
   }
 
+  public interface EntryListOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:EntryList)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .EntryList.Entry entries = 1;</code>
+     */
+    java.util.List<in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry> 
+        getEntriesList();
+    /**
+     * <code>repeated .EntryList.Entry entries = 1;</code>
+     */
+    in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry getEntries(int index);
+    /**
+     * <code>repeated .EntryList.Entry entries = 1;</code>
+     */
+    int getEntriesCount();
+    /**
+     * <code>repeated .EntryList.Entry entries = 1;</code>
+     */
+    java.util.List<? extends in.xnnyygn.xraft.kvstore.Protos.EntryList.EntryOrBuilder> 
+        getEntriesOrBuilderList();
+    /**
+     * <code>repeated .EntryList.Entry entries = 1;</code>
+     */
+    in.xnnyygn.xraft.kvstore.Protos.EntryList.EntryOrBuilder getEntriesOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code EntryList}
+   */
+  public  static final class EntryList extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:EntryList)
+      EntryListOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use EntryList.newBuilder() to construct.
+    private EntryList(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private EntryList() {
+      entries_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private EntryList(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                entries_ = new java.util.ArrayList<in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              entries_.add(
+                  input.readMessage(in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          entries_ = java.util.Collections.unmodifiableList(entries_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return in.xnnyygn.xraft.kvstore.Protos.internal_static_EntryList_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return in.xnnyygn.xraft.kvstore.Protos.internal_static_EntryList_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              in.xnnyygn.xraft.kvstore.Protos.EntryList.class, in.xnnyygn.xraft.kvstore.Protos.EntryList.Builder.class);
+    }
+
+    public interface EntryOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:EntryList.Entry)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>string key = 1;</code>
+       */
+      java.lang.String getKey();
+      /**
+       * <code>string key = 1;</code>
+       */
+      com.google.protobuf.ByteString
+          getKeyBytes();
+
+      /**
+       * <code>bytes value = 2;</code>
+       */
+      com.google.protobuf.ByteString getValue();
+    }
+    /**
+     * Protobuf type {@code EntryList.Entry}
+     */
+    public  static final class Entry extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:EntryList.Entry)
+        EntryOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use Entry.newBuilder() to construct.
+      private Entry(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private Entry() {
+        key_ = "";
+        value_ = com.google.protobuf.ByteString.EMPTY;
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private Entry(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+
+                key_ = s;
+                break;
+              }
+              case 18: {
+
+                value_ = input.readBytes();
+                break;
+              }
+              default: {
+                if (!parseUnknownFieldProto3(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return in.xnnyygn.xraft.kvstore.Protos.internal_static_EntryList_Entry_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return in.xnnyygn.xraft.kvstore.Protos.internal_static_EntryList_Entry_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.class, in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder.class);
+      }
+
+      public static final int KEY_FIELD_NUMBER = 1;
+      private volatile java.lang.Object key_;
+      /**
+       * <code>string key = 1;</code>
+       */
+      public java.lang.String getKey() {
+        java.lang.Object ref = key_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          key_ = s;
+          return s;
+        }
+      }
+      /**
+       * <code>string key = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getKeyBytes() {
+        java.lang.Object ref = key_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          key_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int VALUE_FIELD_NUMBER = 2;
+      private com.google.protobuf.ByteString value_;
+      /**
+       * <code>bytes value = 2;</code>
+       */
+      public com.google.protobuf.ByteString getValue() {
+        return value_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      @java.lang.Override
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      @java.lang.Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (!getKeyBytes().isEmpty()) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, key_);
+        }
+        if (!value_.isEmpty()) {
+          output.writeBytes(2, value_);
+        }
+        unknownFields.writeTo(output);
+      }
+
+      @java.lang.Override
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (!getKeyBytes().isEmpty()) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, key_);
+        }
+        if (!value_.isEmpty()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBytesSize(2, value_);
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry)) {
+          return super.equals(obj);
+        }
+        in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry other = (in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry) obj;
+
+        boolean result = true;
+        result = result && getKey()
+            .equals(other.getKey());
+        result = result && getValue()
+            .equals(other.getValue());
+        result = result && unknownFields.equals(other.unknownFields);
+        return result;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (37 * hash) + KEY_FIELD_NUMBER;
+        hash = (53 * hash) + getKey().hashCode();
+        hash = (37 * hash) + VALUE_FIELD_NUMBER;
+        hash = (53 * hash) + getValue().hashCode();
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      @java.lang.Override
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      @java.lang.Override
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code EntryList.Entry}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:EntryList.Entry)
+          in.xnnyygn.xraft.kvstore.Protos.EntryList.EntryOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return in.xnnyygn.xraft.kvstore.Protos.internal_static_EntryList_Entry_descriptor;
+        }
+
+        @java.lang.Override
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return in.xnnyygn.xraft.kvstore.Protos.internal_static_EntryList_Entry_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.class, in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder.class);
+        }
+
+        // Construct using in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        @java.lang.Override
+        public Builder clear() {
+          super.clear();
+          key_ = "";
+
+          value_ = com.google.protobuf.ByteString.EMPTY;
+
+          return this;
+        }
+
+        @java.lang.Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return in.xnnyygn.xraft.kvstore.Protos.internal_static_EntryList_Entry_descriptor;
+        }
+
+        @java.lang.Override
+        public in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry getDefaultInstanceForType() {
+          return in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.getDefaultInstance();
+        }
+
+        @java.lang.Override
+        public in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry build() {
+          in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        @java.lang.Override
+        public in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry buildPartial() {
+          in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry result = new in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry(this);
+          result.key_ = key_;
+          result.value_ = value_;
+          onBuilt();
+          return result;
+        }
+
+        @java.lang.Override
+        public Builder clone() {
+          return (Builder) super.clone();
+        }
+        @java.lang.Override
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return (Builder) super.setField(field, value);
+        }
+        @java.lang.Override
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return (Builder) super.clearField(field);
+        }
+        @java.lang.Override
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return (Builder) super.clearOneof(oneof);
+        }
+        @java.lang.Override
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return (Builder) super.setRepeatedField(field, index, value);
+        }
+        @java.lang.Override
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return (Builder) super.addRepeatedField(field, value);
+        }
+        @java.lang.Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry) {
+            return mergeFrom((in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry other) {
+          if (other == in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.getDefaultInstance()) return this;
+          if (!other.getKey().isEmpty()) {
+            key_ = other.key_;
+            onChanged();
+          }
+          if (other.getValue() != com.google.protobuf.ByteString.EMPTY) {
+            setValue(other.getValue());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        @java.lang.Override
+        public final boolean isInitialized() {
+          return true;
+        }
+
+        @java.lang.Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+
+        private java.lang.Object key_ = "";
+        /**
+         * <code>string key = 1;</code>
+         */
+        public java.lang.String getKey() {
+          java.lang.Object ref = key_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            key_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>string key = 1;</code>
+         */
+        public com.google.protobuf.ByteString
+            getKeyBytes() {
+          java.lang.Object ref = key_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            key_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>string key = 1;</code>
+         */
+        public Builder setKey(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  
+          key_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string key = 1;</code>
+         */
+        public Builder clearKey() {
+          
+          key_ = getDefaultInstance().getKey();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string key = 1;</code>
+         */
+        public Builder setKeyBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+          
+          key_ = value;
+          onChanged();
+          return this;
+        }
+
+        private com.google.protobuf.ByteString value_ = com.google.protobuf.ByteString.EMPTY;
+        /**
+         * <code>bytes value = 2;</code>
+         */
+        public com.google.protobuf.ByteString getValue() {
+          return value_;
+        }
+        /**
+         * <code>bytes value = 2;</code>
+         */
+        public Builder setValue(com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  
+          value_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>bytes value = 2;</code>
+         */
+        public Builder clearValue() {
+          
+          value_ = getDefaultInstance().getValue();
+          onChanged();
+          return this;
+        }
+        @java.lang.Override
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFieldsProto3(unknownFields);
+        }
+
+        @java.lang.Override
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:EntryList.Entry)
+      }
+
+      // @@protoc_insertion_point(class_scope:EntryList.Entry)
+      private static final in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry();
+      }
+
+      public static in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      private static final com.google.protobuf.Parser<Entry>
+          PARSER = new com.google.protobuf.AbstractParser<Entry>() {
+        @java.lang.Override
+        public Entry parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          return new Entry(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<Entry> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<Entry> getParserForType() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public static final int ENTRIES_FIELD_NUMBER = 1;
+    private java.util.List<in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry> entries_;
+    /**
+     * <code>repeated .EntryList.Entry entries = 1;</code>
+     */
+    public java.util.List<in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry> getEntriesList() {
+      return entries_;
+    }
+    /**
+     * <code>repeated .EntryList.Entry entries = 1;</code>
+     */
+    public java.util.List<? extends in.xnnyygn.xraft.kvstore.Protos.EntryList.EntryOrBuilder> 
+        getEntriesOrBuilderList() {
+      return entries_;
+    }
+    /**
+     * <code>repeated .EntryList.Entry entries = 1;</code>
+     */
+    public int getEntriesCount() {
+      return entries_.size();
+    }
+    /**
+     * <code>repeated .EntryList.Entry entries = 1;</code>
+     */
+    public in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry getEntries(int index) {
+      return entries_.get(index);
+    }
+    /**
+     * <code>repeated .EntryList.Entry entries = 1;</code>
+     */
+    public in.xnnyygn.xraft.kvstore.Protos.EntryList.EntryOrBuilder getEntriesOrBuilder(
+        int index) {
+      return entries_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < entries_.size(); i++) {
+        output.writeMessage(1, entries_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < entries_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, entries_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof in.xnnyygn.xraft.kvstore.Protos.EntryList)) {
+        return super.equals(obj);
+      }
+      in.xnnyygn.xraft.kvstore.Protos.EntryList other = (in.xnnyygn.xraft.kvstore.Protos.EntryList) obj;
+
+      boolean result = true;
+      result = result && getEntriesList()
+          .equals(other.getEntriesList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getEntriesCount() > 0) {
+        hash = (37 * hash) + ENTRIES_FIELD_NUMBER;
+        hash = (53 * hash) + getEntriesList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(in.xnnyygn.xraft.kvstore.Protos.EntryList prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code EntryList}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:EntryList)
+        in.xnnyygn.xraft.kvstore.Protos.EntryListOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return in.xnnyygn.xraft.kvstore.Protos.internal_static_EntryList_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return in.xnnyygn.xraft.kvstore.Protos.internal_static_EntryList_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                in.xnnyygn.xraft.kvstore.Protos.EntryList.class, in.xnnyygn.xraft.kvstore.Protos.EntryList.Builder.class);
+      }
+
+      // Construct using in.xnnyygn.xraft.kvstore.Protos.EntryList.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getEntriesFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (entriesBuilder_ == null) {
+          entries_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          entriesBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return in.xnnyygn.xraft.kvstore.Protos.internal_static_EntryList_descriptor;
+      }
+
+      @java.lang.Override
+      public in.xnnyygn.xraft.kvstore.Protos.EntryList getDefaultInstanceForType() {
+        return in.xnnyygn.xraft.kvstore.Protos.EntryList.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public in.xnnyygn.xraft.kvstore.Protos.EntryList build() {
+        in.xnnyygn.xraft.kvstore.Protos.EntryList result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public in.xnnyygn.xraft.kvstore.Protos.EntryList buildPartial() {
+        in.xnnyygn.xraft.kvstore.Protos.EntryList result = new in.xnnyygn.xraft.kvstore.Protos.EntryList(this);
+        int from_bitField0_ = bitField0_;
+        if (entriesBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            entries_ = java.util.Collections.unmodifiableList(entries_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.entries_ = entries_;
+        } else {
+          result.entries_ = entriesBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof in.xnnyygn.xraft.kvstore.Protos.EntryList) {
+          return mergeFrom((in.xnnyygn.xraft.kvstore.Protos.EntryList)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(in.xnnyygn.xraft.kvstore.Protos.EntryList other) {
+        if (other == in.xnnyygn.xraft.kvstore.Protos.EntryList.getDefaultInstance()) return this;
+        if (entriesBuilder_ == null) {
+          if (!other.entries_.isEmpty()) {
+            if (entries_.isEmpty()) {
+              entries_ = other.entries_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureEntriesIsMutable();
+              entries_.addAll(other.entries_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.entries_.isEmpty()) {
+            if (entriesBuilder_.isEmpty()) {
+              entriesBuilder_.dispose();
+              entriesBuilder_ = null;
+              entries_ = other.entries_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              entriesBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getEntriesFieldBuilder() : null;
+            } else {
+              entriesBuilder_.addAllMessages(other.entries_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        in.xnnyygn.xraft.kvstore.Protos.EntryList parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (in.xnnyygn.xraft.kvstore.Protos.EntryList) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry> entries_ =
+        java.util.Collections.emptyList();
+      private void ensureEntriesIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          entries_ = new java.util.ArrayList<in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry>(entries_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry, in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder, in.xnnyygn.xraft.kvstore.Protos.EntryList.EntryOrBuilder> entriesBuilder_;
+
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public java.util.List<in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry> getEntriesList() {
+        if (entriesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(entries_);
+        } else {
+          return entriesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public int getEntriesCount() {
+        if (entriesBuilder_ == null) {
+          return entries_.size();
+        } else {
+          return entriesBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry getEntries(int index) {
+        if (entriesBuilder_ == null) {
+          return entries_.get(index);
+        } else {
+          return entriesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public Builder setEntries(
+          int index, in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry value) {
+        if (entriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntriesIsMutable();
+          entries_.set(index, value);
+          onChanged();
+        } else {
+          entriesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public Builder setEntries(
+          int index, in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder builderForValue) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          entriesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public Builder addEntries(in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry value) {
+        if (entriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntriesIsMutable();
+          entries_.add(value);
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public Builder addEntries(
+          int index, in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry value) {
+        if (entriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEntriesIsMutable();
+          entries_.add(index, value);
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public Builder addEntries(
+          in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder builderForValue) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.add(builderForValue.build());
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public Builder addEntries(
+          int index, in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder builderForValue) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          entriesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public Builder addAllEntries(
+          java.lang.Iterable<? extends in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry> values) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, entries_);
+          onChanged();
+        } else {
+          entriesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public Builder clearEntries() {
+        if (entriesBuilder_ == null) {
+          entries_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          entriesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public Builder removeEntries(int index) {
+        if (entriesBuilder_ == null) {
+          ensureEntriesIsMutable();
+          entries_.remove(index);
+          onChanged();
+        } else {
+          entriesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder getEntriesBuilder(
+          int index) {
+        return getEntriesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public in.xnnyygn.xraft.kvstore.Protos.EntryList.EntryOrBuilder getEntriesOrBuilder(
+          int index) {
+        if (entriesBuilder_ == null) {
+          return entries_.get(index);  } else {
+          return entriesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public java.util.List<? extends in.xnnyygn.xraft.kvstore.Protos.EntryList.EntryOrBuilder> 
+           getEntriesOrBuilderList() {
+        if (entriesBuilder_ != null) {
+          return entriesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(entries_);
+        }
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder addEntriesBuilder() {
+        return getEntriesFieldBuilder().addBuilder(
+            in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder addEntriesBuilder(
+          int index) {
+        return getEntriesFieldBuilder().addBuilder(
+            index, in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .EntryList.Entry entries = 1;</code>
+       */
+      public java.util.List<in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder> 
+           getEntriesBuilderList() {
+        return getEntriesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry, in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder, in.xnnyygn.xraft.kvstore.Protos.EntryList.EntryOrBuilder> 
+          getEntriesFieldBuilder() {
+        if (entriesBuilder_ == null) {
+          entriesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry, in.xnnyygn.xraft.kvstore.Protos.EntryList.Entry.Builder, in.xnnyygn.xraft.kvstore.Protos.EntryList.EntryOrBuilder>(
+                  entries_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          entries_ = null;
+        }
+        return entriesBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:EntryList)
+    }
+
+    // @@protoc_insertion_point(class_scope:EntryList)
+    private static final in.xnnyygn.xraft.kvstore.Protos.EntryList DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new in.xnnyygn.xraft.kvstore.Protos.EntryList();
+    }
+
+    public static in.xnnyygn.xraft.kvstore.Protos.EntryList getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<EntryList>
+        PARSER = new com.google.protobuf.AbstractParser<EntryList>() {
+      @java.lang.Override
+      public EntryList parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new EntryList(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<EntryList> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<EntryList> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public in.xnnyygn.xraft.kvstore.Protos.EntryList getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Redirect_descriptor;
   private static final 
@@ -3328,6 +4726,16 @@ public final class Protos {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_GetCommandResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_EntryList_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_EntryList_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_EntryList_Entry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_EntryList_Entry_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -3342,9 +4750,11 @@ public final class Protos {
       "\022\n\nerror_code\030\001 \001(\005\022\017\n\007message\030\002 \001(\t\"(\n\n" +
       "SetCommand\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\014\"\031" +
       "\n\nGetCommand\022\013\n\003key\030\001 \001(\t\"2\n\022GetCommandR" +
-      "esponse\022\r\n\005found\030\001 \001(\010\022\r\n\005value\030\002 \001(\014B\"\n" +
-      "\030in.xnnyygn.xraft.kvstoreB\006Protosb\006proto" +
-      "3"
+      "esponse\022\r\n\005found\030\001 \001(\010\022\r\n\005value\030\002 \001(\014\"S\n" +
+      "\tEntryList\022!\n\007entries\030\001 \003(\0132\020.EntryList." +
+      "Entry\032#\n\005Entry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001" +
+      "(\014B\"\n\030in.xnnyygn.xraft.kvstoreB\006Protosb\006" +
+      "proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -3394,6 +4804,18 @@ public final class Protos {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_GetCommandResponse_descriptor,
         new java.lang.String[] { "Found", "Value", });
+    internal_static_EntryList_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_EntryList_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_EntryList_descriptor,
+        new java.lang.String[] { "Entries", });
+    internal_static_EntryList_Entry_descriptor =
+      internal_static_EntryList_descriptor.getNestedTypes().get(0);
+    internal_static_EntryList_Entry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_EntryList_Entry_descriptor,
+        new java.lang.String[] { "Key", "Value", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

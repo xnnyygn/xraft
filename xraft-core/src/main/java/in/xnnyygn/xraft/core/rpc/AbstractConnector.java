@@ -67,6 +67,23 @@ public abstract class AbstractConnector implements Connector {
         }
     }
 
+    @Override
+    public void sendInstallSnapshot(InstallSnapshotRpc rpc, NodeId destinationNodeId) {
+        logger.debug("send {} to {}", rpc, destinationNodeId);
+        AbstractNode node = this.nodeGroup.find(destinationNodeId);
+        try {
+            getChannel(node).writeInstallSnapshotRpc(rpc, this.selfNodeId);
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    @Override
+    public void replyInstallSnapshot(InstallSnapshotResult result, InstallSnapshotRpcMessage rpcMessage) {
+        logger.debug("reply {} to {}", result, rpcMessage.getSourceNodeId());
+        getChannel(rpcMessage).writeInstallSnapshotResult(result, this.selfNodeId, rpcMessage.get());
+    }
+
     protected abstract Channel getChannel(AbstractNode node);
 
     protected <T> Channel getChannel(AbstractRpcMessage<T> rpcMessage) {

@@ -3612,6 +3612,1414 @@ public final class Protos {
 
   }
 
+  public interface InstallSnapshotRpcOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:InstallSnapshotRpc)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 term = 1;</code>
+     */
+    int getTerm();
+
+    /**
+     * <code>string leader_id = 2;</code>
+     */
+    java.lang.String getLeaderId();
+    /**
+     * <code>string leader_id = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getLeaderIdBytes();
+
+    /**
+     * <code>int32 last_included_index = 3;</code>
+     */
+    int getLastIncludedIndex();
+
+    /**
+     * <code>int32 last_included_term = 4;</code>
+     */
+    int getLastIncludedTerm();
+
+    /**
+     * <code>int32 offset = 5;</code>
+     */
+    int getOffset();
+
+    /**
+     * <code>bytes data = 6;</code>
+     */
+    com.google.protobuf.ByteString getData();
+
+    /**
+     * <code>bool done = 7;</code>
+     */
+    boolean getDone();
+  }
+  /**
+   * Protobuf type {@code InstallSnapshotRpc}
+   */
+  public  static final class InstallSnapshotRpc extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:InstallSnapshotRpc)
+      InstallSnapshotRpcOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use InstallSnapshotRpc.newBuilder() to construct.
+    private InstallSnapshotRpc(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private InstallSnapshotRpc() {
+      term_ = 0;
+      leaderId_ = "";
+      lastIncludedIndex_ = 0;
+      lastIncludedTerm_ = 0;
+      offset_ = 0;
+      data_ = com.google.protobuf.ByteString.EMPTY;
+      done_ = false;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private InstallSnapshotRpc(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              term_ = input.readInt32();
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              leaderId_ = s;
+              break;
+            }
+            case 24: {
+
+              lastIncludedIndex_ = input.readInt32();
+              break;
+            }
+            case 32: {
+
+              lastIncludedTerm_ = input.readInt32();
+              break;
+            }
+            case 40: {
+
+              offset_ = input.readInt32();
+              break;
+            }
+            case 50: {
+
+              data_ = input.readBytes();
+              break;
+            }
+            case 56: {
+
+              done_ = input.readBool();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return in.xnnyygn.xraft.core.rpc.Protos.internal_static_InstallSnapshotRpc_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return in.xnnyygn.xraft.core.rpc.Protos.internal_static_InstallSnapshotRpc_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc.class, in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc.Builder.class);
+    }
+
+    public static final int TERM_FIELD_NUMBER = 1;
+    private int term_;
+    /**
+     * <code>int32 term = 1;</code>
+     */
+    public int getTerm() {
+      return term_;
+    }
+
+    public static final int LEADER_ID_FIELD_NUMBER = 2;
+    private volatile java.lang.Object leaderId_;
+    /**
+     * <code>string leader_id = 2;</code>
+     */
+    public java.lang.String getLeaderId() {
+      java.lang.Object ref = leaderId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        leaderId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string leader_id = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getLeaderIdBytes() {
+      java.lang.Object ref = leaderId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        leaderId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int LAST_INCLUDED_INDEX_FIELD_NUMBER = 3;
+    private int lastIncludedIndex_;
+    /**
+     * <code>int32 last_included_index = 3;</code>
+     */
+    public int getLastIncludedIndex() {
+      return lastIncludedIndex_;
+    }
+
+    public static final int LAST_INCLUDED_TERM_FIELD_NUMBER = 4;
+    private int lastIncludedTerm_;
+    /**
+     * <code>int32 last_included_term = 4;</code>
+     */
+    public int getLastIncludedTerm() {
+      return lastIncludedTerm_;
+    }
+
+    public static final int OFFSET_FIELD_NUMBER = 5;
+    private int offset_;
+    /**
+     * <code>int32 offset = 5;</code>
+     */
+    public int getOffset() {
+      return offset_;
+    }
+
+    public static final int DATA_FIELD_NUMBER = 6;
+    private com.google.protobuf.ByteString data_;
+    /**
+     * <code>bytes data = 6;</code>
+     */
+    public com.google.protobuf.ByteString getData() {
+      return data_;
+    }
+
+    public static final int DONE_FIELD_NUMBER = 7;
+    private boolean done_;
+    /**
+     * <code>bool done = 7;</code>
+     */
+    public boolean getDone() {
+      return done_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (term_ != 0) {
+        output.writeInt32(1, term_);
+      }
+      if (!getLeaderIdBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, leaderId_);
+      }
+      if (lastIncludedIndex_ != 0) {
+        output.writeInt32(3, lastIncludedIndex_);
+      }
+      if (lastIncludedTerm_ != 0) {
+        output.writeInt32(4, lastIncludedTerm_);
+      }
+      if (offset_ != 0) {
+        output.writeInt32(5, offset_);
+      }
+      if (!data_.isEmpty()) {
+        output.writeBytes(6, data_);
+      }
+      if (done_ != false) {
+        output.writeBool(7, done_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (term_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, term_);
+      }
+      if (!getLeaderIdBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, leaderId_);
+      }
+      if (lastIncludedIndex_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, lastIncludedIndex_);
+      }
+      if (lastIncludedTerm_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, lastIncludedTerm_);
+      }
+      if (offset_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(5, offset_);
+      }
+      if (!data_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, data_);
+      }
+      if (done_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(7, done_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc)) {
+        return super.equals(obj);
+      }
+      in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc other = (in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc) obj;
+
+      boolean result = true;
+      result = result && (getTerm()
+          == other.getTerm());
+      result = result && getLeaderId()
+          .equals(other.getLeaderId());
+      result = result && (getLastIncludedIndex()
+          == other.getLastIncludedIndex());
+      result = result && (getLastIncludedTerm()
+          == other.getLastIncludedTerm());
+      result = result && (getOffset()
+          == other.getOffset());
+      result = result && getData()
+          .equals(other.getData());
+      result = result && (getDone()
+          == other.getDone());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TERM_FIELD_NUMBER;
+      hash = (53 * hash) + getTerm();
+      hash = (37 * hash) + LEADER_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getLeaderId().hashCode();
+      hash = (37 * hash) + LAST_INCLUDED_INDEX_FIELD_NUMBER;
+      hash = (53 * hash) + getLastIncludedIndex();
+      hash = (37 * hash) + LAST_INCLUDED_TERM_FIELD_NUMBER;
+      hash = (53 * hash) + getLastIncludedTerm();
+      hash = (37 * hash) + OFFSET_FIELD_NUMBER;
+      hash = (53 * hash) + getOffset();
+      hash = (37 * hash) + DATA_FIELD_NUMBER;
+      hash = (53 * hash) + getData().hashCode();
+      hash = (37 * hash) + DONE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getDone());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code InstallSnapshotRpc}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:InstallSnapshotRpc)
+        in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpcOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return in.xnnyygn.xraft.core.rpc.Protos.internal_static_InstallSnapshotRpc_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return in.xnnyygn.xraft.core.rpc.Protos.internal_static_InstallSnapshotRpc_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc.class, in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc.Builder.class);
+      }
+
+      // Construct using in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        term_ = 0;
+
+        leaderId_ = "";
+
+        lastIncludedIndex_ = 0;
+
+        lastIncludedTerm_ = 0;
+
+        offset_ = 0;
+
+        data_ = com.google.protobuf.ByteString.EMPTY;
+
+        done_ = false;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return in.xnnyygn.xraft.core.rpc.Protos.internal_static_InstallSnapshotRpc_descriptor;
+      }
+
+      @java.lang.Override
+      public in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc getDefaultInstanceForType() {
+        return in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc build() {
+        in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc buildPartial() {
+        in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc result = new in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc(this);
+        result.term_ = term_;
+        result.leaderId_ = leaderId_;
+        result.lastIncludedIndex_ = lastIncludedIndex_;
+        result.lastIncludedTerm_ = lastIncludedTerm_;
+        result.offset_ = offset_;
+        result.data_ = data_;
+        result.done_ = done_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc) {
+          return mergeFrom((in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc other) {
+        if (other == in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc.getDefaultInstance()) return this;
+        if (other.getTerm() != 0) {
+          setTerm(other.getTerm());
+        }
+        if (!other.getLeaderId().isEmpty()) {
+          leaderId_ = other.leaderId_;
+          onChanged();
+        }
+        if (other.getLastIncludedIndex() != 0) {
+          setLastIncludedIndex(other.getLastIncludedIndex());
+        }
+        if (other.getLastIncludedTerm() != 0) {
+          setLastIncludedTerm(other.getLastIncludedTerm());
+        }
+        if (other.getOffset() != 0) {
+          setOffset(other.getOffset());
+        }
+        if (other.getData() != com.google.protobuf.ByteString.EMPTY) {
+          setData(other.getData());
+        }
+        if (other.getDone() != false) {
+          setDone(other.getDone());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int term_ ;
+      /**
+       * <code>int32 term = 1;</code>
+       */
+      public int getTerm() {
+        return term_;
+      }
+      /**
+       * <code>int32 term = 1;</code>
+       */
+      public Builder setTerm(int value) {
+        
+        term_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 term = 1;</code>
+       */
+      public Builder clearTerm() {
+        
+        term_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object leaderId_ = "";
+      /**
+       * <code>string leader_id = 2;</code>
+       */
+      public java.lang.String getLeaderId() {
+        java.lang.Object ref = leaderId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          leaderId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string leader_id = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getLeaderIdBytes() {
+        java.lang.Object ref = leaderId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          leaderId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string leader_id = 2;</code>
+       */
+      public Builder setLeaderId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        leaderId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string leader_id = 2;</code>
+       */
+      public Builder clearLeaderId() {
+        
+        leaderId_ = getDefaultInstance().getLeaderId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string leader_id = 2;</code>
+       */
+      public Builder setLeaderIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        leaderId_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int lastIncludedIndex_ ;
+      /**
+       * <code>int32 last_included_index = 3;</code>
+       */
+      public int getLastIncludedIndex() {
+        return lastIncludedIndex_;
+      }
+      /**
+       * <code>int32 last_included_index = 3;</code>
+       */
+      public Builder setLastIncludedIndex(int value) {
+        
+        lastIncludedIndex_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 last_included_index = 3;</code>
+       */
+      public Builder clearLastIncludedIndex() {
+        
+        lastIncludedIndex_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int lastIncludedTerm_ ;
+      /**
+       * <code>int32 last_included_term = 4;</code>
+       */
+      public int getLastIncludedTerm() {
+        return lastIncludedTerm_;
+      }
+      /**
+       * <code>int32 last_included_term = 4;</code>
+       */
+      public Builder setLastIncludedTerm(int value) {
+        
+        lastIncludedTerm_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 last_included_term = 4;</code>
+       */
+      public Builder clearLastIncludedTerm() {
+        
+        lastIncludedTerm_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int offset_ ;
+      /**
+       * <code>int32 offset = 5;</code>
+       */
+      public int getOffset() {
+        return offset_;
+      }
+      /**
+       * <code>int32 offset = 5;</code>
+       */
+      public Builder setOffset(int value) {
+        
+        offset_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 offset = 5;</code>
+       */
+      public Builder clearOffset() {
+        
+        offset_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes data = 6;</code>
+       */
+      public com.google.protobuf.ByteString getData() {
+        return data_;
+      }
+      /**
+       * <code>bytes data = 6;</code>
+       */
+      public Builder setData(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        data_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes data = 6;</code>
+       */
+      public Builder clearData() {
+        
+        data_ = getDefaultInstance().getData();
+        onChanged();
+        return this;
+      }
+
+      private boolean done_ ;
+      /**
+       * <code>bool done = 7;</code>
+       */
+      public boolean getDone() {
+        return done_;
+      }
+      /**
+       * <code>bool done = 7;</code>
+       */
+      public Builder setDone(boolean value) {
+        
+        done_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool done = 7;</code>
+       */
+      public Builder clearDone() {
+        
+        done_ = false;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:InstallSnapshotRpc)
+    }
+
+    // @@protoc_insertion_point(class_scope:InstallSnapshotRpc)
+    private static final in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc();
+    }
+
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<InstallSnapshotRpc>
+        PARSER = new com.google.protobuf.AbstractParser<InstallSnapshotRpc>() {
+      @java.lang.Override
+      public InstallSnapshotRpc parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new InstallSnapshotRpc(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<InstallSnapshotRpc> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<InstallSnapshotRpc> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotRpc getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface InstallSnapshotResultOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:InstallSnapshotResult)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>int32 term = 1;</code>
+     */
+    int getTerm();
+  }
+  /**
+   * Protobuf type {@code InstallSnapshotResult}
+   */
+  public  static final class InstallSnapshotResult extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:InstallSnapshotResult)
+      InstallSnapshotResultOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use InstallSnapshotResult.newBuilder() to construct.
+    private InstallSnapshotResult(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private InstallSnapshotResult() {
+      term_ = 0;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private InstallSnapshotResult(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              term_ = input.readInt32();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return in.xnnyygn.xraft.core.rpc.Protos.internal_static_InstallSnapshotResult_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return in.xnnyygn.xraft.core.rpc.Protos.internal_static_InstallSnapshotResult_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult.class, in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult.Builder.class);
+    }
+
+    public static final int TERM_FIELD_NUMBER = 1;
+    private int term_;
+    /**
+     * <code>int32 term = 1;</code>
+     */
+    public int getTerm() {
+      return term_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (term_ != 0) {
+        output.writeInt32(1, term_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (term_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, term_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult)) {
+        return super.equals(obj);
+      }
+      in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult other = (in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult) obj;
+
+      boolean result = true;
+      result = result && (getTerm()
+          == other.getTerm());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TERM_FIELD_NUMBER;
+      hash = (53 * hash) + getTerm();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code InstallSnapshotResult}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:InstallSnapshotResult)
+        in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResultOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return in.xnnyygn.xraft.core.rpc.Protos.internal_static_InstallSnapshotResult_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return in.xnnyygn.xraft.core.rpc.Protos.internal_static_InstallSnapshotResult_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult.class, in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult.Builder.class);
+      }
+
+      // Construct using in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        term_ = 0;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return in.xnnyygn.xraft.core.rpc.Protos.internal_static_InstallSnapshotResult_descriptor;
+      }
+
+      @java.lang.Override
+      public in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult getDefaultInstanceForType() {
+        return in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult build() {
+        in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult buildPartial() {
+        in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult result = new in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult(this);
+        result.term_ = term_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult) {
+          return mergeFrom((in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult other) {
+        if (other == in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult.getDefaultInstance()) return this;
+        if (other.getTerm() != 0) {
+          setTerm(other.getTerm());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int term_ ;
+      /**
+       * <code>int32 term = 1;</code>
+       */
+      public int getTerm() {
+        return term_;
+      }
+      /**
+       * <code>int32 term = 1;</code>
+       */
+      public Builder setTerm(int value) {
+        
+        term_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 term = 1;</code>
+       */
+      public Builder clearTerm() {
+        
+        term_ = 0;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:InstallSnapshotResult)
+    }
+
+    // @@protoc_insertion_point(class_scope:InstallSnapshotResult)
+    private static final in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult();
+    }
+
+    public static in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<InstallSnapshotResult>
+        PARSER = new com.google.protobuf.AbstractParser<InstallSnapshotResult>() {
+      @java.lang.Override
+      public InstallSnapshotResult parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new InstallSnapshotResult(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<InstallSnapshotResult> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<InstallSnapshotResult> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public in.xnnyygn.xraft.core.rpc.Protos.InstallSnapshotResult getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_RequestVoteRpc_descriptor;
   private static final 
@@ -3637,6 +5045,16 @@ public final class Protos {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_AppendEntriesResult_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_InstallSnapshotRpc_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_InstallSnapshotRpc_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_InstallSnapshotResult_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_InstallSnapshotResult_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -3657,8 +5075,13 @@ public final class Protos {
       "(\0132\027.AppendEntriesRpc.Entry\0325\n\005Entry\022\r\n\005" +
       "index\030\001 \001(\005\022\014\n\004term\030\002 \001(\005\022\017\n\007command\030\003 \001" +
       "(\014\"4\n\023AppendEntriesResult\022\014\n\004term\030\001 \001(\005\022" +
-      "\017\n\007success\030\002 \001(\010B#\n\031in.xnnyygn.xraft.cor" +
-      "e.rpcB\006Protosb\006proto3"
+      "\017\n\007success\030\002 \001(\010\"\232\001\n\022InstallSnapshotRpc\022" +
+      "\014\n\004term\030\001 \001(\005\022\021\n\tleader_id\030\002 \001(\t\022\033\n\023last" +
+      "_included_index\030\003 \001(\005\022\032\n\022last_included_t" +
+      "erm\030\004 \001(\005\022\016\n\006offset\030\005 \001(\005\022\014\n\004data\030\006 \001(\014\022" +
+      "\014\n\004done\030\007 \001(\010\"%\n\025InstallSnapshotResult\022\014" +
+      "\n\004term\030\001 \001(\005B#\n\031in.xnnyygn.xraft.core.rp" +
+      "cB\006Protosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -3702,6 +5125,18 @@ public final class Protos {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_AppendEntriesResult_descriptor,
         new java.lang.String[] { "Term", "Success", });
+    internal_static_InstallSnapshotRpc_descriptor =
+      getDescriptor().getMessageTypes().get(4);
+    internal_static_InstallSnapshotRpc_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_InstallSnapshotRpc_descriptor,
+        new java.lang.String[] { "Term", "LeaderId", "LastIncludedIndex", "LastIncludedTerm", "Offset", "Data", "Done", });
+    internal_static_InstallSnapshotResult_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_InstallSnapshotResult_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_InstallSnapshotResult_descriptor,
+        new java.lang.String[] { "Term", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

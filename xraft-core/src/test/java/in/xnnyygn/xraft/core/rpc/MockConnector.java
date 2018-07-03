@@ -40,6 +40,18 @@ public class MockConnector implements Connector {
         this.destinationNodeId = rpcMessage.getSourceNodeId();
     }
 
+    @Override
+    public void sendInstallSnapshot(InstallSnapshotRpc rpc, NodeId destinationNodeId) {
+        this.rpc = rpc;
+        this.destinationNodeId = destinationNodeId;
+    }
+
+    @Override
+    public void replyInstallSnapshot(InstallSnapshotResult result, InstallSnapshotRpcMessage rpcMessage) {
+        this.result = result;
+        this.destinationNodeId = rpcMessage.getSourceNodeId();
+    }
+
     public Object getRpc() {
         return rpc;
     }

@@ -15,9 +15,10 @@ public abstract class AbstractHandler extends ChannelDuplexHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractHandler.class);
     protected final EventBus eventBus;
-    protected NodeId remoteId;
+    NodeId remoteId;
     protected Channel channel;
     private AppendEntriesRpc lastAppendEntriesRpc;
+    private InstallSnapshotRpc lastInstallSnapshotRpc;
 
     AbstractHandler(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -41,6 +42,14 @@ public abstract class AbstractHandler extends ChannelDuplexHandler {
             assert this.lastAppendEntriesRpc != null;
             this.eventBus.post(new AppendEntriesResultMessage(result, this.remoteId, this.lastAppendEntriesRpc));
             this.lastAppendEntriesRpc = null;
+        } else if (msg instanceof InstallSnapshotRpc) {
+            InstallSnapshotRpc rpc = (InstallSnapshotRpc) msg;
+            this.eventBus.post(new InstallSnapshotRpcMessage(rpc, this.remoteId, this.channel));
+        } else if (msg instanceof InstallSnapshotResult) {
+            InstallSnapshotResult result = (InstallSnapshotResult) msg;
+            assert this.lastInstallSnapshotRpc != null;
+            this.eventBus.post(new InstallSnapshotResultMessage(result, this.remoteId, this.lastInstallSnapshotRpc));
+            this.lastInstallSnapshotRpc = null;
         }
     }
 
@@ -48,6 +57,8 @@ public abstract class AbstractHandler extends ChannelDuplexHandler {
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         if (msg instanceof AppendEntriesRpc) {
             this.lastAppendEntriesRpc = (AppendEntriesRpc) msg;
+        } else if (msg instanceof InstallSnapshotRpc) {
+            this.lastInstallSnapshotRpc = (InstallSnapshotRpc) msg;
         }
         super.write(ctx, msg, promise);
     }

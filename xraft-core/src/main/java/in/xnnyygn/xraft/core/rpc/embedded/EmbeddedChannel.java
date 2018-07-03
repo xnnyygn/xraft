@@ -34,6 +34,16 @@ public class EmbeddedChannel implements Channel {
     }
 
     @Override
+    public void writeInstallSnapshotRpc(InstallSnapshotRpc rpc, NodeId senderId) {
+        this.eventBus.post(new InstallSnapshotRpcMessage(rpc, senderId, null));
+    }
+
+    @Override
+    public void writeInstallSnapshotResult(InstallSnapshotResult result, NodeId senderId, InstallSnapshotRpc rpc) {
+        this.eventBus.post(new InstallSnapshotResultMessage(result, senderId, rpc));
+    }
+
+    @Override
     public void close() {
     }
 

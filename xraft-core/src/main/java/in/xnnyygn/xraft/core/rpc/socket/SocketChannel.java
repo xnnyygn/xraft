@@ -204,6 +204,15 @@ public class SocketChannel implements DirectionalChannel {
         this.writeMessage(MSG_TYPE_APPEND_ENTRIES_RESULT, protoResult, result);
     }
 
+    @Override
+    public void writeInstallSnapshotRpc(InstallSnapshotRpc rpc, NodeId senderId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void writeInstallSnapshotResult(InstallSnapshotResult result, NodeId senderId, InstallSnapshotRpc rpc) {
+        throw new UnsupportedOperationException();
+    }
 
     private void writeMessage(int messageType, MessageLite message, Object originalMessage) {
         this.executorService.submit(() -> {

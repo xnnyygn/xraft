@@ -60,6 +60,22 @@ public class Encoder extends MessageToByteEncoder<Object> {
                     .setSuccess(result.isSuccess())
                     .build();
             this.writeMessage(out, MessageConstants.MSG_TYPE_APPEND_ENTRIES_RESULT, protoResult);
+        } else if (msg instanceof InstallSnapshotRpc) {
+            InstallSnapshotRpc rpc = (InstallSnapshotRpc) msg;
+            Protos.InstallSnapshotRpc protoRpc = Protos.InstallSnapshotRpc.newBuilder()
+                    .setTerm(rpc.getTerm())
+                    .setLeaderId(rpc.getLeaderId().getValue())
+                    .setLastIncludedIndex(rpc.getLastIncludedIndex())
+                    .setLastIncludedTerm(rpc.getLastIncludedTerm())
+                    .setOffset(rpc.getOffset())
+                    .setData(ByteString.copyFrom(rpc.getData()))
+                    .setDone(rpc.isDone()).build();
+            this.writeMessage(out, MessageConstants.MSG_TYPE_INSTALL_SNAPSHOT_PRC, protoRpc);
+        } else if (msg instanceof InstallSnapshotResult) {
+            InstallSnapshotResult result = (InstallSnapshotResult) msg;
+            Protos.InstallSnapshotResult protoResult = Protos.InstallSnapshotResult.newBuilder()
+                    .setTerm(result.getTerm()).build();
+            this.writeMessage(out, MessageConstants.MSG_TYPE_INSTALL_SNAPSHOT_RESULT, protoResult);
         }
     }
 

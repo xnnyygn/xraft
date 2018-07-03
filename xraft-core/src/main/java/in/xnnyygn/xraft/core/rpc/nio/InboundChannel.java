@@ -2,10 +2,7 @@ package in.xnnyygn.xraft.core.rpc.nio;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.Channel;
-import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
-import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
-import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
-import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
+import in.xnnyygn.xraft.core.rpc.message.*;
 
 public class InboundChannel implements Channel {
 
@@ -34,6 +31,16 @@ public class InboundChannel implements Channel {
 
     @Override
     public void writeAppendEntriesResult(AppendEntriesResult result, NodeId senderId, AppendEntriesRpc rpc) {
+        this.write(result);
+    }
+
+    @Override
+    public void writeInstallSnapshotRpc(InstallSnapshotRpc rpc, NodeId senderId) {
+        this.write(rpc);
+    }
+
+    @Override
+    public void writeInstallSnapshotResult(InstallSnapshotResult result, NodeId senderId, InstallSnapshotRpc rpc) {
         this.write(result);
     }
 

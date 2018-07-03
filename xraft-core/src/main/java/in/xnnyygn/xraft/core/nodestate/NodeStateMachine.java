@@ -9,10 +9,7 @@ import in.xnnyygn.xraft.core.log.ReplicationStateTracker;
 import in.xnnyygn.xraft.core.node.NodeContext;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.*;
-import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResultMessage;
-import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpcMessage;
-import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
-import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpcMessage;
+import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
 import org.slf4j.Logger;
@@ -77,7 +74,6 @@ public class NodeStateMachine implements NodeStateContext {
     @Subscribe
     public void onReceive(RequestVoteRpcMessage rpcMessage) {
         this.runWithMonitor(() -> {
-            logger.debug("receive {} from {}", rpcMessage.get(), rpcMessage.getSourceNodeId());
             this.nodeState.onReceiveRequestVoteRpc(this, rpcMessage);
         });
     }
@@ -85,7 +81,6 @@ public class NodeStateMachine implements NodeStateContext {
     @Subscribe
     public void onReceive(RequestVoteResult result) {
         this.runWithMonitor(() -> {
-            logger.debug("receive {}", result);
             this.nodeState.onReceiveRequestVoteResult(this, result);
         });
     }
@@ -93,16 +88,29 @@ public class NodeStateMachine implements NodeStateContext {
     @Subscribe
     public void onReceive(AppendEntriesRpcMessage rpcMessage) {
         this.runWithMonitor(() -> {
-            logger.debug("receive {} from {}", rpcMessage.get(), rpcMessage.getSourceNodeId());
             this.nodeState.onReceiveAppendEntriesRpc(this, rpcMessage);
         });
     }
 
     @Subscribe
-    public void onReceive(AppendEntriesResultMessage message) {
+    public void onReceive(AppendEntriesResultMessage resultMessage) {
         this.runWithMonitor(() -> {
-            logger.debug("receive {} from {}", message.getResult(), message.getSourceNodeId());
-            this.nodeState.onReceiveAppendEntriesResult(this, message.getResult(), message.getSourceNodeId(), message.getRpc());
+            this.nodeState.onReceiveAppendEntriesResult(this, resultMessage.getResult(), resultMessage.getSourceNodeId(), resultMessage.getRpc());
+        });
+    }
+
+    @Subscribe
+    public void onReceive(InstallSnapshotRpcMessage rpcMessage) {
+        this.runWithMonitor(() -> {
+            this.nodeState.onReceiveInstallSnapshotRpc(this, rpcMessage);
+        });
+    }
+
+    @Subscribe
+    public void onReceive(InstallSnapshotResultMessage resultMessage) {
+        this.runWithMonitor(() -> {
+            // TODO add channel to result message
+            this.nodeState.onReceiveInstallSnapshotResult(this, resultMessage.getResult(), resultMessage.getSourceNodeId(), resultMessage.getRpc());
         });
     }
 
@@ -120,7 +128,7 @@ public class NodeStateMachine implements NodeStateContext {
     public ReplicationStateTracker createReplicationStateTracker() {
         Set<NodeId> nodeIds = new HashSet<>(this.nodeContext.getNodeGroup().getNodeIds());
         nodeIds.remove(this.nodeContext.getSelfNodeId());
-        return new ReplicationStateTracker(nodeIds, this.nodeContext.getLog().getLastLogIndex() + 1);
+        return new ReplicationStateTracker(nodeIds, this.nodeContext.getLog().getNextLogIndex());
     }
 
     @Override

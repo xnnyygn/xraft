@@ -2,6 +2,8 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.log.CommandApplier;
 import in.xnnyygn.xraft.core.log.EntryApplierAdapter;
+import in.xnnyygn.xraft.core.log.SnapshotApplier;
+import in.xnnyygn.xraft.core.log.SnapshotGenerator;
 import in.xnnyygn.xraft.core.nodestate.NodeRole;
 import in.xnnyygn.xraft.core.nodestate.NodeStateMachine;
 import in.xnnyygn.xraft.core.nodestate.NodeStateSnapshot;
@@ -33,6 +35,14 @@ public class Node extends AbstractNode {
 
     public void setCommandApplier(CommandApplier applier) {
         this.context.getLog().setEntryApplier(new EntryApplierAdapter(applier));
+    }
+
+    public void setSnapshotGenerator(SnapshotGenerator generator) {
+        this.context.getLog().setSnapshotGenerator(generator);
+    }
+
+    public void setSnapshotApplier(SnapshotApplier applier) {
+        this.context.getLog().setSnapshotApplier(applier);
     }
 
     public void appendLog(byte[] command, CommandApplier applier) {

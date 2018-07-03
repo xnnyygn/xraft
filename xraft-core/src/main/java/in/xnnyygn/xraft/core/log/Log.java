@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.log;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
+import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 
 public interface Log {
@@ -23,12 +24,20 @@ public interface Log {
 
     AppendEntriesRpc createAppendEntriesRpc(int term, NodeId selfNodeId, int nextIndex, int maxEntries);
 
+    InstallSnapshotRpc createInstallSnapshotRpc(int term, NodeId selfNodeId, int offset);
+
     void advanceCommitIndexIfAvailable(int newCommitIndex);
 
-    int getLastLogIndex();
+    int getNextLogIndex();
 
     boolean isNewerThan(int lastLogIndex, int lastLogTerm);
 
     void setEntryApplier(EntryApplier applier);
+
+    void installSnapshot(InstallSnapshotRpc rpc);
+
+    void setSnapshotGenerator(SnapshotGenerator generator);
+
+    void setSnapshotApplier(SnapshotApplier applier);
 
 }

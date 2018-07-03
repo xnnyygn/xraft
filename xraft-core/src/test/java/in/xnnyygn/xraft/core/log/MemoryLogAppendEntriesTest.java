@@ -28,7 +28,7 @@ public class MemoryLogAppendEntriesTest {
                 new Entry(2, 1, COMMAND)
         ));
         Assert.assertTrue(log.appendEntries(rpc));
-        Assert.assertEquals(2, log.getLastLogIndex());
+        Assert.assertEquals(3, log.getNextLogIndex());
     }
 
     @Test

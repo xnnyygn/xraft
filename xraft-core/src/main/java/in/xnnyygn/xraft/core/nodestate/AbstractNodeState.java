@@ -182,4 +182,39 @@ public abstract class AbstractNodeState {
     }
 
 
+    public void onReceiveInstallSnapshotRpc(NodeStateContext context, InstallSnapshotRpcMessage rpcMessage) {
+        InstallSnapshotRpc rpc = rpcMessage.get();
+        if (rpc.getTerm() < this.term) {
+            context.getConnector().replyInstallSnapshot(new InstallSnapshotResult(this.term), rpcMessage);
+            return;
+        }
+
+        if (rpc.getTerm() > this.term) {
+            this.cancelTimeoutOrTask();
+            FollowerNodeState newNodeState = new FollowerNodeState(rpc.getTerm(), null, null, context.scheduleElectionTimeout());
+            context.changeToNodeState(newNodeState);
+            newNodeState.processInstallSnapshotRpc(context, rpcMessage);
+        } else {
+            processInstallSnapshotRpc(context, rpcMessage);
+        }
+        context.getConnector().replyInstallSnapshot(new InstallSnapshotResult(rpc.getTerm()), rpcMessage);
+    }
+
+    protected void processInstallSnapshotRpc(NodeStateContext context, InstallSnapshotRpcMessage rpcMessage) {
+    }
+
+    public void onReceiveInstallSnapshotResult(NodeStateContext context, InstallSnapshotResult result, NodeId sourceNodeId, InstallSnapshotRpc rpc) {
+        // TODO extract method
+        if (result.getTerm() > this.term) {
+            this.cancelTimeoutOrTask();
+            context.changeToNodeState(new FollowerNodeState(result.getTerm(), null, null, context.scheduleElectionTimeout()));
+            return;
+        }
+
+        processInstallSnapshotResult(context, result, sourceNodeId, rpc);
+    }
+
+    protected void processInstallSnapshotResult(NodeStateContext context, InstallSnapshotResult result, NodeId sourceNodeId, InstallSnapshotRpc rpc) {
+    }
+
 }

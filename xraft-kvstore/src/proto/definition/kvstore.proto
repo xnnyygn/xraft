@@ -28,3 +28,10 @@ message GetCommandResponse {
     bytes value = 2;
 }
 
+message EntryList {
+    message Entry {
+        string key = 1;
+        bytes value = 2;
+    }
+    repeated Entry entries = 1;
+}

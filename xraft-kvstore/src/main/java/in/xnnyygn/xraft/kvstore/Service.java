@@ -1,6 +1,10 @@
 package in.xnnyygn.xraft.kvstore;
 
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import in.xnnyygn.xraft.core.log.CommandApplier;
+import in.xnnyygn.xraft.core.log.SnapshotApplier;
+import in.xnnyygn.xraft.core.log.SnapshotGenerator;
 import in.xnnyygn.xraft.core.node.Node;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.nodestate.NodeRole;
@@ -9,28 +13,21 @@ import in.xnnyygn.xraft.kvstore.message.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Service implements CommandApplier {
+public class Service implements CommandApplier, SnapshotGenerator, SnapshotApplier {
 
     private static final Logger logger = LoggerFactory.getLogger(Service.class);
     private final Node node;
-    private final Map<String, byte[]> map = new HashMap<>();
+    private Map<String, byte[]> map = new HashMap<>();
 
     public Service(Node node) {
         this.node = node;
         this.node.setCommandApplier(this);
-    }
-
-    public void set(String key, byte[] value) {
-        logger.info("set {}", key);
-        this.map.put(key, value);
-    }
-
-    public byte[] get(String key) {
-        logger.info("get {}", key);
-        return this.map.get(key);
+        this.node.setSnapshotGenerator(this);
+        this.node.setSnapshotApplier(this);
     }
 
     public void set(CommandRequest<SetCommand> setCommandRequest) {
@@ -62,6 +59,17 @@ public class Service implements CommandApplier {
         this.map.put(command.getKey(), command.getValue());
     }
 
+    @Override
+    public byte[] generateSnapshot() {
+        return toSnapshot(this.map);
+    }
+
+    @Override
+    public void applySnapshot(byte[] snapshot) {
+        logger.info("apply snapshot");
+        this.map = fromSnapshot(snapshot);
+    }
+
     private Redirect checkLeadership() {
         NodeStateSnapshot state = this.node.getNodeState();
         if (state.getRole() == NodeRole.FOLLOWER) {
@@ -73,6 +81,31 @@ public class Service implements CommandApplier {
             return new Redirect(null);
         }
         return null;
+    }
+
+    static byte[] toSnapshot(Map<String, byte[]> map) {
+        Protos.EntryList.Builder entryList = Protos.EntryList.newBuilder();
+        for (Map.Entry<String, byte[]> entry : map.entrySet()) {
+            entryList.addEntries(
+                    Protos.EntryList.Entry.newBuilder()
+                            .setKey(entry.getKey())
+                            .setValue(ByteString.copyFrom(entry.getValue())).build()
+            );
+        }
+        return entryList.build().toByteArray();
+    }
+
+    static Map<String, byte[]> fromSnapshot(byte[] snapshot) {
+        Map<String, byte[]> map = new HashMap<>();
+        try {
+            Protos.EntryList entryList = Protos.EntryList.parseFrom(snapshot);
+            for (Protos.EntryList.Entry entry : entryList.getEntriesList()) {
+                map.put(entry.getKey(), entry.getValue().toByteArray());
+            }
+            return map;
+        } catch (InvalidProtocolBufferException e) {
+            throw new IllegalStateException("failed to load map from snapshot", e);
+        }
     }
 
 }

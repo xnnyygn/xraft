@@ -3,15 +3,13 @@ package in.xnnyygn.xraft.core.rpc.nio;
 import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.Channel;
-import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
-import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
-import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
-import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
+import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.rpc.socket.SocketEndpoint;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO AbstractNioChannel
 public class OutboundChannel implements Channel {
 
     private static final Logger logger = LoggerFactory.getLogger(OutboundChannel.class);
@@ -42,6 +40,16 @@ public class OutboundChannel implements Channel {
     @Override
     public void writeAppendEntriesResult(AppendEntriesResult result, NodeId senderId, AppendEntriesRpc rpc) {
         this.write(result);
+    }
+
+    @Override
+    public void writeInstallSnapshotResult(InstallSnapshotResult result, NodeId senderId, InstallSnapshotRpc rpc) {
+        this.write(result);
+    }
+
+    @Override
+    public void writeInstallSnapshotRpc(InstallSnapshotRpc rpc, NodeId senderId) {
+        this.write(rpc);
     }
 
     private void write(Object message) {

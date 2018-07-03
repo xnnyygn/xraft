@@ -1,9 +1,6 @@
 package in.xnnyygn.xraft.core.nodestate;
 
-import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
-import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
-import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
-import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
+import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 
 public class CandidateNodeState extends AbstractNodeState {

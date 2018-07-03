@@ -56,6 +56,10 @@ public class InstallSnapshotRpc {
         return data;
     }
 
+    public int getDataLength() {
+        return this.data.length;
+    }
+
     public void setData(byte[] data) {
         this.data = data;
     }

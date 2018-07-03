@@ -62,6 +62,22 @@ public class Decoder extends ByteToMessageDecoder {
                 Protos.AppendEntriesResult protoAEResult = Protos.AppendEntriesResult.parseFrom(payload);
                 out.add(new AppendEntriesResult(protoAEResult.getTerm(), protoAEResult.getSuccess()));
                 break;
+            case MessageConstants.MSG_TYPE_INSTALL_SNAPSHOT_PRC:
+                Protos.InstallSnapshotRpc protoISRpc = Protos.InstallSnapshotRpc.parseFrom(payload);
+                InstallSnapshotRpc isRpc = new InstallSnapshotRpc();
+                isRpc.setTerm(protoISRpc.getTerm());
+                isRpc.setLeaderId(new NodeId(protoISRpc.getLeaderId()));
+                isRpc.setLastIncludedIndex(protoISRpc.getLastIncludedIndex());
+                isRpc.setLastIncludedTerm(protoISRpc.getLastIncludedTerm());
+                isRpc.setOffset(protoISRpc.getOffset());
+                isRpc.setData(protoISRpc.getData().toByteArray());
+                isRpc.setDone(protoISRpc.getDone());
+                out.add(isRpc);
+                break;
+            case MessageConstants.MSG_TYPE_INSTALL_SNAPSHOT_RESULT:
+                Protos.InstallSnapshotResult protoISResult = Protos.InstallSnapshotResult.parseFrom(payload);
+                out.add(new InstallSnapshotResult(protoISResult.getTerm()));
+                break;
         }
 
     }
