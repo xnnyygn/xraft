@@ -7,7 +7,6 @@ import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class MemoryLog implements Log {
@@ -23,6 +22,15 @@ public class MemoryLog implements Log {
     private SnapshotApplier snapshotApplier = new NullSnapshotApplier();
     private int commitIndex = 0;
     private int lastApplied = 0;
+
+    public MemoryLog() {
+        this(new EmptySnapshot(), new EntrySequence());
+    }
+
+    public MemoryLog(Snapshot snapshot, EntrySequence entrySequence) {
+        this.snapshot = snapshot;
+        this.entrySequence = entrySequence;
+    }
 
     @Override
     public void appendEntry(int term) {
@@ -66,8 +74,11 @@ public class MemoryLog implements Log {
         RequestVoteRpc rpc = new RequestVoteRpc();
         rpc.setTerm(term);
         rpc.setCandidateId(selfNodeId);
-        Entry lastEntry = this.entrySequence.getLastEntry();
-        if (lastEntry != null) {
+        if (this.entrySequence.isEmpty()) {
+            rpc.setLastLogIndex(this.snapshot.getLastIncludedIndex());
+            rpc.setLastLogTerm(this.snapshot.getLastIncludedTerm());
+        } else {
+            Entry lastEntry = this.entrySequence.getLastEntry();
             rpc.setLastLogIndex(lastEntry.getIndex());
             rpc.setLastLogTerm(lastEntry.getTerm());
         }

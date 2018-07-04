@@ -17,7 +17,6 @@ public interface Connector {
 
     void sendInstallSnapshot(InstallSnapshotRpc rpc, NodeId destinationNodeId);
 
-    // TODO replace second parameter with channel
     void replyInstallSnapshot(InstallSnapshotResult result, InstallSnapshotRpcMessage rpcMessage);
 
     void resetChannels();

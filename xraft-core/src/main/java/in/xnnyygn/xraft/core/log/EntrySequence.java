@@ -18,8 +18,8 @@ public class EntrySequence {
         this.nextLogIndex = logIndexOffset;
     }
 
+    // TODO refactor EntryApplier
     public void append(int term, byte[] command, EntryApplier applier) {
-        // increase next log index
         this.entries.add(new Entry(this.nextLogIndex++, term, command, applier));
     }
 

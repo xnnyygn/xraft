@@ -4,7 +4,7 @@ public class EntryInSnapshotException extends RuntimeException {
 
     private final int index;
 
-    public EntryInSnapshotException(int index) {
+    EntryInSnapshotException(int index) {
         this.index = index;
     }
 

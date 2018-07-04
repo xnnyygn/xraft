@@ -36,6 +36,7 @@ public interface Log {
 
     void installSnapshot(InstallSnapshotRpc rpc);
 
+    // TODO rename to enableSnapshot?
     void setSnapshotGenerator(SnapshotGenerator generator);
 
     void setSnapshotApplier(SnapshotApplier applier);
