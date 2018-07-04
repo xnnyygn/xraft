@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.core.rpc.nio;
 
-import in.xnnyygn.xraft.core.log.Entry;
+import in.xnnyygn.xraft.core.log.entry.GeneralEntry;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.Protos;
 import in.xnnyygn.xraft.core.rpc.message.*;
@@ -54,7 +54,7 @@ public class Decoder extends ByteToMessageDecoder {
                 aeRpc.setPrevLogIndex(protoAERpc.getPrevLogIndex());
                 aeRpc.setPrevLogTerm(protoAERpc.getPrevLogTerm());
                 aeRpc.setEntries(protoAERpc.getEntriesList().stream().map(e ->
-                        new Entry(e.getIndex(), e.getTerm(), e.getCommand().toByteArray())
+                        new GeneralEntry(e.getIndex(), e.getTerm(), e.getCommand().toByteArray())
                 ).collect(Collectors.toList()));
                 out.add(aeRpc);
                 break;

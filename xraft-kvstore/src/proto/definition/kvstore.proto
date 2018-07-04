@@ -15,8 +15,9 @@ message Failure {
 }
 
 message SetCommand {
-    string key = 1;
-    bytes value = 2;
+    string request_id = 1;
+    string key = 2;
+    bytes value = 3;
 }
 
 message GetCommand {

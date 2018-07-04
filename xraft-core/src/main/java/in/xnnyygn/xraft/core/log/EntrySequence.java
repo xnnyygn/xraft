@@ -1,5 +1,9 @@
 package in.xnnyygn.xraft.core.log;
 
+import in.xnnyygn.xraft.core.log.entry.Entry;
+import in.xnnyygn.xraft.core.log.entry.GeneralEntry;
+import in.xnnyygn.xraft.core.log.entry.NoOpEntry;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +22,12 @@ public class EntrySequence {
         this.nextLogIndex = logIndexOffset;
     }
 
-    // TODO refactor EntryApplier
-    public void append(int term, byte[] command, EntryApplier applier) {
-        this.entries.add(new Entry(this.nextLogIndex++, term, command, applier));
+    public void append(int term) {
+        this.entries.add(new NoOpEntry(this.nextLogIndex++, term));
+    }
+
+    public void append(int term, byte[] commandBytes) {
+        this.entries.add(new GeneralEntry(this.nextLogIndex++, term, commandBytes));
     }
 
     public void appendEntries(List<Entry> entries) {

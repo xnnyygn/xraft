@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.log;
+package in.xnnyygn.xraft.core.log.snapshot;
 
 public class MemorySnapshot implements Snapshot {
 
@@ -6,7 +6,7 @@ public class MemorySnapshot implements Snapshot {
     private final int lastIncludedTerm;
     private final byte[] data;
 
-    MemorySnapshot(int lastIncludedIndex, int lastIncludedTerm, byte[] data) {
+    public MemorySnapshot(int lastIncludedIndex, int lastIncludedTerm, byte[] data) {
         this.lastIncludedIndex = lastIncludedIndex;
         this.lastIncludedTerm = lastIncludedTerm;
         this.data = data;

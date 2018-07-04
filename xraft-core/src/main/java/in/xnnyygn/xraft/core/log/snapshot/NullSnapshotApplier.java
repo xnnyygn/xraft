@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.log;
+package in.xnnyygn.xraft.core.log.snapshot;
 
 public class NullSnapshotApplier implements SnapshotApplier {
 

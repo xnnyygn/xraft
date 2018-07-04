@@ -1,5 +1,6 @@
-package in.xnnyygn.xraft.core.log;
+package in.xnnyygn.xraft.core.log.snapshot;
 
+import in.xnnyygn.xraft.core.log.LogException;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 
 import java.io.ByteArrayOutputStream;
@@ -12,7 +13,7 @@ public class MemorySnapshotBuilder {
     private final int lastIncludedTerm;
     private int offset;
 
-    MemorySnapshotBuilder(InstallSnapshotRpc firstRpc) {
+    public MemorySnapshotBuilder(InstallSnapshotRpc firstRpc) {
         assert firstRpc.getOffset() == 0;
 
         this.output = new ByteArrayOutputStream();
@@ -27,7 +28,7 @@ public class MemorySnapshotBuilder {
         this.offset = firstRpc.getDataLength();
     }
 
-    void append(InstallSnapshotRpc rpc) {
+    public void append(InstallSnapshotRpc rpc) {
         if (rpc.getOffset() != this.offset) {
             throw new IllegalStateException("unexpected offset, expected " + this.offset + ", but was " + rpc.getOffset());
         }

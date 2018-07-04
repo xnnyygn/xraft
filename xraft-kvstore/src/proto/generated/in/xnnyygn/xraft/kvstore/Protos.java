@@ -1594,17 +1594,27 @@ public final class Protos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string key = 1;</code>
+     * <code>string request_id = 1;</code>
+     */
+    java.lang.String getRequestId();
+    /**
+     * <code>string request_id = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getRequestIdBytes();
+
+    /**
+     * <code>string key = 2;</code>
      */
     java.lang.String getKey();
     /**
-     * <code>string key = 1;</code>
+     * <code>string key = 2;</code>
      */
     com.google.protobuf.ByteString
         getKeyBytes();
 
     /**
-     * <code>bytes value = 2;</code>
+     * <code>bytes value = 3;</code>
      */
     com.google.protobuf.ByteString getValue();
   }
@@ -1621,6 +1631,7 @@ public final class Protos {
       super(builder);
     }
     private SetCommand() {
+      requestId_ = "";
       key_ = "";
       value_ = com.google.protobuf.ByteString.EMPTY;
     }
@@ -1652,10 +1663,16 @@ public final class Protos {
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              key_ = s;
+              requestId_ = s;
               break;
             }
             case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              key_ = s;
+              break;
+            }
+            case 26: {
 
               value_ = input.readBytes();
               break;
@@ -1692,10 +1709,44 @@ public final class Protos {
               in.xnnyygn.xraft.kvstore.Protos.SetCommand.class, in.xnnyygn.xraft.kvstore.Protos.SetCommand.Builder.class);
     }
 
-    public static final int KEY_FIELD_NUMBER = 1;
+    public static final int REQUEST_ID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object requestId_;
+    /**
+     * <code>string request_id = 1;</code>
+     */
+    public java.lang.String getRequestId() {
+      java.lang.Object ref = requestId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        requestId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string request_id = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getRequestIdBytes() {
+      java.lang.Object ref = requestId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        requestId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int KEY_FIELD_NUMBER = 2;
     private volatile java.lang.Object key_;
     /**
-     * <code>string key = 1;</code>
+     * <code>string key = 2;</code>
      */
     public java.lang.String getKey() {
       java.lang.Object ref = key_;
@@ -1710,7 +1761,7 @@ public final class Protos {
       }
     }
     /**
-     * <code>string key = 1;</code>
+     * <code>string key = 2;</code>
      */
     public com.google.protobuf.ByteString
         getKeyBytes() {
@@ -1726,10 +1777,10 @@ public final class Protos {
       }
     }
 
-    public static final int VALUE_FIELD_NUMBER = 2;
+    public static final int VALUE_FIELD_NUMBER = 3;
     private com.google.protobuf.ByteString value_;
     /**
-     * <code>bytes value = 2;</code>
+     * <code>bytes value = 3;</code>
      */
     public com.google.protobuf.ByteString getValue() {
       return value_;
@@ -1749,11 +1800,14 @@ public final class Protos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      if (!getRequestIdBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, requestId_);
+      }
       if (!getKeyBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, key_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, key_);
       }
       if (!value_.isEmpty()) {
-        output.writeBytes(2, value_);
+        output.writeBytes(3, value_);
       }
       unknownFields.writeTo(output);
     }
@@ -1764,12 +1818,15 @@ public final class Protos {
       if (size != -1) return size;
 
       size = 0;
+      if (!getRequestIdBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, requestId_);
+      }
       if (!getKeyBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, key_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, key_);
       }
       if (!value_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, value_);
+          .computeBytesSize(3, value_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1787,6 +1844,8 @@ public final class Protos {
       in.xnnyygn.xraft.kvstore.Protos.SetCommand other = (in.xnnyygn.xraft.kvstore.Protos.SetCommand) obj;
 
       boolean result = true;
+      result = result && getRequestId()
+          .equals(other.getRequestId());
       result = result && getKey()
           .equals(other.getKey());
       result = result && getValue()
@@ -1802,6 +1861,8 @@ public final class Protos {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + REQUEST_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getRequestId().hashCode();
       hash = (37 * hash) + KEY_FIELD_NUMBER;
       hash = (53 * hash) + getKey().hashCode();
       hash = (37 * hash) + VALUE_FIELD_NUMBER;
@@ -1939,6 +2000,8 @@ public final class Protos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        requestId_ = "";
+
         key_ = "";
 
         value_ = com.google.protobuf.ByteString.EMPTY;
@@ -1969,6 +2032,7 @@ public final class Protos {
       @java.lang.Override
       public in.xnnyygn.xraft.kvstore.Protos.SetCommand buildPartial() {
         in.xnnyygn.xraft.kvstore.Protos.SetCommand result = new in.xnnyygn.xraft.kvstore.Protos.SetCommand(this);
+        result.requestId_ = requestId_;
         result.key_ = key_;
         result.value_ = value_;
         onBuilt();
@@ -2019,6 +2083,10 @@ public final class Protos {
 
       public Builder mergeFrom(in.xnnyygn.xraft.kvstore.Protos.SetCommand other) {
         if (other == in.xnnyygn.xraft.kvstore.Protos.SetCommand.getDefaultInstance()) return this;
+        if (!other.getRequestId().isEmpty()) {
+          requestId_ = other.requestId_;
+          onChanged();
+        }
         if (!other.getKey().isEmpty()) {
           key_ = other.key_;
           onChanged();
@@ -2055,9 +2123,78 @@ public final class Protos {
         return this;
       }
 
+      private java.lang.Object requestId_ = "";
+      /**
+       * <code>string request_id = 1;</code>
+       */
+      public java.lang.String getRequestId() {
+        java.lang.Object ref = requestId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          requestId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string request_id = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getRequestIdBytes() {
+        java.lang.Object ref = requestId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          requestId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string request_id = 1;</code>
+       */
+      public Builder setRequestId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        requestId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string request_id = 1;</code>
+       */
+      public Builder clearRequestId() {
+        
+        requestId_ = getDefaultInstance().getRequestId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string request_id = 1;</code>
+       */
+      public Builder setRequestIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        requestId_ = value;
+        onChanged();
+        return this;
+      }
+
       private java.lang.Object key_ = "";
       /**
-       * <code>string key = 1;</code>
+       * <code>string key = 2;</code>
        */
       public java.lang.String getKey() {
         java.lang.Object ref = key_;
@@ -2072,7 +2209,7 @@ public final class Protos {
         }
       }
       /**
-       * <code>string key = 1;</code>
+       * <code>string key = 2;</code>
        */
       public com.google.protobuf.ByteString
           getKeyBytes() {
@@ -2088,7 +2225,7 @@ public final class Protos {
         }
       }
       /**
-       * <code>string key = 1;</code>
+       * <code>string key = 2;</code>
        */
       public Builder setKey(
           java.lang.String value) {
@@ -2101,7 +2238,7 @@ public final class Protos {
         return this;
       }
       /**
-       * <code>string key = 1;</code>
+       * <code>string key = 2;</code>
        */
       public Builder clearKey() {
         
@@ -2110,7 +2247,7 @@ public final class Protos {
         return this;
       }
       /**
-       * <code>string key = 1;</code>
+       * <code>string key = 2;</code>
        */
       public Builder setKeyBytes(
           com.google.protobuf.ByteString value) {
@@ -2126,13 +2263,13 @@ public final class Protos {
 
       private com.google.protobuf.ByteString value_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes value = 2;</code>
+       * <code>bytes value = 3;</code>
        */
       public com.google.protobuf.ByteString getValue() {
         return value_;
       }
       /**
-       * <code>bytes value = 2;</code>
+       * <code>bytes value = 3;</code>
        */
       public Builder setValue(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -2144,7 +2281,7 @@ public final class Protos {
         return this;
       }
       /**
-       * <code>bytes value = 2;</code>
+       * <code>bytes value = 3;</code>
        */
       public Builder clearValue() {
         
@@ -4747,14 +4884,14 @@ public final class Protos {
     java.lang.String[] descriptorData = {
       "\n\030definition/kvstore.proto\"\035\n\010Redirect\022\021" +
       "\n\tleader_id\030\001 \001(\t\"\t\n\007Success\".\n\007Failure\022" +
-      "\022\n\nerror_code\030\001 \001(\005\022\017\n\007message\030\002 \001(\t\"(\n\n" +
-      "SetCommand\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\014\"\031" +
-      "\n\nGetCommand\022\013\n\003key\030\001 \001(\t\"2\n\022GetCommandR" +
-      "esponse\022\r\n\005found\030\001 \001(\010\022\r\n\005value\030\002 \001(\014\"S\n" +
-      "\tEntryList\022!\n\007entries\030\001 \003(\0132\020.EntryList." +
-      "Entry\032#\n\005Entry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001" +
-      "(\014B\"\n\030in.xnnyygn.xraft.kvstoreB\006Protosb\006" +
-      "proto3"
+      "\022\n\nerror_code\030\001 \001(\005\022\017\n\007message\030\002 \001(\t\"<\n\n" +
+      "SetCommand\022\022\n\nrequest_id\030\001 \001(\t\022\013\n\003key\030\002 " +
+      "\001(\t\022\r\n\005value\030\003 \001(\014\"\031\n\nGetCommand\022\013\n\003key\030" +
+      "\001 \001(\t\"2\n\022GetCommandResponse\022\r\n\005found\030\001 \001" +
+      "(\010\022\r\n\005value\030\002 \001(\014\"S\n\tEntryList\022!\n\007entrie" +
+      "s\030\001 \003(\0132\020.EntryList.Entry\032#\n\005Entry\022\013\n\003ke" +
+      "y\030\001 \001(\t\022\r\n\005value\030\002 \001(\014B\"\n\030in.xnnyygn.xra" +
+      "ft.kvstoreB\006Protosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -4791,7 +4928,7 @@ public final class Protos {
     internal_static_SetCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SetCommand_descriptor,
-        new java.lang.String[] { "Key", "Value", });
+        new java.lang.String[] { "RequestId", "Key", "Value", });
     internal_static_GetCommand_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_GetCommand_fieldAccessorTable = new

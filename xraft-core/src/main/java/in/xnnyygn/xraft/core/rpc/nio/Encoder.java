@@ -48,7 +48,7 @@ public class Encoder extends MessageToByteEncoder<Object> {
                                     Protos.AppendEntriesRpc.Entry.newBuilder()
                                             .setIndex(e.getIndex())
                                             .setTerm(e.getTerm())
-                                            .setCommand(ByteString.copyFrom(e.getCommand()))
+                                            .setCommand(ByteString.copyFrom(e.getCommandBytes()))
                                             .build()
                             ).collect(Collectors.toList())
                     ).build();

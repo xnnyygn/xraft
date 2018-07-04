@@ -1,5 +1,8 @@
 package in.xnnyygn.xraft.core.log;
 
+import in.xnnyygn.xraft.core.log.entry.Entry;
+import in.xnnyygn.xraft.core.log.entry.GeneralEntry;
+import in.xnnyygn.xraft.core.log.snapshot.*;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
@@ -34,19 +37,12 @@ public class MemoryLog implements Log {
 
     @Override
     public void appendEntry(int term) {
-        logger.debug("add no-op entry, term {}", term);
-        this.appendEntry(term, new byte[0], null);
+        this.entrySequence.append(term);
     }
 
     @Override
-    public void appendEntry(int term, byte[] command) {
-        this.appendEntry(term, command, null);
-    }
-
-    @Override
-    public void appendEntry(int term, byte[] command, EntryApplier applier) {
-        logger.info("append entry, term {}", term);
-        this.entrySequence.append(term, command, applier);
+    public void appendEntry(int term, byte[] commandBytes) {
+        this.entrySequence.append(term, commandBytes);
     }
 
     @Override
@@ -166,13 +162,8 @@ public class MemoryLog implements Log {
 
     private void applyEntry(Entry entry) {
         // skip no-op entry
-        if (!entry.isEmpty()) {
-            EntryApplier entryApplier = entry.removeApplier();
-            if (entryApplier != null) {
-                entryApplier.applyEntry(entry);
-            } else {
-                this.entryApplier.applyEntry(entry);
-            }
+        if (entry instanceof GeneralEntry) {
+            this.entryApplier.applyEntry(entry);
         }
         this.lastApplied = entry.getIndex();
     }

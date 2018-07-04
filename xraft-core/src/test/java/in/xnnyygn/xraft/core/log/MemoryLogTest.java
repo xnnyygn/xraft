@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.log;
 
+import in.xnnyygn.xraft.core.log.snapshot.MemorySnapshot;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
@@ -30,7 +31,7 @@ public class MemoryLogTest {
 
     @Test
     public void testCreateAppendEntriesRpcOneLogEntry() {
-        log.appendEntry(1, new byte[0], null);
+        log.appendEntry(1, new byte[0]);
         AppendEntriesRpc rpc = log.createAppendEntriesRpc(1, new NodeId("A"), 2, -1);
         Assert.assertEquals(1, rpc.getTerm());
         Assert.assertEquals(1, rpc.getPrevLogIndex());
@@ -40,8 +41,8 @@ public class MemoryLogTest {
 
     @Test
     public void testCreateAppendEntriesRpcTwoLogEntries() {
-        log.appendEntry(1, new byte[0], null);
-        log.appendEntry(1, new byte[0], null);
+        log.appendEntry(1, new byte[0]);
+        log.appendEntry(1, new byte[0]);
         AppendEntriesRpc rpc = log.createAppendEntriesRpc(1, new NodeId("A"), 2, -1);
         Assert.assertEquals(1, rpc.getTerm());
         Assert.assertEquals(1, rpc.getPrevLogIndex());

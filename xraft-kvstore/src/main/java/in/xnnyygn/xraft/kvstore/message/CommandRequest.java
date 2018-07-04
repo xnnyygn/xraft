@@ -1,6 +1,7 @@
 package in.xnnyygn.xraft.kvstore.message;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 
 public class CommandRequest<T> {
 
@@ -14,6 +15,10 @@ public class CommandRequest<T> {
 
     public void reply(Object response) {
         this.channel.writeAndFlush(response);
+    }
+
+    public void addCloseListener(Runnable runnable) {
+        this.channel.closeFuture().addListener((ChannelFutureListener) future -> runnable.run());
     }
 
     public T getCommand() {

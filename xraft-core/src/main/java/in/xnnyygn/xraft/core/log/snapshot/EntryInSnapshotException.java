@@ -1,10 +1,10 @@
-package in.xnnyygn.xraft.core.log;
+package in.xnnyygn.xraft.core.log.snapshot;
 
 public class EntryInSnapshotException extends RuntimeException {
 
     private final int index;
 
-    EntryInSnapshotException(int index) {
+    public EntryInSnapshotException(int index) {
         this.index = index;
     }
 

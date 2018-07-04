@@ -1,5 +1,7 @@
 package in.xnnyygn.xraft.core.log;
 
+import in.xnnyygn.xraft.core.log.snapshot.SnapshotApplier;
+import in.xnnyygn.xraft.core.log.snapshot.SnapshotGenerator;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
@@ -15,8 +17,6 @@ public interface Log {
     void appendEntry(int term);
 
     void appendEntry(int term, byte[] command);
-
-    void appendEntry(int term, byte[] command, EntryApplier applier);
 
     boolean appendEntries(AppendEntriesRpc rpc);
 

@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.log;
 
+import in.xnnyygn.xraft.core.log.entry.GeneralEntry;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,8 +25,8 @@ public class MemoryLogAppendEntriesTest {
     public void testAppendEntriesFresh() {
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setEntries(Arrays.asList(
-                new Entry(1, 1, COMMAND),
-                new Entry(2, 1, COMMAND)
+                new GeneralEntry(1, 1, COMMAND),
+                new GeneralEntry(2, 1, COMMAND)
         ));
         Assert.assertTrue(log.appendEntries(rpc));
         Assert.assertEquals(3, log.getNextLogIndex());
@@ -41,7 +42,7 @@ public class MemoryLogAppendEntriesTest {
 
     @Test
     public void testAppendEntriesPrevLogTermNotMatch() {
-        log.appendEntry(1, COMMAND, null);
+        log.appendEntry(1, COMMAND);
 
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setPrevLogIndex(1);
@@ -51,7 +52,7 @@ public class MemoryLogAppendEntriesTest {
 
     @Test
     public void testAppendEntriesHeartbeat() {
-        log.appendEntry(1, COMMAND, null);
+        log.appendEntry(1, COMMAND);
 
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setPrevLogIndex(1);
@@ -61,74 +62,74 @@ public class MemoryLogAppendEntriesTest {
 
     @Test
     public void testAppendEntriesSkip() {
-        log.appendEntry(1, COMMAND, null); // 1
-        log.appendEntry(1, COMMAND, null); // 2
+        log.appendEntry(1, COMMAND); // 1
+        log.appendEntry(1, COMMAND); // 2
 
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setPrevLogIndex(1);
         rpc.setPrevLogTerm(1);
         rpc.setEntries(Arrays.asList(
-                new Entry(2, 1, COMMAND),
-                new Entry(3, 2, COMMAND)
+                new GeneralEntry(2, 1, COMMAND),
+                new GeneralEntry(3, 2, COMMAND)
         ));
         Assert.assertTrue(log.appendEntries(rpc));
     }
 
     @Test
     public void testAppendEntriesNoConflict() {
-        log.appendEntry(1, COMMAND, null); // 1
+        log.appendEntry(1, COMMAND); // 1
 
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setPrevLogIndex(1);
         rpc.setPrevLogTerm(1);
         rpc.setEntries(Arrays.asList(
-                new Entry(2, 1, COMMAND),
-                new Entry(3, 1, COMMAND)
+                new GeneralEntry(2, 1, COMMAND),
+                new GeneralEntry(3, 1, COMMAND)
         ));
         Assert.assertTrue(log.appendEntries(rpc));
     }
 
     @Test
     public void testAppendEntriesConflict1() {
-        log.appendEntry(1, COMMAND, null); // 1
-        log.appendEntry(1, COMMAND, null); // 2
+        log.appendEntry(1, COMMAND); // 1
+        log.appendEntry(1, COMMAND); // 2
 
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setPrevLogIndex(1);
         rpc.setPrevLogTerm(1);
         rpc.setEntries(Arrays.asList(
-                new Entry(2, 2, COMMAND),
-                new Entry(3, 2, COMMAND)
+                new GeneralEntry(2, 2, COMMAND),
+                new GeneralEntry(3, 2, COMMAND)
         ));
         Assert.assertTrue(log.appendEntries(rpc));
     }
 
     @Test
     public void testAppendEntriesConflict2() {
-        log.appendEntry(1, COMMAND, null); // 1
-        log.appendEntry(1, COMMAND, null); // 2
-        log.appendEntry(1, COMMAND, null); // 3
+        log.appendEntry(1, COMMAND); // 1
+        log.appendEntry(1, COMMAND); // 2
+        log.appendEntry(1, COMMAND); // 3
 
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setPrevLogIndex(1);
         rpc.setPrevLogTerm(1);
         rpc.setEntries(Arrays.asList(
-                new Entry(2, 1, COMMAND),
-                new Entry(3, 2, COMMAND)
+                new GeneralEntry(2, 1, COMMAND),
+                new GeneralEntry(3, 2, COMMAND)
         ));
         Assert.assertTrue(log.appendEntries(rpc));
     }
 
     @Test
     public void testAppendEntriesApplyLeaderCommit() {
-        log.appendEntry(1, COMMAND, null); // 1
+        log.appendEntry(1, COMMAND); // 1
 
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setPrevLogIndex(1);
         rpc.setPrevLogTerm(1);
         rpc.setEntries(Arrays.asList(
-                new Entry(2, 1, COMMAND),
-                new Entry(3, 2, COMMAND)
+                new GeneralEntry(2, 1, COMMAND),
+                new GeneralEntry(3, 2, COMMAND)
         ));
         rpc.setLeaderCommit(2);
         Assert.assertTrue(log.appendEntries(rpc));
@@ -139,14 +140,14 @@ public class MemoryLogAppendEntriesTest {
 
     @Test
     public void testAppendEntriesApplyLastEntryIndex() {
-        log.appendEntry(1, COMMAND, null); // 1
+        log.appendEntry(1, COMMAND); // 1
 
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setPrevLogIndex(1);
         rpc.setPrevLogTerm(1);
         rpc.setEntries(Arrays.asList(
-                new Entry(2, 1, COMMAND),
-                new Entry(3, 2, COMMAND)
+                new GeneralEntry(2, 1, COMMAND),
+                new GeneralEntry(3, 2, COMMAND)
         ));
         rpc.setLeaderCommit(4);
         Assert.assertTrue(log.appendEntries(rpc));

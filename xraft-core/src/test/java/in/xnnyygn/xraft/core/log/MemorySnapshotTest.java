@@ -1,5 +1,7 @@
 package in.xnnyygn.xraft.core.log;
 
+import in.xnnyygn.xraft.core.log.snapshot.MemorySnapshot;
+import in.xnnyygn.xraft.core.log.snapshot.SnapshotChunk;
 import org.junit.Assert;
 import org.junit.Test;
 

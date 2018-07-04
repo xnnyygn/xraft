@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.core.nodestate;
 
-import in.xnnyygn.xraft.core.log.EntryInSnapshotException;
+import in.xnnyygn.xraft.core.log.snapshot.EntryInSnapshotException;
 import in.xnnyygn.xraft.core.log.ReplicationState;
 import in.xnnyygn.xraft.core.log.ReplicationStateTracker;
 import in.xnnyygn.xraft.core.node.NodeId;

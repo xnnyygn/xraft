@@ -46,13 +46,13 @@ public class NodeStateMachine implements NodeStateContext {
         return this.nodeState.takeSnapshot();
     }
 
-    public void appendLog(byte[] command, EntryApplier applier) {
+    public void appendLog(byte[] command) {
         if (this.nodeState.getRole() != NodeRole.LEADER) {
             throw new IllegalStateException("only leader can append log");
         }
 
         this.runWithMonitor(() -> {
-            this.nodeContext.getLog().appendEntry(this.nodeState.getTerm(), command, applier);
+            this.nodeContext.getLog().appendEntry(this.nodeState.getTerm(), command);
             this.nodeState.replicateLog(this);
         });
     }

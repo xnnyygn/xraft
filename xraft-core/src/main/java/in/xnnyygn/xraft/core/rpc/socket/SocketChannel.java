@@ -3,7 +3,7 @@ package in.xnnyygn.xraft.core.rpc.socket;
 import com.google.common.eventbus.EventBus;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageLite;
-import in.xnnyygn.xraft.core.log.Entry;
+import in.xnnyygn.xraft.core.log.entry.GeneralEntry;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.ChannelException;
 import in.xnnyygn.xraft.core.rpc.DirectionalChannel;
@@ -140,7 +140,7 @@ public class SocketChannel implements DirectionalChannel {
                 aeRpc.setPrevLogIndex(protoAERpc.getPrevLogIndex());
                 aeRpc.setPrevLogTerm(protoAERpc.getPrevLogTerm());
                 aeRpc.setEntries(protoAERpc.getEntriesList().stream().map(e ->
-                        new Entry(e.getIndex(), e.getTerm(), e.getCommand().toByteArray())
+                        new GeneralEntry(e.getIndex(), e.getTerm(), e.getCommand().toByteArray())
                 ).collect(Collectors.toList()));
                 this.eventBus.post(new AppendEntriesRpcMessage(aeRpc, this.remoteId, this));
                 break;
@@ -188,7 +188,7 @@ public class SocketChannel implements DirectionalChannel {
                                 Protos.AppendEntriesRpc.Entry.newBuilder()
                                         .setIndex(e.getIndex())
                                         .setTerm(e.getTerm())
-                                        .setCommand(ByteString.copyFrom(e.getCommand()))
+                                        .setCommand(ByteString.copyFrom(e.getCommandBytes()))
                                         .build()
                         ).collect(Collectors.toList())
                 ).build();

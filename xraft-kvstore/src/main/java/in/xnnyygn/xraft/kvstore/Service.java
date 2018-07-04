@@ -3,8 +3,8 @@ package in.xnnyygn.xraft.kvstore;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import in.xnnyygn.xraft.core.log.CommandApplier;
-import in.xnnyygn.xraft.core.log.SnapshotApplier;
-import in.xnnyygn.xraft.core.log.SnapshotGenerator;
+import in.xnnyygn.xraft.core.log.snapshot.SnapshotApplier;
+import in.xnnyygn.xraft.core.log.snapshot.SnapshotGenerator;
 import in.xnnyygn.xraft.core.node.Node;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.nodestate.NodeRole;
@@ -13,14 +13,16 @@ import in.xnnyygn.xraft.kvstore.message.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class Service implements CommandApplier, SnapshotGenerator, SnapshotApplier {
 
     private static final Logger logger = LoggerFactory.getLogger(Service.class);
     private final Node node;
+    private final ConcurrentMap<String, CommandRequest<?>> pendingCommands = new ConcurrentHashMap<>();
     private Map<String, byte[]> map = new HashMap<>();
 
     public Service(Node node) {
@@ -30,33 +32,37 @@ public class Service implements CommandApplier, SnapshotGenerator, SnapshotAppli
         this.node.setSnapshotApplier(this);
     }
 
-    public void set(CommandRequest<SetCommand> setCommandRequest) {
+    public void set(CommandRequest<SetCommand> commandRequest) {
         Redirect redirect = checkLeadership();
         if (redirect != null) {
-            setCommandRequest.reply(redirect);
+            commandRequest.reply(redirect);
             return;
         }
 
-        logger.info("set {}", setCommandRequest.getCommand().getKey());
-        this.node.appendLog(setCommandRequest.getCommand().toBytes(), (index, commandBytes) -> {
-            Service.this.applyCommand(index, commandBytes);
-            setCommandRequest.reply(Success.INSTANCE);
-        });
+        SetCommand command = commandRequest.getCommand();
+        logger.info("set {}", command.getKey());
+        this.pendingCommands.put(command.getRequestId(), commandRequest);
+        commandRequest.addCloseListener(() -> pendingCommands.remove(command.getRequestId()));
+        this.node.appendLog(command.toBytes());
     }
 
-    public void get(CommandRequest<GetCommand> getCommandCommandRequest) {
-        String key = getCommandCommandRequest.getCommand().getKey();
+    public void get(CommandRequest<GetCommand> commandRequest) {
+        String key = commandRequest.getCommand().getKey();
         logger.info("get {}", key);
         byte[] value = this.map.get(key);
         // TODO view from node state machine
-        getCommandCommandRequest.reply(new GetCommandResponse(value));
+        commandRequest.reply(new GetCommandResponse(value));
     }
 
     @Override
-    public void applyCommand(int index, byte[] commandBytes) {
-        logger.debug("apply command, index {}", index);
+    public void applyCommand(byte[] commandBytes) {
         SetCommand command = SetCommand.fromBytes(commandBytes);
         this.map.put(command.getKey(), command.getValue());
+
+        CommandRequest<?> commandRequest = this.pendingCommands.remove(command.getRequestId());
+        if (commandRequest != null) {
+            commandRequest.reply(Success.INSTANCE);
+        }
     }
 
     @Override
