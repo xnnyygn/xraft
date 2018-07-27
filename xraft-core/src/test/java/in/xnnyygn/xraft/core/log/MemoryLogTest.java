@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.log;
 
+import in.xnnyygn.xraft.core.log.entry.EntrySequence;
 import in.xnnyygn.xraft.core.log.snapshot.MemorySnapshot;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;

@@ -21,6 +21,6 @@ public interface Connector {
 
     void resetChannels();
 
-    void release();
+    void close();
 
 }

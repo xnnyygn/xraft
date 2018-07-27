@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.rpc.nio;
 
+@Deprecated
 interface ChannelWriter {
 
     enum State {

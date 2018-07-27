@@ -1,6 +1,7 @@
 package in.xnnyygn.xraft.core.log;
 
 import in.xnnyygn.xraft.core.log.entry.Entry;
+import in.xnnyygn.xraft.core.log.entry.EntrySequence;
 import in.xnnyygn.xraft.core.log.entry.GeneralEntry;
 import org.junit.Assert;
 import org.junit.Test;

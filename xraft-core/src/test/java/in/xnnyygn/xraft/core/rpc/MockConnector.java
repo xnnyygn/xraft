@@ -1,7 +1,10 @@
 package in.xnnyygn.xraft.core.rpc;
 
+import in.xnnyygn.xraft.core.node.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.*;
+
+import java.util.Set;
 
 public class MockConnector implements Connector {
 
@@ -52,6 +55,10 @@ public class MockConnector implements Connector {
         this.destinationNodeId = rpcMessage.getSourceNodeId();
     }
 
+//    @Override
+//    public void applyNodeConfigs(Set<NodeConfig> nodeConfigs, NodeId selfNodeId) {
+//    }
+
     public Object getRpc() {
         return rpc;
     }
@@ -65,7 +72,7 @@ public class MockConnector implements Connector {
     }
 
     @Override
-    public void release() {
+    public void close() {
     }
 
 }

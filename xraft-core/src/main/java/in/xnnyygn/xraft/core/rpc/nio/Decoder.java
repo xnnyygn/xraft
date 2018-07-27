@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.rpc.nio;
 
+import in.xnnyygn.xraft.core.log.entry.EntryFactory;
 import in.xnnyygn.xraft.core.log.entry.GeneralEntry;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.Protos;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Decoder extends ByteToMessageDecoder {
+
+    private final EntryFactory entryFactory = new EntryFactory();
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -54,7 +57,7 @@ public class Decoder extends ByteToMessageDecoder {
                 aeRpc.setPrevLogIndex(protoAERpc.getPrevLogIndex());
                 aeRpc.setPrevLogTerm(protoAERpc.getPrevLogTerm());
                 aeRpc.setEntries(protoAERpc.getEntriesList().stream().map(e ->
-                        new GeneralEntry(e.getIndex(), e.getTerm(), e.getCommand().toByteArray())
+                        entryFactory.create(e.getKind(), e.getIndex(), e.getTerm(), e.getCommand().toByteArray())
                 ).collect(Collectors.toList()));
                 out.add(aeRpc);
                 break;
@@ -79,7 +82,6 @@ public class Decoder extends ByteToMessageDecoder {
                 out.add(new InstallSnapshotResult(protoISResult.getTerm()));
                 break;
         }
-
     }
 
 }

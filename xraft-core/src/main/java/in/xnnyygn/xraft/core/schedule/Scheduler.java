@@ -1,6 +1,5 @@
 package in.xnnyygn.xraft.core.schedule;
 
-import in.xnnyygn.xraft.core.node.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +15,14 @@ public class Scheduler {
     private final Random electionTimeoutRandom;
     private final ScheduledExecutorService scheduledExecutor;
 
-    public Scheduler(NodeId selfNodeId) {
+    public Scheduler() {
+        this("default");
+    }
+
+    public Scheduler(String name) {
         this.electionTimeoutRandom = new Random();
         this.scheduledExecutor = Executors.newSingleThreadScheduledExecutor(
-                r -> new Thread(r, "scheduler-" + selfNodeId));
+                r -> new Thread(r, "scheduler-" + name));
     }
 
     public LogReplicationTask scheduleLogReplicationTask(Runnable task) {

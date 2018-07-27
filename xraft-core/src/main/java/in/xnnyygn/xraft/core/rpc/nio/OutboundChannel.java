@@ -3,13 +3,13 @@ package in.xnnyygn.xraft.core.rpc.nio;
 import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.Channel;
+import in.xnnyygn.xraft.core.rpc.Endpoint;
 import in.xnnyygn.xraft.core.rpc.message.*;
-import in.xnnyygn.xraft.core.rpc.socket.SocketEndpoint;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO AbstractNioChannel
+@Deprecated
 public class OutboundChannel implements Channel {
 
     private static final Logger logger = LoggerFactory.getLogger(OutboundChannel.class);
@@ -17,7 +17,7 @@ public class OutboundChannel implements Channel {
     private volatile ChannelWriter channelWriter;
 
     OutboundChannel(NioEventLoopGroup workerGroup, EventBus eventBus, NodeId remoteId,
-                    NodeId selfNodeId, SocketEndpoint endpoint) {
+                    NodeId selfNodeId, Endpoint endpoint) {
         this.remoteId = remoteId;
         this.channelWriter = new DisconnectedChannelWriter(workerGroup, eventBus, remoteId, selfNodeId, endpoint, this);
     }

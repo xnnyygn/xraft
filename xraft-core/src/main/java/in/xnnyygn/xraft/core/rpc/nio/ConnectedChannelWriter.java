@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.rpc.nio;
 
 import io.netty.channel.Channel;
 
+@Deprecated
 public class ConnectedChannelWriter implements ChannelWriter {
 
     private final Channel channel;

@@ -1,6 +1,8 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
-public class EntryInSnapshotException extends RuntimeException {
+import in.xnnyygn.xraft.core.log.LogException;
+
+public class EntryInSnapshotException extends LogException {
 
     private final int index;
 

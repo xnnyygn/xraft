@@ -11,7 +11,8 @@ public abstract class AbstractRpcMessage<T> {
     private final NodeId sourceNodeId;
     private final Channel channel;
 
-    public AbstractRpcMessage(T rpc, NodeId sourceNodeId, @Nullable Channel channel) {
+    // TODO remove nullable
+    AbstractRpcMessage(T rpc, NodeId sourceNodeId, @Nullable Channel channel) {
         this.rpc = rpc;
         this.sourceNodeId = sourceNodeId;
         this.channel = channel;

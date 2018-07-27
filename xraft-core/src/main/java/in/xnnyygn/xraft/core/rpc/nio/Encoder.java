@@ -13,7 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-public class Encoder extends MessageToByteEncoder<Object> {
+class Encoder extends MessageToByteEncoder<Object> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
@@ -46,6 +46,7 @@ public class Encoder extends MessageToByteEncoder<Object> {
                     .addAllEntries(
                             rpc.getEntries().stream().map(e ->
                                     Protos.AppendEntriesRpc.Entry.newBuilder()
+                                            .setKind(e.getKind())
                                             .setIndex(e.getIndex())
                                             .setTerm(e.getTerm())
                                             .setCommand(ByteString.copyFrom(e.getCommandBytes()))

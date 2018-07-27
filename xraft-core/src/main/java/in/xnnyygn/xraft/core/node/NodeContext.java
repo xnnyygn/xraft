@@ -117,7 +117,7 @@ public class NodeContext {
 
     public void release() throws InterruptedException {
         this.scheduler.stop();
-        this.connector.release();
+        this.connector.close();
         this.monitorExecutorService.shutdown();
         this.monitorExecutorService.awaitTermination(1L, TimeUnit.SECONDS);
     }

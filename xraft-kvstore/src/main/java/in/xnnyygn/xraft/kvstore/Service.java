@@ -2,13 +2,11 @@ package in.xnnyygn.xraft.kvstore;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import in.xnnyygn.xraft.core.log.CommandApplier;
-import in.xnnyygn.xraft.core.log.snapshot.SnapshotApplier;
-import in.xnnyygn.xraft.core.log.snapshot.SnapshotGenerator;
 import in.xnnyygn.xraft.core.node.Node;
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.nodestate.NodeRole;
-import in.xnnyygn.xraft.core.nodestate.NodeStateSnapshot;
+import in.xnnyygn.xraft.core.noderole.RoleName;
+import in.xnnyygn.xraft.core.noderole.RoleStateSnapshot;
+import in.xnnyygn.xraft.core.service.StateMachine;
 import in.xnnyygn.xraft.kvstore.message.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class Service implements CommandApplier, SnapshotGenerator, SnapshotApplier {
+public class Service implements StateMachine {
 
     private static final Logger logger = LoggerFactory.getLogger(Service.class);
     private final Node node;
@@ -27,9 +25,7 @@ public class Service implements CommandApplier, SnapshotGenerator, SnapshotAppli
 
     public Service(Node node) {
         this.node = node;
-        this.node.setCommandApplier(this);
-        this.node.setSnapshotGenerator(this);
-        this.node.setSnapshotApplier(this);
+        this.node.registerStateMachine(this);
     }
 
     public void set(CommandRequest<SetCommand> commandRequest) {
@@ -77,13 +73,13 @@ public class Service implements CommandApplier, SnapshotGenerator, SnapshotAppli
     }
 
     private Redirect checkLeadership() {
-        NodeStateSnapshot state = this.node.getNodeState();
-        if (state.getRole() == NodeRole.FOLLOWER) {
+        RoleStateSnapshot state = this.node.getRoleState();
+        if (state.getRole() == RoleName.FOLLOWER) {
             NodeId leaderId = state.getLeaderId();
             return new Redirect(leaderId != null ? leaderId.getValue() : null);
         }
 
-        if (state.getRole() == NodeRole.CANDIDATE) {
+        if (state.getRole() == RoleName.CANDIDATE) {
             return new Redirect(null);
         }
         return null;

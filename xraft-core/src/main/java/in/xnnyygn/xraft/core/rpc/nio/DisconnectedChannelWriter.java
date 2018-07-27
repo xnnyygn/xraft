@@ -3,24 +3,25 @@ package in.xnnyygn.xraft.core.rpc.nio;
 import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.ChannelException;
-import in.xnnyygn.xraft.core.rpc.socket.SocketEndpoint;
+import in.xnnyygn.xraft.core.rpc.Endpoint;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+@Deprecated
 public class DisconnectedChannelWriter implements ChannelWriter {
 
     private final NioEventLoopGroup workerGroup;
     private final EventBus eventBus;
     private final NodeId remoteId;
     private final NodeId selfNodeId;
-    private final SocketEndpoint endpoint;
+    private final Endpoint endpoint;
     private final OutboundChannel channel;
 
     DisconnectedChannelWriter(NioEventLoopGroup workerGroup, EventBus eventBus, NodeId remoteId, NodeId selfNodeId,
-                              SocketEndpoint endpoint, OutboundChannel channel) {
+                              Endpoint endpoint, OutboundChannel channel) {
         this.workerGroup = workerGroup;
         this.eventBus = eventBus;
         this.remoteId = remoteId;
@@ -46,7 +47,7 @@ public class DisconnectedChannelWriter implements ChannelWriter {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new Decoder());
                         pipeline.addLast(new Encoder());
-                        pipeline.addLast(new ToRemoteHandler(eventBus, remoteId, channel, selfNodeId, message));
+                        pipeline.addLast(new OldToRemoteHandler(eventBus, remoteId, channel, selfNodeId, message));
                     }
                 });
         try {

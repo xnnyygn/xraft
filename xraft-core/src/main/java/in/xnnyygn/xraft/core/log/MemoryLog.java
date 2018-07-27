@@ -1,8 +1,8 @@
 package in.xnnyygn.xraft.core.log;
 
-import in.xnnyygn.xraft.core.log.entry.Entry;
-import in.xnnyygn.xraft.core.log.entry.GeneralEntry;
+import in.xnnyygn.xraft.core.log.entry.*;
 import in.xnnyygn.xraft.core.log.snapshot.*;
+import in.xnnyygn.xraft.core.node.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Set;
 
 public class MemoryLog implements Log {
 
@@ -19,6 +20,7 @@ public class MemoryLog implements Log {
     private static final int SNAPSHOT_GENERATE_THRESHOLD = 5;
     private Snapshot snapshot = new EmptySnapshot();
     private EntrySequence entrySequence = new EntrySequence();
+    private GroupConfigEntryList groupConfigEntryList = new GroupConfigEntryList();
     private MemorySnapshotBuilder snapshotBuilder;
     private EntryApplier entryApplier = new NullEntryApplier();
     private SnapshotGenerator snapshotGenerator = new NullSnapshotGenerator();
@@ -30,38 +32,65 @@ public class MemoryLog implements Log {
         this(new EmptySnapshot(), new EntrySequence());
     }
 
-    public MemoryLog(Snapshot snapshot, EntrySequence entrySequence) {
+    MemoryLog(Snapshot snapshot, EntrySequence entrySequence) {
         this.snapshot = snapshot;
         this.entrySequence = entrySequence;
     }
 
     @Override
-    public void appendEntry(int term) {
-        this.entrySequence.append(term);
+    public NoOpEntry appendEntry(int term) {
+        return this.entrySequence.append(term);
     }
 
     @Override
-    public void appendEntry(int term, byte[] commandBytes) {
-        this.entrySequence.append(term, commandBytes);
+    public GeneralEntry appendEntry(int term, byte[] commandBytes) {
+        return this.entrySequence.append(term, commandBytes);
+    }
+
+    @Override
+    public GroupConfigEntry appendEntry(int term, Set<NodeConfig> nodeConfigs) {
+        GroupConfigEntry entry = this.entrySequence.append(term, nodeConfigs);
+        this.groupConfigEntryList.add(entry);
+        return entry;
+    }
+
+    @Override
+    public GroupConfigEntry getLastGroupConfigEntry() {
+        return this.groupConfigEntryList.getLast();
+    }
+
+    @Override
+    public int getCommitIndex() {
+        return this.commitIndex;
     }
 
     @Override
     public boolean appendEntries(AppendEntriesRpc rpc) {
         int prevLogIndex = rpc.getPrevLogIndex();
         if (prevLogIndex > 0) {
-            if (prevLogIndex < this.snapshot.getLastIncludedIndex()) return false;
+            if (prevLogIndex < this.snapshot.getLastIncludedIndex()) {
+                logger.debug("previous log index < snapshot's last included index");
+                return false;
+            }
 
             if (prevLogIndex == this.snapshot.getLastIncludedIndex()) {
-                if (rpc.getPrevLogTerm() != this.snapshot.getLastIncludedTerm()) return false;
+                if (rpc.getPrevLogTerm() != this.snapshot.getLastIncludedTerm()) {
+                    logger.debug("previous log term != snapshot's last included term");
+                    return false;
+                }
             } else {
                 assert prevLogIndex > this.snapshot.getLastIncludedIndex();
                 Entry prevLog = this.entrySequence.getEntry(prevLogIndex);
-                if (prevLog == null || prevLog.getTerm() != rpc.getPrevLogTerm()) return false;
+                if (prevLog == null || prevLog.getTerm() != rpc.getPrevLogTerm()) {
+                    logger.debug("previous log {} not found or different term", prevLogIndex);
+                    return false;
+                }
             }
         }
 
         mergeEntries(prevLogIndex + 1, rpc.getEntries());
-        this.advanceCommitIndexIfAvailable(Math.min(rpc.getLeaderCommit(), rpc.getLastEntryIndex()));
+        // move up
+        this.advanceCommitIndex(Math.min(rpc.getLeaderCommit(), rpc.getLastEntryIndex()), rpc.getTerm());
         return true;
     }
 
@@ -79,6 +108,19 @@ public class MemoryLog implements Log {
             rpc.setLastLogTerm(lastEntry.getTerm());
         }
         return rpc;
+    }
+
+    // TODO Get Last Entry Meta
+    @Override
+    public void setLastEntryIndexAndTerm(RequestVoteRpc rpc) {
+        if (entrySequence.isEmpty()) {
+            rpc.setLastLogIndex(snapshot.getLastIncludedIndex());
+            rpc.setLastLogTerm(snapshot.getLastIncludedTerm());
+        } else {
+            Entry lastEntry = entrySequence.getLastEntry();
+            rpc.setLastLogIndex(lastEntry.getIndex());
+            rpc.setLastLogTerm(lastEntry.getTerm());
+        }
     }
 
     @Override
@@ -126,27 +168,35 @@ public class MemoryLog implements Log {
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
         rpc.setTerm(term);
         rpc.setLeaderId(selfNodeId);
-        rpc.setLastIncludedIndex(this.snapshot.getLastIncludedIndex());
-        rpc.setLastIncludedTerm(this.snapshot.getLastIncludedTerm());
+        rpc.setLastIncludedIndex(snapshot.getLastIncludedIndex());
+        rpc.setLastIncludedTerm(snapshot.getLastIncludedTerm());
         rpc.setOffset(offset);
 
-        SnapshotChunk chunk = this.snapshot.read(offset, INSTALL_SNAPSHOT_RPC_DATA_LENGTH);
+        SnapshotChunk chunk = snapshot.read(offset, INSTALL_SNAPSHOT_RPC_DATA_LENGTH);
         rpc.setData(chunk.toByteArray());
         rpc.setDone(chunk.isLastChunk());
         return rpc;
     }
 
     @Override
-    public void advanceCommitIndexIfAvailable(int newCommitIndex) {
+    public void advanceCommitIndex(int newCommitIndex, int currentTerm) {
         if (newCommitIndex <= this.commitIndex) return;
 
-        assert newCommitIndex <= this.entrySequence.getLastLogIndex();
+        // newCommitIndex >= this.entrySequence.getFirstLogIndex() && newCommitIndex <= this.entrySequence.getLastLogIndex();
+        assert this.entrySequence.getEntry(newCommitIndex) != null;
+        if (this.entrySequence.getEntry(newCommitIndex).getTerm() != currentTerm) return;
+
         logger.debug("advance commit index from {} to {}", this.commitIndex, newCommitIndex);
+        // TODO commit items
         this.commitIndex = newCommitIndex;
 
         logger.debug("apply log from {} to {}", this.lastApplied + 1, this.commitIndex);
         for (Entry entry : this.entrySequence.subList(this.lastApplied + 1, this.commitIndex + 1)) {
+            List<EntryListener> entryListeners = entry.getListeners();
+            entryListeners.forEach(l -> l.entryCommitted(entry));
             this.applyEntry(entry);
+            entryListeners.forEach(l -> l.entryApplied(entry));
+            entry.removeAllListeners();
         }
 
         if (this.lastApplied - this.entrySequence.getFirstLogIndex() >= SNAPSHOT_GENERATE_THRESHOLD) {
@@ -161,7 +211,7 @@ public class MemoryLog implements Log {
     }
 
     private void applyEntry(Entry entry) {
-        // skip no-op entry
+        // skip no-op entry and membership-change entry
         if (entry instanceof GeneralEntry) {
             this.entryApplier.applyEntry(entry);
         }
@@ -175,6 +225,7 @@ public class MemoryLog implements Log {
 
     @Override
     public boolean isNewerThan(int lastLogIndex, int lastLogTerm) {
+        // TODO handle snapshot
         Entry lastEntry = this.entrySequence.getLastEntry();
         if (lastEntry == null) {
             logger.debug("no last entry");

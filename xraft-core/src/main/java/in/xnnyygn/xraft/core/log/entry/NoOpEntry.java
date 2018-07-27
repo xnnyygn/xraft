@@ -3,7 +3,7 @@ package in.xnnyygn.xraft.core.log.entry;
 public class NoOpEntry extends AbstractEntry {
 
     public NoOpEntry(int index, int term) {
-        super(index, term);
+        super(KIND_NO_OP, index, term);
     }
 
     @Override

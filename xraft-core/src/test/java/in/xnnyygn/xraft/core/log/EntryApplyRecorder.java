@@ -1,6 +1,7 @@
 package in.xnnyygn.xraft.core.log;
 
 import in.xnnyygn.xraft.core.log.entry.Entry;
+import in.xnnyygn.xraft.core.log.entry.EntryApplier;
 
 import java.util.ArrayList;
 import java.util.List;

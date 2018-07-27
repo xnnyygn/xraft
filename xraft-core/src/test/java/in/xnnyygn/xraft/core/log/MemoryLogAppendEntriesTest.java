@@ -125,10 +125,11 @@ public class MemoryLogAppendEntriesTest {
         log.appendEntry(1, COMMAND); // 1
 
         AppendEntriesRpc rpc = new AppendEntriesRpc();
+        rpc.setTerm(2);
         rpc.setPrevLogIndex(1);
         rpc.setPrevLogTerm(1);
         rpc.setEntries(Arrays.asList(
-                new GeneralEntry(2, 1, COMMAND),
+                new GeneralEntry(2, 2, COMMAND),
                 new GeneralEntry(3, 2, COMMAND)
         ));
         rpc.setLeaderCommit(2);
@@ -143,6 +144,7 @@ public class MemoryLogAppendEntriesTest {
         log.appendEntry(1, COMMAND); // 1
 
         AppendEntriesRpc rpc = new AppendEntriesRpc();
+        rpc.setTerm(2);
         rpc.setPrevLogIndex(1);
         rpc.setPrevLogTerm(1);
         rpc.setEntries(Arrays.asList(

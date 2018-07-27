@@ -1,59 +1,51 @@
 package in.xnnyygn.xraft.core.node;
 
-import in.xnnyygn.xraft.core.log.CommandApplier;
-import in.xnnyygn.xraft.core.log.EntryApplierAdapter;
-import in.xnnyygn.xraft.core.log.snapshot.SnapshotApplier;
-import in.xnnyygn.xraft.core.log.snapshot.SnapshotGenerator;
-import in.xnnyygn.xraft.core.nodestate.NodeRole;
-import in.xnnyygn.xraft.core.nodestate.NodeStateMachine;
-import in.xnnyygn.xraft.core.nodestate.NodeStateSnapshot;
-import in.xnnyygn.xraft.core.rpc.Endpoint;
+import in.xnnyygn.xraft.core.noderole.NodeRoleListener;
+import in.xnnyygn.xraft.core.noderole.RoleStateSnapshot;
+import in.xnnyygn.xraft.core.service.StateMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Node extends AbstractNode {
+import java.util.Set;
+
+public class Node {
 
     private static final Logger logger = LoggerFactory.getLogger(Node.class);
-    private final NodeContext context;
-    private final NodeStateMachine stateMachine;
+    private final Controller controller;
 
-    public Node(NodeContext context, NodeStateMachine stateMachine, Endpoint endpoint) {
-        super(context.getSelfNodeId(), endpoint);
-        this.context = context;
-        this.stateMachine = stateMachine;
+    public Node(NodeContext context) {
+        this.controller = new Controller(context);
     }
 
     public void start() {
-        logger.info("Node {}, start", this.getId());
-        this.context.initialize();
-        this.stateMachine.start();
+        logger.info("node {}, start", this.controller.getSelfNodeId());
+        this.controller.start();
     }
 
-    public NodeStateSnapshot getNodeState() {
-        return this.stateMachine.getNodeState();
+    public RoleStateSnapshot getRoleState() {
+        return this.controller.getRoleState();
     }
 
-    public void setCommandApplier(CommandApplier applier) {
-        this.context.getLog().setEntryApplier(new EntryApplierAdapter(applier));
+    public void registerStateMachine(StateMachine stateMachine) {
+        this.controller.registerStateMachine(stateMachine);
     }
 
-    public void setSnapshotGenerator(SnapshotGenerator generator) {
-        this.context.getLog().setSnapshotGenerator(generator);
-    }
-
-    public void setSnapshotApplier(SnapshotApplier applier) {
-        this.context.getLog().setSnapshotApplier(applier);
+    public void addNodeRoleListener(NodeRoleListener listener) {
+        this.controller.addNodeRoleListener(listener);
     }
 
     public void appendLog(byte[] commandBytes) {
-        assert this.stateMachine.getNodeState().getRole() == NodeRole.LEADER;
-        this.stateMachine.appendLog(commandBytes);
+        // assert this.controller.getRoleState().getRole() == RoleName.LEADER;
+        this.controller.appendLog(commandBytes);
+    }
+
+    public void addServer(NodeConfig newNodeConfig) {
+
     }
 
     public void stop() throws InterruptedException {
-        logger.info("Node {}, stop", this.getId());
-        this.stateMachine.stop();
-        this.context.release();
+        logger.info("node {}, stop", this.controller.getSelfNodeId());
+        this.controller.stop();
     }
 
 }

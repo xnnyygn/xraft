@@ -1,57 +1,62 @@
 package in.xnnyygn.xraft.core.node;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class NodeGroup implements Iterable<AbstractNode> {
+import javax.annotation.Nonnull;
+import java.util.*;
 
-    private Map<NodeId, AbstractNode> nodeMap;
+public class NodeGroup implements Iterable<NodeConfig> {
 
-    public NodeGroup() {
-        this.nodeMap = new HashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(NodeGroup.class);
+    private Map<NodeId, NodeConfig> nodeConfigMap;
+
+    public NodeGroup(Set<NodeConfig> nodeConfigs) {
+        this.nodeConfigMap = buildNodeConfigMap(nodeConfigs);
     }
 
-    public void add(AbstractNode node) {
-        this.nodeMap.put(node.getId(), node);
+    private Map<NodeId, NodeConfig> buildNodeConfigMap(Set<NodeConfig> nodeConfigs) {
+        Map<NodeId, NodeConfig> map = new HashMap<>();
+        for (NodeConfig config : nodeConfigs) {
+            map.put(config.getId(), config);
+        }
+        return map;
     }
 
     public int getCount() {
-        return this.nodeMap.size();
+        return this.nodeConfigMap.size();
     }
 
-    public void startAll() {
-        for (AbstractNode node : nodeMap.values()) {
-            if (node instanceof Node) {
-                ((Node) node).start();
-            }
+    public NodeConfig find(NodeId id) {
+        NodeConfig config = this.nodeConfigMap.get(id);
+        if (config == null) {
+            throw new IllegalStateException("no config for node " + id);
         }
+        return config;
     }
 
-    public void stopAll() throws Exception {
-        for (AbstractNode node : nodeMap.values()) {
-            if (node instanceof Node) {
-                ((Node) node).stop();
-            }
-        }
+    public Set<NodeId> getIds() {
+        return Collections.unmodifiableSet(this.nodeConfigMap.keySet());
     }
 
     @Override
-    public Iterator<AbstractNode> iterator() {
-        return this.nodeMap.values().iterator();
+    @Nonnull
+    public Iterator<NodeConfig> iterator() {
+        return this.nodeConfigMap.values().iterator();
     }
 
-    public AbstractNode find(NodeId nodeId) {
-        AbstractNode node = this.nodeMap.get(nodeId);
-        if (node == null) {
-            throw new IllegalStateException("node " + nodeId + " not found");
-        }
-        return node;
+    public Set<NodeConfig> toNodeConfigs() {
+        return new HashSet<>(this.nodeConfigMap.values());
     }
 
-    public Set<NodeId> getNodeIds() {
-        return this.nodeMap.keySet();
+    public void addNode(NodeConfig config) {
+        logger.info("add node {} to group", config);
+        this.nodeConfigMap.put(config.getId(), config);
+    }
+
+    public void removeNode(NodeId nodeId) {
+        logger.info("remove node {}", nodeId);
+        this.nodeConfigMap.remove(nodeId);
     }
 
 }

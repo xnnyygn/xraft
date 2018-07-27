@@ -6,27 +6,27 @@ import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FromRemoteHandler extends AbstractHandler {
+class FromRemoteHandler extends AbstractHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(FromRemoteHandler.class);
-    private final InboundChannelList channelList;
+    private final InboundChannelGroup channelGroup;
 
-    FromRemoteHandler(EventBus eventBus, InboundChannelList channelList) {
+    FromRemoteHandler(EventBus eventBus, InboundChannelGroup channelGroup) {
         super(eventBus);
-        this.channelList = channelList;
+        this.channelGroup = channelGroup;
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof NodeId) {
-            this.remoteId = (NodeId) msg;
-            InboundChannel inboundChannel = new InboundChannel(ctx.channel(), this.remoteId);
-            this.channel = inboundChannel;
-            this.channelList.add(inboundChannel);
+            remoteId = (NodeId) msg;
+            NioChannel nioChannel = new NioChannel(ctx.channel());
+            channel = nioChannel;
+            channelGroup.add(remoteId, nioChannel);
             return;
         }
 
-        logger.debug("receive {} from {}", msg, this.remoteId);
+        logger.debug("receive {} from {}", msg, remoteId);
         super.channelRead(ctx, msg);
     }
 
