@@ -36,6 +36,7 @@ public class NioConnector implements Connector {
         this.outboundChannelGroup = new OutboundChannelGroup(workerGroup, eventBus, selfNodeId);
     }
 
+    // TODO open after
     @Override
     public void initialize() {
         ServerBootstrap serverBootstrap = new ServerBootstrap()

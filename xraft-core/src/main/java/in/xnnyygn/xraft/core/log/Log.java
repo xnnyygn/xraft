@@ -14,39 +14,52 @@ import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 
 import java.util.Set;
 
+// separate log: supporting snapshot or not
 public interface Log {
 
+    // entries, read
+    @Deprecated
+    RequestVoteRpc createRequestVoteRpc(int term, NodeId selfNodeId);
+
+    // entries, read
+    void setLastEntryIndexAndTerm(RequestVoteRpc rpc);
+
+    // snapshot, entries, read
+    AppendEntriesRpc createAppendEntriesRpc(int term, NodeId selfNodeId, int nextIndex, int maxEntries);
+
+    // snapshot, entries, write
+    InstallSnapshotRpc createInstallSnapshotRpc(int term, NodeId selfNodeId, int offset);
+
+    // get last group config entry, entries, read
+    // TODO rename me?
+    GroupConfigEntry getLastGroupConfigEntry();
+
+    // state, read
+    int getCommitIndex();
+
+    // state, read
+    int getNextLogIndex();
+
+    // snapshot, entries read
+    boolean isNewerThan(int lastLogIndex, int lastLogTerm);
+
+    // append entry, entries, write
     NoOpEntry appendEntry(int term);
 
     GeneralEntry appendEntry(int term, byte[] command);
 
     GroupConfigEntry appendEntry(int term, Set<NodeConfig> nodeConfigs);
 
-    // TODO rename me?
-    GroupConfigEntry getLastGroupConfigEntry();
-
-    int getCommitIndex();
-
+    // entries, write
     boolean appendEntries(AppendEntriesRpc rpc);
 
-    @Deprecated
-    RequestVoteRpc createRequestVoteRpc(int term, NodeId selfNodeId);
-
-    void setLastEntryIndexAndTerm(RequestVoteRpc rpc);
-
-    AppendEntriesRpc createAppendEntriesRpc(int term, NodeId selfNodeId, int nextIndex, int maxEntries);
-
-    InstallSnapshotRpc createInstallSnapshotRpc(int term, NodeId selfNodeId, int offset);
-
+    // entries, write
     void advanceCommitIndex(int newCommitIndex, int currentTerm);
 
-    int getNextLogIndex();
-
-    boolean isNewerThan(int lastLogIndex, int lastLogTerm);
+    // snapshot, write
+    void installSnapshot(InstallSnapshotRpc rpc);
 
     void setEntryApplier(EntryApplier applier);
-
-    void installSnapshot(InstallSnapshotRpc rpc);
 
     // TODO rename to enableSnapshot?
     void setSnapshotGenerator(SnapshotGenerator generator);

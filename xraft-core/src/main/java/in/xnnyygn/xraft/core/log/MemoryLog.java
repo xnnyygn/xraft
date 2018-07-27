@@ -89,7 +89,7 @@ public class MemoryLog implements Log {
         }
 
         mergeEntries(prevLogIndex + 1, rpc.getEntries());
-        // move up
+        // TODO move up
         this.advanceCommitIndex(Math.min(rpc.getLeaderCommit(), rpc.getLastEntryIndex()), rpc.getTerm());
         return true;
     }
