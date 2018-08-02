@@ -41,7 +41,9 @@ public interface Log {
 
     GeneralEntry appendEntry(int term, byte[] command);
 
-    GroupConfigEntry appendEntry(int term, Set<NodeConfig> nodeConfigs);
+    AddNodeEntry appendEntryForAddNode(int term, Set<NodeConfig> nodeConfigs, NodeConfig newNodeConfig);
+
+    RemoveNodeEntry appendEntryForRemoveNode(int term, Set<NodeConfig> nodeConfigs, NodeId nodeToRemove);
 
     // entries, write
     boolean appendEntries(AppendEntriesRpc rpc);

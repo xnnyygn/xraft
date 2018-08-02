@@ -3,6 +3,7 @@ package in.xnnyygn.xraft.core.noderole;
 import in.xnnyygn.xraft.core.log.replication.NewNodeReplicationState;
 import in.xnnyygn.xraft.core.log.replication.ReplicationState;
 import in.xnnyygn.xraft.core.log.snapshot.EntryInSnapshotException;
+import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
@@ -82,10 +83,16 @@ public class LeaderNodeRole extends AbstractNodeRole {
     protected void processAppendEntriesResult(NodeRoleContext context, AppendEntriesResult result, NodeId sourceNodeId, AppendEntriesRpc rpc) {
         assert result.getTerm() <= this.term;
 
-        ReplicationState replicationState = context.getNodeGroup().getReplicationState(sourceNodeId);
+        NodeGroup.NodeState nodeState = context.getNodeGroup().getState(sourceNodeId);
+        if (nodeState == null) {
+            logger.warn("node {} removed before receiving append entries result", sourceNodeId);
+            return;
+        }
+
+        ReplicationState replicationState = nodeState.getReplicationState();
 
         if (result.isSuccess()) {
-            if (context.getNodeGroup().isMemberOfMajor(sourceNodeId)) {
+            if (nodeState.isMemberOfMajor()) {
 
                 // peer
                 if (replicationState.advance(rpc.getLastEntryIndex())) {
@@ -97,6 +104,11 @@ public class LeaderNodeRole extends AbstractNodeRole {
                     return;
                 }
             } else {
+                // skip removing node
+                if (nodeState.isRemoving()) {
+                    replicationState.setReplicating(false);
+                    return;
+                }
 
                 // new node
                 logger.debug("replication state of new node, {}", replicationState);

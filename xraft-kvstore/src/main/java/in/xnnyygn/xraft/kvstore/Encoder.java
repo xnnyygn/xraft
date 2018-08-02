@@ -3,6 +3,7 @@ package in.xnnyygn.xraft.kvstore;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageLite;
 import in.xnnyygn.xraft.core.service.AddServerCommand;
+import in.xnnyygn.xraft.core.service.RemoveServerCommand;
 import in.xnnyygn.xraft.kvstore.message.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,6 +30,10 @@ public class Encoder extends MessageToByteEncoder<Object> {
             Protos.AddServerCommand protoCommand = Protos.AddServerCommand.newBuilder().setNodeId(command.getNodeId())
                     .setHost(command.getHost()).setPort(command.getPort()).build();
             this.writeMessage(MessageConstants.MSG_TYPE_ADD_SERVER_COMMAND, protoCommand, out);
+        } else if (msg instanceof RemoveServerCommand) {
+            RemoveServerCommand command = (RemoveServerCommand) msg;
+            Protos.RemoveServerCommand protoCommand = Protos.RemoveServerCommand.newBuilder().setNodeId(command.getNodeId().getValue()).build();
+            this.writeMessage(MessageConstants.MSG_TYPE_REMOVE_SERVER_COMMAND, protoCommand, out);
         } else if (msg instanceof GetCommand) {
             GetCommand command = (GetCommand) msg;
             Protos.GetCommand protoGetCommand = Protos.GetCommand.newBuilder().setKey(command.getKey()).build();

@@ -65,7 +65,7 @@ public class MockNodeRoleContext implements NodeRoleContext {
     }
 
     @Override
-    public boolean standbyMode() {
+    public boolean isStandbyMode() {
         return false;
     }
 

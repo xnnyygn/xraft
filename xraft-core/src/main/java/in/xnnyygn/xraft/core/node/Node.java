@@ -43,6 +43,10 @@ public class Node {
         this.controller.addServer(newNodeConfig);
     }
 
+    public void removeServer(NodeId id) {
+        controller.removeServer(id);
+    }
+
     public void stop() throws InterruptedException {
         logger.info("node {}, stop", this.controller.getSelfNodeId());
         this.controller.stop();

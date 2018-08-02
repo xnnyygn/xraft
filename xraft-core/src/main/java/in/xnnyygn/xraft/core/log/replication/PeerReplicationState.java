@@ -63,7 +63,7 @@ public class PeerReplicationState extends AbstractReplicationState {
     @Override
     public String toString() {
         return "PeerReplicationState{nodeId=" + nodeId +
-                "matchIndex=" + matchIndex +
+                ", matchIndex=" + matchIndex +
                 ", nextIndex=" + nextIndex + '}';
     }
 

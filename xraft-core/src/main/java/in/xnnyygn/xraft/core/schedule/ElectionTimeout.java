@@ -9,6 +9,8 @@ import java.util.concurrent.TimeUnit;
 public class ElectionTimeout {
 
     private static final Logger logger = LoggerFactory.getLogger(ElectionTimeout.class);
+    public static final ElectionTimeout NONE = new ElectionTimeout(new NullScheduledFuture(), new NullElectionTimeoutScheduler());
+
     private final ScheduledFuture<?> scheduledFuture;
     private final ElectionTimeoutScheduler schedulerCallback;
 

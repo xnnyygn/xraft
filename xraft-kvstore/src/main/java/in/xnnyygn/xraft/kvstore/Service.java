@@ -8,6 +8,7 @@ import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.noderole.RoleName;
 import in.xnnyygn.xraft.core.noderole.RoleStateSnapshot;
 import in.xnnyygn.xraft.core.service.AddServerCommand;
+import in.xnnyygn.xraft.core.service.RemoveServerCommand;
 import in.xnnyygn.xraft.core.service.StateMachine;
 import in.xnnyygn.xraft.kvstore.message.*;
 import org.slf4j.Logger;
@@ -39,6 +40,18 @@ public class Service implements StateMachine {
 
         AddServerCommand command = commandRequest.getCommand();
         this.node.addServer(command.toNodeConfig());
+        commandRequest.reply(Success.INSTANCE);
+    }
+
+    public void removeServer(CommandRequest<RemoveServerCommand> commandRequest) {
+        Redirect redirect = checkLeadership();
+        if (redirect != null) {
+            commandRequest.reply(redirect);
+            return;
+        }
+
+        RemoveServerCommand command = commandRequest.getCommand();
+        node.removeServer(command.getNodeId());
         commandRequest.reply(Success.INSTANCE);
     }
 

@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.noderole;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.*;
+import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +53,12 @@ public abstract class AbstractNodeRole {
      */
     public abstract void cancelTimeoutOrTask();
 
+    public void stepDown(NodeRoleContext context, boolean stopElectionTimeout) {
+        cancelTimeoutOrTask();
+        ElectionTimeout timeout = stopElectionTimeout ? ElectionTimeout.NONE : context.scheduleElectionTimeout();
+        context.changeToNodeRole(new FollowerNodeRole(this.term, null, null, timeout));
+    }
+
     /**
      * Called when election timeout.
      *
@@ -69,8 +76,8 @@ public abstract class AbstractNodeRole {
         cancelTimeoutOrTask();
 
         if (context.getNodeGroup().isUniqueNode(context.getSelfNodeId())) {
-            if (context.standbyMode()) {
-                logger.info("standby mode, skip election");
+            if (context.isStandbyMode()) {
+                logger.info("starts with standby mode, skip election");
             } else {
                 logger.info("no other node, just become LEADER");
                 context.changeToNodeRole(new LeaderNodeRole(newTerm, context.scheduleLogReplicationTask()));
@@ -93,14 +100,19 @@ public abstract class AbstractNodeRole {
         RequestVoteRpc rpc = rpcMessage.get();
         RequestVoteResult result;
 
-        if (rpc.getTerm() > this.term) {
-            boolean voteForCandidate = !context.getLog().isNewerThan(rpc.getLastLogIndex(), rpc.getLastLogTerm());
-            this.cancelTimeoutOrTask();
-            context.changeToNodeRole(new FollowerNodeRole(rpc.getTerm(), (voteForCandidate ? rpc.getCandidateId() : null), null, context.scheduleElectionTimeout()));
-            result = new RequestVoteResult(rpc.getTerm(), voteForCandidate);
-        } else if (rpc.getTerm() == this.term) {
-            result = processRequestVoteRpc(context, rpc);
+        if (context.getNodeGroup().isMemberOfMajor(rpcMessage.getSourceNodeId())) {
+            if (rpc.getTerm() > this.term) {
+                boolean voteForCandidate = !context.getLog().isNewerThan(rpc.getLastLogIndex(), rpc.getLastLogTerm());
+                this.cancelTimeoutOrTask();
+                context.changeToNodeRole(new FollowerNodeRole(rpc.getTerm(), (voteForCandidate ? rpc.getCandidateId() : null), null, context.scheduleElectionTimeout()));
+                result = new RequestVoteResult(rpc.getTerm(), voteForCandidate);
+            } else if (rpc.getTerm() == this.term) {
+                result = processRequestVoteRpc(context, rpc);
+            } else {
+                result = new RequestVoteResult(this.term, false);
+            }
         } else {
+            logger.warn("request vote rpc from node {} not in group", rpcMessage.getSourceNodeId());
             result = new RequestVoteResult(this.term, false);
         }
 

@@ -57,8 +57,15 @@ public class MemoryLog implements Log {
     }
 
     @Override
-    public GroupConfigEntry appendEntry(int term, Set<NodeConfig> nodeConfigs) {
-        GroupConfigEntry entry = entrySequence.append(term, nodeConfigs);
+    public AddNodeEntry appendEntryForAddNode(int term, Set<NodeConfig> nodeConfigs, NodeConfig newNodeConfig) {
+        AddNodeEntry entry = entrySequence.append(term, nodeConfigs, newNodeConfig);
+        groupConfigEntryList.add(entry);
+        return entry;
+    }
+
+    @Override
+    public RemoveNodeEntry appendEntryForRemoveNode(int term, Set<NodeConfig> nodeConfigs, NodeId nodeToRemove) {
+        RemoveNodeEntry entry = entrySequence.append(term, nodeConfigs, nodeToRemove);
         groupConfigEntryList.add(entry);
         return entry;
     }

@@ -1,6 +1,7 @@
 package in.xnnyygn.xraft.kvstore;
 
 import in.xnnyygn.xraft.core.service.AddServerCommand;
+import in.xnnyygn.xraft.core.service.RemoveServerCommand;
 import in.xnnyygn.xraft.core.service.ServerRouter;
 import in.xnnyygn.xraft.kvstore.message.GetCommand;
 import in.xnnyygn.xraft.kvstore.message.SetCommand;
@@ -15,6 +16,10 @@ public class Client {
 
     public void addServer(String nodeId, String host, int port) {
         serverRouter.send(new AddServerCommand(nodeId, host, port));
+    }
+
+    public void removeServer(String nodeId) {
+        serverRouter.send(new RemoveServerCommand(nodeId));
     }
 
     public void set(String key, byte[] value) {

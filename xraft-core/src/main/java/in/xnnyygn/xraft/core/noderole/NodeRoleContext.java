@@ -27,6 +27,6 @@ public interface NodeRoleContext extends ElectionTimeoutScheduler {
 
     Connector getConnector();
 
-    boolean standbyMode();
+    boolean isStandbyMode();
 
 }

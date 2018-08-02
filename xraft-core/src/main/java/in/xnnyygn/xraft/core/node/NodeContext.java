@@ -33,7 +33,7 @@ public class NodeContext {
     private Scheduler scheduler;
     private Connector connector;
 
-    private boolean standby = false;
+    private boolean standbyMode = false;
 
     public NodeContext(NodeId selfNodeId, NodeGroup nodeGroup, NodeStore nodeStore, EventBus eventBus) {
         this.selfNodeId = selfNodeId;
@@ -48,12 +48,12 @@ public class NodeContext {
         eventBus.register(this);
     }
 
-    public boolean isStandby() {
-        return standby;
+    public boolean isStandbyMode() {
+        return standbyMode;
     }
 
-    public void setStandby(boolean standby) {
-        this.standby = standby;
+    public void setStandbyMode(boolean standbyMode) {
+        this.standbyMode = standbyMode;
     }
 
     public NodeId getSelfNodeId() {

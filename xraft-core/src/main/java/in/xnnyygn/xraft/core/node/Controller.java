@@ -4,10 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import in.xnnyygn.xraft.core.log.Log;
-import in.xnnyygn.xraft.core.log.entry.Entry;
-import in.xnnyygn.xraft.core.log.entry.EntryApplierAdapter;
-import in.xnnyygn.xraft.core.log.entry.EntryListenerAdapter;
-import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
+import in.xnnyygn.xraft.core.log.entry.*;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryAppendEvent;
 import in.xnnyygn.xraft.core.noderole.*;
 import in.xnnyygn.xraft.core.rpc.Connector;
@@ -70,14 +67,46 @@ public class Controller implements NodeRoleContext {
 
     void addServer(NodeConfig config) {
         ensureLeader();
-        this.runWithMonitor(() -> {
+        runWithMonitor(() -> {
             nodeContext.addNode(config, false);
             ((LeaderNodeRole) nodeRole).replicateLog(this, config.getId());
         });
     }
 
-    void removeServer(NodeConfig nodeConfig) {
+    void removeServer(NodeId id) {
+        ensureLeader();
+        runWithMonitor(() -> {
+            GroupConfigEntry lastEntry = nodeContext.getLog().getLastGroupConfigEntry();
+            // TODO refactor
+            // check if last group config entry committed
+            if (lastEntry != null && nodeContext.getLog().getCommitIndex() < lastEntry.getIndex()) {
+                logger.info("wait for last group config entry {} to be committed", lastEntry);
+                // since controller is single thread, no race condition to add listener
+                lastEntry.addListener(new EntryListenerAdapter() {
+                    @Override
+                    public void entryCommitted(Entry entry) {
+                        Controller.this.removeServer(id);
+                    }
+                });
+                return;
+            }
 
+            RemoveNodeEntry removeNodeEntry = nodeContext.getLog().appendEntryForRemoveNode(
+                    nodeRole.getTerm(), nodeContext.getNodeGroup().getNodeConfigsOfMajor(), id
+            );
+            removeNodeEntry.addListener(new EntryListenerAdapter() {
+                @Override
+                public void entryCommitted(Entry entry) {
+                    if (id.equals(nodeContext.getSelfNodeId())) {
+                        logger.info("remove leader from group, step down");
+                        nodeRole.stepDown(Controller.this, true);
+                    }
+                    nodeContext.getNodeGroup().removeNode(id);
+                }
+            });
+            nodeContext.getNodeGroup().downgrade(id);
+            ((LeaderNodeRole) nodeRole).replicateLog(this);
+        });
     }
 
     void addNodeRoleListener(NodeRoleListener listener) {
@@ -142,7 +171,7 @@ public class Controller implements NodeRoleContext {
     @Subscribe
     public void onReceive(GroupConfigEntryAppendEvent event) {
         GroupConfigEntry entry = (GroupConfigEntry) event.getEntry();
-        nodeContext.getNodeGroup().updateNodes(entry.getNodeConfigs());
+        nodeContext.getNodeGroup().updateNodes(entry.getResultNodeConfigs());
     }
 
     @Override
@@ -179,14 +208,17 @@ public class Controller implements NodeRoleContext {
     }
 
     private void doUpgradeNode(NodeId id) {
+        NodeConfig newNodeConfig = nodeContext.getNodeGroup().getConfig(id);
+        nodeContext.getLog().appendEntryForAddNode(nodeRole.getTerm(), nodeContext.getNodeGroup().getNodeConfigsOfMajor(), newNodeConfig);
         nodeContext.getNodeGroup().upgrade(id);
-        nodeContext.getLog().appendEntry(nodeRole.getTerm(), nodeContext.getNodeGroup().getNodeConfigsOfMajor());
+        // TODO reply ok
     }
 
     @Override
     public void removeNode(NodeId id) {
         nodeContext.getNodeGroup().removeNode(id);
         // TODO close connection to node
+        // TODO reply timeout
     }
 
     @Override
@@ -233,8 +265,8 @@ public class Controller implements NodeRoleContext {
     }
 
     @Override
-    public boolean standbyMode() {
-        return nodeContext.isStandby();
+    public boolean isStandbyMode() {
+        return nodeContext.isStandbyMode();
     }
 
     private void runWithMonitor(Runnable r) {

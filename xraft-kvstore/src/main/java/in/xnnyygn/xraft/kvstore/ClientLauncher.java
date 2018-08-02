@@ -33,6 +33,9 @@ public class ClientLauncher {
             String host = args[2];
             int port = Integer.parseInt(args[3]);
             client.addServer(nodeId, host, port);
+        } else if ("remove-server".equals(command)) {
+            String nodeId = args[1];
+            client.removeServer(nodeId);
         }
     }
 

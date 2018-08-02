@@ -11,11 +11,12 @@ import java.util.stream.Collectors;
 
 public class NodeGroup {
 
-    private static class NodeState {
+    public static class NodeState {
 
         private final NodeConfig config;
         private ReplicationState replicationState;
         private boolean memberOfMajor;
+        private boolean removing = false;
 
         NodeState(NodeConfig config) {
             this(config, true);
@@ -48,14 +49,14 @@ public class NodeGroup {
             this.replicationState = replicationState;
         }
 
-        ReplicationState getReplicationState() {
+        public ReplicationState getReplicationState() {
             if (replicationState == null) {
                 throw new IllegalStateException("replication state not set");
             }
             return replicationState;
         }
 
-        boolean isMemberOfMajor() {
+        public boolean isMemberOfMajor() {
             return memberOfMajor;
         }
 
@@ -63,13 +64,12 @@ public class NodeGroup {
             this.memberOfMajor = memberOfMajor;
         }
 
-        @Override
-        public String toString() {
-            return "NodeState{" +
-                    "config=" + config +
-                    ", memberOfMajor=" + memberOfMajor +
-                    ", replicationState=" + replicationState +
-                    '}';
+        public boolean isRemoving() {
+            return removing;
+        }
+
+        public void setRemoving(boolean removing) {
+            this.removing = removing;
         }
 
     }
@@ -104,10 +104,10 @@ public class NodeGroup {
     }
 
     public Endpoint getEndpoint(NodeId id) {
-        return getState(id).getEndpoint();
+        return findState(id).getEndpoint();
     }
 
-    private NodeState getState(NodeId id) {
+    private NodeState findState(NodeId id) {
         NodeState state = stateMap.get(id);
         if (state == null) {
             throw new IllegalStateException("no such node " + id);
@@ -115,22 +115,29 @@ public class NodeGroup {
         return state;
     }
 
-    public NodeConfig getConfig(NodeId id) {
-        return getState(id).getConfig();
+    public NodeState getState(NodeId id) {
+        return stateMap.get(id);
     }
 
-    public boolean isMemberOfMajor(NodeId id) {
-        return getState(id).isMemberOfMajor();
+    public NodeConfig getConfig(NodeId id) {
+        return findState(id).getConfig();
     }
 
     public void upgrade(NodeId id) {
         logger.info("upgrade node {}", id);
-        NodeState state = getState(id);
+        NodeState state = findState(id);
         state.setMemberOfMajor(true);
 
         // replication state of new node -> peer
         PeerReplicationState newReplicationState = new PeerReplicationState(state.getReplicationState());
         state.setReplicationState(newReplicationState);
+    }
+
+    public void downgrade(NodeId id) {
+        logger.info("downgrade node {}", id);
+        NodeState state = findState(id);
+        state.setMemberOfMajor(false);
+        state.setRemoving(true);
     }
 
     public void resetReplicationStates(NodeId selfId, Log log) {
@@ -150,7 +157,7 @@ public class NodeGroup {
     }
 
     public ReplicationState getReplicationState(NodeId id) {
-        return getState(id).getReplicationState();
+        return findState(id).getReplicationState();
     }
 
     public int getMatchIndexOfMajor() {
@@ -194,6 +201,11 @@ public class NodeGroup {
 
     public boolean isUniqueNode(NodeId id) {
         return stateMap.size() == 1 && stateMap.containsKey(id);
+    }
+
+    public boolean isMemberOfMajor(NodeId id) {
+        NodeState state = stateMap.get(id);
+        return state != null && state.isMemberOfMajor();
     }
 
 }

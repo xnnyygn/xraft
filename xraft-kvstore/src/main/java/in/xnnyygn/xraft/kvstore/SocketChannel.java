@@ -3,10 +3,7 @@ package in.xnnyygn.xraft.kvstore;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageLite;
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.service.AddServerCommand;
-import in.xnnyygn.xraft.core.service.Channel;
-import in.xnnyygn.xraft.core.service.ChannelException;
-import in.xnnyygn.xraft.core.service.RedirectException;
+import in.xnnyygn.xraft.core.service.*;
 import in.xnnyygn.xraft.kvstore.message.GetCommand;
 import in.xnnyygn.xraft.kvstore.message.SetCommand;
 
@@ -70,11 +67,15 @@ public class SocketChannel implements Channel {
                     .setKey(setCommand.getKey())
                     .setValue(ByteString.copyFrom(setCommand.getValue())).build();
             this.write(output, MessageConstants.MSG_TYPE_SET_COMMAND, protoSetCommand);
-        } else if(payload instanceof AddServerCommand) {
+        } else if (payload instanceof AddServerCommand) {
             AddServerCommand command = (AddServerCommand) payload;
             Protos.AddServerCommand protoAddServerCommand = Protos.AddServerCommand.newBuilder().setNodeId(command.getNodeId())
                     .setHost(command.getHost()).setPort(command.getPort()).build();
             this.write(output, MessageConstants.MSG_TYPE_ADD_SERVER_COMMAND, protoAddServerCommand);
+        } else if (payload instanceof RemoveServerCommand) {
+            RemoveServerCommand command = (RemoveServerCommand) payload;
+            Protos.RemoveServerCommand protoRemoveServerCommand = Protos.RemoveServerCommand.newBuilder().setNodeId(command.getNodeId().getValue()).build();
+            this.write(output, MessageConstants.MSG_TYPE_REMOVE_SERVER_COMMAND, protoRemoveServerCommand);
         }
     }
 

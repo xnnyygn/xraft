@@ -1,6 +1,7 @@
 package in.xnnyygn.xraft.core.log.entry;
 
 import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.node.NodeId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +29,21 @@ public class EntrySequence {
     }
 
     public GeneralEntry append(int term, byte[] commandBytes) {
+        // TODO move index to outside
         GeneralEntry entry = new GeneralEntry(this.nextLogIndex++, term, commandBytes);
         this.entries.add(entry);
         return entry;
     }
 
-    public GroupConfigEntry append(int term, Set<NodeConfig> nodeConfigs) {
-        // TODO move command up
-        GroupConfigEntry entry = new GroupConfigEntry(this.nextLogIndex++, term, nodeConfigs);
-        this.entries.add(entry);
+    public AddNodeEntry append(int term, Set<NodeConfig> nodeConfigs, NodeConfig newNodeConfig) {
+        AddNodeEntry entry = new AddNodeEntry(nextLogIndex++, term, nodeConfigs, newNodeConfig);
+        entries.add(entry);
+        return entry;
+    }
+
+    public RemoveNodeEntry append(int term, Set<NodeConfig> nodeConfigs, NodeId nodeToRemove) {
+        RemoveNodeEntry entry = new RemoveNodeEntry(nextLogIndex++, term, nodeConfigs, nodeToRemove);
+        entries.add(entry);
         return entry;
     }
 

@@ -12,7 +12,7 @@ public class NodeBuilder {
     private final NodeGroup group;
     private final EventBus eventBus;
     private final Endpoint endpoint;
-    private boolean standby = false;
+    private boolean standbyMode = false;
 
     public NodeBuilder(NodeId id, NodeGroup group) {
         this.id = id;
@@ -21,14 +21,14 @@ public class NodeBuilder {
         this.eventBus = new EventBus(id.getValue());
     }
 
-    public NodeBuilder setStandby(boolean standby) {
-        this.standby = standby;
+    public NodeBuilder setStandbyMode(boolean standbyMode) {
+        this.standbyMode = standbyMode;
         return this;
     }
 
     public Node build() {
         NodeContext context = new NodeContext(id, group, new NodeStore(), eventBus);
-        context.setStandby(standby);
+        context.setStandbyMode(standbyMode);
         context.setLog(new MemoryLog(eventBus));
         context.setScheduler(new Scheduler());
         context.setConnector(new NioConnector(group, id, eventBus, endpoint.getPort()));

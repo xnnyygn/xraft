@@ -27,7 +27,7 @@ public class ServerLauncher {
         } else if ("new-node".equals(command)) {
             NodeConfig newNodeConfig = new NodeConfig(args[1], "localhost", Integer.parseInt(args[2]));
             NodeGroup nodeGroup = new NodeGroup(newNodeConfig);
-            Node node = new NodeBuilder(newNodeConfig.getId(), nodeGroup).setStandby(true).build();
+            Node node = new NodeBuilder(newNodeConfig.getId(), nodeGroup).setStandbyMode(true).build();
             server = new Server(node, newNodeConfig.getPort() + 1000);
         } else {
             throw new IllegalArgumentException("unknown command " + command);
