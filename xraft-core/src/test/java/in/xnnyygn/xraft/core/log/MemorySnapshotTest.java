@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class MemorySnapshotTest {
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testReadEmpty() {
         MemorySnapshot snapshot = new MemorySnapshot(0, 0, new byte[0]);
         snapshot.read(0, 10);

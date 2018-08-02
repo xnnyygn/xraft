@@ -36,3 +36,9 @@ message EntryList {
     }
     repeated Entry entries = 1;
 }
+
+message AddServerCommand {
+    string node_id = 1;
+    string host = 2;
+    int32 port = 3;
+}

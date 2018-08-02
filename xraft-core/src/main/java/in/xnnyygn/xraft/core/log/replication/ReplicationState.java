@@ -10,12 +10,20 @@ public interface ReplicationState {
 
     int getMatchIndex();
 
-    void backOffNextIndex();
+    boolean backOffNextIndex();
 
     boolean advance(int lastEntryIndex);
 
-    boolean isMember();
+    boolean isReplicationTarget();
 
-    void setMember(boolean member);
+    boolean catchUp(int nextLogIndex);
+
+    boolean isReplicating();
+
+    void setReplicating(boolean replicating);
+
+    long getLastReplicatedAt();
+
+    void setLastReplicatedAt(long lastReplicatedAt);
 
 }

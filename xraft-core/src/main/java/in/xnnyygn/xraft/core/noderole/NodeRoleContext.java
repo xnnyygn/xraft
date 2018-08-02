@@ -1,19 +1,23 @@
 package in.xnnyygn.xraft.core.noderole;
 
 import in.xnnyygn.xraft.core.log.Log;
-import in.xnnyygn.xraft.core.log.replication.GeneralReplicationStateTracker;
+import in.xnnyygn.xraft.core.node.NodeGroup;
+import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.Connector;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeoutScheduler;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
-import in.xnnyygn.xraft.core.node.NodeId;
 
 public interface NodeRoleContext extends ElectionTimeoutScheduler {
 
     NodeId getSelfNodeId();
 
-    int getNodeCountForVoting();
+    NodeGroup getNodeGroup();
 
-    GeneralReplicationStateTracker createReplicationStateTracker();
+    void resetReplicationStates();
+
+    void upgradeNode(NodeId id);
+
+    void removeNode(NodeId id);
 
     void changeToNodeRole(AbstractNodeRole newNodeRole);
 
@@ -22,5 +26,7 @@ public interface NodeRoleContext extends ElectionTimeoutScheduler {
     Log getLog();
 
     Connector getConnector();
+
+    boolean standbyMode();
 
 }

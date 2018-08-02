@@ -1,9 +1,12 @@
 package in.xnnyygn.xraft.core.noderole;
 
-import in.xnnyygn.xraft.core.log.*;
+import in.xnnyygn.xraft.core.log.Log;
+import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.log.replication.ReplicationState;
-import in.xnnyygn.xraft.core.log.replication.GeneralReplicationStateTracker;
+import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.rpc.Endpoint;
 import in.xnnyygn.xraft.core.rpc.MockConnector;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
@@ -14,6 +17,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LeaderAppendEntriesResultTest {
 
@@ -35,14 +41,21 @@ public class LeaderAppendEntriesResultTest {
         this.mockNodeStateContext.setConnector(this.mockConnector);
     }
 
+    private NodeGroup buildNodeGroup(Collection<NodeId> ids, int nextLogIndex) {
+        Set<NodeConfig> configs = ids.stream().map(id -> new NodeConfig(id, new Endpoint("", 0))).collect(Collectors.toSet());
+        NodeGroup group = new NodeGroup(configs);
+        group.resetReplicationStates(nextLogIndex);
+        return group;
+    }
+
     @Test
     public void testOnReceiveAppendEntriesResultHeartbeat() {
-        GeneralReplicationStateTracker tracker = new GeneralReplicationStateTracker(Arrays.asList(nodeId, new NodeId("F2")), 1);
-        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()), tracker);
+        mockNodeStateContext.setNodeGroup(buildNodeGroup(Arrays.asList(nodeId, new NodeId("F2")), 1));
+        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()));
 
-        leader.onReceiveAppendEntriesResult(mockNodeStateContext, new AppendEntriesResult(1, true), nodeId, new AppendEntriesRpc());
+        leader.onReceiveAppendEntriesResult(mockNodeStateContext, new AppendEntriesResult("", 1, true), nodeId, new AppendEntriesRpc());
 
-        ReplicationState replicationState = tracker.get(nodeId);
+        ReplicationState replicationState = mockNodeStateContext.getNodeGroup().getReplicationState(nodeId);
         Assert.assertEquals(0, replicationState.getMatchIndex());
         Assert.assertEquals(1, replicationState.getNextIndex());
     }
@@ -51,15 +64,15 @@ public class LeaderAppendEntriesResultTest {
     public void testOnReceiveAppendEntriesResultSuccessLog1() {
         this.log.appendEntry(1, new byte[0]); // 1
 
-        GeneralReplicationStateTracker tracker = new GeneralReplicationStateTracker(Arrays.asList(nodeId, new NodeId("F2")), 2);
-        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()), tracker);
+        mockNodeStateContext.setNodeGroup(buildNodeGroup(Arrays.asList(nodeId, new NodeId("F2")), 2));
+        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()));
 
         leader.onReceiveAppendEntriesResult(mockNodeStateContext,
-                new AppendEntriesResult(1, true),
+                new AppendEntriesResult("", 1, true),
                 nodeId,
                 this.log.createAppendEntriesRpc(1, nodeId, 2, -1));
 
-        ReplicationState replicationState = tracker.get(nodeId);
+        ReplicationState replicationState = mockNodeStateContext.getNodeGroup().getReplicationState(nodeId);
         Assert.assertEquals(1, replicationState.getMatchIndex());
         Assert.assertEquals(2, replicationState.getNextIndex());
     }
@@ -69,30 +82,30 @@ public class LeaderAppendEntriesResultTest {
         this.log.appendEntry(1, new byte[0]); // 1
         this.log.appendEntry(1, new byte[0]); // 2
 
-        GeneralReplicationStateTracker tracker = new GeneralReplicationStateTracker(Arrays.asList(nodeId, new NodeId("F2")), 2);
-        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()), tracker);
+        mockNodeStateContext.setNodeGroup(buildNodeGroup(Arrays.asList(nodeId, new NodeId("F2")), 2));
+        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()));
 
         leader.onReceiveAppendEntriesResult(mockNodeStateContext,
-                new AppendEntriesResult(1, true),
+                new AppendEntriesResult("", 1, true),
                 nodeId,
                 this.log.createAppendEntriesRpc(1, nodeId, 2, -1));
 
-        ReplicationState replicationState = tracker.get(nodeId);
+        ReplicationState replicationState = mockNodeStateContext.getNodeGroup().getReplicationState(nodeId);
         Assert.assertEquals(2, replicationState.getMatchIndex());
         Assert.assertEquals(3, replicationState.getNextIndex());
     }
 
     @Test
     public void testOnReceiveAppendEntriesFailed() {
-        GeneralReplicationStateTracker tracker = new GeneralReplicationStateTracker(Arrays.asList(nodeId, new NodeId("F2")), 1);
-        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()), tracker);
+        mockNodeStateContext.setNodeGroup(buildNodeGroup(Arrays.asList(nodeId, new NodeId("F2")), 2));
+        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()));
 
-        leader.onReceiveAppendEntriesResult(mockNodeStateContext, new AppendEntriesResult(1, false), nodeId, new AppendEntriesRpc());
+        leader.onReceiveAppendEntriesResult(mockNodeStateContext, new AppendEntriesResult("", 1, false), nodeId, new AppendEntriesRpc());
 
-        ReplicationState replicationState = tracker.get(nodeId);
+        ReplicationState replicationState = mockNodeStateContext.getNodeGroup().getReplicationState(nodeId);
         Assert.assertEquals(0, replicationState.getMatchIndex());
         Assert.assertEquals(1, replicationState.getNextIndex());
-        Assert.assertNotNull(this.mockConnector.getRpc());
+        Assert.assertNotNull(mockConnector.getRpc());
         Assert.assertEquals(this.nodeId, this.mockConnector.getDestinationNodeId());
     }
 
@@ -100,15 +113,15 @@ public class LeaderAppendEntriesResultTest {
     public void testOnReceiveAppendEntriesResultFailedLog1() {
         this.log.appendEntry(1, new byte[0]); // 1
 
-        GeneralReplicationStateTracker tracker = new GeneralReplicationStateTracker(Arrays.asList(nodeId, new NodeId("F2")), 2);
-        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()), tracker);
+        mockNodeStateContext.setNodeGroup(buildNodeGroup(Arrays.asList(nodeId, new NodeId("F2")), 2));
+        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()));
 
         leader.onReceiveAppendEntriesResult(mockNodeStateContext,
-                new AppendEntriesResult(1, false),
+                new AppendEntriesResult("", 1, false),
                 nodeId,
                 this.log.createAppendEntriesRpc(1, nodeId, 2, -1));
 
-        ReplicationState replicationState = tracker.get(nodeId);
+        ReplicationState replicationState =  mockNodeStateContext.getNodeGroup().getReplicationState(nodeId);
         Assert.assertEquals(0, replicationState.getMatchIndex());
         Assert.assertEquals(1, replicationState.getNextIndex());
         Assert.assertNotNull(this.mockConnector.getRpc());
@@ -118,11 +131,11 @@ public class LeaderAppendEntriesResultTest {
     public void testOnReceiveAppendEntriesResultFailedHigherTerm() {
         this.log.appendEntry(1, new byte[0]); // 1
 
-        GeneralReplicationStateTracker tracker = new GeneralReplicationStateTracker(Arrays.asList(nodeId, new NodeId("F2")), 2);
-        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()), tracker);
+        mockNodeStateContext.setNodeGroup(buildNodeGroup(Arrays.asList(nodeId, new NodeId("F2")), 2));
+        LeaderNodeRole leader = new LeaderNodeRole(1, new LogReplicationTask(new NullScheduledFuture()));
 
         leader.onReceiveAppendEntriesResult(mockNodeStateContext,
-                new AppendEntriesResult(2, false),
+                new AppendEntriesResult("", 2, false),
                 nodeId,
                 this.log.createAppendEntriesRpc(1, nodeId, 2, -1));
 

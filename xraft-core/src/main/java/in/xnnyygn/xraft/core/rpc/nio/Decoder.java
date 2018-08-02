@@ -1,7 +1,6 @@
 package in.xnnyygn.xraft.core.rpc.nio;
 
 import in.xnnyygn.xraft.core.log.entry.EntryFactory;
-import in.xnnyygn.xraft.core.log.entry.GeneralEntry;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.Protos;
 import in.xnnyygn.xraft.core.rpc.message.*;
@@ -51,6 +50,7 @@ public class Decoder extends ByteToMessageDecoder {
             case MessageConstants.MSG_TYPE_APPEND_ENTRIES_RPC:
                 Protos.AppendEntriesRpc protoAERpc = Protos.AppendEntriesRpc.parseFrom(payload);
                 AppendEntriesRpc aeRpc = new AppendEntriesRpc();
+                aeRpc.setMessageId(protoAERpc.getMessageId());
                 aeRpc.setTerm(protoAERpc.getTerm());
                 aeRpc.setLeaderId(new NodeId(protoAERpc.getLeaderId()));
                 aeRpc.setLeaderCommit(protoAERpc.getLeaderCommit());
@@ -63,7 +63,7 @@ public class Decoder extends ByteToMessageDecoder {
                 break;
             case MessageConstants.MSG_TYPE_APPEND_ENTRIES_RESULT:
                 Protos.AppendEntriesResult protoAEResult = Protos.AppendEntriesResult.parseFrom(payload);
-                out.add(new AppendEntriesResult(protoAEResult.getTerm(), protoAEResult.getSuccess()));
+                out.add(new AppendEntriesResult(protoAEResult.getRpcMessageId(), protoAEResult.getTerm(), protoAEResult.getSuccess()));
                 break;
             case MessageConstants.MSG_TYPE_INSTALL_SNAPSHOT_PRC:
                 Protos.InstallSnapshotRpc protoISRpc = Protos.InstallSnapshotRpc.parseFrom(payload);

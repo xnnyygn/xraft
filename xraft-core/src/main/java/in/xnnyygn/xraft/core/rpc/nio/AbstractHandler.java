@@ -10,6 +10,8 @@ import io.netty.channel.ChannelPromise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 abstract class AbstractHandler extends ChannelDuplexHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractHandler.class);
@@ -38,9 +40,16 @@ abstract class AbstractHandler extends ChannelDuplexHandler {
             eventBus.post(new AppendEntriesRpcMessage(rpc, remoteId, channel));
         } else if (msg instanceof AppendEntriesResult) {
             AppendEntriesResult result = (AppendEntriesResult) msg;
-            assert lastAppendEntriesRpc != null;
-            eventBus.post(new AppendEntriesResultMessage(result, remoteId, lastAppendEntriesRpc));
-            lastAppendEntriesRpc = null;
+            if (lastAppendEntriesRpc == null) {
+                logger.warn("no last append entries rpc");
+            } else {
+                if (!Objects.equals(result.getRpcMessageId(), lastAppendEntriesRpc.getMessageId())) {
+                    logger.warn("incorrect append entries rpc message id {}, expected {}", result.getRpcMessageId(), lastAppendEntriesRpc.getMessageId());
+                } else {
+                    eventBus.post(new AppendEntriesResultMessage(result, remoteId, lastAppendEntriesRpc));
+                    lastAppendEntriesRpc = null;
+                }
+            }
         } else if (msg instanceof InstallSnapshotRpc) {
             InstallSnapshotRpc rpc = (InstallSnapshotRpc) msg;
             eventBus.post(new InstallSnapshotRpcMessage(rpc, remoteId, channel));

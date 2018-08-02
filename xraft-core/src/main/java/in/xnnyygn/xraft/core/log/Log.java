@@ -1,9 +1,6 @@
 package in.xnnyygn.xraft.core.log;
 
-import in.xnnyygn.xraft.core.log.entry.EntryApplier;
-import in.xnnyygn.xraft.core.log.entry.GeneralEntry;
-import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
-import in.xnnyygn.xraft.core.log.entry.NoOpEntry;
+import in.xnnyygn.xraft.core.log.entry.*;
 import in.xnnyygn.xraft.core.log.snapshot.SnapshotApplier;
 import in.xnnyygn.xraft.core.log.snapshot.SnapshotGenerator;
 import in.xnnyygn.xraft.core.node.NodeConfig;
@@ -18,11 +15,7 @@ import java.util.Set;
 public interface Log {
 
     // entries, read
-    @Deprecated
     RequestVoteRpc createRequestVoteRpc(int term, NodeId selfNodeId);
-
-    // entries, read
-    void setLastEntryIndexAndTerm(RequestVoteRpc rpc);
 
     // snapshot, entries, read
     AppendEntriesRpc createAppendEntriesRpc(int term, NodeId selfNodeId, int nextIndex, int maxEntries);
@@ -38,7 +31,7 @@ public interface Log {
     int getCommitIndex();
 
     // state, read
-    int getNextLogIndex();
+    int getNextIndex();
 
     // snapshot, entries read
     boolean isNewerThan(int lastLogIndex, int lastLogTerm);

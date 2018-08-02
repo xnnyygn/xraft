@@ -16,11 +16,12 @@ message RequestVoteResult {
 }
 
 message AppendEntriesRpc {
-    int32 term = 1;
-    string leader_id = 2;
-    int32 prev_log_index = 3;
-    int32 prev_log_term = 4;
-    int32 leader_commit = 5;
+    string message_id = 1;
+    int32 term = 2;
+    string leader_id = 3;
+    int32 prev_log_index = 4;
+    int32 prev_log_term = 5;
+    int32 leader_commit = 6;
 
     message Entry {
         int32 kind = 1;
@@ -29,12 +30,13 @@ message AppendEntriesRpc {
         bytes command = 4;
     }
 
-    repeated Entry entries = 6;
+    repeated Entry entries = 7;
 }
 
 message AppendEntriesResult {
-    int32 term = 1;
-    bool success = 2;
+    string rpc_message_id = 1;
+    int32 term = 2;
+    bool success = 3;
 }
 
 message InstallSnapshotRpc {

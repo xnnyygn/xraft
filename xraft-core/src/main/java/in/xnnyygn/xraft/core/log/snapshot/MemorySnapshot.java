@@ -28,7 +28,7 @@ public class MemorySnapshot implements Snapshot {
 
     @Override
     public SnapshotChunk read(int offset, int length) {
-        if (offset < 0 || offset >= this.data.length) {
+        if (offset < 0 || offset > this.data.length) {
             throw new IndexOutOfBoundsException("offset " + offset + " out of bound");
         }
 

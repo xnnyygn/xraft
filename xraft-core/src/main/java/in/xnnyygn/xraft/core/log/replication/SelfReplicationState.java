@@ -9,7 +9,7 @@ public class SelfReplicationState extends AbstractReplicationState {
     private final Log log;
 
     public SelfReplicationState(NodeId selfNodeId, Log log) {
-        super(true);
+        super(false);
         this.selfNodeId = selfNodeId;
         this.log = log;
     }
@@ -21,16 +21,16 @@ public class SelfReplicationState extends AbstractReplicationState {
 
     @Override
     public int getNextIndex() {
-        return this.log.getNextLogIndex();
+        return this.log.getNextIndex();
     }
 
     @Override
     public int getMatchIndex() {
-        return this.log.getNextLogIndex() - 1;
+        return this.log.getNextIndex() - 1;
     }
 
     @Override
-    public void backOffNextIndex() {
+    public boolean backOffNextIndex() {
         throw new UnsupportedOperationException();
     }
 

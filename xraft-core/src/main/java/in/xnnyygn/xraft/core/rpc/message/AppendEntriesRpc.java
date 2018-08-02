@@ -9,12 +9,21 @@ import java.util.List;
 
 public class AppendEntriesRpc implements Serializable {
 
+    private String messageId;
     private int term;
     private NodeId leaderId;
     private int prevLogIndex = 0;
     private int prevLogTerm;
     private List<Entry> entries = Collections.emptyList();
     private int leaderCommit;
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
 
     public int getTerm() {
         return term;
@@ -75,7 +84,8 @@ public class AppendEntriesRpc implements Serializable {
     @Override
     public String toString() {
         return "AppendEntriesRpc{" +
-                "entries.size=" + entries.size() +
+                "messageId='" + messageId +
+                "', entries.size=" + entries.size() +
                 ", leaderCommit=" + leaderCommit +
                 ", leaderId=" + leaderId +
                 ", prevLogIndex=" + prevLogIndex +

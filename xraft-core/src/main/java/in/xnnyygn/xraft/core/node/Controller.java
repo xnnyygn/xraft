@@ -5,11 +5,10 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.log.entry.Entry;
+import in.xnnyygn.xraft.core.log.entry.EntryApplierAdapter;
 import in.xnnyygn.xraft.core.log.entry.EntryListenerAdapter;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
-import in.xnnyygn.xraft.core.log.replication.GeneralReplicationStateTracker;
-import in.xnnyygn.xraft.core.log.replication.SelfReplicationState;
-import in.xnnyygn.xraft.core.log.entry.EntryApplierAdapter;
+import in.xnnyygn.xraft.core.log.event.GroupConfigEntryAppendEvent;
 import in.xnnyygn.xraft.core.noderole.*;
 import in.xnnyygn.xraft.core.rpc.Connector;
 import in.xnnyygn.xraft.core.rpc.message.*;
@@ -20,9 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -65,54 +62,17 @@ public class Controller implements NodeRoleContext {
         });
     }
 
-//    void changeMembership(Set<NodeConfig> newNodeConfigs) {
-//        if (this.nodeRole.getRole() != RoleName.LEADER) {
-//            throw new IllegalStateException("only leader can append log");
-//        }
-//
-//        this.runWithMonitor(() -> {
-//            Set<NodeConfig> oldNodeConfigs = this.nodeContext.getNodeGroup().toNodeConfigs();
-//            Set<NodeConfig> mergedNodeConfigs = NodeConfig.merge(oldNodeConfigs, newNodeConfigs);
-//            this.nodeRole.applyNodeConfigs(this, mergedNodeConfigs);
-//
-//            // wait for node committed
-//            if (!NodeConfig.isSame(mergedNodeConfigs, newNodeConfigs)) {
-//                this.nodeRole.applyNodeConfigs(this, newNodeConfigs);
-//            }
-//        });
-//    }
-
     private void ensureLeader() {
         if (this.nodeRole.getRole() != RoleName.LEADER) {
             throw new IllegalStateException("only leader can perform such operation");
         }
     }
 
-    void addServer(NodeConfig newNodeConfig) {
+    void addServer(NodeConfig config) {
         ensureLeader();
-        // TODO wrap in executor
         this.runWithMonitor(() -> {
-            // TODO catch up new server
-
-            GroupConfigEntry lastEntry = nodeContext.getLog().getLastGroupConfigEntry();
-            // check if last group config entry committed
-            if (lastEntry != null && nodeContext.getLog().getCommitIndex() < lastEntry.getIndex()) {
-                // if not committed, wait for last config to be committed
-                logger.info("wait for last group config entry {} to be committed", lastEntry);
-                // since controller is single thread, no race condition to add listener
-                lastEntry.addListener(new EntryListenerAdapter() {
-                    @Override
-                    public void entryCommitted(Entry entry) {
-                        Controller.this.addServer(newNodeConfig);
-                    }
-                });
-                return;
-            }
-
-            nodeContext.getNodeGroup().addNode(newNodeConfig);
-            // now connector can use new node config
-            nodeContext.getLog().appendEntry(nodeRole.getTerm(), nodeContext.getNodeGroup().toNodeConfigs());
-            ((LeaderNodeRole) nodeRole).replicateLog(this);
+            nodeContext.addNode(config, false);
+            ((LeaderNodeRole) nodeRole).replicateLog(this, config.getId());
         });
     }
 
@@ -179,25 +139,54 @@ public class Controller implements NodeRoleContext {
         });
     }
 
+    @Subscribe
+    public void onReceive(GroupConfigEntryAppendEvent event) {
+        GroupConfigEntry entry = (GroupConfigEntry) event.getEntry();
+        nodeContext.getNodeGroup().updateNodes(entry.getNodeConfigs());
+    }
+
     @Override
     public NodeId getSelfNodeId() {
         return this.nodeContext.getSelfNodeId();
     }
 
     @Override
-    public int getNodeCountForVoting() {
-        return this.nodeContext.getNodeGroup().getCount();
+    public NodeGroup getNodeGroup() {
+        return nodeContext.getNodeGroup();
     }
 
     @Override
-    public GeneralReplicationStateTracker createReplicationStateTracker() {
-        Set<NodeId> nodeIds = new HashSet<>(this.nodeContext.getNodeGroup().getIds());
-        nodeIds.remove(this.nodeContext.getSelfNodeId());
-        return new GeneralReplicationStateTracker(
-                nodeIds,
-                this.nodeContext.getLog().getNextLogIndex(),
-                new SelfReplicationState(this.nodeContext.getSelfNodeId(), this.nodeContext.getLog())
-        );
+    public void resetReplicationStates() {
+        nodeContext.resetReplicationStates();
+    }
+
+    @Override
+    public void upgradeNode(NodeId id) {
+        GroupConfigEntry lastEntry = nodeContext.getLog().getLastGroupConfigEntry();
+        // check if last group config entry committed
+        if (lastEntry != null && nodeContext.getLog().getCommitIndex() < lastEntry.getIndex()) {
+            logger.info("wait for last group config entry {} to be committed", lastEntry);
+            // since controller is single thread, no race condition to add listener
+            lastEntry.addListener(new EntryListenerAdapter() {
+                @Override
+                public void entryCommitted(Entry entry) {
+                    doUpgradeNode(id);
+                }
+            });
+        } else {
+            doUpgradeNode(id);
+        }
+    }
+
+    private void doUpgradeNode(NodeId id) {
+        nodeContext.getNodeGroup().upgrade(id);
+        nodeContext.getLog().appendEntry(nodeRole.getTerm(), nodeContext.getNodeGroup().getNodeConfigsOfMajor());
+    }
+
+    @Override
+    public void removeNode(NodeId id) {
+        nodeContext.getNodeGroup().removeNode(id);
+        // TODO close connection to node
     }
 
     @Override
@@ -221,7 +210,6 @@ public class Controller implements NodeRoleContext {
 
     @Override
     public LogReplicationTask scheduleLogReplicationTask() {
-        ensureLeader();
         return this.nodeContext.getScheduler().scheduleLogReplicationTask(
                 () -> this.runWithMonitor(() -> ((LeaderNodeRole) this.nodeRole).replicateLog(this))
         );
@@ -242,6 +230,11 @@ public class Controller implements NodeRoleContext {
         return this.nodeContext.getScheduler().scheduleElectionTimeout(
                 () -> this.runWithMonitor(() -> this.nodeRole.electionTimeout(this))
         );
+    }
+
+    @Override
+    public boolean standbyMode() {
+        return nodeContext.isStandby();
     }
 
     private void runWithMonitor(Runnable r) {

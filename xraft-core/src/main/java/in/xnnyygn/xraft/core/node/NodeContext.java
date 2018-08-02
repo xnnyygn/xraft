@@ -22,25 +22,38 @@ import java.util.concurrent.TimeUnit;
 public class NodeContext {
 
     private static final Logger logger = LoggerFactory.getLogger(NodeContext.class);
+
     private final NodeId selfNodeId;
     private final NodeGroup nodeGroup;
     private final NodeStore nodeStore;
+    private final EventBus eventBus;
     private final ExecutorService monitorExecutorService;
 
-    private EventBus eventBus;
     private Log log;
     private Scheduler scheduler;
     private Connector connector;
 
-    public NodeContext(NodeId selfNodeId, NodeGroup nodeGroup, NodeStore nodeStore) {
+    private boolean standby = false;
+
+    public NodeContext(NodeId selfNodeId, NodeGroup nodeGroup, NodeStore nodeStore, EventBus eventBus) {
         this.selfNodeId = selfNodeId;
         this.nodeGroup = nodeGroup;
         this.nodeStore = nodeStore;
+        this.eventBus = eventBus;
         this.monitorExecutorService = Executors.newSingleThreadExecutor(r -> new Thread(r, "monitor-" + selfNodeId));
     }
 
     public void initialize() {
-        this.connector.initialize();
+        connector.initialize();
+        eventBus.register(this);
+    }
+
+    public boolean isStandby() {
+        return standby;
+    }
+
+    public void setStandby(boolean standby) {
+        this.standby = standby;
     }
 
     public NodeId getSelfNodeId() {
@@ -49,6 +62,14 @@ public class NodeContext {
 
     public NodeGroup getNodeGroup() {
         return nodeGroup;
+    }
+
+    public void resetReplicationStates() {
+        nodeGroup.resetReplicationStates(selfNodeId, log);
+    }
+
+    public void addNode(NodeConfig config, boolean memberOfMajor) {
+        nodeGroup.addNode(config, log.getNextIndex(), memberOfMajor);
     }
 
     public NodeStore getNodeStore() {
@@ -65,15 +86,6 @@ public class NodeContext {
 
     public Connector getConnector() {
         return connector;
-    }
-
-    public void setEventBus(EventBus eventBus) {
-        this.eventBus = eventBus;
-        this.eventBus.register(this);
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public void setLog(Log log) {
@@ -107,7 +119,7 @@ public class NodeContext {
                     logger.warn("failure", t);
                 }
             }
-        }, this.monitorExecutorService);
+        }, monitorExecutorService);
     }
 
     @Subscribe
@@ -116,10 +128,10 @@ public class NodeContext {
     }
 
     public void release() throws InterruptedException {
-        this.scheduler.stop();
-        this.connector.close();
-        this.monitorExecutorService.shutdown();
-        this.monitorExecutorService.awaitTermination(1L, TimeUnit.SECONDS);
+        scheduler.stop();
+        connector.close();
+        monitorExecutorService.shutdown();
+        monitorExecutorService.awaitTermination(1L, TimeUnit.SECONDS);
     }
 
 }

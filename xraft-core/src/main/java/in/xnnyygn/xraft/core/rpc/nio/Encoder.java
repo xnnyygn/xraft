@@ -38,6 +38,7 @@ class Encoder extends MessageToByteEncoder<Object> {
         } else if (msg instanceof AppendEntriesRpc) {
             AppendEntriesRpc rpc = (AppendEntriesRpc) msg;
             Protos.AppendEntriesRpc protoRpc = Protos.AppendEntriesRpc.newBuilder()
+                    .setMessageId(rpc.getMessageId())
                     .setTerm(rpc.getTerm())
                     .setLeaderId(rpc.getLeaderId().getValue())
                     .setLeaderCommit(rpc.getLeaderCommit())
@@ -57,6 +58,7 @@ class Encoder extends MessageToByteEncoder<Object> {
         } else if (msg instanceof AppendEntriesResult) {
             AppendEntriesResult result = (AppendEntriesResult) msg;
             Protos.AppendEntriesResult protoResult = Protos.AppendEntriesResult.newBuilder()
+                    .setRpcMessageId(result.getRpcMessageId())
                     .setTerm(result.getTerm())
                     .setSuccess(result.isSuccess())
                     .build();

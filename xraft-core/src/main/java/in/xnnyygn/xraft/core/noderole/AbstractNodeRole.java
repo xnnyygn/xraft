@@ -59,21 +59,28 @@ public abstract class AbstractNodeRole {
      */
     public void electionTimeout(NodeRoleContext context) {
         if (this.role == RoleName.LEADER) {
-            logger.warn("Node {}, current role is LEADER, ignore election timeout", context.getSelfNodeId());
+            logger.warn("node {}, current role is LEADER, ignore election timeout", context.getSelfNodeId());
             return;
         }
 
         // follower: start election
         // candidate: restart election
         int newTerm = this.term + 1;
+        cancelTimeoutOrTask();
 
-        // reset election timeout
-        this.cancelTimeoutOrTask();
-        context.changeToNodeRole(new CandidateNodeRole(newTerm, context.scheduleElectionTimeout()));
-
-        // rpc
-        RequestVoteRpc rpc = context.getLog().createRequestVoteRpc(newTerm, context.getSelfNodeId());
-        context.getConnector().sendRequestVote(rpc);
+        if (context.getNodeGroup().isUniqueNode(context.getSelfNodeId())) {
+            if (context.standbyMode()) {
+                logger.info("standby mode, skip election");
+            } else {
+                logger.info("no other node, just become LEADER");
+                context.changeToNodeRole(new LeaderNodeRole(newTerm, context.scheduleLogReplicationTask()));
+                context.getLog().appendEntry(newTerm); // no-op log
+            }
+        } else {
+            context.changeToNodeRole(new CandidateNodeRole(newTerm, context.scheduleElectionTimeout()));
+            RequestVoteRpc rpc = context.getLog().createRequestVoteRpc(newTerm, context.getSelfNodeId());
+            context.getConnector().sendRequestVote(rpc);
+        }
     }
 
     /**
@@ -141,11 +148,11 @@ public abstract class AbstractNodeRole {
         if (rpc.getTerm() > this.term) {
             this.cancelTimeoutOrTask();
             context.changeToNodeRole(new FollowerNodeRole(rpc.getTerm(), null, rpc.getLeaderId(), context.scheduleElectionTimeout()));
-            result = new AppendEntriesResult(rpc.getTerm(), context.getLog().appendEntries(rpc));
+            result = new AppendEntriesResult(rpc.getMessageId(), rpc.getTerm(), context.getLog().appendEntries(rpc));
         } else if (rpc.getTerm() == this.term) {
             result = processAppendEntriesRpc(context, rpc);
         } else {
-            result = new AppendEntriesResult(this.term, false);
+            result = new AppendEntriesResult(rpc.getMessageId(), this.term, false);
         }
 
         context.getConnector().replyAppendEntries(result, rpcMessage);

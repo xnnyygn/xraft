@@ -1,20 +1,43 @@
 package in.xnnyygn.xraft.core.log.replication;
 
-public abstract class AbstractReplicationState implements ReplicationState {
+abstract class AbstractReplicationState implements ReplicationState {
 
-    private boolean member;
+    private final boolean replicationTarget;
+    private boolean replicating = false;
+    private long lastReplicatedAt = 0;
 
-    public AbstractReplicationState(boolean member) {
-        this.member = member;
+    AbstractReplicationState(boolean replicationTarget) {
+        this.replicationTarget = replicationTarget;
     }
 
     @Override
-    public boolean isMember() {
-        return member;
+    public boolean isReplicationTarget() {
+        return replicationTarget;
     }
 
-    public void setMember(boolean member) {
-        this.member = member;
+    @Override
+    public boolean catchUp(int nextLogIndex) {
+        return getNextIndex() >= nextLogIndex;
+    }
+
+    @Override
+    public boolean isReplicating() {
+        return replicating;
+    }
+
+    @Override
+    public void setReplicating(boolean replicating) {
+        this.replicating = replicating;
+    }
+
+    @Override
+    public long getLastReplicatedAt() {
+        return lastReplicatedAt;
+    }
+
+    @Override
+    public void setLastReplicatedAt(long lastReplicatedAt) {
+        this.lastReplicatedAt = lastReplicatedAt;
     }
 
 }

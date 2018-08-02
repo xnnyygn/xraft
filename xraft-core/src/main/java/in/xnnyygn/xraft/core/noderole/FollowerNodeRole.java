@@ -75,7 +75,7 @@ public class FollowerNodeRole extends AbstractNodeRole {
         assert rpc.getTerm() == this.term;
 
         context.changeToNodeRole(new FollowerNodeRole(this.term, this.votedFor, rpc.getLeaderId(), electionTimeout.reset()));
-        return new AppendEntriesResult(this.term, context.getLog().appendEntries(rpc));
+        return new AppendEntriesResult(rpc.getMessageId(), this.term, context.getLog().appendEntries(rpc));
     }
 
     @Override

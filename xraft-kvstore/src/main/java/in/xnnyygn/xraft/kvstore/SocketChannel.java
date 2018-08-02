@@ -3,6 +3,7 @@ package in.xnnyygn.xraft.kvstore;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageLite;
 import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.service.AddServerCommand;
 import in.xnnyygn.xraft.core.service.Channel;
 import in.xnnyygn.xraft.core.service.ChannelException;
 import in.xnnyygn.xraft.core.service.RedirectException;
@@ -69,6 +70,11 @@ public class SocketChannel implements Channel {
                     .setKey(setCommand.getKey())
                     .setValue(ByteString.copyFrom(setCommand.getValue())).build();
             this.write(output, MessageConstants.MSG_TYPE_SET_COMMAND, protoSetCommand);
+        } else if(payload instanceof AddServerCommand) {
+            AddServerCommand command = (AddServerCommand) payload;
+            Protos.AddServerCommand protoAddServerCommand = Protos.AddServerCommand.newBuilder().setNodeId(command.getNodeId())
+                    .setHost(command.getHost()).setPort(command.getPort()).build();
+            this.write(output, MessageConstants.MSG_TYPE_ADD_SERVER_COMMAND, protoAddServerCommand);
         }
     }
 

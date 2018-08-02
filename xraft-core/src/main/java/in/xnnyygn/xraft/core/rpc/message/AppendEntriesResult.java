@@ -4,12 +4,18 @@ import java.io.Serializable;
 
 public class AppendEntriesResult implements Serializable {
 
+    private final String rpcMessageId;
     private final int term;
     private final boolean success;
 
-    public AppendEntriesResult(int term, boolean success) {
+    public AppendEntriesResult(String rpcMessageId, int term, boolean success) {
+        this.rpcMessageId = rpcMessageId;
         this.term = term;
         this.success = success;
+    }
+
+    public String getRpcMessageId() {
+        return rpcMessageId;
     }
 
     public int getTerm() {
@@ -23,7 +29,8 @@ public class AppendEntriesResult implements Serializable {
     @Override
     public String toString() {
         return "AppendEntriesResult{" +
-                "success=" + success +
+                "rpcMessageId='" + rpcMessageId + '\'' +
+                ", success=" + success +
                 ", term=" + term +
                 '}';
     }

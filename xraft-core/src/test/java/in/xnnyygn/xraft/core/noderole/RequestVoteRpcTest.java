@@ -208,7 +208,7 @@ public class RequestVoteRpcTest {
     @Test
     public void testOnReceiveRequestVoteRpcLeader() {
         NodeId candidateId = new NodeId("C1");
-        LeaderNodeRole leader = new LeaderNodeRole(2, this.mockNodeStateContext.scheduleLogReplicationTask(), null);
+        LeaderNodeRole leader = new LeaderNodeRole(2, this.mockNodeStateContext.scheduleLogReplicationTask());
         RequestVoteRpc rpc = new RequestVoteRpc();
         rpc.setTerm(3);
         rpc.setCandidateId(candidateId);
@@ -223,7 +223,7 @@ public class RequestVoteRpcTest {
         this.log.appendEntry(1, new byte[0]);
 
         NodeId candidateId = new NodeId("C1");
-        LeaderNodeRole leader = new LeaderNodeRole(2, this.mockNodeStateContext.scheduleLogReplicationTask(), null);
+        LeaderNodeRole leader = new LeaderNodeRole(2, this.mockNodeStateContext.scheduleLogReplicationTask());
         RequestVoteRpc rpc = new RequestVoteRpc();
         rpc.setTerm(3);
         rpc.setCandidateId(candidateId);

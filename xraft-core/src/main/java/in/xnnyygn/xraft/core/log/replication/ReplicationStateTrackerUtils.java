@@ -13,13 +13,12 @@ public class ReplicationStateTrackerUtils {
     private static final Logger logger = LoggerFactory.getLogger(ReplicationStateTrackerUtils.class);
 
     public static int getMajorMatchIndex(Collection<ReplicationState> replicationStates) {
-        if (replicationStates.isEmpty()) {
-            throw new IllegalArgumentException("no replication state");
-        }
-
         List<ReplicationStateTracker.NodeMatchIndex> matchIndices = new ArrayList<>();
         for (ReplicationState state : replicationStates) {
             matchIndices.add(new ReplicationStateTracker.NodeMatchIndex(state));
+        }
+        if (matchIndices.isEmpty()) {
+            throw new IllegalArgumentException("no replication state");
         }
         Collections.sort(matchIndices);
         logger.debug("match indices {}", matchIndices);

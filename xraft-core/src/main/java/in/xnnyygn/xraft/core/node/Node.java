@@ -40,7 +40,7 @@ public class Node {
     }
 
     public void addServer(NodeConfig newNodeConfig) {
-
+        this.controller.addServer(newNodeConfig);
     }
 
     public void stop() throws InterruptedException {

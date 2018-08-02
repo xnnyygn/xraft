@@ -1,6 +1,8 @@
 package in.xnnyygn.xraft.core.log;
 
+import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.log.entry.*;
+import in.xnnyygn.xraft.core.log.event.GroupConfigEntryAppendEvent;
 import in.xnnyygn.xraft.core.log.snapshot.*;
 import in.xnnyygn.xraft.core.node.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeId;
@@ -12,12 +14,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class MemoryLog implements Log {
 
     private static final Logger logger = LoggerFactory.getLogger(MemoryLog.class);
     private static final int INSTALL_SNAPSHOT_RPC_DATA_LENGTH = 10;
     private static final int SNAPSHOT_GENERATE_THRESHOLD = 5;
+    private final EventBus eventBus;
     private Snapshot snapshot = new EmptySnapshot();
     private EntrySequence entrySequence = new EntrySequence();
     private GroupConfigEntryList groupConfigEntryList = new GroupConfigEntryList();
@@ -29,12 +33,17 @@ public class MemoryLog implements Log {
     private int lastApplied = 0;
 
     public MemoryLog() {
-        this(new EmptySnapshot(), new EntrySequence());
+        this(new EventBus());
     }
 
-    MemoryLog(Snapshot snapshot, EntrySequence entrySequence) {
+    public MemoryLog(EventBus eventBus) {
+        this(new EmptySnapshot(), new EntrySequence(), eventBus);
+    }
+
+    MemoryLog(Snapshot snapshot, EntrySequence entrySequence, EventBus eventBus) {
         this.snapshot = snapshot;
         this.entrySequence = entrySequence;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -49,8 +58,8 @@ public class MemoryLog implements Log {
 
     @Override
     public GroupConfigEntry appendEntry(int term, Set<NodeConfig> nodeConfigs) {
-        GroupConfigEntry entry = this.entrySequence.append(term, nodeConfigs);
-        this.groupConfigEntryList.add(entry);
+        GroupConfigEntry entry = entrySequence.append(term, nodeConfigs);
+        groupConfigEntryList.add(entry);
         return entry;
     }
 
@@ -61,7 +70,7 @@ public class MemoryLog implements Log {
 
     @Override
     public int getCommitIndex() {
-        return this.commitIndex;
+        return commitIndex;
     }
 
     @Override
@@ -110,19 +119,6 @@ public class MemoryLog implements Log {
         return rpc;
     }
 
-    // TODO Get Last Entry Meta
-    @Override
-    public void setLastEntryIndexAndTerm(RequestVoteRpc rpc) {
-        if (entrySequence.isEmpty()) {
-            rpc.setLastLogIndex(snapshot.getLastIncludedIndex());
-            rpc.setLastLogTerm(snapshot.getLastIncludedTerm());
-        } else {
-            Entry lastEntry = entrySequence.getLastEntry();
-            rpc.setLastLogIndex(lastEntry.getIndex());
-            rpc.setLastLogTerm(lastEntry.getTerm());
-        }
-    }
-
     @Override
     public AppendEntriesRpc createAppendEntriesRpc(int term, NodeId selfNodeId, int nextIndex, int maxEntries) {
         if (nextIndex > this.entrySequence.getNextLogIndex()) {
@@ -130,6 +126,7 @@ public class MemoryLog implements Log {
         }
 
         AppendEntriesRpc rpc = new AppendEntriesRpc();
+        rpc.setMessageId(UUID.randomUUID().toString());
         rpc.setTerm(term);
         rpc.setLeaderId(selfNodeId);
         rpc.setLeaderCommit(this.commitIndex);
@@ -219,8 +216,8 @@ public class MemoryLog implements Log {
     }
 
     @Override
-    public int getNextLogIndex() {
-        return this.entrySequence.getNextLogIndex();
+    public int getNextIndex() {
+        return entrySequence.getNextLogIndex();
     }
 
     @Override
@@ -250,14 +247,13 @@ public class MemoryLog implements Log {
 
         if (rpc.getOffset() == 0) {
             this.snapshotBuilder = new MemorySnapshotBuilder(rpc);
-            return;
+        } else {
+            if (this.snapshotBuilder == null) {
+                throw new IllegalStateException("no snapshot rpc with offset 0");
+            }
+            this.snapshotBuilder.append(rpc);
         }
 
-        if (this.snapshotBuilder == null) {
-            throw new IllegalStateException("no snapshot data with offset 0");
-        }
-
-        this.snapshotBuilder.append(rpc);
         if (!rpc.isDone()) return;
 
         Snapshot newSnapshot = this.snapshotBuilder.build();
@@ -308,6 +304,7 @@ public class MemoryLog implements Log {
                 Entry leaderEntry = leaderEntries.get(i);
                 if (followerEntry.getTerm() != leaderEntry.getTerm()) {
                     logger.debug("remove entries from {}", followerEntry.getIndex());
+                    // TODO rollback group config entry
                     this.entrySequence.clearAfter(followerEntry.getIndex() - 1);
                     copyFrom = i;
                     break;
@@ -318,9 +315,21 @@ public class MemoryLog implements Log {
         if (copyFrom > 0) {
             logger.debug("skip copying {} entries", copyFrom);
         }
+
+        // TODO refactor
         if (copyFrom < leaderEntries.size()) {
             logger.debug("append leader entries from {} to {}", leaderEntries.get(copyFrom).getIndex(), leaderEntries.get(leaderEntries.size() - 1).getIndex());
-            this.entrySequence.appendEntries(leaderEntries.subList(copyFrom, leaderEntries.size()));
+            List<Entry> entriesToAppend = leaderEntries.subList(copyFrom, leaderEntries.size());
+
+            // append entries to log
+            entrySequence.appendEntries(entriesToAppend);
+
+            // filter group config entry
+            for (Entry entry : entriesToAppend) {
+                if (entry instanceof GroupConfigEntry) {
+                    eventBus.post(new GroupConfigEntryAppendEvent((GroupConfigEntry) entry));
+                }
+            }
         }
     }
 

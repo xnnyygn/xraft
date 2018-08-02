@@ -12,8 +12,12 @@ public class NodeConfig {
     private final Endpoint endpoint;
 
     public NodeConfig(String id, String host, int port) {
-        this.id = new NodeId(id);
-        this.endpoint = new Endpoint(host, port);
+        this(new NodeId(id), new Endpoint(host, port));
+    }
+
+    public NodeConfig(NodeId id, Endpoint endpoint) {
+        this.id = id;
+        this.endpoint = endpoint;
     }
 
     public NodeId getId() {

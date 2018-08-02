@@ -5,6 +5,7 @@ import in.xnnyygn.xraft.core.node.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.Channel;
+import in.xnnyygn.xraft.core.rpc.ChannelConnectException;
 import in.xnnyygn.xraft.core.rpc.Connector;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import io.netty.bootstrap.ServerBootstrap;
@@ -60,65 +61,73 @@ public class NioConnector implements Connector {
 
     @Override
     public void sendRequestVote(RequestVoteRpc rpc) {
-        for (NodeConfig config : nodeGroup) {
+        for (NodeConfig config : nodeGroup.getNodeConfigsOfMajor()) {
             if (config.getId().equals(selfNodeId)) continue;
 
-            logger.debug("send {} to {}", rpc, config.getId());
+            logger.debug("send {} to node {}", rpc, config.getId());
             try {
                 getChannel(config).writeRequestVoteRpc(rpc);
             } catch (Exception e) {
-                logger.warn("failed to send", e);
+                logException(e);
             }
+        }
+    }
+
+    private void logException(Exception e) {
+        if (e instanceof ChannelConnectException) {
+            logger.warn(e.getMessage());
+        } else {
+            logger.warn("failed to process channel", e);
         }
     }
 
     @Override
     public void replyRequestVote(RequestVoteResult result, RequestVoteRpcMessage rpcMessage) {
-        logger.debug("reply {} to {}", result, rpcMessage.getSourceNodeId());
+        logger.debug("reply {} to node {}", result, rpcMessage.getSourceNodeId());
         try {
             rpcMessage.getChannel().writeRequestVoteResult(result);
         } catch (Exception e) {
-            logger.warn("failed to reply", e);
+            logException(e);
         }
     }
 
     @Override
     public void sendAppendEntries(AppendEntriesRpc rpc, NodeId destinationNodeId) {
-        logger.debug("send {} to {}", rpc, destinationNodeId);
+        logger.debug("send {} to node {}", rpc, destinationNodeId);
         try {
             getChannel(destinationNodeId).writeAppendEntriesRpc(rpc);
         } catch (Exception e) {
-            logger.warn("failed to send", e);
+            logException(e);
         }
     }
 
     @Override
     public void replyAppendEntries(AppendEntriesResult result, AppendEntriesRpcMessage rpcMessage) {
-        logger.debug("reply {} to {}", result, rpcMessage.getSourceNodeId());
+        logger.debug("reply {} to node {}", result, rpcMessage.getSourceNodeId());
         try {
             rpcMessage.getChannel().writeAppendEntriesResult(result);
         } catch (Exception e) {
-            logger.warn("failed to reply", e);
+            logException(e);
         }
     }
 
     @Override
     public void sendInstallSnapshot(InstallSnapshotRpc rpc, NodeId destinationNodeId) {
-        logger.debug("send {} to {}", rpc, destinationNodeId);
+        logger.debug("send {} to node {}", rpc, destinationNodeId);
         try {
             getChannel(destinationNodeId).writeInstallSnapshotRpc(rpc);
         } catch (Exception e) {
-            logger.warn("failed to send", e);
+            logException(e);
         }
     }
 
     @Override
     public void replyInstallSnapshot(InstallSnapshotResult result, InstallSnapshotRpcMessage rpcMessage) {
-        logger.debug("reply {} to {}", result, rpcMessage.getSourceNodeId());
+        logger.debug("reply {} to node {}", result, rpcMessage.getSourceNodeId());
         try {
             rpcMessage.getChannel().writeInstallSnapshotResult(result);
         } catch (Exception e) {
-            logger.warn("failed to reply", e);
+            logException(e);
         }
     }
 
@@ -128,7 +137,7 @@ public class NioConnector implements Connector {
     }
 
     private Channel getChannel(NodeId nodeId) {
-        return getChannel(nodeGroup.find(nodeId));
+        return getChannel(nodeGroup.getConfig(nodeId));
     }
 
     private Channel getChannel(NodeConfig config) {

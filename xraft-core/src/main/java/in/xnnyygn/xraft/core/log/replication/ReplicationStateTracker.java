@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.log.replication;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public interface ReplicationStateTracker {
@@ -25,7 +26,7 @@ public interface ReplicationStateTracker {
         }
 
         @Override
-        public int compareTo(NodeMatchIndex o) {
+        public int compareTo(@Nonnull NodeMatchIndex o) {
             return -Integer.compare(o.matchIndex, this.matchIndex);
         }
 
@@ -40,6 +41,8 @@ public interface ReplicationStateTracker {
 
     int getMajorMatchIndex();
 
-    Collection<NodeId> listPeer();
+    Collection<ReplicationState> replicationTargets();
+
+    void add(ReplicationState replicationState);
 
 }

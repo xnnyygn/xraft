@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.rpc.nio;
 
 import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.rpc.ChannelConnectException;
 import in.xnnyygn.xraft.core.rpc.ChannelException;
 import in.xnnyygn.xraft.core.rpc.Endpoint;
 import io.netty.bootstrap.Bootstrap;
@@ -11,15 +12,14 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.net.ConnectException;
+import java.util.concurrent.*;
 
 class OutboundChannelGroup {
 
     private static final Logger logger = LoggerFactory.getLogger(OutboundChannelGroup.class);
     private final EventLoopGroup workerGroup;
+    // TODO create an interface for EventBus
     private final EventBus eventBus;
     private final NodeId selfNodeId;
     private final ConcurrentMap<NodeId, Future<NioChannel>> channelMap = new ConcurrentHashMap<>();
@@ -44,7 +44,12 @@ class OutboundChannelGroup {
             return future.get();
         } catch (Exception e) {
             channelMap.remove(nodeId);
-            throw new ChannelException("failed to get channel", e);
+            if (e instanceof ExecutionException && e.getCause() instanceof ConnectException) {
+                throw new ChannelConnectException("failed to get channel to node " + nodeId + ", cause " +
+                        e.getCause().getMessage(), e.getCause());
+            } else {
+                throw new ChannelException("failed to get channel to node " + nodeId, e);
+            }
         }
     }
 

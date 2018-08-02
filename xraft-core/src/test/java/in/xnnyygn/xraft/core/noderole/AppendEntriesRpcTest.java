@@ -83,7 +83,7 @@ public class AppendEntriesRpcTest {
     @Test
     public void testOnReceiveAppendEntriesRpcLeader() {
         NodeId leaderId = new NodeId("L");
-        LeaderNodeRole leader = new LeaderNodeRole(2, this.mockNodeStateContext.scheduleLogReplicationTask(), null);
+        LeaderNodeRole leader = new LeaderNodeRole(2, this.mockNodeStateContext.scheduleLogReplicationTask());
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setTerm(2);
         rpc.setLeaderId(leaderId);

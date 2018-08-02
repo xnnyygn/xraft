@@ -2,18 +2,21 @@ package in.xnnyygn.xraft.core.log.replication;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
-public class GeneralReplicationState extends AbstractReplicationState {
+public class PeerReplicationState extends AbstractReplicationState {
 
-    private final NodeId nodeId;
-    private int nextIndex;
-    private int matchIndex = 0;
+    protected final NodeId nodeId;
+    int nextIndex;
+    int matchIndex = 0;
 
-    public GeneralReplicationState(NodeId nodeId, int nextIndex) {
-        this(nodeId, nextIndex, true);
+    public PeerReplicationState(ReplicationState replicationState) {
+        super(true);
+        this.nodeId = replicationState.getNodeId();
+        this.nextIndex = replicationState.getNextIndex();
+        this.matchIndex = replicationState.getMatchIndex();
     }
 
-    public GeneralReplicationState(NodeId nodeId, int nextIndex, boolean member) {
-        super(member);
+    public PeerReplicationState(NodeId nodeId, int nextIndex) {
+        super(true);
         this.nodeId = nodeId;
         this.nextIndex = nextIndex;
     }
@@ -38,10 +41,12 @@ public class GeneralReplicationState extends AbstractReplicationState {
     }
 
     @Override
-    public void backOffNextIndex() {
+    public boolean backOffNextIndex() {
         if (this.nextIndex > 1) {
             this.nextIndex--;
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -57,11 +62,9 @@ public class GeneralReplicationState extends AbstractReplicationState {
 
     @Override
     public String toString() {
-        return "GeneralReplicationState{" +
+        return "PeerReplicationState{nodeId=" + nodeId +
                 "matchIndex=" + matchIndex +
-                ", nextIndex=" + nextIndex +
-                ", nodeId=" + nodeId +
-                '}';
+                ", nextIndex=" + nextIndex + '}';
     }
 
 }

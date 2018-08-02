@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.kvstore;
 
+import in.xnnyygn.xraft.core.service.AddServerCommand;
 import in.xnnyygn.xraft.kvstore.message.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -34,6 +35,10 @@ public class Decoder extends ByteToMessageDecoder {
             case MessageConstants.MSG_TYPE_REDIRECT:
                 Protos.Redirect protoRedirect = Protos.Redirect.parseFrom(payload);
                 out.add(new Redirect(protoRedirect.getLeaderId()));
+                break;
+            case MessageConstants.MSG_TYPE_ADD_SERVER_COMMAND:
+                Protos.AddServerCommand protoAddServerCommand = Protos.AddServerCommand.parseFrom(payload);
+                out.add(new AddServerCommand(protoAddServerCommand.getNodeId(), protoAddServerCommand.getHost(), protoAddServerCommand.getPort()));
                 break;
             case MessageConstants.MSG_TYPE_GET_COMMAND:
                 Protos.GetCommand protoGetCommand = Protos.GetCommand.parseFrom(payload);

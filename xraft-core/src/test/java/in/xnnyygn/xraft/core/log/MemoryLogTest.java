@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.log;
 
+import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.log.entry.EntrySequence;
 import in.xnnyygn.xraft.core.log.snapshot.MemorySnapshot;
 import in.xnnyygn.xraft.core.node.NodeId;
@@ -87,7 +88,7 @@ public class MemoryLogTest {
 
     @Test
     public void testCreateRequestVoteRpcNoLog() {
-        MemoryLog log = new MemoryLog(new MemorySnapshot(1, 2, new byte[0]), new EntrySequence(2));
+        MemoryLog log = new MemoryLog(new MemorySnapshot(1, 2, new byte[0]), new EntrySequence(2), new EventBus());
         NodeId nodeId = new NodeId("N");
         RequestVoteRpc rpc = log.createRequestVoteRpc(3, nodeId);
         Assert.assertEquals(3, rpc.getTerm());

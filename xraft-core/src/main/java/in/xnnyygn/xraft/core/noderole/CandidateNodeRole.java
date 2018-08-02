@@ -2,26 +2,29 @@ package in.xnnyygn.xraft.core.noderole;
 
 import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CandidateNodeRole extends AbstractNodeRole {
 
-    private final int votedCount;
+    private static final Logger logger = LoggerFactory.getLogger(CandidateNodeRole.class);
+    private final int votesCount;
     private final ElectionTimeout electionTimeout;
 
     CandidateNodeRole(int term, ElectionTimeout electionTimeout) {
         this(term, 1, electionTimeout);
     }
 
-    CandidateNodeRole(int term, int votedCount, ElectionTimeout electionTimeout) {
+    CandidateNodeRole(int term, int votesCount, ElectionTimeout electionTimeout) {
         super(RoleName.CANDIDATE, term);
-        this.votedCount = votedCount;
+        this.votesCount = votesCount;
         this.electionTimeout = electionTimeout;
     }
 
     @Override
     public RoleStateSnapshot takeSnapshot() {
         RoleStateSnapshot snapshot = new RoleStateSnapshot(this.role, this.term);
-        snapshot.setVotesCount(this.votedCount);
+        snapshot.setVotesCount(this.votesCount);
         return snapshot;
     }
 
@@ -35,14 +38,17 @@ public class CandidateNodeRole extends AbstractNodeRole {
         assert result.getTerm() <= this.term;
 
         if (result.isVoteGranted()) {
-            int votesCount = this.votedCount + 1;
-            if (votesCount > (context.getNodeCountForVoting() / 2)) {
-                this.electionTimeout.cancel();
-                context.changeToNodeRole(new LeaderNodeRole(this.term, context.scheduleLogReplicationTask(), context.createReplicationStateTracker()));
-                context.getLog().appendEntry(this.term); // no-op entry
+            int currentVotesCount = this.votesCount + 1;
+            int countOfMajor = context.getNodeGroup().getCountOfMajor();
+            logger.debug("votes count {}, major node count {}", currentVotesCount, countOfMajor);
+            if (currentVotesCount > countOfMajor / 2) {
+                electionTimeout.cancel();
+                context.resetReplicationStates();
+                context.changeToNodeRole(new LeaderNodeRole(this.term, context.scheduleLogReplicationTask()));
+                context.getLog().appendEntry(this.term); // no-op log
                 context.getConnector().resetChannels();
             } else {
-                context.changeToNodeRole(new CandidateNodeRole(this.term, votedCount, electionTimeout.reset()));
+                context.changeToNodeRole(new CandidateNodeRole(this.term, currentVotesCount, electionTimeout.reset()));
             }
         }
     }
@@ -61,7 +67,7 @@ public class CandidateNodeRole extends AbstractNodeRole {
 
         // more than 1 candidate but another node win the election
         context.changeToNodeRole(new FollowerNodeRole(this.term, null, rpc.getLeaderId(), electionTimeout.reset()));
-        return new AppendEntriesResult(this.term, context.getLog().appendEntries(rpc));
+        return new AppendEntriesResult(rpc.getMessageId(), this.term, context.getLog().appendEntries(rpc));
     }
 
     @Override
@@ -69,7 +75,7 @@ public class CandidateNodeRole extends AbstractNodeRole {
         return "CandidateNodeRole{" +
                 electionTimeout +
                 ", term=" + term +
-                ", votedCount=" + votedCount +
+                ", votesCount=" + votesCount +
                 '}';
     }
 
