@@ -2,11 +2,11 @@ package in.xnnyygn.xraft.kvstore.client;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
-public class ClientLeaderSetCommand implements Command {
+public class ClientSetLeaderCommand implements Command {
 
     @Override
     public String getName() {
-        return "client-leader-set";
+        return "client-set-leader";
     }
 
     @Override

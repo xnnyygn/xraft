@@ -1,10 +1,10 @@
 package in.xnnyygn.xraft.kvstore.client;
 
-public class ClientLeaderGetCommand implements Command {
+public class ClientGetLeaderCommand implements Command {
 
     @Override
     public String getName() {
-        return "client-leader-get";
+        return "client-get-leader";
     }
 
     @Override
