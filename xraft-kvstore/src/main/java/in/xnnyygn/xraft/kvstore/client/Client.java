@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.kvstore;
+package in.xnnyygn.xraft.kvstore.client;
 
 import in.xnnyygn.xraft.core.service.AddServerCommand;
 import in.xnnyygn.xraft.core.service.RemoveServerCommand;
@@ -7,6 +7,8 @@ import in.xnnyygn.xraft.kvstore.message.GetCommand;
 import in.xnnyygn.xraft.kvstore.message.SetCommand;
 
 public class Client {
+
+    public static final String VERSION = "0.0.1";
 
     private final ServerRouter serverRouter;
 
@@ -28,6 +30,10 @@ public class Client {
 
     public byte[] get(String key) {
         return (byte[]) serverRouter.send(new GetCommand(key));
+    }
+
+    public ServerRouter getServerRouter() {
+        return serverRouter;
     }
 
 }

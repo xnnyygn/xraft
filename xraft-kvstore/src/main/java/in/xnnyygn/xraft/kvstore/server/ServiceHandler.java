@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.kvstore;
+package in.xnnyygn.xraft.kvstore.server;
 
 import in.xnnyygn.xraft.core.service.AddServerCommand;
 import in.xnnyygn.xraft.core.service.RemoveServerCommand;

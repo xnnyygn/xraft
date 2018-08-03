@@ -1,15 +1,15 @@
-package in.xnnyygn.xraft.kvstore;
+package in.xnnyygn.xraft.kvstore.server;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import in.xnnyygn.xraft.core.node.Node;
-import in.xnnyygn.xraft.core.node.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.noderole.RoleName;
 import in.xnnyygn.xraft.core.noderole.RoleStateSnapshot;
 import in.xnnyygn.xraft.core.service.AddServerCommand;
 import in.xnnyygn.xraft.core.service.RemoveServerCommand;
 import in.xnnyygn.xraft.core.service.StateMachine;
+import in.xnnyygn.xraft.kvstore.Protos;
 import in.xnnyygn.xraft.kvstore.message.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

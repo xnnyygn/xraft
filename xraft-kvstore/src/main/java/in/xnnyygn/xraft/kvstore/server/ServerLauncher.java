@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.kvstore;
+package in.xnnyygn.xraft.kvstore.server;
 
 import in.xnnyygn.xraft.core.node.*;
 import org.apache.commons.cli.*;
@@ -63,7 +63,7 @@ public class ServerLauncher {
 
         if (args.length == 0) {
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("xraft-kvstore [OPTION]...", options);
+            formatter.printHelp("xraft-kvstore-server [OPTION]...", options);
             return;
         }
 

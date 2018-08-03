@@ -64,6 +64,12 @@
                 <artifactId>commons-cli</artifactId>
                 <version>1.4</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.jline/jline -->
+            <dependency>
+                <groupId>org.jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>3.9.0</version>
+            </dependency>
             <dependency>
                 <groupId>org.jmock</groupId>
                 <artifactId>jmock-junit4</artifactId>

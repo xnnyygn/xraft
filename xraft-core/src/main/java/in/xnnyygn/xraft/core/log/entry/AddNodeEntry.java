@@ -44,4 +44,14 @@ public class AddNodeEntry extends GroupConfigEntry {
                 ).build().toByteArray();
     }
 
+    @Override
+    public String toString() {
+        return "AddNodeEntry{" +
+                "index=" + index +
+                ", term=" + term +
+                ", nodeConfigs=" + getNodeConfigs() +
+                ", newNodeConfig=" + newNodeConfig +
+                '}';
+    }
+
 }

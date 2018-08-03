@@ -80,6 +80,7 @@ public abstract class AbstractNodeRole {
                 logger.info("starts with standby mode, skip election");
             } else {
                 logger.info("no other node, just become LEADER");
+                context.resetReplicationStates();
                 context.changeToNodeRole(new LeaderNodeRole(newTerm, context.scheduleLogReplicationTask()));
                 context.getLog().appendEntry(newTerm); // no-op log
             }

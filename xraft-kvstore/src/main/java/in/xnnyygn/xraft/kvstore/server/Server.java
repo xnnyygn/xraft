@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.kvstore;
+package in.xnnyygn.xraft.kvstore.server;
 
 import in.xnnyygn.xraft.core.node.Node;
 import io.netty.bootstrap.ServerBootstrap;

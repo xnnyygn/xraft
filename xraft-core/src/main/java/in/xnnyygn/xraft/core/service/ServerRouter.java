@@ -23,15 +23,15 @@ public class ServerRouter {
                 this.leaderId = e.getLeaderId();
                 return doSend(e.getLeaderId(), payload);
             } catch (Exception e) {
-                logger.warn("failed to process with server " + nodeId + ", cause " + e.getMessage());
+                logger.debug("failed to process with server " + nodeId + ", cause " + e.getMessage());
             }
         }
-        throw new IllegalStateException("no available server");
+        throw new NoAvailableServerException("no available server");
     }
 
     private Collection<NodeId> getCandidateNodeIds() {
         if (this.availableServers.isEmpty()) {
-            throw new IllegalStateException("no available server");
+            throw new NoAvailableServerException("no available server");
         }
 
         if (this.leaderId != null) {
@@ -53,12 +53,23 @@ public class ServerRouter {
         if (channel == null) {
             throw new IllegalStateException("no such channel to server " + id);
         }
-        logger.info("send request to server {}", id);
+        logger.debug("send request to server {}", id);
         return channel.send(payload);
     }
 
     public void add(NodeId id, Channel channel) {
         this.availableServers.put(id, channel);
+    }
+
+    public NodeId getLeaderId() {
+        return leaderId;
+    }
+
+    public void setLeaderId(NodeId leaderId) {
+        if (!availableServers.containsKey(leaderId)) {
+            throw new IllegalStateException("no such server [" + leaderId + "] in list");
+        }
+        this.leaderId = leaderId;
     }
 
 }

@@ -1,9 +1,11 @@
-package in.xnnyygn.xraft.kvstore;
+package in.xnnyygn.xraft.kvstore.client;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageLite;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.service.*;
+import in.xnnyygn.xraft.kvstore.MessageConstants;
+import in.xnnyygn.xraft.kvstore.Protos;
 import in.xnnyygn.xraft.kvstore.message.GetCommand;
 import in.xnnyygn.xraft.kvstore.message.SetCommand;
 

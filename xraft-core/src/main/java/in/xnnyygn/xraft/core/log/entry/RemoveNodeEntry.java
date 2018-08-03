@@ -36,4 +36,14 @@ public class RemoveNodeEntry extends GroupConfigEntry {
                 .build().toByteArray();
     }
 
+    @Override
+    public String toString() {
+        return "RemoveNodeEntry{" +
+                "index=" + index +
+                ", term=" + term +
+                ", nodeConfigs=" + getNodeConfigs() +
+                ", nodeToRemove=" + nodeToRemove +
+                '}';
+    }
+
 }
