@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.service;
 
 import in.xnnyygn.xraft.core.node.NodeConfig;
 
+// TODO service.proto?
 public class AddServerCommand {
 
     private final String nodeId;

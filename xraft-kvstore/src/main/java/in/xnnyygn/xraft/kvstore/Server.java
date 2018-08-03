@@ -41,7 +41,7 @@ public class Server {
                         pipeline.addLast(new ServiceHandler(service));
                     }
                 });
-        logger.info("start server at port {}", this.port);
+        logger.info("start at port {}", this.port);
         serverBootstrap.bind(this.port);
     }
 
