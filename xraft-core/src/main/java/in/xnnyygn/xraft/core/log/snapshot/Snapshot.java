@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
+// struct?
 public interface Snapshot {
 
     int getLastIncludedIndex();
@@ -8,10 +9,10 @@ public interface Snapshot {
 
     int size();
 
+    // InstallSnapshot rpc
     SnapshotChunk read(int offset, int length);
 
+    // read all data and apply to service when startup
     byte[] toByteArray();
-
-    void close();
 
 }

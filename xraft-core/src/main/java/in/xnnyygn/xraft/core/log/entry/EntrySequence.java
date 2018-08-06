@@ -76,6 +76,7 @@ public class EntrySequence {
         return this.nextLogIndex - 1;
     }
 
+    // [fromIndex, toIndex)
     public List<Entry> subList(int fromIndex, int toIndex) {
         if (this.isEmpty()) {
             throw new IllegalStateException("sequence is empty");

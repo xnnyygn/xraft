@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class MemoryLog implements Log {
+public class DefaultLog implements Log {
 
-    private static final Logger logger = LoggerFactory.getLogger(MemoryLog.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultLog.class);
     private static final int INSTALL_SNAPSHOT_RPC_DATA_LENGTH = 10;
     private static final int SNAPSHOT_GENERATE_THRESHOLD = 5;
     private final EventBus eventBus;
-    private Snapshot snapshot = new EmptySnapshot();
-    private EntrySequence entrySequence = new EntrySequence();
+    private Snapshot snapshot;
+    private EntrySequence entrySequence;
     private GroupConfigEntryList groupConfigEntryList = new GroupConfigEntryList();
     private MemorySnapshotBuilder snapshotBuilder;
     private EntryApplier entryApplier = new NullEntryApplier();
@@ -32,15 +32,15 @@ public class MemoryLog implements Log {
     private int commitIndex = 0;
     private int lastApplied = 0;
 
-    public MemoryLog() {
+    public DefaultLog() {
         this(new EventBus());
     }
 
-    public MemoryLog(EventBus eventBus) {
+    public DefaultLog(EventBus eventBus) {
         this(new EmptySnapshot(), new EntrySequence(), eventBus);
     }
 
-    MemoryLog(Snapshot snapshot, EntrySequence entrySequence, EventBus eventBus) {
+    DefaultLog(Snapshot snapshot, EntrySequence entrySequence, EventBus eventBus) {
         this.snapshot = snapshot;
         this.entrySequence = entrySequence;
         this.eventBus = eventBus;
@@ -192,6 +192,9 @@ public class MemoryLog implements Log {
 
         logger.debug("advance commit index from {} to {}", this.commitIndex, newCommitIndex);
         // TODO commit items
+        for (Entry entry : entrySequence.subList(commitIndex + 1, newCommitIndex + 1)) {
+
+        }
         this.commitIndex = newCommitIndex;
 
         logger.debug("apply log from {} to {}", this.lastApplied + 1, this.commitIndex);
@@ -203,6 +206,7 @@ public class MemoryLog implements Log {
             entry.removeAllListeners();
         }
 
+        // TODO configurable item: snapshot_generate_threshold, or strategy?
         if (this.lastApplied - this.entrySequence.getFirstLogIndex() >= SNAPSHOT_GENERATE_THRESHOLD) {
             logger.info("generate snapshot, last included index {}", this.lastApplied);
             Entry lastAppliedEntry = this.entrySequence.getEntry(this.lastApplied);

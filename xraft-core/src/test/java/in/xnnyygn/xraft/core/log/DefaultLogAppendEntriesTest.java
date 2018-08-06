@@ -8,16 +8,16 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-public class MemoryLogAppendEntriesTest {
+public class DefaultLogAppendEntriesTest {
 
     private static final byte[] COMMAND = "command".getBytes();
     private EntryApplyRecorder entryApplyRecorder;
-    private MemoryLog log;
+    private DefaultLog log;
 
     @Before
     public void setUp() {
         this.entryApplyRecorder = new EntryApplyRecorder();
-        log = new MemoryLog();
+        log = new DefaultLog();
         log.setEntryApplier(this.entryApplyRecorder);
     }
 

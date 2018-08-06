@@ -27,8 +27,4 @@ public class EmptySnapshot implements Snapshot {
         return new byte[0];
     }
 
-    @Override
-    public void close() {
-    }
-
 }

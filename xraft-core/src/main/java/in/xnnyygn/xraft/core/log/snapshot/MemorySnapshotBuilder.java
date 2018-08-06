@@ -1,12 +1,11 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
-import in.xnnyygn.xraft.core.log.LogException;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class MemorySnapshotBuilder {
+public class MemorySnapshotBuilder implements SnapshotBuilder {
 
     private final ByteArrayOutputStream output;
     private final int lastIncludedIndex;
@@ -23,33 +22,30 @@ public class MemorySnapshotBuilder {
         try {
             this.output.write(firstRpc.getData());
         } catch (IOException e) {
-            throw new LogException(e);
+            throw new SnapshotIOException("failed to write", e);
         }
         this.offset = firstRpc.getDataLength();
     }
 
+    @Override
     public void append(InstallSnapshotRpc rpc) {
-        if (rpc.getOffset() != this.offset) {
-            throw new IllegalStateException("unexpected offset, expected " + this.offset + ", but was " + rpc.getOffset());
+        if (rpc.getOffset() != offset) {
+            throw new IllegalStateException("unexpected offset, expected " + offset + ", but was " + rpc.getOffset());
         }
-        if (rpc.getLastIncludedIndex() != this.lastIncludedIndex || rpc.getLastIncludedTerm() != this.lastIncludedTerm) {
+        if (rpc.getLastIncludedIndex() != lastIncludedIndex || rpc.getLastIncludedTerm() != lastIncludedTerm) {
             throw new IllegalStateException("unexpected last included index or term");
         }
         try {
-            this.output.write(rpc.getData());
+            output.write(rpc.getData());
         } catch (IOException e) {
-            throw new LogException(e);
+            throw new SnapshotIOException("failed to write", e);
         }
-        this.offset += rpc.getDataLength();
+        offset += rpc.getDataLength();
     }
 
-    public MemorySnapshot build() {
-        try {
-            output.flush();
-        } catch (IOException e) {
-            throw new LogException(e);
-        }
-        return new MemorySnapshot(this.lastIncludedIndex, this.lastIncludedTerm, output.toByteArray());
+    @Override
+    public Snapshot build() {
+        return new MemorySnapshot(lastIncludedIndex, lastIncludedTerm, output.toByteArray());
     }
 
 }

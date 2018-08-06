@@ -10,15 +10,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class MemoryLogTest {
+public class DefaultLogTest {
 
     private EntryApplyRecorder entryApplyRecorder;
-    private MemoryLog log;
+    private DefaultLog log;
 
     @Before
     public void setUp() throws Exception {
         entryApplyRecorder = new EntryApplyRecorder();
-        log = new MemoryLog();
+        log = new DefaultLog();
         log.setEntryApplier(entryApplyRecorder);
     }
 
@@ -77,7 +77,7 @@ public class MemoryLogTest {
 
     @Test
     public void testCreateRequestVoteRpcNoLogAndSnapshot() {
-        MemoryLog log = new MemoryLog();
+        DefaultLog log = new DefaultLog();
         NodeId nodeId = new NodeId("N");
         RequestVoteRpc rpc = log.createRequestVoteRpc(1, nodeId);
         Assert.assertEquals(1, rpc.getTerm());
@@ -88,7 +88,7 @@ public class MemoryLogTest {
 
     @Test
     public void testCreateRequestVoteRpcNoLog() {
-        MemoryLog log = new MemoryLog(new MemorySnapshot(1, 2, new byte[0]), new EntrySequence(2), new EventBus());
+        DefaultLog log = new DefaultLog(new MemorySnapshot(1, 2, new byte[0]), new EntrySequence(2), new EventBus());
         NodeId nodeId = new NodeId("N");
         RequestVoteRpc rpc = log.createRequestVoteRpc(3, nodeId);
         Assert.assertEquals(3, rpc.getTerm());
@@ -99,7 +99,7 @@ public class MemoryLogTest {
 
     @Test
     public void testCreateRequestVoteRpcNoSnapshot() {
-        MemoryLog log = new MemoryLog();
+        DefaultLog log = new DefaultLog();
         log.appendEntry(1);
         NodeId nodeId = new NodeId("N");
         RequestVoteRpc rpc = log.createRequestVoteRpc(2, nodeId);

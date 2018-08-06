@@ -6,6 +6,10 @@ public class MemorySnapshot implements Snapshot {
     private final int lastIncludedTerm;
     private final byte[] data;
 
+    public MemorySnapshot(int lastIncludedIndex, int lastIncludedTerm) {
+        this(lastIncludedIndex, lastIncludedTerm, new byte[0]);
+    }
+
     public MemorySnapshot(int lastIncludedIndex, int lastIncludedTerm, byte[] data) {
         this.lastIncludedIndex = lastIncludedIndex;
         this.lastIncludedTerm = lastIncludedTerm;
@@ -35,16 +39,12 @@ public class MemorySnapshot implements Snapshot {
         int bufferLength = Math.min(this.data.length - offset, length);
         byte[] buffer = new byte[bufferLength];
         System.arraycopy(this.data, offset, buffer, 0, bufferLength);
-        return new MemorySnapshotChunk(buffer, offset + length >= this.data.length);
+        return new DefaultSnapshotChunk(buffer, offset + length >= this.data.length);
     }
 
     @Override
     public byte[] toByteArray() {
         return this.data;
-    }
-
-    @Override
-    public void close() {
     }
 
     @Override

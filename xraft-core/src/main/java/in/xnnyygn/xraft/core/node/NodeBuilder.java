@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.core.node;
 
 import com.google.common.eventbus.EventBus;
-import in.xnnyygn.xraft.core.log.MemoryLog;
+import in.xnnyygn.xraft.core.log.DefaultLog;
 import in.xnnyygn.xraft.core.rpc.Endpoint;
 import in.xnnyygn.xraft.core.rpc.nio.NioConnector;
 import in.xnnyygn.xraft.core.schedule.Scheduler;
@@ -29,7 +29,7 @@ public class NodeBuilder {
     public Node build() {
         NodeContext context = new NodeContext(id, group, new NodeStore(), eventBus);
         context.setStandbyMode(standbyMode);
-        context.setLog(new MemoryLog(eventBus));
+        context.setLog(new DefaultLog(eventBus));
         context.setScheduler(new Scheduler());
         context.setConnector(new NioConnector(group, id, eventBus, endpoint.getPort()));
         return new Node(context);
