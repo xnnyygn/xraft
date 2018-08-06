@@ -69,9 +69,8 @@ public class Console {
     }
 
     private void showInfo() {
-        System.out.println("Welcome to KVStore Shell\n");
+        System.out.println("Welcome to XRaft KVStore Shell\n");
         System.out.println("***********************************************");
-        // print server list
         System.out.println("current server list: \n");
         commandContext.printSeverList();
         System.out.println("***********************************************");
