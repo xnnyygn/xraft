@@ -128,6 +128,8 @@ public class NodeContext {
     }
 
     public void release() throws InterruptedException {
+        nodeStore.close();
+        log.close();
         scheduler.stop();
         connector.close();
         monitorExecutorService.shutdown();

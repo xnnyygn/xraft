@@ -75,7 +75,7 @@ public class InstallSnapshotRpc {
     @Override
     public String toString() {
         return "InstallSnapshotRpc{" +
-                "data.size=" + data.length +
+                "data.getDataSize=" + data.length +
                 ", done=" + done +
                 ", lastIncludedIndex=" + lastIncludedIndex +
                 ", lastIncludedTerm=" + lastIncludedTerm +

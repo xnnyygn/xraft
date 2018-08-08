@@ -33,6 +33,11 @@ abstract class AbstractEntry implements Entry {
     }
 
     @Override
+    public EntryMeta getMeta() {
+        return new EntryMeta(index, term);
+    }
+
+    @Override
     public List<EntryListener> getListeners() {
         return Collections.unmodifiableList(listeners);
     }

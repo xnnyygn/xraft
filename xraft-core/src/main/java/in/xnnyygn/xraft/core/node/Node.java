@@ -1,12 +1,10 @@
 package in.xnnyygn.xraft.core.node;
 
+import in.xnnyygn.xraft.core.log.StateMachine;
 import in.xnnyygn.xraft.core.noderole.NodeRoleListener;
 import in.xnnyygn.xraft.core.noderole.RoleStateSnapshot;
-import in.xnnyygn.xraft.core.service.StateMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Set;
 
 public class Node {
 

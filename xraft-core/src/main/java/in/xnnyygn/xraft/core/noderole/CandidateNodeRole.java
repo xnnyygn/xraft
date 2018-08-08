@@ -67,7 +67,7 @@ public class CandidateNodeRole extends AbstractNodeRole {
 
         // more than 1 candidate but another node win the election
         context.changeToNodeRole(new FollowerNodeRole(this.term, null, rpc.getLeaderId(), electionTimeout.reset()));
-        return new AppendEntriesResult(rpc.getMessageId(), this.term, context.getLog().appendEntries(rpc));
+        return new AppendEntriesResult(rpc.getMessageId(), this.term, appendEntries(context, rpc));
     }
 
     @Override

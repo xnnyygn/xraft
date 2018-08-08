@@ -2,7 +2,8 @@ package in.xnnyygn.xraft.core.noderole;
 
 import com.google.common.collect.ImmutableSet;
 import in.xnnyygn.xraft.core.log.Log;
-import in.xnnyygn.xraft.core.log.DefaultLog;
+import in.xnnyygn.xraft.core.log.FileLog;
+import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.node.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
@@ -22,7 +23,7 @@ public class RequestVoteRpcTest {
 
     @Before
     public void setUp() {
-        this.log = new DefaultLog();
+        this.log = new MemoryLog();
         this.mockConnector = new MockConnector();
 
         this.mockNodeStateContext = new MockNodeRoleContext();

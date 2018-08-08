@@ -1,5 +1,8 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 public class MemorySnapshot implements Snapshot {
 
     private final int lastIncludedIndex;
@@ -26,31 +29,35 @@ public class MemorySnapshot implements Snapshot {
         return lastIncludedTerm;
     }
 
-    public int size() {
-        return this.data.length;
+    public long getDataSize() {
+        return data.length;
     }
 
     @Override
-    public SnapshotChunk read(int offset, int length) {
-        if (offset < 0 || offset > this.data.length) {
+    public SnapshotChunk readData(int offset, int length) {
+        if (offset < 0 || offset > data.length) {
             throw new IndexOutOfBoundsException("offset " + offset + " out of bound");
         }
 
-        int bufferLength = Math.min(this.data.length - offset, length);
+        int bufferLength = Math.min(data.length - offset, length);
         byte[] buffer = new byte[bufferLength];
-        System.arraycopy(this.data, offset, buffer, 0, bufferLength);
+        System.arraycopy(data, offset, buffer, 0, bufferLength);
         return new DefaultSnapshotChunk(buffer, offset + length >= this.data.length);
     }
 
     @Override
-    public byte[] toByteArray() {
-        return this.data;
+    public InputStream getDataStream() {
+        return new ByteArrayInputStream(data);
+    }
+
+    @Override
+    public void close() {
     }
 
     @Override
     public String toString() {
         return "MemorySnapshot{" +
-                "size=" + data.length +
+                "getDataSize=" + data.length +
                 ", lastIncludedIndex=" + lastIncludedIndex +
                 ", lastIncludedTerm=" + lastIncludedTerm +
                 '}';

@@ -1,21 +1,17 @@
 package in.xnnyygn.xraft.core.log;
 
 import in.xnnyygn.xraft.core.log.entry.*;
-import in.xnnyygn.xraft.core.log.snapshot.SnapshotApplier;
-import in.xnnyygn.xraft.core.log.snapshot.SnapshotGenerator;
 import in.xnnyygn.xraft.core.node.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
-import in.xnnyygn.xraft.core.rpc.message.RequestVoteRpc;
 
+import java.util.List;
 import java.util.Set;
 
-// separate log: supporting snapshot or not
 public interface Log {
 
-    // entries, read
-    RequestVoteRpc createRequestVoteRpc(int term, NodeId selfNodeId);
+    EntryMeta getLastEntryMeta();
 
     // snapshot, entries, read
     AppendEntriesRpc createAppendEntriesRpc(int term, NodeId selfNodeId, int nextIndex, int maxEntries);
@@ -45,8 +41,7 @@ public interface Log {
 
     RemoveNodeEntry appendEntryForRemoveNode(int term, Set<NodeConfig> nodeConfigs, NodeId nodeToRemove);
 
-    // entries, write
-    boolean appendEntries(AppendEntriesRpc rpc);
+    boolean appendEntries(int prevLogIndex, int prevLogTerm, List<Entry> entries);
 
     // entries, write
     void advanceCommitIndex(int newCommitIndex, int currentTerm);
@@ -54,11 +49,8 @@ public interface Log {
     // snapshot, write
     void installSnapshot(InstallSnapshotRpc rpc);
 
-    void setEntryApplier(EntryApplier applier);
+    void setStateMachine(StateMachine stateMachine);
 
-    // TODO rename to enableSnapshot?
-    void setSnapshotGenerator(SnapshotGenerator generator);
-
-    void setSnapshotApplier(SnapshotApplier applier);
+    void close();
 
 }

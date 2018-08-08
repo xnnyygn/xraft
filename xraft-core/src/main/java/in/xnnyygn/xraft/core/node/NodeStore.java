@@ -1,24 +1,15 @@
 package in.xnnyygn.xraft.core.node;
 
-public class NodeStore {
+public interface NodeStore {
 
-    private int currentTerm = 0;
-    private NodeId votedFor = null;
+    int getCurrentTerm();
 
-    public int getCurrentTerm() {
-        return currentTerm;
-    }
+    void setCurrentTerm(int currentTerm);
 
-    public void setCurrentTerm(int currentTerm) {
-        this.currentTerm = currentTerm;
-    }
+    NodeId getVotedFor();
 
-    public NodeId getVotedFor() {
-        return votedFor;
-    }
+    void setVotedFor(NodeId votedFor);
 
-    public void setVotedFor(NodeId votedFor) {
-        this.votedFor = votedFor;
-    }
+    void close();
 
 }

@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.noderole;
 
+import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
@@ -86,7 +87,15 @@ public abstract class AbstractNodeRole {
             }
         } else {
             context.changeToNodeRole(new CandidateNodeRole(newTerm, context.scheduleElectionTimeout()));
-            RequestVoteRpc rpc = context.getLog().createRequestVoteRpc(newTerm, context.getSelfNodeId());
+
+            EntryMeta lastEntryMeta = context.getLog().getLastEntryMeta();
+
+            RequestVoteRpc rpc = new RequestVoteRpc();
+            rpc.setTerm(newTerm);
+            rpc.setCandidateId(context.getSelfNodeId());
+            rpc.setLastLogIndex(lastEntryMeta.getIndex());
+            rpc.setLastLogTerm(lastEntryMeta.getTerm());
+
             context.getConnector().sendRequestVote(rpc);
         }
     }
@@ -161,7 +170,7 @@ public abstract class AbstractNodeRole {
         if (rpc.getTerm() > this.term) {
             this.cancelTimeoutOrTask();
             context.changeToNodeRole(new FollowerNodeRole(rpc.getTerm(), null, rpc.getLeaderId(), context.scheduleElectionTimeout()));
-            result = new AppendEntriesResult(rpc.getMessageId(), rpc.getTerm(), context.getLog().appendEntries(rpc));
+            result = new AppendEntriesResult(rpc.getMessageId(), rpc.getTerm(), appendEntries(context, rpc));
         } else if (rpc.getTerm() == this.term) {
             result = processAppendEntriesRpc(context, rpc);
         } else {
@@ -169,6 +178,14 @@ public abstract class AbstractNodeRole {
         }
 
         context.getConnector().replyAppendEntries(result, rpcMessage);
+    }
+
+    protected boolean appendEntries(NodeRoleContext context, AppendEntriesRpc rpc) {
+        boolean result = context.getLog().appendEntries(rpc.getPrevLogIndex(), rpc.getPrevLogTerm(), rpc.getEntries());
+        if(result) {
+            context.getLog().advanceCommitIndex(Math.min(rpc.getLeaderCommit(), rpc.getLastEntryIndex()), rpc.getTerm());
+        }
+        return result;
     }
 
     /**

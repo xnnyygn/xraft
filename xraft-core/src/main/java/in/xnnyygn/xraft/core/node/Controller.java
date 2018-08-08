@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import in.xnnyygn.xraft.core.log.Log;
+import in.xnnyygn.xraft.core.log.StateMachine;
 import in.xnnyygn.xraft.core.log.entry.*;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryAppendEvent;
 import in.xnnyygn.xraft.core.noderole.*;
@@ -11,7 +12,6 @@ import in.xnnyygn.xraft.core.rpc.Connector;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
-import in.xnnyygn.xraft.core.service.StateMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +37,8 @@ public class Controller implements NodeRoleContext {
     }
 
     void start() {
-        this.nodeContext.initialize();
-        this.changeToNodeRole(new FollowerNodeRole(this.nodeContext.getNodeStore(), this.scheduleElectionTimeout()));
+        nodeContext.initialize();
+        this.changeToNodeRole(new FollowerNodeRole(nodeContext.getNodeStore(), scheduleElectionTimeout()));
     }
 
     RoleStateSnapshot getRoleState() {
@@ -46,9 +46,7 @@ public class Controller implements NodeRoleContext {
     }
 
     void registerStateMachine(StateMachine stateMachine) {
-        this.nodeContext.getLog().setEntryApplier(new EntryApplierAdapter(stateMachine));
-        this.nodeContext.getLog().setSnapshotGenerator(stateMachine);
-        this.nodeContext.getLog().setSnapshotApplier(stateMachine);
+        this.nodeContext.getLog().setStateMachine(stateMachine);
     }
 
     void appendLog(byte[] command) {
@@ -229,6 +227,10 @@ public class Controller implements NodeRoleContext {
         if (!isStableBetween(this.nodeRole, newNodeRole)) {
             RoleStateSnapshot snapshot = newNodeRole.takeSnapshot();
             this.nodeRoleListeners.forEach((l) -> l.nodeRoleChanged(snapshot));
+
+            NodeStore store = nodeContext.getNodeStore();
+            store.setCurrentTerm(snapshot.getTerm());
+            store.setVotedFor(snapshot.getVotedFor());
         }
 
         this.nodeRole = newNodeRole;

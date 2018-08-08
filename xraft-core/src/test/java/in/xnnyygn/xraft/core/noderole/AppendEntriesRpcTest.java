@@ -1,7 +1,8 @@
 package in.xnnyygn.xraft.core.noderole;
 
 import in.xnnyygn.xraft.core.log.Log;
-import in.xnnyygn.xraft.core.log.DefaultLog;
+import in.xnnyygn.xraft.core.log.FileLog;
+import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
@@ -19,7 +20,7 @@ public class AppendEntriesRpcTest {
 
     @Before
     public void setUp() {
-        this.log = new DefaultLog();
+        this.log = new MemoryLog();
         this.mockConnector = new MockConnector();
 
         this.mockNodeStateContext = new MockNodeRoleContext();

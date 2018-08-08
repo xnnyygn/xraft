@@ -1,7 +1,8 @@
 package in.xnnyygn.xraft.core.noderole;
 
 import in.xnnyygn.xraft.core.log.Log;
-import in.xnnyygn.xraft.core.log.DefaultLog;
+import in.xnnyygn.xraft.core.log.FileLog;
+import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.log.replication.ReplicationState;
 import in.xnnyygn.xraft.core.node.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeGroup;
@@ -32,7 +33,7 @@ public class LeaderAppendEntriesResultTest {
     public void setUp() throws Exception {
         this.nodeId = new NodeId("F1");
 
-        this.log = new DefaultLog();
+        this.log = new MemoryLog();
         this.mockConnector = new MockConnector();
 
         this.mockNodeStateContext = new MockNodeRoleContext();

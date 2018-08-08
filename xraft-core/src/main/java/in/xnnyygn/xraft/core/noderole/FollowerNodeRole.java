@@ -1,9 +1,9 @@
 package in.xnnyygn.xraft.core.noderole;
 
+import in.xnnyygn.xraft.core.node.NodeStore;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.node.NodeStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +75,7 @@ public class FollowerNodeRole extends AbstractNodeRole {
         assert rpc.getTerm() == this.term;
 
         context.changeToNodeRole(new FollowerNodeRole(this.term, this.votedFor, rpc.getLeaderId(), electionTimeout.reset()));
-        return new AppendEntriesResult(rpc.getMessageId(), this.term, context.getLog().appendEntries(rpc));
+        return new AppendEntriesResult(rpc.getMessageId(), this.term, appendEntries(context, rpc));
     }
 
     @Override

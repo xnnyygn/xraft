@@ -1,19 +1,21 @@
 package in.xnnyygn.xraft.kvstore.server;
 
 import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
+import in.xnnyygn.xraft.core.log.StateMachine;
 import in.xnnyygn.xraft.core.node.Node;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.noderole.RoleName;
 import in.xnnyygn.xraft.core.noderole.RoleStateSnapshot;
 import in.xnnyygn.xraft.core.service.AddServerCommand;
 import in.xnnyygn.xraft.core.service.RemoveServerCommand;
-import in.xnnyygn.xraft.core.service.StateMachine;
 import in.xnnyygn.xraft.kvstore.Protos;
 import in.xnnyygn.xraft.kvstore.message.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,7 +80,7 @@ public class Service implements StateMachine {
     }
 
     @Override
-    public void applyCommand(byte[] commandBytes) {
+    public void applyLog(int index, byte[] commandBytes) {
         SetCommand command = SetCommand.fromBytes(commandBytes);
         this.map.put(command.getKey(), command.getValue());
 
@@ -89,14 +91,14 @@ public class Service implements StateMachine {
     }
 
     @Override
-    public byte[] generateSnapshot() {
-        return toSnapshot(this.map);
+    public void generateSnapshot(OutputStream output) throws IOException {
+        toSnapshot(map, output);
     }
 
     @Override
-    public void applySnapshot(byte[] snapshot) {
+    public void applySnapshot(InputStream input) throws IOException {
         logger.info("apply snapshot");
-        this.map = fromSnapshot(snapshot);
+        this.map = fromSnapshot(input);
     }
 
     private Redirect checkLeadership() {
@@ -112,7 +114,7 @@ public class Service implements StateMachine {
         return null;
     }
 
-    static byte[] toSnapshot(Map<String, byte[]> map) {
+    static void toSnapshot(Map<String, byte[]> map, OutputStream output) throws IOException {
         Protos.EntryList.Builder entryList = Protos.EntryList.newBuilder();
         for (Map.Entry<String, byte[]> entry : map.entrySet()) {
             entryList.addEntries(
@@ -121,20 +123,17 @@ public class Service implements StateMachine {
                             .setValue(ByteString.copyFrom(entry.getValue())).build()
             );
         }
-        return entryList.build().toByteArray();
+        entryList.build().writeTo(output);
+        entryList.build().getSerializedSize();
     }
 
-    static Map<String, byte[]> fromSnapshot(byte[] snapshot) {
+    static Map<String, byte[]> fromSnapshot(InputStream input) throws IOException {
         Map<String, byte[]> map = new HashMap<>();
-        try {
-            Protos.EntryList entryList = Protos.EntryList.parseFrom(snapshot);
-            for (Protos.EntryList.Entry entry : entryList.getEntriesList()) {
-                map.put(entry.getKey(), entry.getValue().toByteArray());
-            }
-            return map;
-        } catch (InvalidProtocolBufferException e) {
-            throw new IllegalStateException("failed to load map from snapshot", e);
+        Protos.EntryList entryList = Protos.EntryList.parseFrom(input);
+        for (Protos.EntryList.Entry entry : entryList.getEntriesList()) {
+            map.put(entry.getKey(), entry.getValue().toByteArray());
         }
+        return map;
     }
 
 }

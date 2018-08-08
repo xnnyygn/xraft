@@ -1,6 +1,7 @@
 package in.xnnyygn.xraft.core.noderole;
 
-import in.xnnyygn.xraft.core.log.DefaultLog;
+import in.xnnyygn.xraft.core.log.FileLog;
+import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.node.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.rpc.MockConnector;
@@ -21,7 +22,7 @@ public class CandidateRequestVoteResultTest {
     public void setUp() throws Exception {
         this.mockNodeStateContext = new MockNodeRoleContext();
         this.mockNodeStateContext.setConnector(new MockConnector());
-        this.mockNodeStateContext.setLog(new DefaultLog());
+        this.mockNodeStateContext.setLog(new MemoryLog());
     }
 
     private NodeGroup buildNodeGroup(int nodeCount) {

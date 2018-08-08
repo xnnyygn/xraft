@@ -8,4 +8,6 @@ public interface SnapshotBuilder {
 
     Snapshot build();
 
+    void close();
+
 }

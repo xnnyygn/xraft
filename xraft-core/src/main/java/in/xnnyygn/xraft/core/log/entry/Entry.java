@@ -15,6 +15,8 @@ public interface Entry {
 
     int getTerm();
 
+    EntryMeta getMeta();
+
     byte[] getCommandBytes();
 
     List<EntryListener> getListeners();

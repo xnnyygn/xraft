@@ -54,6 +54,11 @@ public class ServerLauncher {
                 .required()
                 .desc("port of service, required")
                 .build());
+        options.addOption(Option.builder("d")
+                .hasArg()
+                .argName("data-dir")
+                .desc("data directory, optional. must be present")
+                .build());
         options.addOption(Option.builder("gc")
                 .hasArgs()
                 .argName("node-config")
@@ -102,6 +107,7 @@ public class ServerLauncher {
         NodeConfig nodeConfig = new NodeConfig(id, host, portRaftServer);
         Node node = new NodeBuilder(nodeConfig.getId(), new NodeGroup(nodeConfig))
                 .setStandbyMode(standby)
+                .setDataDir(cmdLine.getOptionValue('d'))
                 .build();
         Server server = new Server(node, portService);
         logger.info("start with mode {}, id {}, host {}, port raft server {}, port service {}",
@@ -123,7 +129,9 @@ public class ServerLauncher {
                 .collect(Collectors.toSet());
 
         NodeGroup nodeGroup = new NodeGroup(nodeConfigs);
-        Node node = new NodeBuilder(new NodeId(rawNodeId), nodeGroup).build();
+        Node node = new NodeBuilder(new NodeId(rawNodeId), nodeGroup)
+                .setDataDir(cmdLine.getOptionValue('d'))
+                .build();
         Server server = new Server(node, portService);
         logger.info("start as group member, group config {}, id {}, port service {}", nodeConfigs, rawNodeId, portService);
         startServer(server);

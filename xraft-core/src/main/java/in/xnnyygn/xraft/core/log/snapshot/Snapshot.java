@@ -1,18 +1,19 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
-// struct?
+import java.io.InputStream;
+
 public interface Snapshot {
 
     int getLastIncludedIndex();
 
     int getLastIncludedTerm();
 
-    int size();
+    long getDataSize();
 
-    // InstallSnapshot rpc
-    SnapshotChunk read(int offset, int length);
+    SnapshotChunk readData(int offset, int length);
 
-    // read all data and apply to service when startup
-    byte[] toByteArray();
+    InputStream getDataStream();
+
+    void close();
 
 }
