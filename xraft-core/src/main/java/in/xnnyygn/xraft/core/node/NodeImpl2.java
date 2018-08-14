@@ -100,7 +100,8 @@ public class NodeImpl2 implements Node {
         AddNodeTaskReference taskReference = new AddNodeTaskReference(newNodeEndpoint.getId());
         context.taskExecutor().submit(() -> {
             GroupConfigEntry lastUncommittedGroupConfigEntry = context.log().getLastUncommittedGroupConfigEntry();
-            if (!taskReferenceHolder.awaitPreviousGroupConfigChange(lastUncommittedGroupConfigEntry, taskReference,
+            if (!taskReferenceHolder.awaitPreviousGroupConfigChange(
+                    lastUncommittedGroupConfigEntry, taskReference,
                     context.config().getPreviousGroupConfigChangeTimeout())) {
                 logger.info("previous group config change cannot complete with specified timeout, skip adding server");
                 return;
@@ -123,17 +124,21 @@ public class NodeImpl2 implements Node {
     public TaskReference removeServer(NodeId id) {
         ensureLeader();
         EntryTaskReference taskReference = new EntryTaskReference();
-        GroupConfigEntry lastUncommittedGroupConfigEntry = context.log().getLastUncommittedGroupConfigEntry();
-        if (!taskReferenceHolder.awaitPreviousGroupConfigChange(lastUncommittedGroupConfigEntry, taskReference,
-                context.config().getPreviousGroupConfigChangeTimeout())) {
-            return taskReference;
-        }
-        Set<NodeEndpoint> nodeEndpoints = context.group().getNodeEndpointsOfMajor();
-        RemoveNodeEntry entry = context.log().appendEntryForRemoveNode(role.getTerm(), nodeEndpoints, id);
-        taskReference.setEntryIndex(entry.getIndex());
-        taskReferenceHolder.set(taskReference);
-        context.group().downgrade(id);
-        replicateLog();
+        context.taskExecutor().submit(() -> {
+            GroupConfigEntry lastUncommittedGroupConfigEntry = context.log().getLastUncommittedGroupConfigEntry();
+            if (!taskReferenceHolder.awaitPreviousGroupConfigChange(
+                    lastUncommittedGroupConfigEntry, taskReference,
+                    context.config().getPreviousGroupConfigChangeTimeout())) {
+                logger.info("previous group config change cannot complete with specified timeout, skip removing server");
+                return;
+            }
+            Set<NodeEndpoint> nodeEndpoints = context.group().getNodeEndpointsOfMajor();
+            RemoveNodeEntry entry = context.log().appendEntryForRemoveNode(role.getTerm(), nodeEndpoints, id);
+            taskReference.setEntryIndex(entry.getIndex());
+            taskReferenceHolder.set(taskReference);
+            context.group().downgrade(id);
+            doReplicateLog();
+        }, LOGGING_FUTURE_CALLBACK);
         return taskReference;
     }
 
@@ -183,15 +188,15 @@ public class NodeImpl2 implements Node {
     }
 
     private void changeToRole(AbstractNodeRole2 newRole) {
-        logger.debug("node {}, state changed -> {}", context.selfId(), newRole);
-        role = newRole;
         if (!isStableBetween(role, newRole)) {
+            logger.debug("node {}, state changed -> {}", context.selfId(), newRole);
             RoleState state = newRole.getState();
             NodeStore store = context.store();
             store.setTerm(state.getTerm());
             store.setVotedFor(state.getVotedFor());
             roleListeners.forEach(l -> l.nodeRoleChanged(state));
         }
+        role = newRole;
     }
 
     private boolean isStableBetween(AbstractNodeRole2 before, AbstractNodeRole2 after) {
@@ -253,17 +258,20 @@ public class NodeImpl2 implements Node {
 
     @Subscribe
     public void onReceiveRequestVoteRpc(RequestVoteRpcMessage rpcMessage) {
-        context.taskExecutor().submit(() -> context.connector().replyRequestVote(processRequestVoteRpc(rpcMessage), rpcMessage));
+        context.taskExecutor().submit(() ->
+                        context.connector().replyRequestVote(processRequestVoteRpc(rpcMessage), rpcMessage),
+                LOGGING_FUTURE_CALLBACK
+        );
     }
 
     private RequestVoteResult processRequestVoteRpc(RequestVoteRpcMessage rpcMessage) {
         if (!context.group().isMemberOfMajor(rpcMessage.getSourceNodeId())) {
-            logger.warn("request vote rpc from node {} not in group, ignore", rpcMessage.getSourceNodeId());
+            logger.warn("receive request vote rpc from node {} which is not major node, ignore", rpcMessage.getSourceNodeId());
             return new RequestVoteResult(role.getTerm(), false);
         }
         RequestVoteRpc rpc = rpcMessage.get();
         if (rpc.getTerm() < role.getTerm()) {
-            logger.debug("term in rpc < current term, don't vote ({} < {})", rpc.getTerm(), role.getTerm());
+            logger.debug("term from rpc < current term, don't vote ({} < {})", rpc.getTerm(), role.getTerm());
             return new RequestVoteResult(role.getTerm(), false);
         }
         // rpc from new candidate
@@ -280,8 +288,7 @@ public class NodeImpl2 implements Node {
                 if ((votedFor == null && !context.log().isNewerThan(rpc.getLastLogIndex(), rpc.getLastLogTerm())) ||
                         Objects.equals(votedFor, rpc.getCandidateId())) {
                     // vote for candidate
-                    // TODO not atomic operation
-                    role = new FollowerNodeRole2(role.getTerm(), rpc.getCandidateId(), null, follower.resetElectionTimeout());
+                    becomeFollower(role.getTerm(), rpc.getCandidateId(), null, true);
                     return new RequestVoteResult(rpc.getTerm(), true);
                 }
                 return new RequestVoteResult(role.getTerm(), false);

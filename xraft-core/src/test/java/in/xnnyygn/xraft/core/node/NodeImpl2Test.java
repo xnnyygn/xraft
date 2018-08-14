@@ -343,6 +343,7 @@ public class NodeImpl2Test {
         // commit new node log
         node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
         Assert.assertEquals(TaskReference.Result.OK, reference.getResult());
+        Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
     }
 
     @Test
@@ -403,14 +404,345 @@ public class NodeImpl2Test {
         Assert.assertEquals(TaskReference.Result.TIMEOUT, reference.getResult());
     }
 
-    //    @Test
-//    public void removeServer() {
-//    }
-//
-//    @Test
-//    public void onReceiveRequestVoteRpc() {
-//    }
-//
+    @Test(expected = NotLeaderException.class)
+    public void testRemoveServerWhenFollower() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335)
+        ).build();
+        node.start();
+        node.removeServer(NodeId.of("A"));
+    }
+
+    @Test(expected = NotLeaderException.class)
+    public void testRemoveServerWhenCandidate() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335)
+        ).build();
+        node.start();
+        node.electionTimeout();
+        node.removeServer(NodeId.of("A"));
+    }
+
+    @Test
+    public void testRemoveServer() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335)
+        ).build();
+        MockConnector connector = (MockConnector) node.getContext().connector();
+        node.start();
+        node.electionTimeout();
+        connector.clearMessage();
+        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
+        TaskReference reference = node.removeServer(NodeId.of("B"));
+
+        GroupConfigEntry groupConfigEntry = node.getContext().log().getLastUncommittedGroupConfigEntry();
+        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
+                new AppendEntriesResult("", 1, true),
+                NodeId.of("C"), createAppendEntriesRpc(2)));
+        node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
+        Assert.assertEquals(TaskReference.Result.OK, reference.getResult());
+        Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
+        Assert.assertNull(node.getContext().group().getState(NodeId.of("B")));
+    }
+
+    @Test
+    public void testRemoveServerSelf() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335)
+        ).build();
+        MockConnector connector = (MockConnector) node.getContext().connector();
+        node.start();
+        node.electionTimeout();
+        connector.clearMessage();
+        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
+        TaskReference reference = node.removeServer(NodeId.of("A"));
+
+        GroupConfigEntry groupConfigEntry = node.getContext().log().getLastUncommittedGroupConfigEntry();
+        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
+                new AppendEntriesResult("", 1, true),
+                NodeId.of("B"), createAppendEntriesRpc(2)));
+        node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
+        Assert.assertEquals(TaskReference.Result.OK, reference.getResult());
+        Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
+        Assert.assertNull(node.getContext().group().getState(NodeId.of("A")));
+        RoleState state = node.getRoleState2();
+        Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
+        Assert.assertEquals(1, state.getTerm());
+    }
+
+    @Test
+    public void testRemoveServerAppendEntriesResultFromRemovingNode() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335)
+        ).build();
+        MockConnector connector = (MockConnector) node.getContext().connector();
+        node.start();
+        node.electionTimeout();
+        connector.clearMessage();
+        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
+        node.removeServer(NodeId.of("B"));
+        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
+                new AppendEntriesResult("", 1, true),
+                NodeId.of("B"), createAppendEntriesRpc(2)));
+    }
+
+    @Test
+    public void testRemoveServerAwaitPreviousGroupConfigChange() {
+        NodeConfig2 config = new NodeConfig2();
+        config.setPreviousGroupConfigChangeTimeout(1);
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setConfig(config)
+                .build();
+        MockConnector connector = (MockConnector) node.getContext().connector();
+        node.start();
+        node.electionTimeout();
+        connector.clearMessage();
+        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
+        node.removeServer(NodeId.of("B"));
+        TaskReference reference = node.removeServer(NodeId.of("B"));
+        Assert.assertEquals(TaskReference.Result.TIMEOUT, reference.getResult());
+    }
+
+    @Test
+    public void testOnReceiveRequestVoteRpcNotMajor() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        node.getContext().group().downgrade(NodeId.of("C"));
+        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(
+                new RequestVoteRpc(), NodeId.of("C"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
+        Assert.assertEquals(1, result.getTerm());
+        Assert.assertFalse(result.isVoteGranted());
+    }
+
+    @Test
+    public void testOnReceiveRequestVoteRpcUnknownNode() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(
+                new RequestVoteRpc(), NodeId.of("D"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
+        Assert.assertEquals(1, result.getTerm());
+        Assert.assertFalse(result.isVoteGranted());
+    }
+
+    @Test
+    public void testOnReceiveRequestVoteRpcSmallerTerm() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(2, null))
+                .build();
+        node.start();
+        RequestVoteRpc rpc = new RequestVoteRpc();
+        rpc.setTerm(1);
+        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(rpc, NodeId.of("C"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
+        Assert.assertEquals(2, result.getTerm());
+        Assert.assertFalse(result.isVoteGranted());
+    }
+
+    @Test
+    public void testOnReceiveRequestVoteRpcLargerTerm() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        RequestVoteRpc rpc = new RequestVoteRpc();
+        rpc.setTerm(2);
+        rpc.setCandidateId(NodeId.of("C"));
+        rpc.setLastLogIndex(1);
+        rpc.setLastLogTerm(2);
+        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(rpc, NodeId.of("C"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
+        Assert.assertEquals(2, result.getTerm());
+        Assert.assertTrue(result.isVoteGranted());
+        RoleState state = node.getRoleState2();
+        Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
+        Assert.assertEquals(NodeId.of("C"), state.getVotedFor());
+        Assert.assertEquals(NodeId.of("C"), node.getContext().store().getVotedFor());
+    }
+
+    @Test
+    public void testOnReceiveRequestVoteRpcLargerTermButNotVote() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.getContext().log().appendEntry(1);
+        node.start();
+        RequestVoteRpc rpc = new RequestVoteRpc();
+        rpc.setTerm(2);
+        rpc.setCandidateId(NodeId.of("C"));
+        rpc.setLastLogIndex(0);
+        rpc.setLastLogTerm(0);
+        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(rpc, NodeId.of("C"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
+        Assert.assertEquals(2, result.getTerm());
+        Assert.assertFalse(result.isVoteGranted());
+    }
+
+    @Test
+    public void testOnReceiveRequestVoteRpcFollower() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        RequestVoteRpc rpc = new RequestVoteRpc();
+        rpc.setTerm(1);
+        rpc.setCandidateId(NodeId.of("C"));
+        rpc.setLastLogIndex(0);
+        rpc.setLastLogTerm(0);
+        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(rpc, NodeId.of("C"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
+        Assert.assertEquals(1, result.getTerm());
+        Assert.assertTrue(result.isVoteGranted());
+        Assert.assertEquals(NodeId.of("C"), node.getRoleState2().getVotedFor());
+    }
+
+    @Test
+    public void testOnReceiveRequestVoteRpcFollowerVoted() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, NodeId.of("C")))
+                .build();
+        node.start();
+        RequestVoteRpc rpc = new RequestVoteRpc();
+        rpc.setTerm(1);
+        rpc.setCandidateId(NodeId.of("C"));
+        rpc.setLastLogIndex(0);
+        rpc.setLastLogTerm(0);
+        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(rpc, NodeId.of("C"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
+        Assert.assertEquals(1, result.getTerm());
+        Assert.assertTrue(result.isVoteGranted());
+        Assert.assertEquals(NodeId.of("C"), node.getRoleState2().getVotedFor());
+    }
+
+    @Test
+    public void testOnReceiveRequestVoteRpcFollowerNotVote() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.getContext().log().appendEntry(1);
+        node.start();
+        RequestVoteRpc rpc = new RequestVoteRpc();
+        rpc.setTerm(1);
+        rpc.setCandidateId(NodeId.of("C"));
+        rpc.setLastLogIndex(0);
+        rpc.setLastLogTerm(0);
+        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(rpc, NodeId.of("C"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
+        Assert.assertEquals(1, result.getTerm());
+        Assert.assertFalse(result.isVoteGranted());
+    }
+
+    @Test
+    public void testOnReceiveRequestVoteRpcCandidate() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        node.electionTimeout();
+        RequestVoteRpc rpc = new RequestVoteRpc();
+        rpc.setTerm(2);
+        rpc.setCandidateId(NodeId.of("C"));
+        rpc.setLastLogIndex(0);
+        rpc.setLastLogTerm(0);
+        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(rpc, NodeId.of("C"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
+        Assert.assertEquals(2, result.getTerm());
+        Assert.assertFalse(result.isVoteGranted());
+    }
+
+    @Test
+    public void testOnReceiveRequestVoteRpcLeader() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        node.electionTimeout();
+        node.onReceiveRequestVoteResult(new RequestVoteResult(2, true));
+        RequestVoteRpc rpc = new RequestVoteRpc();
+        rpc.setTerm(2);
+        rpc.setCandidateId(NodeId.of("C"));
+        rpc.setLastLogIndex(0);
+        rpc.setLastLogTerm(0);
+        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(rpc, NodeId.of("C"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
+        Assert.assertEquals(2, result.getTerm());
+        Assert.assertFalse(result.isVoteGranted());
+    }
+
     @Test
     public void testOnReceiveRequestVoteResult() {
         NodeImpl2 node = (NodeImpl2) newNodeBuilder(

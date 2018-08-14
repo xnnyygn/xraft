@@ -145,7 +145,7 @@ public class NodeGroup {
     }
 
     public void removeNode(NodeId id) {
-        logger.info("remove node {}", id);
+        logger.info("node {} removed", id);
         stateMap.remove(id);
     }
 
