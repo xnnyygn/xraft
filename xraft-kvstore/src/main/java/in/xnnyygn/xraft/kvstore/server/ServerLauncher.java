@@ -104,9 +104,9 @@ public class ServerLauncher {
         int portRaftServer = ((Long) cmdLine.getParsedOptionValue("p1")).intValue();
         int portService = ((Long) cmdLine.getParsedOptionValue("p2")).intValue();
 
-        NodeConfig nodeConfig = new NodeConfig(id, host, portRaftServer);
-        Node node = new NodeBuilder(nodeConfig.getId(), new NodeGroup(nodeConfig))
-                .setStandbyMode(standby)
+        NodeEndpoint nodeEndpoint = new NodeEndpoint(id, host, portRaftServer);
+        Node node = new NodeBuilder2(nodeEndpoint.getId(), new NodeGroup(nodeEndpoint))
+                .setStandby(standby)
                 .setDataDir(cmdLine.getOptionValue('d'))
                 .build();
         Server server = new Server(node, portService);
@@ -124,20 +124,20 @@ public class ServerLauncher {
         String rawNodeId = cmdLine.getOptionValue('i');
         int portService = ((Long) cmdLine.getParsedOptionValue("p2")).intValue();
 
-        Set<NodeConfig> nodeConfigs = Stream.of(rawGroupConfig)
+        Set<NodeEndpoint> nodeEndpoints = Stream.of(rawGroupConfig)
                 .map(this::parseNodeConfig)
                 .collect(Collectors.toSet());
 
-        NodeGroup nodeGroup = new NodeGroup(nodeConfigs);
-        Node node = new NodeBuilder(new NodeId(rawNodeId), nodeGroup)
+        NodeGroup nodeGroup = new NodeGroup(nodeEndpoints);
+        Node node = new NodeBuilder2(new NodeId(rawNodeId), nodeGroup)
                 .setDataDir(cmdLine.getOptionValue('d'))
                 .build();
         Server server = new Server(node, portService);
-        logger.info("start as group member, group config {}, id {}, port service {}", nodeConfigs, rawNodeId, portService);
+        logger.info("start as group member, group config {}, id {}, port service {}", nodeEndpoints, rawNodeId, portService);
         startServer(server);
     }
 
-    private NodeConfig parseNodeConfig(String rawNodeConfig) {
+    private NodeEndpoint parseNodeConfig(String rawNodeConfig) {
         String[] pieces = rawNodeConfig.split(",");
         if (pieces.length != 3) {
             throw new IllegalArgumentException("illegal server config [" + rawNodeConfig + "]");
@@ -150,7 +150,7 @@ public class ServerLauncher {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("illegal port in node config [" + rawNodeConfig + "]");
         }
-        return new NodeConfig(nodeId, host, port);
+        return new NodeEndpoint(nodeId, host, port);
     }
 
     private void startServer(Server server) throws Exception {

@@ -1,56 +1,189 @@
 package in.xnnyygn.xraft.core.log;
 
 import in.xnnyygn.xraft.core.log.entry.*;
-import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.log.sequence.EntrySequence;
+import in.xnnyygn.xraft.core.log.snapshot.SnapshotGenerateStrategy;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Log.
+ *
+ * @see EntrySequence
+ * @see in.xnnyygn.xraft.core.log.snapshot.Snapshot
+ */
 public interface Log {
 
+    int ALL_ENTRIES = -1;
+
+    /**
+     * Get meta of last entry.
+     *
+     * @return entry meta
+     */
+    @Nonnull
     EntryMeta getLastEntryMeta();
 
-    // snapshot, entries, read
-    AppendEntriesRpc createAppendEntriesRpc(int term, NodeId selfNodeId, int nextIndex, int maxEntries);
+    /**
+     * Create append entries rpc from log.
+     *
+     * @param term       current term
+     * @param selfId     self node id
+     * @param nextIndex  next index
+     * @param maxEntries max entries
+     * @return append entries rpc
+     */
+    AppendEntriesRpc createAppendEntriesRpc(int term, NodeId selfId, int nextIndex, int maxEntries);
 
-    // snapshot, entries, write
-    InstallSnapshotRpc createInstallSnapshotRpc(int term, NodeId selfNodeId, int offset);
+    /**
+     * Create install snapshot rpc from log.
+     *
+     * @param term   current term
+     * @param selfId self node id
+     * @param offset data offset
+     * @param length data length
+     * @return install snapshot rpc
+     */
+    InstallSnapshotRpc createInstallSnapshotRpc(int term, NodeId selfId, int offset, int length);
 
-    // get last group config entry, entries, read
-    // TODO rename me?
-    GroupConfigEntry getLastGroupConfigEntry();
+    /**
+     * Get last uncommitted group config entry.
+     *
+     * @return last committed group config entry, maybe {@code null}
+     */
+    @Nullable
+    GroupConfigEntry getLastUncommittedGroupConfigEntry();
 
-    // state, read
-    int getCommitIndex();
-
-    // state, read
+    /**
+     * Get next log index.
+     *
+     * @return next log index
+     */
     int getNextIndex();
 
-    // snapshot, entries read
+    /**
+     * Get commit index.
+     *
+     * @return commit index
+     */
+    int getCommitIndex();
+
+    /**
+     * Get last applied log index.
+     *
+     * @return last applied log index
+     */
+    int getLastApplied();
+
+    /**
+     * Test if last log self is new than last log of leader.
+     *
+     * @param lastLogIndex last log index
+     * @param lastLogTerm  last log term
+     * @return true if last log self is newer than last log of leader, otherwise false
+     */
     boolean isNewerThan(int lastLogIndex, int lastLogTerm);
 
-    // append entry, entries, write
+    /**
+     * Append a NO-OP log entry.
+     *
+     * @param term current term
+     * @return no-op entry
+     */
     NoOpEntry appendEntry(int term);
 
+    /**
+     * Append a general log entry.
+     *
+     * @param term    current term
+     * @param command command in bytes
+     * @return general entry
+     */
     GeneralEntry appendEntry(int term, byte[] command);
 
-    AddNodeEntry appendEntryForAddNode(int term, Set<NodeConfig> nodeConfigs, NodeConfig newNodeConfig);
+    /**
+     * Append a log entry for adding node.
+     *
+     * @param term          current term
+     * @param nodeEndpoints   current node configs
+     * @param newNodeEndpoint new node config
+     * @return add node entry
+     */
+    AddNodeEntry appendEntryForAddNode(int term, Set<NodeEndpoint> nodeEndpoints, NodeEndpoint newNodeEndpoint);
 
-    RemoveNodeEntry appendEntryForRemoveNode(int term, Set<NodeConfig> nodeConfigs, NodeId nodeToRemove);
+    /**
+     * Append a log entry for removing node.
+     *
+     * @param term         current term
+     * @param nodeEndpoints  current node configs
+     * @param nodeToRemove node to remove
+     * @return remove node entry
+     */
+    RemoveNodeEntry appendEntryForRemoveNode(int term, Set<NodeEndpoint> nodeEndpoints, NodeId nodeToRemove);
 
-    boolean appendEntries(int prevLogIndex, int prevLogTerm, List<Entry> entries);
+    /**
+     * Append entries to log.
+     *
+     * @param prevLogIndex expected index of previous log entry
+     * @param prevLogTerm  expected term of previous log entry
+     * @param entries      entries to append
+     * @return true if success, false if previous log check failed
+     */
+    boolean appendEntriesFromLeader(int prevLogIndex, int prevLogTerm, List<Entry> entries);
 
-    // entries, write
+    /**
+     * Advance commit index.
+     *
+     * <p>
+     * The log entry with new commit index must be the same term as the one in parameter,
+     * otherwise commit index will not change.
+     * </p>
+     *
+     * @param newCommitIndex new commit index
+     * @param currentTerm    current term
+     */
     void advanceCommitIndex(int newCommitIndex, int currentTerm);
 
-    // snapshot, write
-    void installSnapshot(InstallSnapshotRpc rpc);
+    /**
+     * Install snapshot.
+     *
+     * @param rpc rpc
+     */
+    boolean installSnapshot(InstallSnapshotRpc rpc);
 
+    /**
+     * Set state machine.
+     *
+     * <p>
+     * It will be called when
+     * <ul>
+     * <li>apply the log entry</li>
+     * <li>generate snapshot</li>
+     * <li>apply snapshot</li>
+     * </ul>
+     * </p>
+     *
+     * @param stateMachine state machine
+     */
     void setStateMachine(StateMachine stateMachine);
 
+    /**
+     * Set snapshot generate strategy.
+     *
+     * @param strategy strategy
+     */
+    void setSnapshotGenerateStrategy(@Nonnull SnapshotGenerateStrategy strategy);
+
+    /**
+     * Close log files.
+     */
     void close();
 
 }

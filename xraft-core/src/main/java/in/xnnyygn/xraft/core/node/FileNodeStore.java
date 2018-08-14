@@ -10,9 +10,11 @@ import java.io.IOException;
 public class FileNodeStore implements NodeStore {
 
     public static final String FILE_NAME = "node.bin";
-    private static final long OFFSET_CURRENT_TERM = 0;
+    private static final long OFFSET_TERM = 0;
     private static final long OFFSET_VOTED_FOR = 4;
     private final SeekableFile seekableFile;
+    private int term = 0;
+    private NodeId votedFor = null;
 
     public FileNodeStore(File file) {
         try {
@@ -20,6 +22,7 @@ public class FileNodeStore implements NodeStore {
                 Files.touch(file);
             }
             seekableFile = new RandomAccessFileAdapter(file);
+            initializeOrLoad();
         } catch (IOException e) {
             throw new NodeStoreException(e);
         }
@@ -27,59 +30,52 @@ public class FileNodeStore implements NodeStore {
 
     public FileNodeStore(SeekableFile seekableFile) {
         this.seekableFile = seekableFile;
+        try {
+            initializeOrLoad();
+        } catch (IOException e) {
+            throw new NodeStoreException(e);
+        }
     }
 
-    public void initialize() {
-        try {
-            if (seekableFile.size() > 0) {
-                return;
-            }
-
+    private void initializeOrLoad() throws IOException {
+        if (seekableFile.size() == 0) {
             // (term, 4) + (votedFor length, 4) = 8
             seekableFile.truncate(8L);
             seekableFile.seek(0);
             seekableFile.writeInt(0); // term
             seekableFile.writeInt(0); // votedFor length
-            seekableFile.seek(0); // return to start
-        } catch (IOException e) {
-            throw new NodeStoreException(e);
+        } else {
+            // read term
+            term = seekableFile.readInt();
+            // read voted for
+            int length = seekableFile.readInt();
+            if (length > 0) {
+                byte[] bytes = new byte[length];
+                seekableFile.read(bytes);
+                votedFor = new NodeId(new String(bytes));
+            }
         }
     }
 
     @Override
-    public int getCurrentTerm() {
-        try {
-            seekableFile.seek(OFFSET_CURRENT_TERM);
-            return seekableFile.readInt();
-        } catch (IOException e) {
-            throw new NodeStoreException(e);
-        }
+    public int getTerm() {
+        return term;
     }
 
     @Override
-    public void setCurrentTerm(int currentTerm) {
+    public void setTerm(int term) {
         try {
-            seekableFile.seek(OFFSET_CURRENT_TERM);
-            seekableFile.writeInt(currentTerm);
+            seekableFile.seek(OFFSET_TERM);
+            seekableFile.writeInt(term);
         } catch (IOException e) {
             throw new NodeStoreException(e);
         }
+        this.term = term;
     }
 
     @Override
     public NodeId getVotedFor() {
-        try {
-            seekableFile.seek(OFFSET_VOTED_FOR);
-            int length = seekableFile.readInt();
-            if (length == 0) {
-                return null;
-            }
-            byte[] bytes = new byte[length];
-            seekableFile.read(bytes);
-            return new NodeId(new String(bytes));
-        } catch (IOException e) {
-            throw new NodeStoreException(e);
-        }
+        return votedFor;
     }
 
     @Override
@@ -96,6 +92,7 @@ public class FileNodeStore implements NodeStore {
         } catch (IOException e) {
             throw new NodeStoreException(e);
         }
+        this.votedFor = votedFor;
     }
 
     @Override

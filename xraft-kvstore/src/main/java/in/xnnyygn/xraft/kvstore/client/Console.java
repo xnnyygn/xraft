@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.kvstore.client;
 
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.Endpoint;
+import in.xnnyygn.xraft.core.rpc.Address;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -18,7 +18,7 @@ public class Console {
     private final CommandContext commandContext;
     private final LineReader reader;
 
-    public Console(Map<NodeId, Endpoint> serverMap) {
+    public Console(Map<NodeId, Address> serverMap) {
         commandMap = buildCommandMap(Arrays.asList(
                 new ExitCommand(),
                 new ClientAddServerCommand(),

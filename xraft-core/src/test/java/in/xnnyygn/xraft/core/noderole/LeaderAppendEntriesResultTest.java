@@ -1,13 +1,12 @@
 package in.xnnyygn.xraft.core.noderole;
 
 import in.xnnyygn.xraft.core.log.Log;
-import in.xnnyygn.xraft.core.log.FileLog;
 import in.xnnyygn.xraft.core.log.MemoryLog;
-import in.xnnyygn.xraft.core.log.replication.ReplicationState;
-import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.Endpoint;
+import in.xnnyygn.xraft.core.rpc.Address;
 import in.xnnyygn.xraft.core.rpc.MockConnector;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
@@ -43,7 +42,7 @@ public class LeaderAppendEntriesResultTest {
     }
 
     private NodeGroup buildNodeGroup(Collection<NodeId> ids, int nextLogIndex) {
-        Set<NodeConfig> configs = ids.stream().map(id -> new NodeConfig(id, new Endpoint("", 0))).collect(Collectors.toSet());
+        Set<NodeEndpoint> configs = ids.stream().map(id -> new NodeEndpoint(id, new Address("", 0))).collect(Collectors.toSet());
         NodeGroup group = new NodeGroup(configs);
         group.resetReplicationStates(nextLogIndex);
         return group;
@@ -56,9 +55,9 @@ public class LeaderAppendEntriesResultTest {
 
         leader.onReceiveAppendEntriesResult(mockNodeStateContext, new AppendEntriesResult("", 1, true), nodeId, new AppendEntriesRpc());
 
-        ReplicationState replicationState = mockNodeStateContext.getNodeGroup().getReplicationState(nodeId);
-        Assert.assertEquals(0, replicationState.getMatchIndex());
-        Assert.assertEquals(1, replicationState.getNextIndex());
+        ReplicatingState replicatingState = mockNodeStateContext.getNodeGroup().findReplicationState(nodeId);
+        Assert.assertEquals(0, replicatingState.getMatchIndex());
+        Assert.assertEquals(1, replicatingState.getNextIndex());
     }
 
     @Test
@@ -73,9 +72,9 @@ public class LeaderAppendEntriesResultTest {
                 nodeId,
                 this.log.createAppendEntriesRpc(1, nodeId, 2, -1));
 
-        ReplicationState replicationState = mockNodeStateContext.getNodeGroup().getReplicationState(nodeId);
-        Assert.assertEquals(1, replicationState.getMatchIndex());
-        Assert.assertEquals(2, replicationState.getNextIndex());
+        ReplicatingState replicatingState = mockNodeStateContext.getNodeGroup().findReplicationState(nodeId);
+        Assert.assertEquals(1, replicatingState.getMatchIndex());
+        Assert.assertEquals(2, replicatingState.getNextIndex());
     }
 
     @Test
@@ -91,9 +90,9 @@ public class LeaderAppendEntriesResultTest {
                 nodeId,
                 this.log.createAppendEntriesRpc(1, nodeId, 2, -1));
 
-        ReplicationState replicationState = mockNodeStateContext.getNodeGroup().getReplicationState(nodeId);
-        Assert.assertEquals(2, replicationState.getMatchIndex());
-        Assert.assertEquals(3, replicationState.getNextIndex());
+        ReplicatingState replicatingState = mockNodeStateContext.getNodeGroup().findReplicationState(nodeId);
+        Assert.assertEquals(2, replicatingState.getMatchIndex());
+        Assert.assertEquals(3, replicatingState.getNextIndex());
     }
 
     @Test
@@ -103,9 +102,9 @@ public class LeaderAppendEntriesResultTest {
 
         leader.onReceiveAppendEntriesResult(mockNodeStateContext, new AppendEntriesResult("", 1, false), nodeId, new AppendEntriesRpc());
 
-        ReplicationState replicationState = mockNodeStateContext.getNodeGroup().getReplicationState(nodeId);
-        Assert.assertEquals(0, replicationState.getMatchIndex());
-        Assert.assertEquals(1, replicationState.getNextIndex());
+        ReplicatingState replicatingState = mockNodeStateContext.getNodeGroup().findReplicationState(nodeId);
+        Assert.assertEquals(0, replicatingState.getMatchIndex());
+        Assert.assertEquals(1, replicatingState.getNextIndex());
         Assert.assertNotNull(mockConnector.getRpc());
         Assert.assertEquals(this.nodeId, this.mockConnector.getDestinationNodeId());
     }
@@ -122,9 +121,9 @@ public class LeaderAppendEntriesResultTest {
                 nodeId,
                 this.log.createAppendEntriesRpc(1, nodeId, 2, -1));
 
-        ReplicationState replicationState =  mockNodeStateContext.getNodeGroup().getReplicationState(nodeId);
-        Assert.assertEquals(0, replicationState.getMatchIndex());
-        Assert.assertEquals(1, replicationState.getNextIndex());
+        ReplicatingState replicatingState =  mockNodeStateContext.getNodeGroup().findReplicationState(nodeId);
+        Assert.assertEquals(0, replicatingState.getMatchIndex());
+        Assert.assertEquals(1, replicatingState.getNextIndex());
         Assert.assertNotNull(this.mockConnector.getRpc());
     }
 

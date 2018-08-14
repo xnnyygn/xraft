@@ -1,18 +1,18 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
+import in.xnnyygn.xraft.core.log.LogException;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 
 import java.io.IOException;
 
-abstract class AbstractSnapshotBuilder implements SnapshotBuilder {
+abstract class AbstractSnapshotBuilder<T extends Snapshot> implements SnapshotBuilder<T> {
 
-    protected int lastIncludedIndex;
-    protected int lastIncludedTerm;
+    int lastIncludedIndex;
+    int lastIncludedTerm;
     private int offset;
 
-    public AbstractSnapshotBuilder(InstallSnapshotRpc firstRpc) {
+    AbstractSnapshotBuilder(InstallSnapshotRpc firstRpc) {
         assert firstRpc.getOffset() == 0;
-
         lastIncludedIndex = firstRpc.getLastIncludedIndex();
         lastIncludedTerm = firstRpc.getLastIncludedTerm();
         offset = firstRpc.getDataLength();
@@ -22,7 +22,7 @@ abstract class AbstractSnapshotBuilder implements SnapshotBuilder {
         try {
             doWrite(data);
         } catch (IOException e) {
-            throw new SnapshotIOException(e);
+            throw new LogException(e);
         }
     }
 
@@ -31,10 +31,10 @@ abstract class AbstractSnapshotBuilder implements SnapshotBuilder {
     @Override
     public void append(InstallSnapshotRpc rpc) {
         if (rpc.getOffset() != offset) {
-            throw new IllegalStateException("unexpected offset, expected " + offset + ", but was " + rpc.getOffset());
+            throw new IllegalArgumentException("unexpected offset, expected " + offset + ", but was " + rpc.getOffset());
         }
         if (rpc.getLastIncludedIndex() != lastIncludedIndex || rpc.getLastIncludedTerm() != lastIncludedTerm) {
-            throw new IllegalStateException("unexpected last included index or term");
+            throw new IllegalArgumentException("unexpected last included index or term");
         }
         write(rpc.getData());
         offset += rpc.getDataLength();

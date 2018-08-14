@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.core.service;
 
-import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 
 // TODO service.proto?
 public class AddServerCommand {
@@ -27,8 +27,8 @@ public class AddServerCommand {
         return port;
     }
 
-    public NodeConfig toNodeConfig() {
-        return new NodeConfig(nodeId, host, port);
+    public NodeEndpoint toNodeConfig() {
+        return new NodeEndpoint(nodeId, host, port);
     }
 
 }

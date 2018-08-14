@@ -16,7 +16,7 @@ public class AppendEntriesResultMessage {
         this.rpc = rpc;
     }
 
-    public AppendEntriesResult getResult() {
+    public AppendEntriesResult get() {
         return result;
     }
 

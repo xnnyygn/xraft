@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.core.noderole;
 
-import in.xnnyygn.xraft.core.log.replication.NewNodeReplicationState;
-import in.xnnyygn.xraft.core.log.replication.ReplicationState;
+import in.xnnyygn.xraft.core.log.replication.NewNodeReplicatingState;
+import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
 import in.xnnyygn.xraft.core.log.snapshot.EntryInSnapshotException;
 import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
@@ -34,32 +34,31 @@ public class LeaderNodeRole extends AbstractNodeRole {
         if (context.getNodeGroup().isUniqueNode(context.getSelfNodeId())) {
             context.getLog().advanceCommitIndex(context.getLog().getNextIndex() - 1, this.term);
         } else {
-            for (ReplicationState replicationState : context.getNodeGroup().getReplicationTargets()) {
-                if (replicationState.isReplicating() &&
-                        System.currentTimeMillis() - replicationState.getLastReplicatedAt() <= 900L) { // 0.9s
-                    logger.debug("node {} is replicating, skip replication task", replicationState.getNodeId());
+            for (ReplicatingState replicatingState : context.getNodeGroup().getReplicationTargets()) {
+                if (replicatingState.isReplicating() &&
+                        System.currentTimeMillis() - replicatingState.getLastReplicatedAt() <= 900L) { // 0.9s
+                    logger.debug("node {} is replicating, skip replication task", replicatingState.getNodeId());
                 } else {
-                    doReplicateLog(context, replicationState, 10);
+                    doReplicateLog(context, replicatingState, 10);
                 }
             }
         }
     }
 
     public void replicateLog(NodeRoleContext context, NodeId id) {
-        ReplicationState replicationState = context.getNodeGroup().getReplicationState(id);
-        doReplicateLog(context, replicationState, 20);
+        ReplicatingState replicatingState = context.getNodeGroup().findReplicationState(id);
+        doReplicateLog(context, replicatingState, 20);
     }
 
-    private void doReplicateLog(NodeRoleContext context, ReplicationState replicationState, int maxEntries) {
-        replicationState.setReplicating(true);
-        replicationState.setLastReplicatedAt(System.currentTimeMillis());
+    private void doReplicateLog(NodeRoleContext context, ReplicatingState replicatingState, int maxEntries) {
+        replicatingState.startReplicating();
         try {
-            AppendEntriesRpc rpc = context.getLog().createAppendEntriesRpc(this.term, context.getSelfNodeId(), replicationState.getNextIndex(), maxEntries);
-            context.getConnector().sendAppendEntries(rpc, replicationState.getNodeId());
+            AppendEntriesRpc rpc = context.getLog().createAppendEntriesRpc(this.term, context.getSelfNodeId(), replicatingState.getNextIndex(), maxEntries);
+            context.getConnector().sendAppendEntries(rpc, replicatingState.getNodeId());
         } catch (EntryInSnapshotException e) {
-            logger.debug("log entry {} in snapshot, replicate with InstallSnapshot RPC", replicationState.getNextIndex());
-            InstallSnapshotRpc rpc = context.getLog().createInstallSnapshotRpc(this.term, context.getSelfNodeId(), 0);
-            context.getConnector().sendInstallSnapshot(rpc, replicationState.getNodeId());
+            logger.debug("log entry {} in snapshot, replicate with InstallSnapshot RPC", replicatingState.getNextIndex());
+            InstallSnapshotRpc rpc = context.getLog().createInstallSnapshotRpc(this.term, context.getSelfNodeId(), 0, 1024);
+            context.getConnector().sendInstallSnapshot(rpc, replicatingState.getNodeId());
         }
     }
 
@@ -89,65 +88,65 @@ public class LeaderNodeRole extends AbstractNodeRole {
             return;
         }
 
-        ReplicationState replicationState = nodeState.getReplicationState();
+        ReplicatingState replicatingState = nodeState.getReplicatingState();
 
         if (result.isSuccess()) {
             if (nodeState.isMemberOfMajor()) {
 
                 // peer
-                if (replicationState.advance(rpc.getLastEntryIndex())) {
+                if (replicatingState.advance(rpc.getLastEntryIndex())) {
                     context.getLog().advanceCommitIndex(context.getNodeGroup().getMatchIndexOfMajor(), this.term);
                 }
 
-                if (replicationState.catchUp(context.getLog().getNextIndex())) {
-                    replicationState.setReplicating(false);
+                if (replicatingState.catchUp(context.getLog().getNextIndex())) {
+                    replicatingState.stopReplicating();
                     return;
                 }
             } else {
                 // skip removing node
                 if (nodeState.isRemoving()) {
-                    replicationState.setReplicating(false);
+                    replicatingState.stopReplicating();
                     return;
                 }
 
                 // new node
-                logger.debug("replication state of new node, {}", replicationState);
+                logger.debug("replication state of new node, {}", replicatingState);
 
-                replicationState.advance(rpc.getLastEntryIndex());
-                if (replicationState.catchUp(context.getLog().getNextIndex())) {
+                replicatingState.advance(rpc.getLastEntryIndex());
+                if (replicatingState.catchUp(context.getLog().getNextIndex())) {
                     context.upgradeNode(sourceNodeId);
-                    replicationState.setReplicating(false);
+                    replicatingState.stopReplicating();
                     return;
                 }
 
-                NewNodeReplicationState newNodeReplicationState = (NewNodeReplicationState) replicationState;
+                NewNodeReplicatingState newNodeReplicationState = (NewNodeReplicatingState) replicatingState;
                 newNodeReplicationState.increaseRound();
-                if (newNodeReplicationState.roundExceedOrTimeout(300L)) {
+                if (newNodeReplicationState.roundExceedOrTimeout(10, 300L)) {
                     // replication state will also be removed
                     context.removeNode(sourceNodeId);
                     return;
                 }
             }
         } else {
-            if (!replicationState.backOffNextIndex()) {
+            if (!replicatingState.backOffNextIndex()) {
                 logger.warn("cannot back off next index more, node {}", sourceNodeId);
-                replicationState.setReplicating(false);
+                replicatingState.stopReplicating();
                 return;
             }
         }
 
-        doReplicateLog(context, replicationState, ALL_ENTRIES);
+        doReplicateLog(context, replicatingState, ALL_ENTRIES);
     }
 
     @Override
     protected void processInstallSnapshotResult(NodeRoleContext context, InstallSnapshotResult result, NodeId sourceNodeId, InstallSnapshotRpc rpc) {
         if (rpc.isDone()) {
-            ReplicationState replicationState = context.getNodeGroup().getReplicationState(sourceNodeId);
-            replicationState.advance(rpc.getLastIncludedIndex());
+            ReplicatingState replicatingState = context.getNodeGroup().findReplicationState(sourceNodeId);
+            replicatingState.advance(rpc.getLastIncludedIndex());
             return;
         }
 
-        InstallSnapshotRpc nextRpc = context.getLog().createInstallSnapshotRpc(this.term, context.getSelfNodeId(), rpc.getOffset() + rpc.getDataLength());
+        InstallSnapshotRpc nextRpc = context.getLog().createInstallSnapshotRpc(this.term, context.getSelfNodeId(), rpc.getOffset() + rpc.getDataLength(), 1024);
         context.getConnector().sendInstallSnapshot(nextRpc, sourceNodeId);
     }
 

@@ -2,17 +2,26 @@ package in.xnnyygn.xraft.core.node;
 
 public class MemoryNodeStore implements NodeStore {
 
-    private int currentTerm = 0;
-    private NodeId votedFor = null;
+    private int term;
+    private NodeId votedFor;
 
-    @Override
-    public int getCurrentTerm() {
-        return currentTerm;
+    public MemoryNodeStore() {
+        this(0, null);
+    }
+
+    public MemoryNodeStore(int term, NodeId votedFor) {
+        this.term = term;
+        this.votedFor = votedFor;
     }
 
     @Override
-    public void setCurrentTerm(int currentTerm) {
-        this.currentTerm = currentTerm;
+    public int getTerm() {
+        return term;
+    }
+
+    @Override
+    public void setTerm(int term) {
+        this.term = term;
     }
 
     @Override

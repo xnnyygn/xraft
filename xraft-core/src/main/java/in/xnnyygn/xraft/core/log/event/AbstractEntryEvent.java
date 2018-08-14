@@ -2,15 +2,15 @@ package in.xnnyygn.xraft.core.log.event;
 
 import in.xnnyygn.xraft.core.log.entry.Entry;
 
-class AbstractEntryEvent {
+abstract class AbstractEntryEvent<T extends Entry> {
 
-    protected final Entry entry;
+    protected final T entry;
 
-    AbstractEntryEvent(Entry entry) {
+    AbstractEntryEvent(T entry) {
         this.entry = entry;
     }
 
-    public Entry getEntry() {
+    public T getEntry() {
         return entry;
     }
 

@@ -2,9 +2,9 @@ package in.xnnyygn.xraft.core.node;
 
 public interface NodeStore {
 
-    int getCurrentTerm();
+    int getTerm();
 
-    void setCurrentTerm(int currentTerm);
+    void setTerm(int term);
 
     NodeId getVotedFor();
 

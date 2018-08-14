@@ -1,8 +1,6 @@
 package in.xnnyygn.xraft.core.rpc.nio;
 
-import com.google.common.eventbus.EventBus;
-import in.xnnyygn.xraft.core.node.NodeConfig;
-import in.xnnyygn.xraft.core.node.NodeGroup;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.Channel;
 import in.xnnyygn.xraft.core.rpc.ChannelConnectException;
@@ -20,28 +18,20 @@ import org.slf4j.LoggerFactory;
 public class NioConnector implements Connector {
 
     private static final Logger logger = LoggerFactory.getLogger(NioConnector.class);
-    private final NioEventLoopGroup bossGroup = new NioEventLoopGroup(1);
-    private final NioEventLoopGroup workerGroup = new NioEventLoopGroup(4);
+    private final NioEventLoopGroup bossNioEventLoopGroup = new NioEventLoopGroup(1);
+    private final NioConnectorContext context;
     private final InboundChannelGroup inboundChannelGroup = new InboundChannelGroup();
     private final OutboundChannelGroup outboundChannelGroup;
-    private final NodeGroup nodeGroup;
-    private final NodeId selfNodeId;
-    private final EventBus eventBus;
-    private final int port;
 
-    public NioConnector(NodeGroup nodeGroup, NodeId selfNodeId, EventBus eventBus, int port) {
-        this.nodeGroup = nodeGroup;
-        this.selfNodeId = selfNodeId;
-        this.eventBus = eventBus;
-        this.port = port;
-        this.outboundChannelGroup = new OutboundChannelGroup(workerGroup, eventBus, selfNodeId);
+    public NioConnector(NioConnectorContext context) {
+        this.context = context;
+        this.outboundChannelGroup = new OutboundChannelGroup(context.workerNioEventLoopGroup(), context.eventBus(), context.selfNodeId());
     }
 
-    // TODO open after
     @Override
     public void initialize() {
         ServerBootstrap serverBootstrap = new ServerBootstrap()
-                .group(this.bossGroup, this.workerGroup)
+                .group(bossNioEventLoopGroup, context.workerNioEventLoopGroup())
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -49,24 +39,25 @@ public class NioConnector implements Connector {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new Decoder());
                         pipeline.addLast(new Encoder());
-                        pipeline.addLast(new FromRemoteHandler(eventBus, inboundChannelGroup));
+                        pipeline.addLast(new FromRemoteHandler(context.eventBus(), inboundChannelGroup));
                     }
                 });
-        logger.debug("start acceptor at port {}", port);
+        logger.debug("connector listen on port {}", context.port());
         try {
-            serverBootstrap.bind(port).sync();
+            serverBootstrap.bind(context.port()).sync();
         } catch (InterruptedException ignored) {
         }
     }
 
     @Override
     public void sendRequestVote(RequestVoteRpc rpc) {
-        for (NodeConfig config : nodeGroup.getNodeConfigsOfMajor()) {
-            if (config.getId().equals(selfNodeId)) continue;
-
-            logger.debug("send {} to node {}", rpc, config.getId());
+        for (NodeEndpoint endpoint : context.nodeGroup().getNodeEndpointsOfMajor()) {
+            if (endpoint.getId().equals(context.selfNodeId())) {
+                continue;
+            }
+            logger.debug("send {} to node {}", rpc, endpoint.getId());
             try {
-                getChannel(config).writeRequestVoteRpc(rpc);
+                getChannel(endpoint).writeRequestVoteRpc(rpc);
             } catch (Exception e) {
                 logException(e);
             }
@@ -137,11 +128,11 @@ public class NioConnector implements Connector {
     }
 
     private Channel getChannel(NodeId nodeId) {
-        return getChannel(nodeGroup.getConfig(nodeId));
+        return getChannel(context.nodeGroup().findEndpoint(nodeId));
     }
 
-    private Channel getChannel(NodeConfig config) {
-        return outboundChannelGroup.getOrConnect(config.getId(), config.getEndpoint());
+    private Channel getChannel(NodeEndpoint endpoint) {
+        return outboundChannelGroup.getOrConnect(endpoint.getId(), endpoint.getAddress());
     }
 
     @Override
@@ -149,8 +140,10 @@ public class NioConnector implements Connector {
         logger.debug("close connector");
         inboundChannelGroup.closeAll();
         outboundChannelGroup.closeAll();
-        bossGroup.shutdownGracefully();
-        workerGroup.shutdownGracefully();
+        bossNioEventLoopGroup.shutdownGracefully();
+        if (!context.workerGroupShared()) {
+            context.workerNioEventLoopGroup().shutdownGracefully();
+        }
     }
 
 }

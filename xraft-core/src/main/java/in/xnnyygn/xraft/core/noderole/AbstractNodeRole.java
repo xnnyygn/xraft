@@ -181,7 +181,7 @@ public abstract class AbstractNodeRole {
     }
 
     protected boolean appendEntries(NodeRoleContext context, AppendEntriesRpc rpc) {
-        boolean result = context.getLog().appendEntries(rpc.getPrevLogIndex(), rpc.getPrevLogTerm(), rpc.getEntries());
+        boolean result = context.getLog().appendEntriesFromLeader(rpc.getPrevLogIndex(), rpc.getPrevLogTerm(), rpc.getEntries());
         if(result) {
             context.getLog().advanceCommitIndex(Math.min(rpc.getLeaderCommit(), rpc.getLastEntryIndex()), rpc.getTerm());
         }

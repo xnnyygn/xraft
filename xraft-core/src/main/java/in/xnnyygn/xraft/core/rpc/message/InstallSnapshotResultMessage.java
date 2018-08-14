@@ -14,7 +14,7 @@ public class InstallSnapshotResultMessage {
         this.rpc = rpc;
     }
 
-    public InstallSnapshotResult getResult() {
+    public InstallSnapshotResult get() {
         return result;
     }
 

@@ -2,9 +2,11 @@ package in.xnnyygn.xraft.kvstore.server;
 
 import com.google.protobuf.ByteString;
 import in.xnnyygn.xraft.core.log.StateMachine;
+import in.xnnyygn.xraft.core.log.TaskReference;
 import in.xnnyygn.xraft.core.node.Node;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.noderole.RoleName;
+import in.xnnyygn.xraft.core.noderole.RoleNameAndLeaderId;
 import in.xnnyygn.xraft.core.noderole.RoleStateSnapshot;
 import in.xnnyygn.xraft.core.service.AddServerCommand;
 import in.xnnyygn.xraft.core.service.RemoveServerCommand;
@@ -41,8 +43,21 @@ public class Service implements StateMachine {
         }
 
         AddServerCommand command = commandRequest.getCommand();
-        this.node.addServer(command.toNodeConfig());
-        commandRequest.reply(Success.INSTANCE);
+        TaskReference taskReference = this.node.addServer(command.toNodeConfig());
+        awaitResult(taskReference, commandRequest);
+    }
+
+    private <T> void awaitResult(TaskReference taskReference, CommandRequest<T> commandRequest) {
+        try {
+            if (taskReference.await(3000L)) {
+                commandRequest.reply(Success.INSTANCE);
+            } else {
+                // TODO cancel?
+                commandRequest.reply(new Failure(101, "timeout"));
+            }
+        } catch (InterruptedException e) {
+            commandRequest.reply(new Failure(100, "unknown"));
+        }
     }
 
     public void removeServer(CommandRequest<RemoveServerCommand> commandRequest) {
@@ -53,8 +68,8 @@ public class Service implements StateMachine {
         }
 
         RemoveServerCommand command = commandRequest.getCommand();
-        node.removeServer(command.getNodeId());
-        commandRequest.reply(Success.INSTANCE);
+        TaskReference taskReference = node.removeServer(command.getNodeId());
+        awaitResult(taskReference, commandRequest);
     }
 
     public void set(CommandRequest<SetCommand> commandRequest) {
@@ -82,9 +97,8 @@ public class Service implements StateMachine {
     @Override
     public void applyLog(int index, byte[] commandBytes) {
         SetCommand command = SetCommand.fromBytes(commandBytes);
-        this.map.put(command.getKey(), command.getValue());
-
-        CommandRequest<?> commandRequest = this.pendingCommands.remove(command.getRequestId());
+        map.put(command.getKey(), command.getValue());
+        CommandRequest<?> commandRequest = pendingCommands.remove(command.getRequestId());
         if (commandRequest != null) {
             commandRequest.reply(Success.INSTANCE);
         }
@@ -102,14 +116,9 @@ public class Service implements StateMachine {
     }
 
     private Redirect checkLeadership() {
-        RoleStateSnapshot state = this.node.getRoleState();
-        if (state.getRole() == RoleName.FOLLOWER) {
-            NodeId leaderId = state.getLeaderId();
-            return new Redirect(leaderId != null ? leaderId.getValue() : null);
-        }
-
-        if (state.getRole() == RoleName.CANDIDATE) {
-            return new Redirect(null);
+        RoleNameAndLeaderId state = node.getRoleNameAndLeaderId();
+        if (state.getRoleName() != RoleName.LEADER) {
+            return new Redirect(state.getLeaderId());
         }
         return null;
     }

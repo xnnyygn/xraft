@@ -1,11 +1,12 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
+import in.xnnyygn.xraft.core.log.LogException;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class MemorySnapshotBuilder extends AbstractSnapshotBuilder {
+public class MemorySnapshotBuilder extends AbstractSnapshotBuilder<MemorySnapshot> {
 
     private final ByteArrayOutputStream output;
 
@@ -16,7 +17,7 @@ public class MemorySnapshotBuilder extends AbstractSnapshotBuilder {
         try {
             output.write(firstRpc.getData());
         } catch (IOException e) {
-            throw new SnapshotIOException(e);
+            throw new LogException(e);
         }
     }
 
@@ -26,7 +27,7 @@ public class MemorySnapshotBuilder extends AbstractSnapshotBuilder {
     }
 
     @Override
-    public Snapshot build() {
+    public MemorySnapshot build() {
         return new MemorySnapshot(lastIncludedIndex, lastIncludedTerm, output.toByteArray());
     }
 

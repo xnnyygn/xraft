@@ -22,12 +22,12 @@ class InboundChannelGroup {
     }
 
     private void remove(NioChannel channel) {
-        this.channels.remove(channel);
+        channels.remove(channel);
     }
 
     void closeAll() {
         logger.info("close all inbound channels");
-        for (NioChannel channel : this.channels) {
+        for (NioChannel channel : channels) {
             channel.close();
         }
     }

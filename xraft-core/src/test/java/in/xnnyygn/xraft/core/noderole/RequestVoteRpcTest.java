@@ -2,9 +2,8 @@ package in.xnnyygn.xraft.core.noderole;
 
 import com.google.common.collect.ImmutableSet;
 import in.xnnyygn.xraft.core.log.Log;
-import in.xnnyygn.xraft.core.log.FileLog;
 import in.xnnyygn.xraft.core.log.MemoryLog;
-import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.MockConnector;
@@ -27,7 +26,7 @@ public class RequestVoteRpcTest {
         this.mockConnector = new MockConnector();
 
         this.mockNodeStateContext = new MockNodeRoleContext();
-        this.mockNodeStateContext.setNodeGroup(new NodeGroup(ImmutableSet.of(new NodeConfig("C1", "", 0))));
+        this.mockNodeStateContext.setNodeGroup(new NodeGroup(ImmutableSet.of(new NodeEndpoint("C1", "", 0))));
         this.mockNodeStateContext.setSelfNodeId(new NodeId("N"));
         this.mockNodeStateContext.setLog(log);
         this.mockNodeStateContext.setConnector(this.mockConnector);

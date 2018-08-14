@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.kvstore.client;
 
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.Endpoint;
+import in.xnnyygn.xraft.core.rpc.Address;
 import org.apache.commons.cli.*;
 
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class ConsoleLauncher {
         }
 
         CommandLineParser parser = new DefaultParser();
-        Map<NodeId, Endpoint> serverMap;
+        Map<NodeId, Address> serverMap;
         try {
             CommandLine commandLine = parser.parse(options, args);
             serverMap = parseGroupConfig(commandLine.getOptionValues("gc"));
@@ -64,11 +64,11 @@ public class ConsoleLauncher {
         console.start();
     }
 
-    private Map<NodeId, Endpoint> parseGroupConfig(String[] rawGroupConfig) {
-        Map<NodeId, Endpoint> serverMap = new HashMap<>();
+    private Map<NodeId, Address> parseGroupConfig(String[] rawGroupConfig) {
+        Map<NodeId, Address> serverMap = new HashMap<>();
         for (String rawServerConfig : rawGroupConfig) {
             ServerConfig serverConfig = parseServerConfig(rawServerConfig);
-            serverMap.put(new NodeId(serverConfig.getNodeId()), new Endpoint(serverConfig.getHost(), serverConfig.getPort()));
+            serverMap.put(new NodeId(serverConfig.getNodeId()), new Address(serverConfig.getHost(), serverConfig.getPort()));
         }
         return serverMap;
     }

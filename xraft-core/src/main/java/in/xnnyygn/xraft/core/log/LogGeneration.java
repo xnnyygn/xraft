@@ -19,7 +19,7 @@ class LogGeneration extends AbstractLogDir implements Comparable<LogGeneration> 
         super(dir);
         Matcher matcher = DIR_NAME_PATTERN.matcher(dir.getName());
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("illegal dir name [" + dir.getName() + "] for log generation");
+            throw new IllegalArgumentException("not a directory name of log generation, [" + dir.getName() + "]");
         }
         lastIncludedIndex = Integer.parseInt(matcher.group(1));
     }
@@ -28,7 +28,7 @@ class LogGeneration extends AbstractLogDir implements Comparable<LogGeneration> 
         return DIR_NAME_PATTERN.matcher(dirName).matches();
     }
 
-    static String generateDirName(int lastIncludedIndex) {
+    private static String generateDirName(int lastIncludedIndex) {
         return "log-" + lastIncludedIndex;
     }
 

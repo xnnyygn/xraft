@@ -7,7 +7,7 @@ import java.io.IOException;
 
 abstract class AbstractLogDir implements LogDir {
 
-    protected final File dir;
+    final File dir;
 
     AbstractLogDir(File dir) {
         this.dir = dir;
@@ -33,17 +33,17 @@ abstract class AbstractLogDir implements LogDir {
 
     @Override
     public File getSnapshotFile() {
-        return new File(dir, LogFiles.FILE_NAME_SNAPSHOT);
+        return new File(dir, RootDir.FILE_NAME_SNAPSHOT);
     }
 
     @Override
     public File getEntriesFile() {
-        return new File(dir, LogFiles.FILE_NAME_ENTRIES);
+        return new File(dir, RootDir.FILE_NAME_ENTRIES);
     }
 
     @Override
     public File getEntryOffsetIndexFile() {
-        return new File(dir, LogFiles.FILE_NAME_ENTRY_OFFSET_INDEX);
+        return new File(dir, RootDir.FILE_NAME_ENTRY_OFFSET_INDEX);
     }
 
     @Override

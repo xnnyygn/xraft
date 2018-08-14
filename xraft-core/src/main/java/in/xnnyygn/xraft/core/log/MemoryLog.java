@@ -2,13 +2,15 @@ package in.xnnyygn.xraft.core.log;
 
 import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.log.entry.Entry;
-import in.xnnyygn.xraft.core.log.entry.EntrySequence;
-import in.xnnyygn.xraft.core.log.entry.MemoryEntrySequence;
+import in.xnnyygn.xraft.core.log.entry.EntryMeta;
+import in.xnnyygn.xraft.core.log.sequence.EntrySequence;
+import in.xnnyygn.xraft.core.log.sequence.MemoryEntrySequence;
 import in.xnnyygn.xraft.core.log.snapshot.*;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class MemoryLog extends AbstractLog {
 
@@ -27,14 +29,14 @@ public class MemoryLog extends AbstractLog {
     }
 
     @Override
-    protected Snapshot generateSnapshot(Entry lastAppliedEntry) {
+    protected Snapshot generateSnapshot(EntryMeta lastAppliedEntryMeta) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             stateMachine.generateSnapshot(output);
         } catch (IOException e) {
-            throw new SnapshotIOException(e);
+            throw new LogException("failed to generate snapshot", e);
         }
-        return new MemorySnapshot(lastAppliedEntry.getIndex(), lastAppliedEntry.getTerm(), output.toByteArray());
+        return new MemorySnapshot(lastAppliedEntryMeta.getIndex(), lastAppliedEntryMeta.getTerm(), output.toByteArray());
     }
 
     @Override
@@ -44,11 +46,15 @@ public class MemoryLog extends AbstractLog {
 
     @Override
     protected void replaceSnapshot(Snapshot newSnapshot) {
+        int logIndexOffset = newSnapshot.getLastIncludedIndex() + 1;
+        EntrySequence newEntrySequence = new MemoryEntrySequence(logIndexOffset);
+        // when install snapshot from fresh
+        // entry sequence maybe empty
+        if (!entrySequence.isEmpty()) {
+            List<Entry> remainingEntries = entrySequence.subList(logIndexOffset);
+            newEntrySequence.append(remainingEntries);
+        }
         snapshot = newSnapshot;
-
-        int lastIncludedIndex = newSnapshot.getLastIncludedIndex();
-        EntrySequence newEntrySequence = new MemoryEntrySequence(lastIncludedIndex + 1);
-        newEntrySequence.append(entrySequence.subList(lastIncludedIndex + 1));
         entrySequence = newEntrySequence;
     }
 

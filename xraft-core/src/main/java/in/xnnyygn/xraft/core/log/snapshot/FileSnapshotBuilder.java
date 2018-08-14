@@ -1,11 +1,12 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
 import in.xnnyygn.xraft.core.log.LogDir;
+import in.xnnyygn.xraft.core.log.LogException;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 
 import java.io.IOException;
 
-public class FileSnapshotBuilder extends AbstractSnapshotBuilder {
+public class FileSnapshotBuilder extends AbstractSnapshotBuilder<FileSnapshot> {
 
     private final LogDir logDir;
     private FileSnapshotWriter writer;
@@ -18,7 +19,7 @@ public class FileSnapshotBuilder extends AbstractSnapshotBuilder {
             writer = new FileSnapshotWriter(logDir.getSnapshotFile(), firstRpc.getLastIncludedIndex(), firstRpc.getLastIncludedTerm());
             writer.write(firstRpc.getData());
         } catch (IOException e) {
-            throw new SnapshotIOException(e);
+            throw new LogException("failed to write snapshot data to file", e);
         }
     }
 
@@ -28,13 +29,9 @@ public class FileSnapshotBuilder extends AbstractSnapshotBuilder {
     }
 
     @Override
-    public Snapshot build() {
-        try {
-            writer.close();
-            return new FileSnapshot(logDir);
-        } catch (IOException e) {
-            throw new SnapshotIOException("failed to build", e);
-        }
+    public FileSnapshot build() {
+        close();
+        return new FileSnapshot(logDir);
     }
 
     @Override
@@ -42,7 +39,7 @@ public class FileSnapshotBuilder extends AbstractSnapshotBuilder {
         try {
             writer.close();
         } catch (IOException e) {
-            throw new SnapshotIOException(e);
+            throw new LogException("failed to close writer", e);
         }
     }
 

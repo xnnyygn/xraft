@@ -1,9 +1,21 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
-public interface SnapshotChunk {
+public class SnapshotChunk {
 
-    boolean isLastChunk();
+    private final byte[] bytes;
+    private final boolean lastChunk;
 
-    byte[] toByteArray();
+    SnapshotChunk(byte[] bytes, boolean lastChunk) {
+        this.bytes = bytes;
+        this.lastChunk = lastChunk;
+    }
+
+    public boolean isLastChunk() {
+        return lastChunk;
+    }
+
+    public byte[] toByteArray() {
+        return bytes;
+    }
 
 }

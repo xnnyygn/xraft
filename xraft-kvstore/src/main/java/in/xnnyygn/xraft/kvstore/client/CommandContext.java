@@ -1,27 +1,27 @@
 package in.xnnyygn.xraft.kvstore.client;
 
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.Endpoint;
+import in.xnnyygn.xraft.core.rpc.Address;
 import in.xnnyygn.xraft.core.service.ServerRouter;
 
 import java.util.Map;
 
 class CommandContext {
 
-    private final Map<NodeId, Endpoint> serverMap;
+    private final Map<NodeId, Address> serverMap;
     private Client client;
     private boolean running = false;
 
-    public CommandContext(Map<NodeId, Endpoint> serverMap) {
+    public CommandContext(Map<NodeId, Address> serverMap) {
         this.serverMap = serverMap;
         this.client = new Client(buildServerRouter(serverMap));
     }
 
-    private ServerRouter buildServerRouter(Map<NodeId, Endpoint> serverMap) {
+    private ServerRouter buildServerRouter(Map<NodeId, Address> serverMap) {
         ServerRouter router = new ServerRouter();
         for (NodeId nodeId : serverMap.keySet()) {
-            Endpoint endpoint = serverMap.get(nodeId);
-            router.add(nodeId, new SocketChannel(endpoint.getHost(), endpoint.getPort()));
+            Address address = serverMap.get(nodeId);
+            router.add(nodeId, new SocketChannel(address.getHost(), address.getPort()));
         }
         return router;
     }
@@ -39,13 +39,13 @@ class CommandContext {
     }
 
     void clientAddServer(String nodeId, String host, int portService) {
-        serverMap.put(new NodeId(nodeId), new Endpoint(host, portService));
+        serverMap.put(new NodeId(nodeId), new Address(host, portService));
         client = new Client(buildServerRouter(serverMap));
     }
 
     boolean clientRemoveServer(String nodeId) {
-        Endpoint endpoint = serverMap.remove(new NodeId(nodeId));
-        if (endpoint != null) {
+        Address address = serverMap.remove(new NodeId(nodeId));
+        if (address != null) {
             client = new Client(buildServerRouter(serverMap));
             return true;
         }
@@ -62,8 +62,8 @@ class CommandContext {
 
     void printSeverList() {
         for (NodeId nodeId : serverMap.keySet()) {
-            Endpoint endpoint = serverMap.get(nodeId);
-            System.out.println(nodeId + "," + endpoint.getHost() + "," + endpoint.getPort());
+            Address address = serverMap.get(nodeId);
+            System.out.println(nodeId + "," + address.getHost() + "," + address.getPort());
         }
     }
 

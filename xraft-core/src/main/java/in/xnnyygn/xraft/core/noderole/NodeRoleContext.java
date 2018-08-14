@@ -7,6 +7,7 @@ import in.xnnyygn.xraft.core.rpc.Connector;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeoutScheduler;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
 
+@Deprecated
 public interface NodeRoleContext extends ElectionTimeoutScheduler {
 
     NodeId getSelfNodeId();

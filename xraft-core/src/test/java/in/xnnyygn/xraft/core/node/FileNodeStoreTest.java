@@ -8,16 +8,40 @@ import java.io.IOException;
 
 public class FileNodeStoreTest {
 
+    // 1, A
     @Test
-    public void test() throws IOException {
+    public void testRead() throws IOException {
+        ByteArraySeekableFile file = new ByteArraySeekableFile();
+        file.writeInt(1);
+        file.writeInt(1);
+        file.write("A".getBytes());
+        file.seek(0L);
+        FileNodeStore store = new FileNodeStore(file);
+        Assert.assertEquals(1, store.getTerm());
+        Assert.assertEquals(NodeId.of("A"), store.getVotedFor());
+    }
+
+    // 1, null
+    @Test
+    public void testRead2() throws IOException {
+        ByteArraySeekableFile file = new ByteArraySeekableFile();
+        file.writeInt(1);
+        file.writeInt(0);
+        file.seek(0L);
+        FileNodeStore store = new FileNodeStore(file);
+        Assert.assertEquals(1, store.getTerm());
+        Assert.assertNull(store.getVotedFor());
+    }
+
+    @Test
+    public void testWrite() throws IOException {
         ByteArraySeekableFile file = new ByteArraySeekableFile();
         FileNodeStore store = new FileNodeStore(file);
-        store.initialize();
-        Assert.assertEquals(0, store.getCurrentTerm());
+        Assert.assertEquals(0, store.getTerm());
         Assert.assertNull(store.getVotedFor());
         Assert.assertEquals(8, file.size());
 
-        store.setCurrentTerm(1);
+        store.setTerm(1);
         NodeId nodeId = new NodeId("A");
         store.setVotedFor(nodeId);
 
@@ -30,7 +54,7 @@ public class FileNodeStoreTest {
         file.read(data);
         Assert.assertArrayEquals(nodeId.getValue().getBytes(), data);
 
-        Assert.assertEquals(1, store.getCurrentTerm());
+        Assert.assertEquals(1, store.getTerm());
         Assert.assertEquals(nodeId, store.getVotedFor());
     }
 

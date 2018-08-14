@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.core.log.entry;
 
 import in.xnnyygn.xraft.core.log.Protos;
-import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,27 +9,27 @@ import java.util.stream.Collectors;
 
 public class AddNodeEntry extends GroupConfigEntry {
 
-    private final NodeConfig newNodeConfig;
+    private final NodeEndpoint newNodeEndpoint;
 
-    public AddNodeEntry(int index, int term, Set<NodeConfig> nodeConfigs, NodeConfig newNodeConfig) {
-        super(KIND_ADD_NODE, index, term, nodeConfigs);
-        this.newNodeConfig = newNodeConfig;
+    public AddNodeEntry(int index, int term, Set<NodeEndpoint> nodeEndpoints, NodeEndpoint newNodeEndpoint) {
+        super(KIND_ADD_NODE, index, term, nodeEndpoints);
+        this.newNodeEndpoint = newNodeEndpoint;
     }
 
-    public NodeConfig getNewNodeConfig() {
-        return newNodeConfig;
+    public NodeEndpoint getNewNodeEndpoint() {
+        return newNodeEndpoint;
     }
 
-    public Set<NodeConfig> getResultNodeConfigs() {
-        Set<NodeConfig> configs = new HashSet<>(getNodeConfigs());
-        configs.add(newNodeConfig);
+    public Set<NodeEndpoint> getResultNodeConfigs() {
+        Set<NodeEndpoint> configs = new HashSet<>(getNodeEndpoints());
+        configs.add(newNodeEndpoint);
         return configs;
     }
 
     @Override
     public byte[] getCommandBytes() {
         return Protos.AddNodeCommand.newBuilder()
-                .addAllNodeConfigs(getNodeConfigs().stream().map(c ->
+                .addAllNodeConfigs(getNodeEndpoints().stream().map(c ->
                         Protos.NodeConfig.newBuilder()
                                 .setId(c.getId().getValue())
                                 .setHost(c.getHost())
@@ -37,9 +37,9 @@ public class AddNodeEntry extends GroupConfigEntry {
                                 .build()
                 ).collect(Collectors.toList()))
                 .setNewNodeConfig(Protos.NodeConfig.newBuilder()
-                        .setId(newNodeConfig.getId().getValue())
-                        .setHost(newNodeConfig.getHost())
-                        .setPort(newNodeConfig.getPort())
+                        .setId(newNodeEndpoint.getId().getValue())
+                        .setHost(newNodeEndpoint.getHost())
+                        .setPort(newNodeEndpoint.getPort())
                         .build()
                 ).build().toByteArray();
     }
@@ -49,8 +49,8 @@ public class AddNodeEntry extends GroupConfigEntry {
         return "AddNodeEntry{" +
                 "index=" + index +
                 ", term=" + term +
-                ", nodeConfigs=" + getNodeConfigs() +
-                ", newNodeConfig=" + newNodeConfig +
+                ", nodeConfigs=" + getNodeEndpoints() +
+                ", newNodeEndpoint=" + newNodeEndpoint +
                 '}';
     }
 

@@ -11,6 +11,10 @@ public class NodeId implements Serializable {
         this.value = value;
     }
 
+    public static NodeId of(String value) {
+        return new NodeId(value);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

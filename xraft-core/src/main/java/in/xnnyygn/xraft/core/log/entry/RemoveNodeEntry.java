@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.core.log.entry;
 
 import in.xnnyygn.xraft.core.log.Protos;
-import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 
 import java.util.Set;
@@ -11,21 +11,25 @@ public class RemoveNodeEntry extends GroupConfigEntry {
 
     private final NodeId nodeToRemove;
 
-    public RemoveNodeEntry(int index, int term, Set<NodeConfig> nodeConfigs, NodeId nodeToRemove) {
-        super(KIND_REMOVE_NODE, index, term, nodeConfigs);
+    public RemoveNodeEntry(int index, int term, Set<NodeEndpoint> nodeEndpoints, NodeId nodeToRemove) {
+        super(KIND_REMOVE_NODE, index, term, nodeEndpoints);
         this.nodeToRemove = nodeToRemove;
     }
 
-    public Set<NodeConfig> getResultNodeConfigs() {
-        return getNodeConfigs().stream()
+    public Set<NodeEndpoint> getResultNodeConfigs() {
+        return getNodeEndpoints().stream()
                 .filter(c -> !c.getId().equals(nodeToRemove))
                 .collect(Collectors.toSet());
+    }
+
+    public NodeId getNodeToRemove() {
+        return nodeToRemove;
     }
 
     @Override
     public byte[] getCommandBytes() {
         return Protos.RemoveNodeCommand.newBuilder()
-                .addAllNodeConfigs(getNodeConfigs().stream().map(c ->
+                .addAllNodeConfigs(getNodeEndpoints().stream().map(c ->
                         Protos.NodeConfig.newBuilder()
                                 .setId(c.getId().getValue())
                                 .setHost(c.getHost())
@@ -41,7 +45,7 @@ public class RemoveNodeEntry extends GroupConfigEntry {
         return "RemoveNodeEntry{" +
                 "index=" + index +
                 ", term=" + term +
-                ", nodeConfigs=" + getNodeConfigs() +
+                ", nodeConfigs=" + getNodeEndpoints() +
                 ", nodeToRemove=" + nodeToRemove +
                 '}';
     }

@@ -15,9 +15,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class NodeContext {
 
@@ -68,7 +66,7 @@ public class NodeContext {
         nodeGroup.resetReplicationStates(selfNodeId, log);
     }
 
-    public void addNode(NodeConfig config, boolean memberOfMajor) {
+    public void addNode(NodeEndpoint config, boolean memberOfMajor) {
         nodeGroup.addNode(config, log.getNextIndex(), memberOfMajor);
     }
 
@@ -104,11 +102,22 @@ public class NodeContext {
         this.eventBus.register(eventSubscriber);
     }
 
-    public void runWithMonitor(ListeningExecutorService executorService, Runnable r) {
+    public Future<?> runWithMonitor(ListeningExecutorService executorService, Runnable r) {
         ListenableFuture<?> future = executorService.submit(r);
-        Futures.addCallback(future, new FutureCallback<Object>() {
+        monitor(future);
+        return future;
+    }
+
+    public <V> Future<V> runWithMonitor(ListeningExecutorService executorService, Callable<V> c) {
+        ListenableFuture<V> future = executorService.submit(c);
+        monitor(future);
+        return future;
+    }
+
+    private <V> void monitor(ListenableFuture<V> future) {
+        Futures.addCallback(future, new FutureCallback<V>() {
             @Override
-            public void onSuccess(@Nullable Object result) {
+            public void onSuccess(@Nullable V result) {
             }
 
             @Override

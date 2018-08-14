@@ -3,10 +3,11 @@ package in.xnnyygn.xraft.core.node;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import in.xnnyygn.xraft.core.log.Log;
-import in.xnnyygn.xraft.core.log.StateMachine;
+import in.xnnyygn.xraft.core.log.*;
 import in.xnnyygn.xraft.core.log.entry.*;
-import in.xnnyygn.xraft.core.log.event.GroupConfigEntryAppendEvent;
+import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
+import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
+import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
 import in.xnnyygn.xraft.core.noderole.*;
 import in.xnnyygn.xraft.core.rpc.Connector;
 import in.xnnyygn.xraft.core.rpc.message.*;
@@ -17,15 +18,19 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
+import java.util.concurrent.*;
 
 public class Controller implements NodeRoleContext {
 
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
+
+    private final List<NodeRoleListener> nodeRoleListeners = new ArrayList<>();
+    private final TaskReferenceHolder taskReferenceHolder = new TaskReferenceHolder();
+
     private final NodeContext nodeContext;
     private AbstractNodeRole nodeRole;
-    private final List<NodeRoleListener> nodeRoleListeners = new ArrayList<>();
+
     private final ListeningExecutorService executorService;
 
     Controller(NodeContext nodeContext) {
@@ -63,49 +68,37 @@ public class Controller implements NodeRoleContext {
         }
     }
 
-    void addServer(NodeConfig config) {
+    TaskReference addServer(NodeEndpoint config) {
         ensureLeader();
+        AddNodeTaskReference taskReference = new AddNodeTaskReference(config.getId());
         runWithMonitor(() -> {
-            nodeContext.addNode(config, false);
-            ((LeaderNodeRole) nodeRole).replicateLog(this, config.getId());
-        });
-    }
-
-    void removeServer(NodeId id) {
-        ensureLeader();
-        runWithMonitor(() -> {
-            GroupConfigEntry lastEntry = nodeContext.getLog().getLastGroupConfigEntry();
-            // TODO refactor
-            // check if last group config entry committed
-            if (lastEntry != null && nodeContext.getLog().getCommitIndex() < lastEntry.getIndex()) {
-                logger.info("wait for last group config entry {} to be committed", lastEntry);
-                // since controller is single thread, no race condition to add listener
-                lastEntry.addListener(new EntryListenerAdapter() {
-                    @Override
-                    public void entryCommitted(Entry entry) {
-                        Controller.this.removeServer(id);
-                    }
-                });
+            if (!taskReferenceHolder.awaitPreviousGroupConfigChange(nodeContext.getLog().getLastUncommittedGroupConfigEntry(), taskReference, 1000)) {
                 return;
             }
+            nodeContext.addNode(config, false);
+            ((LeaderNodeRole) nodeRole).replicateLog(this, config.getId());
+            taskReferenceHolder.set(taskReference);
+        });
+        return taskReference;
+    }
 
-            RemoveNodeEntry removeNodeEntry = nodeContext.getLog().appendEntryForRemoveNode(
-                    nodeRole.getTerm(), nodeContext.getNodeGroup().getNodeConfigsOfMajor(), id
-            );
-            removeNodeEntry.addListener(new EntryListenerAdapter() {
-                @Override
-                public void entryCommitted(Entry entry) {
-                    if (id.equals(nodeContext.getSelfNodeId())) {
-                        logger.info("remove leader from group, step down");
-                        nodeRole.stepDown(Controller.this, true);
-                    }
-                    nodeContext.getNodeGroup().removeNode(id);
-                }
-            });
+    TaskReference removeServer(NodeId id) {
+        ensureLeader();
+        EntryTaskReference taskReference = new EntryTaskReference();
+        runWithMonitor(() -> {
+            if (!taskReferenceHolder.awaitPreviousGroupConfigChange(nodeContext.getLog().getLastUncommittedGroupConfigEntry(), taskReference, 1000)) {
+                return;
+            }
+            Set<NodeEndpoint> nodeEndpoints = nodeContext.getNodeGroup().getNodeEndpointsOfMajor();
+            RemoveNodeEntry entry = nodeContext.getLog().appendEntryForRemoveNode(nodeRole.getTerm(), nodeEndpoints, id);
+            taskReference.setEntryIndex(entry.getIndex());
+            taskReferenceHolder.set(taskReference);
             nodeContext.getNodeGroup().downgrade(id);
             ((LeaderNodeRole) nodeRole).replicateLog(this);
         });
+        return taskReference;
     }
+
 
     void addNodeRoleListener(NodeRoleListener listener) {
         this.nodeRoleListeners.add(listener);
@@ -147,7 +140,7 @@ public class Controller implements NodeRoleContext {
     @Subscribe
     public void onReceive(AppendEntriesResultMessage resultMessage) {
         this.runWithMonitor(() -> {
-            this.nodeRole.onReceiveAppendEntriesResult(this, resultMessage.getResult(), resultMessage.getSourceNodeId(), resultMessage.getRpc());
+            this.nodeRole.onReceiveAppendEntriesResult(this, resultMessage.get(), resultMessage.getSourceNodeId(), resultMessage.getRpc());
         });
     }
 
@@ -160,16 +153,43 @@ public class Controller implements NodeRoleContext {
 
     @Subscribe
     public void onReceive(InstallSnapshotResultMessage resultMessage) {
-        this.runWithMonitor(() -> {
+        runWithMonitor(() -> {
             // TODO add channel to result message
-            this.nodeRole.onReceiveInstallSnapshotResult(this, resultMessage.getResult(), resultMessage.getSourceNodeId(), resultMessage.getRpc());
+            this.nodeRole.onReceiveInstallSnapshotResult(this, resultMessage.get(), resultMessage.getSourceNodeId(), resultMessage.getRpc());
         });
     }
 
     @Subscribe
-    public void onReceive(GroupConfigEntryAppendEvent event) {
-        GroupConfigEntry entry = (GroupConfigEntry) event.getEntry();
-        nodeContext.getNodeGroup().updateNodes(entry.getResultNodeConfigs());
+    public void onReceive(GroupConfigEntryFromLeaderAppendEvent event) {
+        runWithMonitor(() -> {
+            GroupConfigEntry entry = event.getEntry();
+            nodeContext.getNodeGroup().updateNodes(entry.getResultNodeConfigs());
+        });
+    }
+
+    @Subscribe
+    public void onReceive(GroupConfigEntryCommittedEvent event) {
+        runWithMonitor(() -> {
+            GroupConfigEntry entry = event.getEntry();
+            if (entry.getKind() == Entry.KIND_REMOVE_NODE) {
+                RemoveNodeEntry removeNodeEntry = (RemoveNodeEntry) entry;
+                NodeId nodeToRemove = removeNodeEntry.getNodeToRemove();
+                if (nodeToRemove.equals(nodeContext.getSelfNodeId())) {
+                    logger.info("remove leader from group, step down");
+                    nodeRole.stepDown(Controller.this, true);
+                }
+                nodeContext.getNodeGroup().removeNode(nodeToRemove);
+            }
+            taskReferenceHolder.done(entry.getIndex());
+        });
+    }
+
+    @Subscribe
+    public void onReceive(GroupConfigEntryBatchRemovedEvent event) {
+        runWithMonitor(() -> {
+            GroupConfigEntry entry = event.getFirstRemovedEntry();
+            nodeContext.getNodeGroup().updateNodes(entry.getNodeEndpoints());
+        });
     }
 
     @Override
@@ -187,36 +207,20 @@ public class Controller implements NodeRoleContext {
         nodeContext.resetReplicationStates();
     }
 
+    // called when catch up successfully
     @Override
     public void upgradeNode(NodeId id) {
-        GroupConfigEntry lastEntry = nodeContext.getLog().getLastGroupConfigEntry();
-        // check if last group config entry committed
-        if (lastEntry != null && nodeContext.getLog().getCommitIndex() < lastEntry.getIndex()) {
-            logger.info("wait for last group config entry {} to be committed", lastEntry);
-            // since controller is single thread, no race condition to add listener
-            lastEntry.addListener(new EntryListenerAdapter() {
-                @Override
-                public void entryCommitted(Entry entry) {
-                    doUpgradeNode(id);
-                }
-            });
-        } else {
-            doUpgradeNode(id);
-        }
-    }
-
-    private void doUpgradeNode(NodeId id) {
-        NodeConfig newNodeConfig = nodeContext.getNodeGroup().getConfig(id);
-        nodeContext.getLog().appendEntryForAddNode(nodeRole.getTerm(), nodeContext.getNodeGroup().getNodeConfigsOfMajor(), newNodeConfig);
+        NodeEndpoint newNodeEndpoint = nodeContext.getNodeGroup().findEndpoint(id);
+        AddNodeEntry entry = nodeContext.getLog().appendEntryForAddNode(nodeRole.getTerm(), nodeContext.getNodeGroup().getNodeEndpointsOfMajor(), newNodeEndpoint);
         nodeContext.getNodeGroup().upgrade(id);
-        // TODO reply ok
+        taskReferenceHolder.setEntryIndexForAddNode(entry.getIndex());
     }
 
+    // called when failed to catch up
     @Override
     public void removeNode(NodeId id) {
         nodeContext.getNodeGroup().removeNode(id);
-        // TODO close connection to node
-        // TODO reply timeout
+        taskReferenceHolder.doneForAddNode(TaskReference.Result.TIMEOUT);
     }
 
     @Override
@@ -229,7 +233,7 @@ public class Controller implements NodeRoleContext {
             this.nodeRoleListeners.forEach((l) -> l.nodeRoleChanged(snapshot));
 
             NodeStore store = nodeContext.getNodeStore();
-            store.setCurrentTerm(snapshot.getTerm());
+            store.setTerm(snapshot.getTerm());
             store.setVotedFor(snapshot.getVotedFor());
         }
 
@@ -271,8 +275,9 @@ public class Controller implements NodeRoleContext {
         return nodeContext.isStandbyMode();
     }
 
-    private void runWithMonitor(Runnable r) {
-        this.nodeContext.runWithMonitor(this.executorService, r);
+    @SuppressWarnings("UnusedReturnValue")
+    private Future runWithMonitor(Runnable r) {
+        return nodeContext.runWithMonitor(executorService, r);
     }
 
 }

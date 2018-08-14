@@ -1,25 +1,26 @@
 package in.xnnyygn.xraft.core.log;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.log.entry.*;
-import in.xnnyygn.xraft.core.log.event.GroupConfigEntryAppendEvent;
+import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
+import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
+import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
+import in.xnnyygn.xraft.core.log.sequence.EntrySequence;
+import in.xnnyygn.xraft.core.log.sequence.GroupConfigEntryList;
 import in.xnnyygn.xraft.core.log.snapshot.*;
-import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 abstract class AbstractLog implements Log {
-
-    private static final int INSTALL_SNAPSHOT_RPC_DATA_LENGTH = 10;
-    private static final int SNAPSHOT_GENERATE_THRESHOLD = 5;
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractLog.class);
 
@@ -28,82 +29,91 @@ abstract class AbstractLog implements Log {
     protected EntrySequence entrySequence;
 
     protected SnapshotBuilder snapshotBuilder = new NullSnapshotBuilder();
+    protected SnapshotGenerateStrategy snapshotGenerateStrategy = SnapshotGenerateStrategy.DISABLED;
     protected GroupConfigEntryList groupConfigEntryList = new GroupConfigEntryList();
     protected StateMachine stateMachine = new NullStateMachine();
-    protected int commitIndex = 0;
-    protected int lastApplied = 0;
+    int commitIndex = 0;
+    int lastApplied = 0;
 
     AbstractLog(EventBus eventBus) {
         this.eventBus = eventBus;
     }
 
     @Override
+    @Nonnull
     public EntryMeta getLastEntryMeta() {
         if (entrySequence.isEmpty()) {
-            return new EntryMeta(snapshot.getLastIncludedIndex(), snapshot.getLastIncludedTerm());
+            return new EntryMeta(Entry.KIND_NO_OP, snapshot.getLastIncludedIndex(), snapshot.getLastIncludedTerm());
         }
         return entrySequence.getLastEntry().getMeta();
     }
 
     @Override
-    public AppendEntriesRpc createAppendEntriesRpc(int term, NodeId selfNodeId, int nextIndex, int maxEntries) {
-        if (nextIndex > entrySequence.getNextLogIndex()) {
+    public AppendEntriesRpc createAppendEntriesRpc(int term, NodeId selfId, int nextIndex, int maxEntries) {
+        int nextLogIndex = entrySequence.getNextLogIndex();
+        if (nextIndex > nextLogIndex) {
             throw new IllegalArgumentException("illegal next index " + nextIndex);
         }
-
+        if (nextIndex <= snapshot.getLastIncludedIndex()) {
+            throw new EntryInSnapshotException(nextIndex);
+        }
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setMessageId(UUID.randomUUID().toString());
         rpc.setTerm(term);
-        rpc.setLeaderId(selfNodeId);
+        rpc.setLeaderId(selfId);
         rpc.setLeaderCommit(commitIndex);
-
-        if (entrySequence.isEmpty()) {
-            if (nextIndex < entrySequence.getNextLogIndex()) {
-                throw new EntryInSnapshotException(nextIndex);
-            }
-
-            assert nextIndex == entrySequence.getNextLogIndex();
-            rpc.setPrevLogIndex(snapshot.getLastIncludedIndex());
-            rpc.setPrevLogTerm(snapshot.getLastIncludedTerm());
-            return rpc;
-        }
-
-        if (nextIndex < entrySequence.getFirstLogIndex()) {
-            throw new EntryInSnapshotException(nextIndex);
-        }
-
-        if (nextIndex == entrySequence.getFirstLogIndex()) {
+        if (nextIndex == snapshot.getLastIncludedIndex() + 1) {
             rpc.setPrevLogIndex(snapshot.getLastIncludedIndex());
             rpc.setPrevLogTerm(snapshot.getLastIncludedTerm());
         } else {
+            // if entry sequence is empty,
+            // snapshot.lastIncludedIndex + 1 == nextLogIndex,
+            // so it has been rejected at the first line.
+            //
+            // if entry sequence is not empty,
+            // snapshot.lastIncludedIndex + 1 < nextIndex <= nextLogIndex
+            // and snapshot.lastIncludedIndex + 1 = firstLogIndex
+            //     nextLogIndex = lastLogIndex + 1
+            // then firstLogIndex < nextIndex <= lastLogIndex + 1
+            //      firstLogIndex + 1 <= nextIndex <= lastLogIndex + 1
+            //      firstLogIndex <= nextIndex - 1 <= lastLogIndex
+            // it is ok to get entry without null check
             Entry entry = entrySequence.getEntry(nextIndex - 1);
             assert entry != null;
             rpc.setPrevLogIndex(entry.getIndex());
             rpc.setPrevLogTerm(entry.getTerm());
         }
-        int maxIndex = maxEntries < 0 ? entrySequence.getNextLogIndex() : Math.min(entrySequence.getNextLogIndex(), nextIndex + maxEntries);
-        rpc.setEntries(entrySequence.subList(nextIndex, maxIndex));
+        if (!entrySequence.isEmpty()) {
+            int maxIndex = (maxEntries == ALL_ENTRIES ? nextLogIndex : Math.min(nextLogIndex, nextIndex + maxEntries));
+            rpc.setEntries(entrySequence.subList(nextIndex, maxIndex));
+        }
         return rpc;
     }
 
     @Override
-    public InstallSnapshotRpc createInstallSnapshotRpc(int term, NodeId selfNodeId, int offset) {
+    public InstallSnapshotRpc createInstallSnapshotRpc(int term, NodeId selfId, int offset, int length) {
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
         rpc.setTerm(term);
-        rpc.setLeaderId(selfNodeId);
+        rpc.setLeaderId(selfId);
         rpc.setLastIncludedIndex(snapshot.getLastIncludedIndex());
         rpc.setLastIncludedTerm(snapshot.getLastIncludedTerm());
         rpc.setOffset(offset);
 
-        SnapshotChunk chunk = snapshot.readData(offset, INSTALL_SNAPSHOT_RPC_DATA_LENGTH);
+        SnapshotChunk chunk = snapshot.readData(offset, length);
         rpc.setData(chunk.toByteArray());
         rpc.setDone(chunk.isLastChunk());
         return rpc;
     }
 
     @Override
-    public GroupConfigEntry getLastGroupConfigEntry() {
-        return groupConfigEntryList.getLast();
+    public GroupConfigEntry getLastUncommittedGroupConfigEntry() {
+        GroupConfigEntry lastEntry = groupConfigEntryList.getLast();
+        return (lastEntry != null && lastEntry.getIndex() > commitIndex) ? lastEntry : null;
+    }
+
+    @Override
+    public int getNextIndex() {
+        return entrySequence.getNextLogIndex();
     }
 
     @Override
@@ -112,8 +122,8 @@ abstract class AbstractLog implements Log {
     }
 
     @Override
-    public int getNextIndex() {
-        return entrySequence.getNextLogIndex();
+    public int getLastApplied() {
+        return lastApplied;
     }
 
     @Override
@@ -125,153 +135,215 @@ abstract class AbstractLog implements Log {
 
     @Override
     public NoOpEntry appendEntry(int term) {
-        NoOpEntry entry = new NoOpEntry(entrySequence.getAndIncreaseNextLogIndex(), term);
+        NoOpEntry entry = new NoOpEntry(entrySequence.getNextLogIndex(), term);
         entrySequence.append(entry);
         return entry;
     }
 
     @Override
     public GeneralEntry appendEntry(int term, byte[] command) {
-        GeneralEntry entry = new GeneralEntry(entrySequence.getAndIncreaseNextLogIndex(), term, command);
+        GeneralEntry entry = new GeneralEntry(entrySequence.getNextLogIndex(), term, command);
         entrySequence.append(entry);
         return entry;
     }
 
     @Override
-    public AddNodeEntry appendEntryForAddNode(int term, Set<NodeConfig> nodeConfigs, NodeConfig newNodeConfig) {
-        AddNodeEntry entry = new AddNodeEntry(entrySequence.getAndIncreaseNextLogIndex(), term, nodeConfigs, newNodeConfig);
-        entrySequence.append(entry);
-        groupConfigEntryList.add(entry);
-        return entry;
-    }
-
-    @Override
-    public RemoveNodeEntry appendEntryForRemoveNode(int term, Set<NodeConfig> nodeConfigs, NodeId nodeToRemove) {
-        RemoveNodeEntry entry = new RemoveNodeEntry(entrySequence.getAndIncreaseNextLogIndex(), term, nodeConfigs, nodeToRemove);
+    public AddNodeEntry appendEntryForAddNode(int term, Set<NodeEndpoint> nodeEndpoints, NodeEndpoint newNodeEndpoint) {
+        AddNodeEntry entry = new AddNodeEntry(entrySequence.getNextLogIndex(), term, nodeEndpoints, newNodeEndpoint);
         entrySequence.append(entry);
         groupConfigEntryList.add(entry);
         return entry;
     }
 
     @Override
-    public boolean appendEntries(int prevLogIndex, int prevLogTerm, List<Entry> entries) {
-        if (prevLogIndex > 0) {
-            if (prevLogIndex < snapshot.getLastIncludedIndex()) {
-                logger.debug("previous log index < snapshot's last included index");
+    public RemoveNodeEntry appendEntryForRemoveNode(int term, Set<NodeEndpoint> nodeEndpoints, NodeId nodeToRemove) {
+        RemoveNodeEntry entry = new RemoveNodeEntry(entrySequence.getNextLogIndex(), term, nodeEndpoints, nodeToRemove);
+        entrySequence.append(entry);
+        groupConfigEntryList.add(entry);
+        return entry;
+    }
+
+    @Override
+    public boolean appendEntriesFromLeader(int prevLogIndex, int prevLogTerm, List<Entry> leaderEntries) {
+        // check previous log
+        if (!checkIfPreviousLogMatches(prevLogIndex, prevLogTerm)) {
+            return false;
+        }
+        // heartbeat
+        if (leaderEntries.isEmpty()) {
+            return true;
+        }
+        assert prevLogIndex + 1 == leaderEntries.get(0).getIndex();
+        EntrySequenceView newEntries = removeUnmatchedLog(new EntrySequenceView(leaderEntries));
+        appendEntriesFromLeader(newEntries);
+        return true;
+    }
+
+    private void appendEntriesFromLeader(EntrySequenceView leaderEntries) {
+        if (leaderEntries.isEmpty()) {
+            return;
+        }
+        logger.debug("append entries from leader from {} to {}", leaderEntries.getFirstLogIndex(), leaderEntries.getLastLogIndex());
+        for (Entry leaderEntry : leaderEntries) {
+            appendEntryFromLeader(leaderEntry);
+        }
+    }
+
+    private void appendEntryFromLeader(Entry leaderEntry) {
+        entrySequence.append(leaderEntry);
+        if (leaderEntry instanceof GroupConfigEntry) {
+            eventBus.post(new GroupConfigEntryFromLeaderAppendEvent(
+                    (GroupConfigEntry) leaderEntry)
+            );
+        }
+    }
+
+    private EntrySequenceView removeUnmatchedLog(EntrySequenceView leaderEntries) {
+        assert !leaderEntries.isEmpty();
+        int firstUnmatched = findFirstUnmatchedLog(leaderEntries);
+        removeEntriesAfter(firstUnmatched - 1);
+        return leaderEntries.subView(firstUnmatched);
+    }
+
+    private int findFirstUnmatchedLog(EntrySequenceView leaderEntries) {
+        assert !leaderEntries.isEmpty();
+        int logIndex;
+        EntryMeta followerEntryMeta;
+        for (Entry leaderEntry : leaderEntries) {
+            logIndex = leaderEntry.getIndex();
+            followerEntryMeta = entrySequence.getEntryMeta(logIndex);
+            if (followerEntryMeta == null || followerEntryMeta.getTerm() != leaderEntry.getTerm()) {
+                return logIndex;
+            }
+        }
+        return leaderEntries.getLastLogIndex() + 1;
+    }
+
+    private boolean checkIfPreviousLogMatches(int prevLogIndex, int prevLogTerm) {
+        int lastIncludedIndex = snapshot.getLastIncludedIndex();
+        if (prevLogIndex < lastIncludedIndex) {
+            logger.debug("previous log index {} < snapshot's last included index {}", prevLogIndex, lastIncludedIndex);
+            return false;
+        }
+        if (prevLogIndex == lastIncludedIndex) {
+            int lastIncludedTerm = snapshot.getLastIncludedTerm();
+            if (prevLogTerm != lastIncludedTerm) {
+                logger.debug("previous log index matches snapshot's last included index, " +
+                        "but term not (expected {}, actual {})", lastIncludedTerm, prevLogTerm);
                 return false;
             }
-
-            if (prevLogIndex == snapshot.getLastIncludedIndex()) {
-                if (prevLogTerm != snapshot.getLastIncludedTerm()) {
-                    logger.debug("previous log term != snapshot's last included term");
-                    return false;
-                }
-            } else {
-                assert prevLogIndex > snapshot.getLastIncludedIndex();
-                Entry prevLog = entrySequence.getEntry(prevLogIndex);
-                if (prevLog == null || prevLog.getTerm() != prevLogTerm) {
-                    logger.debug("previous log {} not found or different term", prevLogIndex);
-                    return false;
-                }
-            }
+            return true;
         }
-
-        if (entries.isEmpty()) return true;
-
-        // merge entries
-        int fromIndex = prevLogIndex + 1;
-        int copyFrom = 0;
-        if (!entrySequence.isEmpty() && fromIndex <= entrySequence.getLastLogIndex()) {
-            List<Entry> followerEntries = entrySequence.subList(fromIndex,
-                    Math.min(entrySequence.getNextLogIndex(), fromIndex + entries.size()));
-            copyFrom = followerEntries.size();
-            for (int i = 0; i < Math.min(followerEntries.size(), entries.size()); i++) {
-                Entry followerEntry = followerEntries.get(i);
-                Entry leaderEntry = entries.get(i);
-                if (followerEntry.getTerm() != leaderEntry.getTerm()) {
-                    logger.debug("remove entries from {}", followerEntry.getIndex());
-                    // TODO rollback group config entry
-                    entrySequence.removeAfter(followerEntry.getIndex() - 1);
-                    copyFrom = i;
-                    break;
-                }
-            }
+        Entry entry = entrySequence.getEntry(prevLogIndex);
+        if (entry == null) {
+            logger.debug("previous log {} not found", prevLogIndex);
+            return false;
         }
-
-        if (copyFrom > 0) {
-            logger.debug("skip copying {} entries", copyFrom);
-        }
-
-        // TODO refactor
-        if (copyFrom < entries.size()) {
-            logger.debug("append leader entries from {} to {}", entries.get(copyFrom).getIndex(), entries.get(entries.size() - 1).getIndex());
-            List<Entry> entriesToAppend = entries.subList(copyFrom, entries.size());
-
-            // append entries to log
-            entrySequence.append(entriesToAppend);
-
-            // filter group config entry
-            for (Entry entry : entriesToAppend) {
-                if (entry instanceof GroupConfigEntry) {
-                    eventBus.post(new GroupConfigEntryAppendEvent((GroupConfigEntry) entry));
-                }
-            }
+        int term = entry.getTerm();
+        if (term != prevLogTerm) {
+            logger.debug("different term of previous log, local {}, remote {}", term, prevLogTerm);
+            return false;
         }
         return true;
     }
 
+    private void removeEntriesAfter(int index) {
+        if (entrySequence.isEmpty() || index >= entrySequence.getLastLogIndex()) {
+            return;
+        }
+        logger.debug("remove entries after {}", index);
+        entrySequence.removeAfter(index);
+        GroupConfigEntry firstRemovedEntry = groupConfigEntryList.removeAfter(index);
+        if (firstRemovedEntry != null) {
+            eventBus.post(new GroupConfigEntryBatchRemovedEvent(firstRemovedEntry));
+        }
+        // TODO update commitIndex and lastApplied
+    }
+
     @Override
     public void advanceCommitIndex(int newCommitIndex, int currentTerm) {
-        if (newCommitIndex <= commitIndex) return;
-        if (entrySequence.getEntry(newCommitIndex).getTerm() != currentTerm) return;
-
+        if (!validateNewCommitIndex(newCommitIndex, currentTerm)) {
+            return;
+        }
         logger.debug("advance commit index from {} to {}", commitIndex, newCommitIndex);
         entrySequence.commit(newCommitIndex);
+        groupConfigsCommitted(newCommitIndex);
         commitIndex = newCommitIndex;
 
-        if (lastApplied == 0 && snapshot.getLastIncludedIndex() > 0) {
-            // start up and snapshot exists
-            assert commitIndex >= snapshot.getLastIncludedIndex();
-            logger.debug("apply snapshot, last included index {}", snapshot.getLastIncludedIndex());
-            try {
-                stateMachine.applySnapshot(snapshot.getDataStream());
-            } catch (IOException e) {
-                throw new SnapshotIOException(e);
-            }
-            lastApplied = snapshot.getLastIncludedIndex();
+        advanceApplyIndex();
+        generateSnapshotIfNecessary();
+    }
+
+    private void generateSnapshotIfNecessary() {
+        if (!snapshotGenerateStrategy.shouldGenerate(entrySequence.getFirstLogIndex(), lastApplied)) {
+            return;
+        }
+        logger.info("generate snapshot, last included index {}", lastApplied);
+        EntryMeta lastAppliedEntryMeta = entrySequence.getEntryMeta(lastApplied);
+        replaceSnapshot(generateSnapshot(lastAppliedEntryMeta));
+    }
+
+    private void advanceApplyIndex() {
+        // start up and snapshot exists
+        int lastIncludedIndex = snapshot.getLastIncludedIndex();
+        if (lastApplied == 0 && lastIncludedIndex > 0) {
+            assert commitIndex >= lastIncludedIndex;
+            applySnapshot(snapshot);
+            lastApplied = lastIncludedIndex;
         }
         logger.debug("apply log from {} to {}", lastApplied + 1, commitIndex);
         for (Entry entry : entrySequence.subList(lastApplied + 1, commitIndex + 1)) {
             applyEntry(entry);
         }
+    }
 
-        if (lastApplied - entrySequence.getFirstLogIndex() >= SNAPSHOT_GENERATE_THRESHOLD) {
-            logger.info("generate snapshot, last included index {}", lastApplied);
-            Entry lastAppliedEntry = entrySequence.getEntry(lastApplied);
-            assert lastAppliedEntry != null;
-            replaceSnapshot(generateSnapshot(lastAppliedEntry));
+    private void applySnapshot(Snapshot snapshot) {
+        logger.debug("apply snapshot, last included index {}", snapshot.getLastIncludedIndex());
+        try {
+            stateMachine.applySnapshot(snapshot.getDataStream());
+        } catch (IOException e) {
+            throw new LogException("failed to apply snapshot", e);
         }
     }
 
-    protected abstract Snapshot generateSnapshot(Entry lastAppliedEntry);
-
     private void applyEntry(Entry entry) {
-        List<EntryListener> entryListeners = entry.getListeners();
-        entryListeners.forEach(l -> l.entryCommitted(entry));
         // skip no-op entry and membership-change entry
         if (entry instanceof GeneralEntry) {
             stateMachine.applyLog(entry.getIndex(), entry.getCommandBytes());
         }
-        entryListeners.forEach(l -> l.entryApplied(entry));
-        entry.removeAllListeners();
         lastApplied = entry.getIndex();
     }
 
+    private void groupConfigsCommitted(int newCommitIndex) {
+        for (GroupConfigEntry groupConfigEntry : groupConfigEntryList.subList(commitIndex + 1, newCommitIndex + 1)) {
+            eventBus.post(new GroupConfigEntryCommittedEvent(groupConfigEntry));
+        }
+    }
+
+    private boolean validateNewCommitIndex(int newCommitIndex, int currentTerm) {
+        if (newCommitIndex <= commitIndex) {
+            return false;
+        }
+        Entry entry = entrySequence.getEntry(newCommitIndex);
+        if (entry == null) {
+            logger.debug("log of new commit index {} not found", newCommitIndex);
+            return false;
+        }
+        if (entry.getTerm() != currentTerm) {
+            logger.debug("log term of new commit index != current term ({} != {})", entry.getTerm(), currentTerm);
+            return false;
+        }
+        return true;
+    }
+
+    protected abstract Snapshot generateSnapshot(EntryMeta lastAppliedEntryMeta);
+
     @Override
-    public void installSnapshot(InstallSnapshotRpc rpc) {
+    public boolean installSnapshot(InstallSnapshotRpc rpc) {
         if (rpc.getLastIncludedIndex() <= snapshot.getLastIncludedIndex()) {
-            logger.debug("snapshot's last included index from rpc <= current one, ignore");
-            return;
+            logger.debug("snapshot's last included index from rpc <= current one ({} <= {}), ignore",
+                    rpc.getLastIncludedIndex(), snapshot.getLastIncludedIndex());
+            return false;
         }
         if (rpc.getOffset() == 0) {
             snapshotBuilder.close();
@@ -279,23 +351,23 @@ abstract class AbstractLog implements Log {
         } else {
             snapshotBuilder.append(rpc);
         }
-
-        if (!rpc.isDone())
-            return;
-
+        if (!rpc.isDone()) {
+            return true;
+        }
         Snapshot newSnapshot = snapshotBuilder.build();
-        logger.info("install snapshot, last included index {}", newSnapshot.getLastIncludedIndex());
-        try {
-            stateMachine.applySnapshot(newSnapshot.getDataStream());
-        } catch (IOException e) {
-            throw new SnapshotIOException(e);
-        }
+        applySnapshot(newSnapshot);
         replaceSnapshot(newSnapshot);
-        if (commitIndex < newSnapshot.getLastIncludedIndex()) {
-            commitIndex = newSnapshot.getLastIncludedIndex();
+        updateCommitIndexAndLastApplied(newSnapshot);
+        return true;
+    }
+
+    private void updateCommitIndexAndLastApplied(Snapshot snapshot) {
+        int lastIncludedIndex = snapshot.getLastIncludedIndex();
+        if (commitIndex < lastIncludedIndex) {
+            commitIndex = lastIncludedIndex;
         }
-        if (lastApplied <= newSnapshot.getLastIncludedIndex()) {
-            lastApplied = newSnapshot.getLastIncludedIndex();
+        if (lastApplied <= lastIncludedIndex) {
+            lastApplied = lastIncludedIndex;
         }
     }
 
@@ -309,10 +381,67 @@ abstract class AbstractLog implements Log {
     }
 
     @Override
+    public void setSnapshotGenerateStrategy(@Nonnull SnapshotGenerateStrategy strategy) {
+        Preconditions.checkNotNull(strategy);
+        this.snapshotGenerateStrategy = strategy;
+    }
+
+    @Override
     public void close() {
         snapshot.close();
         entrySequence.close();
         snapshotBuilder.close();
+    }
+
+
+    private static class EntrySequenceView implements Iterable<Entry> {
+
+        private final List<Entry> entries;
+        private int firstLogIndex;
+        private int lastLogIndex;
+
+        EntrySequenceView(List<Entry> entries) {
+            this.entries = entries;
+            if (!entries.isEmpty()) {
+                firstLogIndex = entries.get(0).getIndex();
+                lastLogIndex = entries.get(entries.size() - 1).getIndex();
+            }
+        }
+
+        Entry get(int index) {
+            if (entries.isEmpty() || index < firstLogIndex || index > lastLogIndex) {
+                return null;
+            }
+            return entries.get(index - firstLogIndex);
+        }
+
+        boolean isEmpty() {
+            return entries.isEmpty();
+        }
+
+        int getFirstLogIndex() {
+            return firstLogIndex;
+        }
+
+        int getLastLogIndex() {
+            return lastLogIndex;
+        }
+
+        EntrySequenceView subView(int fromIndex) {
+            if (entries.isEmpty() || fromIndex > lastLogIndex) {
+                return new EntrySequenceView(Collections.emptyList());
+            }
+            return new EntrySequenceView(
+                    entries.subList(fromIndex - firstLogIndex, entries.size())
+            );
+        }
+
+        @Override
+        @Nonnull
+        public Iterator<Entry> iterator() {
+            return entries.iterator();
+        }
+
     }
 
 }

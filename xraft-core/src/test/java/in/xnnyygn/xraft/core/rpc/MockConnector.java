@@ -1,16 +1,15 @@
 package in.xnnyygn.xraft.core.rpc;
 
-import in.xnnyygn.xraft.core.node.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.*;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MockConnector implements Connector {
 
-    private Object rpc;
-    private Object result;
-    private NodeId destinationNodeId;
+    private LinkedList<Message> messages = new LinkedList<>();
 
     @Override
     public void initialize() {
@@ -22,57 +21,114 @@ public class MockConnector implements Connector {
 
     @Override
     public void sendRequestVote(RequestVoteRpc rpc) {
-        this.rpc = rpc;
+        Message m = new Message();
+        m.rpc = rpc;
+        messages.add(m);
     }
 
     @Override
     public void replyRequestVote(RequestVoteResult result, RequestVoteRpcMessage rpcMessage) {
-        this.result = result;
-        this.destinationNodeId = rpcMessage.getSourceNodeId();
+        Message m = new Message();
+        m.result = result;
+        m.destinationNodeId = rpcMessage.getSourceNodeId();
+        messages.add(m);
     }
 
     @Override
     public void sendAppendEntries(AppendEntriesRpc rpc, NodeId destinationNodeId) {
-        this.rpc = rpc;
-        this.destinationNodeId = destinationNodeId;
+        Message m = new Message();
+        m.rpc = rpc;
+        m.destinationNodeId = destinationNodeId;
+        messages.add(m);
     }
 
     @Override
     public void replyAppendEntries(AppendEntriesResult result, AppendEntriesRpcMessage rpcMessage) {
-        this.result = result;
-        this.destinationNodeId = rpcMessage.getSourceNodeId();
+        Message m = new Message();
+        m.result = result;
+        m.destinationNodeId = rpcMessage.getSourceNodeId();
+        messages.add(m);
     }
 
     @Override
     public void sendInstallSnapshot(InstallSnapshotRpc rpc, NodeId destinationNodeId) {
-        this.rpc = rpc;
-        this.destinationNodeId = destinationNodeId;
+        Message m = new Message();
+        m.rpc = rpc;
+        m.destinationNodeId = destinationNodeId;
+        messages.add(m);
     }
 
     @Override
     public void replyInstallSnapshot(InstallSnapshotResult result, InstallSnapshotRpcMessage rpcMessage) {
-        this.result = result;
-        this.destinationNodeId = rpcMessage.getSourceNodeId();
+        Message m = new Message();
+        m.result = result;
+        m.destinationNodeId = rpcMessage.getSourceNodeId();
+        messages.add(m);
     }
 
-//    @Override
-//    public void applyNodeConfigs(Set<NodeConfig> nodeConfigs, NodeId selfNodeId) {
-//    }
+    public Message getLastMessage() {
+        return messages.isEmpty() ? null : messages.getLast();
+    }
+
+    private Message getLastMessageOrDefault() {
+        return messages.isEmpty() ? new Message() : messages.getLast();
+    }
 
     public Object getRpc() {
-        return rpc;
+        return getLastMessageOrDefault().rpc;
     }
 
     public Object getResult() {
-        return result;
+        return getLastMessageOrDefault().result;
     }
 
     public NodeId getDestinationNodeId() {
-        return destinationNodeId;
+        return getLastMessageOrDefault().destinationNodeId;
+    }
+
+    public int getMessageCount() {
+        return messages.size();
+    }
+
+    public List<Message> getMessages() {
+        return new ArrayList<>(messages);
+    }
+
+    public void clearMessage() {
+        messages.clear();
     }
 
     @Override
     public void close() {
+    }
+
+    public static class Message {
+
+        private Object rpc;
+        private NodeId destinationNodeId;
+        private Object result;
+
+        public Object getRpc() {
+            return rpc;
+        }
+
+        public NodeId getDestinationNodeId() {
+            return destinationNodeId;
+        }
+
+        public Object getResult() {
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Message{" +
+                    "destinationNodeId=" + destinationNodeId +
+                    ", rpc=" + rpc +
+                    ", result=" + result +
+                    '}';
+        }
+
     }
 
 }

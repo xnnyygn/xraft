@@ -23,7 +23,7 @@ public class EmptySnapshot implements Snapshot {
     @Override
     public SnapshotChunk readData(int offset, int length) {
         if (offset == 0) {
-            return new DefaultSnapshotChunk(new byte[0], true);
+            return new SnapshotChunk(new byte[0], true);
         }
         throw new IllegalArgumentException("offset > 0");
     }

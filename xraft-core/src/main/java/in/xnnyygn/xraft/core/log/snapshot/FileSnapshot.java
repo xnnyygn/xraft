@@ -1,10 +1,12 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
 import in.xnnyygn.xraft.core.log.LogDir;
+import in.xnnyygn.xraft.core.log.LogException;
 import in.xnnyygn.xraft.core.support.RandomAccessFileAdapter;
 import in.xnnyygn.xraft.core.support.SeekableFile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -19,33 +21,33 @@ public class FileSnapshot implements Snapshot {
 
     public FileSnapshot(LogDir logDir) {
         this.logDir = logDir;
-        initialize(logDir.getSnapshotFile());
+        readMeta(logDir.getSnapshotFile());
     }
 
     public FileSnapshot(File file) {
-        initialize(file);
+        readMeta(file);
     }
 
     public FileSnapshot(SeekableFile seekableFile) {
-        initialize(seekableFile);
+        readMeta(seekableFile);
     }
 
-    private void initialize(File file) {
+    private void readMeta(File file) {
         try {
-            initialize(new RandomAccessFileAdapter(file, "r"));
-        } catch (IOException e) {
-            throw new SnapshotIOException(e);
+            readMeta(new RandomAccessFileAdapter(file, "r"));
+        } catch (FileNotFoundException e) {
+            throw new LogException(e);
         }
     }
 
-    private void initialize(SeekableFile seekableFile) {
+    private void readMeta(SeekableFile seekableFile) {
         this.seekableFile = seekableFile;
         try {
             lastIncludedIndex = seekableFile.readInt();
             lastIncludedTerm = seekableFile.readInt();
             dataLength = seekableFile.size() - DATA_START;
         } catch (IOException e) {
-            throw new SnapshotIOException(e);
+            throw new LogException("failed to read meta of snapshot", e);
         }
     }
 
@@ -73,9 +75,9 @@ public class FileSnapshot implements Snapshot {
             seekableFile.seek(DATA_START + offset);
             byte[] buffer = new byte[Math.min(length, (int) dataLength - offset)];
             int n = seekableFile.read(buffer);
-            return new DefaultSnapshotChunk(buffer, offset + n >= dataLength);
+            return new SnapshotChunk(buffer, offset + n >= dataLength);
         } catch (IOException e) {
-            throw new SnapshotIOException("failed to seek or read file content", e);
+            throw new LogException("failed to seek or read snapshot content", e);
         }
     }
 
@@ -84,7 +86,7 @@ public class FileSnapshot implements Snapshot {
         try {
             return seekableFile.inputStream(DATA_START);
         } catch (IOException e) {
-            throw new SnapshotIOException(e);
+            throw new LogException("failed to get input stream of snapshot data", e);
         }
     }
 
@@ -97,7 +99,7 @@ public class FileSnapshot implements Snapshot {
         try {
             seekableFile.close();
         } catch (IOException e) {
-            throw new SnapshotIOException(e);
+            throw new LogException("failed to close file", e);
         }
     }
 

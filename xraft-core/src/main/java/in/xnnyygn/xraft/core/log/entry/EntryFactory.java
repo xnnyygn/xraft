@@ -2,7 +2,7 @@ package in.xnnyygn.xraft.core.log.entry;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import in.xnnyygn.xraft.core.log.Protos;
-import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 
 import java.util.Collection;
@@ -32,12 +32,12 @@ public class EntryFactory {
         }
     }
 
-    private Set<NodeConfig> asNodeConfigs(Collection<Protos.NodeConfig> protoNodeConfigs) {
+    private Set<NodeEndpoint> asNodeConfigs(Collection<Protos.NodeConfig> protoNodeConfigs) {
         return protoNodeConfigs.stream().map(this::asNodeConfig).collect(Collectors.toSet());
     }
 
-    private NodeConfig asNodeConfig(Protos.NodeConfig protoNodeConfig) {
-        return new NodeConfig(protoNodeConfig.getId(), protoNodeConfig.getHost(), protoNodeConfig.getPort());
+    private NodeEndpoint asNodeConfig(Protos.NodeConfig protoNodeConfig) {
+        return new NodeEndpoint(protoNodeConfig.getId(), protoNodeConfig.getHost(), protoNodeConfig.getPort());
     }
 
 }

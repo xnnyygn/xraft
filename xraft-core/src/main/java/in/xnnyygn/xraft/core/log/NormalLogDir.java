@@ -4,7 +4,7 @@ import java.io.File;
 
 public class NormalLogDir extends AbstractLogDir {
 
-    public NormalLogDir(File dir) {
+    NormalLogDir(File dir) {
         super(dir);
     }
 

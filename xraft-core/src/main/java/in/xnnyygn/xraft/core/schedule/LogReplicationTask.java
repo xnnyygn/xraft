@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 public class LogReplicationTask {
 
     private static final Logger logger = LoggerFactory.getLogger(LogReplicationTask.class);
+    public static final LogReplicationTask NONE = new LogReplicationTask(new NullScheduledFuture());
     private final ScheduledFuture<?> scheduledFuture;
 
     public LogReplicationTask(ScheduledFuture<?> scheduledFuture) {

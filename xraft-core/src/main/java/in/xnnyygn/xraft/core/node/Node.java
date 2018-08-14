@@ -1,53 +1,30 @@
 package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.log.StateMachine;
+import in.xnnyygn.xraft.core.log.TaskReference;
 import in.xnnyygn.xraft.core.noderole.NodeRoleListener;
+import in.xnnyygn.xraft.core.noderole.RoleNameAndLeaderId;
 import in.xnnyygn.xraft.core.noderole.RoleStateSnapshot;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class Node {
+public interface Node {
 
-    private static final Logger logger = LoggerFactory.getLogger(Node.class);
-    private final Controller controller;
+    void registerStateMachine(StateMachine stateMachine);
 
-    public Node(NodeContext context) {
-        this.controller = new Controller(context);
-    }
+    RoleNameAndLeaderId getRoleNameAndLeaderId();
 
-    public void start() {
-        logger.info("node {}, start", this.controller.getSelfNodeId());
-        this.controller.start();
-    }
+    @Deprecated
+    RoleStateSnapshot getRoleState();
 
-    public RoleStateSnapshot getRoleState() {
-        return this.controller.getRoleState();
-    }
+    void addNodeRoleListener(NodeRoleListener listener);
 
-    public void registerStateMachine(StateMachine stateMachine) {
-        this.controller.registerStateMachine(stateMachine);
-    }
+    void start();
 
-    public void addNodeRoleListener(NodeRoleListener listener) {
-        this.controller.addNodeRoleListener(listener);
-    }
+    void appendLog(byte[] commandBytes);
 
-    public void appendLog(byte[] commandBytes) {
-        // assert this.controller.getRoleState().getRole() == RoleName.LEADER;
-        this.controller.appendLog(commandBytes);
-    }
+    TaskReference addServer(NodeEndpoint newNodeEndpoint);
 
-    public void addServer(NodeConfig newNodeConfig) {
-        this.controller.addServer(newNodeConfig);
-    }
+    TaskReference removeServer(NodeId id);
 
-    public void removeServer(NodeId id) {
-        controller.removeServer(id);
-    }
-
-    public void stop() throws InterruptedException {
-        logger.info("node {}, stop", this.controller.getSelfNodeId());
-        this.controller.stop();
-    }
+    void stop() throws InterruptedException;
 
 }

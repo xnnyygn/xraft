@@ -29,8 +29,13 @@ public class MemorySnapshot implements Snapshot {
         return lastIncludedTerm;
     }
 
+    @Override
     public long getDataSize() {
         return data.length;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 
     @Override
@@ -42,7 +47,7 @@ public class MemorySnapshot implements Snapshot {
         int bufferLength = Math.min(data.length - offset, length);
         byte[] buffer = new byte[bufferLength];
         System.arraycopy(data, offset, buffer, 0, bufferLength);
-        return new DefaultSnapshotChunk(buffer, offset + length >= this.data.length);
+        return new SnapshotChunk(buffer, offset + length >= this.data.length);
     }
 
     @Override

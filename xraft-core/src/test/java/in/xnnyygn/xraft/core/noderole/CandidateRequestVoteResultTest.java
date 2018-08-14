@@ -1,8 +1,7 @@
 package in.xnnyygn.xraft.core.noderole;
 
-import in.xnnyygn.xraft.core.log.FileLog;
 import in.xnnyygn.xraft.core.log.MemoryLog;
-import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.rpc.MockConnector;
 import in.xnnyygn.xraft.core.rpc.message.RequestVoteResult;
@@ -26,8 +25,8 @@ public class CandidateRequestVoteResultTest {
     }
 
     private NodeGroup buildNodeGroup(int nodeCount) {
-        Set<NodeConfig> configs = IntStream.range(0, nodeCount).boxed()
-                .map(i -> new NodeConfig(String.valueOf(i), "", 0))
+        Set<NodeEndpoint> configs = IntStream.range(0, nodeCount).boxed()
+                .map(i -> new NodeEndpoint(String.valueOf(i), "", 0))
                 .collect(Collectors.toSet());
         return new NodeGroup(configs);
     }

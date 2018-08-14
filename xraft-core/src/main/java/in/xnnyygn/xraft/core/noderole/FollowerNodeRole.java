@@ -17,7 +17,7 @@ public class FollowerNodeRole extends AbstractNodeRole {
     private final ElectionTimeout electionTimeout;
 
     public FollowerNodeRole(NodeStore nodeStore, ElectionTimeout electionTimeout) {
-        this(nodeStore.getCurrentTerm(), nodeStore.getVotedFor(), null, electionTimeout);
+        this(nodeStore.getTerm(), nodeStore.getVotedFor(), null, electionTimeout);
     }
 
     public FollowerNodeRole(int term, NodeId votedFor, NodeId leaderId, ElectionTimeout electionTimeout) {

@@ -2,9 +2,9 @@ package in.xnnyygn.xraft.core.rpc.nio;
 
 import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.rpc.Address;
 import in.xnnyygn.xraft.core.rpc.ChannelConnectException;
 import in.xnnyygn.xraft.core.rpc.ChannelException;
-import in.xnnyygn.xraft.core.rpc.Endpoint;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
@@ -19,7 +19,6 @@ class OutboundChannelGroup {
 
     private static final Logger logger = LoggerFactory.getLogger(OutboundChannelGroup.class);
     private final EventLoopGroup workerGroup;
-    // TODO create an interface for EventBus
     private final EventBus eventBus;
     private final NodeId selfNodeId;
     private final ConcurrentMap<NodeId, Future<NioChannel>> channelMap = new ConcurrentHashMap<>();
@@ -30,10 +29,10 @@ class OutboundChannelGroup {
         this.selfNodeId = selfNodeId;
     }
 
-    NioChannel getOrConnect(NodeId nodeId, Endpoint endpoint) {
+    NioChannel getOrConnect(NodeId nodeId, Address address) {
         Future<NioChannel> future = channelMap.get(nodeId);
         if (future == null) {
-            FutureTask<NioChannel> newFuture = new FutureTask<>(() -> connect(nodeId, endpoint));
+            FutureTask<NioChannel> newFuture = new FutureTask<>(() -> connect(nodeId, address));
             future = channelMap.putIfAbsent(nodeId, newFuture);
             if (future == null) {
                 future = newFuture;
@@ -44,18 +43,20 @@ class OutboundChannelGroup {
             return future.get();
         } catch (Exception e) {
             channelMap.remove(nodeId);
-            if (e instanceof ExecutionException && e.getCause() instanceof ConnectException) {
-                throw new ChannelConnectException("failed to get channel to node " + nodeId + ", cause " +
-                        e.getCause().getMessage(), e.getCause());
-            } else {
-                throw new ChannelException("failed to get channel to node " + nodeId, e);
+            if (e instanceof ExecutionException) {
+                Throwable cause = e.getCause();
+                if (cause instanceof ConnectException) {
+                    throw new ChannelConnectException("failed to get channel to node " + nodeId +
+                            ", cause " + cause.getMessage(), cause);
+                }
             }
+            throw new ChannelException("failed to get channel to node " + nodeId, e);
         }
     }
 
-    private NioChannel connect(NodeId nodeId, Endpoint endpoint) throws InterruptedException {
+    private NioChannel connect(NodeId nodeId, Address address) throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap()
-                .group(this.workerGroup)
+                .group(workerGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
@@ -67,7 +68,7 @@ class OutboundChannelGroup {
                         pipeline.addLast(new ToRemoteHandler(eventBus, nodeId, selfNodeId));
                     }
                 });
-        ChannelFuture future = bootstrap.connect(endpoint.getHost(), endpoint.getPort()).sync();
+        ChannelFuture future = bootstrap.connect(address.getHost(), address.getPort()).sync();
         if (!future.isSuccess()) {
             throw new ChannelException("failed to connect", future.cause());
         }
