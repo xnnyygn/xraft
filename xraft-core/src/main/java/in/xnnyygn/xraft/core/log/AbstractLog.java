@@ -249,13 +249,23 @@ abstract class AbstractLog implements Log {
         if (entrySequence.isEmpty() || index >= entrySequence.getLastLogIndex()) {
             return;
         }
+        if (index < lastApplied && entrySequence.subList(index + 1, lastApplied + 1).stream().anyMatch(this::isApplicable)) {
+            logger.warn("applied log removed, reapply from start");
+            applySnapshot(snapshot);
+            logger.debug("apply log from {} to {}", entrySequence.getFirstLogIndex(), index);
+            entrySequence.subList(entrySequence.getFirstLogIndex(), index + 1).forEach(this::applyEntry);
+            lastApplied = index;
+        }
         logger.debug("remove entries after {}", index);
         entrySequence.removeAfter(index);
+        if (index < commitIndex) {
+            commitIndex = index;
+        }
         GroupConfigEntry firstRemovedEntry = groupConfigEntryList.removeAfter(index);
         if (firstRemovedEntry != null) {
+            logger.info("group config removed");
             eventBus.post(new GroupConfigEntryBatchRemovedEvent(firstRemovedEntry));
         }
-        // TODO update commitIndex and lastApplied
     }
 
     @Override
@@ -310,6 +320,10 @@ abstract class AbstractLog implements Log {
             stateMachine.applyLog(entry.getIndex(), entry.getCommandBytes());
         }
         lastApplied = entry.getIndex();
+    }
+
+    private boolean isApplicable(Entry entry) {
+        return entry.getKind() == Entry.KIND_GENERAL;
     }
 
     private void groupConfigsCommitted(int newCommitIndex) {

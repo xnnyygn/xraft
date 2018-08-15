@@ -444,6 +444,57 @@ public class MemoryLogTest {
         Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
     }
 
+    // follower: (1, 1), (2, 1), (3, 1, no-op, committed)
+    // leader  :         (2, 1), (3, 2)
+    @Test
+    public void testAppendEntriesFromLeaderConflict3() {
+        MemoryLog log = new MemoryLog();
+        log.appendEntry(1); // 1
+        log.appendEntry(1); // 2
+        log.appendEntry(1); // 3
+        log.advanceCommitIndex(3, 1);
+        List<Entry> leaderEntries = Arrays.asList(
+                new NoOpEntry(2, 1),
+                new NoOpEntry(3, 2)
+        );
+        Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
+    }
+
+    // follower: (1, 1), (2, 1), (3, 1, general, committed)
+    // leader  :         (2, 1), (3, 2)
+    @Test
+    public void testAppendEntriesFromLeaderConflict4() {
+        MemoryLog log = new MemoryLog();
+        log.appendEntry(1); // 1
+        log.appendEntry(1); // 2
+        log.appendEntry(1, "test".getBytes()); // 3
+        log.advanceCommitIndex(3, 1);
+        List<Entry> leaderEntries = Arrays.asList(
+                new NoOpEntry(2, 1),
+                new NoOpEntry(3, 2)
+        );
+        Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
+        Assert.assertEquals(2, log.getCommitIndex());
+        Assert.assertEquals(2, log.getLastApplied());
+    }
+
+    // follower: (1, 1), (2, 1), (3, 1, group-config, committed)
+    // leader  :         (2, 1), (3, 2)
+    @Test
+    public void testAppendEntriesFromLeaderConflict5() {
+        MemoryLog log = new MemoryLog();
+        log.appendEntry(1); // 1
+        log.appendEntry(1); // 2
+        log.appendEntryForRemoveNode(1, Collections.emptySet(), NodeId.of("A")); // 3
+        log.advanceCommitIndex(3, 1);
+        List<Entry> leaderEntries = Arrays.asList(
+                new NoOpEntry(2, 1),
+                new NoOpEntry(3, 2)
+        );
+        Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
+        Assert.assertEquals(2, log.getCommitIndex());
+    }
+
     @Test
     public void testAdvanceCommitIndexLessThanCurrentCommitIndex() {
         MemoryLog log = new MemoryLog();
