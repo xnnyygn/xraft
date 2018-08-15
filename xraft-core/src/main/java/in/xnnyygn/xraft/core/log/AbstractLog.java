@@ -32,8 +32,8 @@ abstract class AbstractLog implements Log {
     protected SnapshotGenerateStrategy snapshotGenerateStrategy = SnapshotGenerateStrategy.DISABLED;
     protected GroupConfigEntryList groupConfigEntryList = new GroupConfigEntryList();
     protected StateMachine stateMachine = new NullStateMachine();
-    int commitIndex = 0;
-    int lastApplied = 0;
+    protected int commitIndex = 0;
+    protected int lastApplied = 0;
 
     AbstractLog(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -83,6 +83,7 @@ abstract class AbstractLog implements Log {
             rpc.setPrevLogIndex(entry.getIndex());
             rpc.setPrevLogTerm(entry.getTerm());
         }
+        // TODO remove empty check before subList
         if (!entrySequence.isEmpty()) {
             int maxIndex = (maxEntries == ALL_ENTRIES ? nextLogIndex : Math.min(nextLogIndex, nextIndex + maxEntries));
             rpc.setEntries(entrySequence.subList(nextIndex, maxIndex));

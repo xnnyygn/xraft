@@ -266,8 +266,7 @@ public class MemoryLogTest {
     public void testGetLastUncommittedGroupConfigEntryCommitted() {
         MemoryLog log = new MemoryLog();
         log.appendEntryForAddNode(1, Collections.emptySet(), new NodeEndpoint("A", "localhost", 2333));
-        // TODO change to advanceCommitIndex
-        log.commitIndex = 1;
+        log.advanceCommitIndex(1, 1);
         Assert.assertNull(log.getLastUncommittedGroupConfigEntry());
     }
 
