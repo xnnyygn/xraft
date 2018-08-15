@@ -54,7 +54,6 @@ abstract class AbstractEntrySequence implements EntrySequence {
         return doGetEntry(index);
     }
 
-    // TODO add test
     @Override
     public EntryMeta getEntryMeta(int index) {
         Entry entry = getEntry(index);

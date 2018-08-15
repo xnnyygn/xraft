@@ -55,7 +55,6 @@ public class MemoryEntrySequenceTest {
         Assert.assertEquals(1, meta.getTerm());
     }
 
-
     @Test
     public void testIsEntryPresent() {
         MemoryEntrySequence sequence = new MemoryEntrySequence(1);
