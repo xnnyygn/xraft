@@ -21,7 +21,7 @@ public class NodeBuilder {
     private final NodeId selfId;
     private final NodeGroup group;
     private final EventBus eventBus;
-    private NodeConfig2 config = new NodeConfig2();
+    private NodeConfig config = new NodeConfig();
     private boolean standby = false;
     private Log log = null;
     private NodeStore store = null;
@@ -41,7 +41,7 @@ public class NodeBuilder {
         return this;
     }
 
-    public NodeBuilder setConfig(NodeConfig2 config) {
+    public NodeBuilder setConfig(NodeConfig config) {
         this.config = config;
         return this;
     }

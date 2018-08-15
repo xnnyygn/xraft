@@ -347,7 +347,7 @@ public class NodeImplTest {
 
     @Test
     public void testAddServerCannotCatchUp() {
-        NodeConfig2 config = new NodeConfig2();
+        NodeConfig config = new NodeConfig();
         config.setNewNodeMaxRound(1);
 
         NodeImpl node = (NodeImpl) newNodeBuilder(
@@ -377,7 +377,7 @@ public class NodeImplTest {
 
     @Test
     public void testAddServerAwaitPreviousGroupConfigChange() {
-        NodeConfig2 config = new NodeConfig2();
+        NodeConfig config = new NodeConfig();
         config.setPreviousGroupConfigChangeTimeout(1);
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
@@ -502,7 +502,7 @@ public class NodeImplTest {
 
     @Test
     public void testRemoveServerAwaitPreviousGroupConfigChange() {
-        NodeConfig2 config = new NodeConfig2();
+        NodeConfig config = new NodeConfig();
         config.setPreviousGroupConfigChangeTimeout(1);
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
@@ -1134,7 +1134,7 @@ public class NodeImplTest {
 
     @Test
     public void testOnReceiveAppendEntriesResultNewNodeCannotCatchUp() {
-        NodeConfig2 config = new NodeConfig2();
+        NodeConfig config = new NodeConfig();
         config.setNewNodeMaxRound(1);
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),

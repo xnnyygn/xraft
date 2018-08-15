@@ -15,7 +15,7 @@ public class NodeContext {
     private NodeStore store;
     private Scheduler scheduler;
     private NodeMode mode;
-    private NodeConfig2 config;
+    private NodeConfig config;
     private EventBus eventBus;
     private TaskExecutor taskExecutor;
 
@@ -75,11 +75,11 @@ public class NodeContext {
         this.mode = mode;
     }
 
-    public NodeConfig2 config() {
+    public NodeConfig config() {
         return config;
     }
 
-    public void setConfig(NodeConfig2 config) {
+    public void setConfig(NodeConfig config) {
         this.config = config;
     }
 

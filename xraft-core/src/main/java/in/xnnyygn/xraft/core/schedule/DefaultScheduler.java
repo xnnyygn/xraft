@@ -1,6 +1,6 @@
 package in.xnnyygn.xraft.core.schedule;
 
-import in.xnnyygn.xraft.core.node.NodeConfig2;
+import in.xnnyygn.xraft.core.node.NodeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,7 @@ public class DefaultScheduler implements Scheduler {
         this(4000, 5000, 0, 1000);
     }
 
-    public DefaultScheduler(NodeConfig2 config) {
+    public DefaultScheduler(NodeConfig config) {
         this(config.getMinElectionTimeout(), config.getMaxElectionTimeout(), config.getLogReplicationDelay(),
                 config.getLogReplicationInterval());
     }
