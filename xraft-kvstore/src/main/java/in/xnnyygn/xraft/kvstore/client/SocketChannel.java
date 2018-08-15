@@ -69,14 +69,14 @@ public class SocketChannel implements Channel {
                     .setKey(setCommand.getKey())
                     .setValue(ByteString.copyFrom(setCommand.getValue())).build();
             this.write(output, MessageConstants.MSG_TYPE_SET_COMMAND, protoSetCommand);
-        } else if (payload instanceof AddServerCommand) {
-            AddServerCommand command = (AddServerCommand) payload;
-            Protos.AddServerCommand protoAddServerCommand = Protos.AddServerCommand.newBuilder().setNodeId(command.getNodeId())
+        } else if (payload instanceof AddNodeCommand) {
+            AddNodeCommand command = (AddNodeCommand) payload;
+            Protos.AddNodeCommand protoAddServerCommand = Protos.AddNodeCommand.newBuilder().setNodeId(command.getNodeId())
                     .setHost(command.getHost()).setPort(command.getPort()).build();
             this.write(output, MessageConstants.MSG_TYPE_ADD_SERVER_COMMAND, protoAddServerCommand);
-        } else if (payload instanceof RemoveServerCommand) {
-            RemoveServerCommand command = (RemoveServerCommand) payload;
-            Protos.RemoveServerCommand protoRemoveServerCommand = Protos.RemoveServerCommand.newBuilder().setNodeId(command.getNodeId().getValue()).build();
+        } else if (payload instanceof RemoveNodeCommand) {
+            RemoveNodeCommand command = (RemoveNodeCommand) payload;
+            Protos.RemoveNodeCommand protoRemoveServerCommand = Protos.RemoveNodeCommand.newBuilder().setNodeId(command.getNodeId().getValue()).build();
             this.write(output, MessageConstants.MSG_TYPE_REMOVE_SERVER_COMMAND, protoRemoveServerCommand);
         }
     }

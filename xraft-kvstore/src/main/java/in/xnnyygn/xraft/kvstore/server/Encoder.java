@@ -2,8 +2,8 @@ package in.xnnyygn.xraft.kvstore.server;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageLite;
-import in.xnnyygn.xraft.core.service.AddServerCommand;
-import in.xnnyygn.xraft.core.service.RemoveServerCommand;
+import in.xnnyygn.xraft.core.service.AddNodeCommand;
+import in.xnnyygn.xraft.core.service.RemoveNodeCommand;
 import in.xnnyygn.xraft.kvstore.MessageConstants;
 import in.xnnyygn.xraft.kvstore.Protos;
 import in.xnnyygn.xraft.kvstore.message.*;
@@ -27,14 +27,14 @@ public class Encoder extends MessageToByteEncoder<Object> {
             Redirect redirect = (Redirect) msg;
             Protos.Redirect protoRedirect = Protos.Redirect.newBuilder().setLeaderId(redirect.getLeaderId()).build();
             this.writeMessage(MessageConstants.MSG_TYPE_REDIRECT, protoRedirect, out);
-        } else if (msg instanceof AddServerCommand) {
-            AddServerCommand command = (AddServerCommand) msg;
-            Protos.AddServerCommand protoCommand = Protos.AddServerCommand.newBuilder().setNodeId(command.getNodeId())
+        } else if (msg instanceof AddNodeCommand) {
+            AddNodeCommand command = (AddNodeCommand) msg;
+            Protos.AddNodeCommand protoCommand = Protos.AddNodeCommand.newBuilder().setNodeId(command.getNodeId())
                     .setHost(command.getHost()).setPort(command.getPort()).build();
             this.writeMessage(MessageConstants.MSG_TYPE_ADD_SERVER_COMMAND, protoCommand, out);
-        } else if (msg instanceof RemoveServerCommand) {
-            RemoveServerCommand command = (RemoveServerCommand) msg;
-            Protos.RemoveServerCommand protoCommand = Protos.RemoveServerCommand.newBuilder().setNodeId(command.getNodeId().getValue()).build();
+        } else if (msg instanceof RemoveNodeCommand) {
+            RemoveNodeCommand command = (RemoveNodeCommand) msg;
+            Protos.RemoveNodeCommand protoCommand = Protos.RemoveNodeCommand.newBuilder().setNodeId(command.getNodeId().getValue()).build();
             this.writeMessage(MessageConstants.MSG_TYPE_REMOVE_SERVER_COMMAND, protoCommand, out);
         } else if (msg instanceof GetCommand) {
             GetCommand command = (GetCommand) msg;

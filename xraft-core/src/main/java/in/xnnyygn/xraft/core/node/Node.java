@@ -20,9 +20,9 @@ public interface Node {
 
     void appendLog(byte[] commandBytes);
 
-    TaskReference addServer(NodeEndpoint newNodeEndpoint);
+    TaskReference addNode(NodeEndpoint newNodeEndpoint);
 
-    TaskReference removeServer(NodeId id);
+    TaskReference removeNode(NodeId id);
 
     void stop() throws InterruptedException;
 

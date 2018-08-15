@@ -91,7 +91,7 @@ public class NodeImpl implements Node {
     }
 
     @Override
-    public TaskReference addServer(NodeEndpoint newNodeEndpoint) {
+    public TaskReference addNode(NodeEndpoint newNodeEndpoint) {
         ensureLeader();
         AddNodeTaskReference taskReference = new AddNodeTaskReference(newNodeEndpoint.getId());
         context.taskExecutor().submit(() -> {
@@ -117,7 +117,7 @@ public class NodeImpl implements Node {
     }
 
     @Override
-    public TaskReference removeServer(NodeId id) {
+    public TaskReference removeNode(NodeId id) {
         ensureLeader();
         EntryTaskReference taskReference = new EntryTaskReference();
         context.taskExecutor().submit(() -> {

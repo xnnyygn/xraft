@@ -2,11 +2,11 @@ package in.xnnyygn.xraft.kvstore.client;
 
 import in.xnnyygn.xraft.core.service.NoAvailableServerException;
 
-public class RaftRemoveServerCommand implements Command {
+public class RaftRemoveNodeCommand implements Command {
 
     @Override
     public String getName() {
-        return "raft-remove-server";
+        return "raft-remove-node";
     }
 
     @Override
@@ -16,7 +16,7 @@ public class RaftRemoveServerCommand implements Command {
         }
 
         try {
-            context.getClient().removeServer(arguments);
+            context.getClient().removeNode(arguments);
         } catch (NoAvailableServerException e) {
             System.err.println(e.getMessage());
         }

@@ -2,11 +2,11 @@ package in.xnnyygn.xraft.core.service;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
-public class RemoveServerCommand {
+public class RemoveNodeCommand {
 
     private final NodeId nodeId;
 
-    public RemoveServerCommand(String nodeId) {
+    public RemoveNodeCommand(String nodeId) {
         this.nodeId = new NodeId(nodeId);
     }
 

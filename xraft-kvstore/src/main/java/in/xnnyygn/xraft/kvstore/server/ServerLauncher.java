@@ -40,11 +40,11 @@ public class ServerLauncher {
                 .desc("host, required when starts with standalone or standby mode")
                 .build());
         options.addOption(Option.builder("p1")
-                .longOpt("port-raft-server")
+                .longOpt("port-raft-node")
                 .hasArg()
                 .argName("port")
                 .type(Number.class)
-                .desc("port of raft server, required when starts with standalone or standby mode")
+                .desc("port of raft node, required when starts with standalone or standby mode")
                 .build());
         options.addOption(Option.builder("p2")
                 .longOpt("port-service")
@@ -61,9 +61,9 @@ public class ServerLauncher {
                 .build());
         options.addOption(Option.builder("gc")
                 .hasArgs()
-                .argName("node-config")
-                .desc("group config, required when starts with group-member mode. format: <node-config> <node-config>..., " +
-                        "format of node-config: <node-id>,<host>,<port-raft-server>, eg: A,localhost,8000 B,localhost,8010")
+                .argName("node-endpoint")
+                .desc("group config, required when starts with group-member mode. format: <node-endpoint> <node-endpoint>..., " +
+                        "format of node-endpoint: <node-id>,<host>,<port-raft-node>, eg: A,localhost,8000 B,localhost,8010")
                 .build());
 
         if (args.length == 0) {
@@ -96,7 +96,7 @@ public class ServerLauncher {
 
     private void startAsStandaloneOrStandby(CommandLine cmdLine, boolean standby) throws Exception {
         if (!cmdLine.hasOption("p1") || !cmdLine.hasOption("p2")) {
-            throw new IllegalArgumentException("port-raft-server or port-service required");
+            throw new IllegalArgumentException("port-raft-node or port-service required");
         }
 
         String id = cmdLine.getOptionValue('i');
@@ -125,7 +125,7 @@ public class ServerLauncher {
         int portService = ((Long) cmdLine.getParsedOptionValue("p2")).intValue();
 
         Set<NodeEndpoint> nodeEndpoints = Stream.of(rawGroupConfig)
-                .map(this::parseNodeConfig)
+                .map(this::parseNodeEndpoint)
                 .collect(Collectors.toSet());
 
         NodeGroup nodeGroup = new NodeGroup(nodeEndpoints);
@@ -137,10 +137,10 @@ public class ServerLauncher {
         startServer(server);
     }
 
-    private NodeEndpoint parseNodeConfig(String rawNodeConfig) {
-        String[] pieces = rawNodeConfig.split(",");
+    private NodeEndpoint parseNodeEndpoint(String rawNodeEndpoint) {
+        String[] pieces = rawNodeEndpoint.split(",");
         if (pieces.length != 3) {
-            throw new IllegalArgumentException("illegal server config [" + rawNodeConfig + "]");
+            throw new IllegalArgumentException("illegal node endpoint [" + rawNodeEndpoint + "]");
         }
         String nodeId = pieces[0];
         String host = pieces[1];
@@ -148,7 +148,7 @@ public class ServerLauncher {
         try {
             port = Integer.parseInt(pieces[2]);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("illegal port in node config [" + rawNodeConfig + "]");
+            throw new IllegalArgumentException("illegal port in node endpoint [" + rawNodeEndpoint + "]");
         }
         return new NodeEndpoint(nodeId, host, port);
     }

@@ -282,7 +282,7 @@ public class NodeImplTest {
 
 
     @Test(expected = NotLeaderException.class)
-    public void testAddServerWhenFollower() {
+    public void testAddNodeWhenFollower() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
@@ -290,11 +290,11 @@ public class NodeImplTest {
                 new NodeEndpoint("C", "localhost", 2335)
         ).build();
         node.start();
-        node.addServer(new NodeEndpoint("D", "localhost", 2336));
+        node.addNode(new NodeEndpoint("D", "localhost", 2336));
     }
 
     @Test(expected = NotLeaderException.class)
-    public void testAddServerWhenCandidate() {
+    public void testAddNodeWhenCandidate() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
@@ -303,11 +303,11 @@ public class NodeImplTest {
         ).build();
         node.start();
         node.electionTimeout();
-        node.addServer(new NodeEndpoint("D", "localhost", 2336));
+        node.addNode(new NodeEndpoint("D", "localhost", 2336));
     }
 
     @Test
-    public void testAddServer() {
+    public void testAddNode() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
@@ -320,7 +320,7 @@ public class NodeImplTest {
         connector.clearMessage();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
 
-        TaskReference reference = node.addServer(new NodeEndpoint("D", "localhost", 2336));
+        TaskReference reference = node.addNode(new NodeEndpoint("D", "localhost", 2336));
         Assert.assertEquals(1, connector.getMessageCount());
         connector.clearMessage();
 
@@ -346,7 +346,7 @@ public class NodeImplTest {
     }
 
     @Test
-    public void testAddServerCannotCatchUp() {
+    public void testAddNodeCannotCatchUp() {
         NodeConfig config = new NodeConfig();
         config.setNewNodeMaxRound(1);
 
@@ -363,7 +363,7 @@ public class NodeImplTest {
         connector.clearMessage();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
 
-        TaskReference reference = node.addServer(new NodeEndpoint("D", "localhost", 2336));
+        TaskReference reference = node.addNode(new NodeEndpoint("D", "localhost", 2336));
         Assert.assertEquals(1, connector.getMessageCount());
         connector.clearMessage();
 
@@ -376,7 +376,7 @@ public class NodeImplTest {
     }
 
     @Test
-    public void testAddServerAwaitPreviousGroupConfigChange() {
+    public void testAddNodeAwaitPreviousGroupConfigChange() {
         NodeConfig config = new NodeConfig();
         config.setPreviousGroupConfigChangeTimeout(1);
         NodeImpl node = (NodeImpl) newNodeBuilder(
@@ -392,19 +392,19 @@ public class NodeImplTest {
         connector.clearMessage();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
 
-        node.addServer(new NodeEndpoint("D", "localhost", 2336));
+        node.addNode(new NodeEndpoint("D", "localhost", 2336));
         System.out.println(connector.getMessages());
         connector.clearMessage();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("D"), createAppendEntriesRpc(1)));
 
-        TaskReference reference = node.addServer(new NodeEndpoint("E", "localhost", 2337));
+        TaskReference reference = node.addNode(new NodeEndpoint("E", "localhost", 2337));
         Assert.assertEquals(TaskReference.Result.TIMEOUT, reference.getResult());
     }
 
     @Test(expected = NotLeaderException.class)
-    public void testRemoveServerWhenFollower() {
+    public void testRemoveNodeWhenFollower() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
@@ -412,11 +412,11 @@ public class NodeImplTest {
                 new NodeEndpoint("C", "localhost", 2335)
         ).build();
         node.start();
-        node.removeServer(NodeId.of("A"));
+        node.removeNode(NodeId.of("A"));
     }
 
     @Test(expected = NotLeaderException.class)
-    public void testRemoveServerWhenCandidate() {
+    public void testRemoveNodeWhenCandidate() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
@@ -425,11 +425,11 @@ public class NodeImplTest {
         ).build();
         node.start();
         node.electionTimeout();
-        node.removeServer(NodeId.of("A"));
+        node.removeNode(NodeId.of("A"));
     }
 
     @Test
-    public void testRemoveServer() {
+    public void testRemoveNode() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
@@ -441,7 +441,7 @@ public class NodeImplTest {
         node.electionTimeout();
         connector.clearMessage();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
-        TaskReference reference = node.removeServer(NodeId.of("B"));
+        TaskReference reference = node.removeNode(NodeId.of("B"));
 
         GroupConfigEntry groupConfigEntry = node.getContext().log().getLastUncommittedGroupConfigEntry();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
@@ -454,7 +454,7 @@ public class NodeImplTest {
     }
 
     @Test
-    public void testRemoveServerSelf() {
+    public void testRemoveNodeSelf() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
@@ -466,7 +466,7 @@ public class NodeImplTest {
         node.electionTimeout();
         connector.clearMessage();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
-        TaskReference reference = node.removeServer(NodeId.of("A"));
+        TaskReference reference = node.removeNode(NodeId.of("A"));
 
         GroupConfigEntry groupConfigEntry = node.getContext().log().getLastUncommittedGroupConfigEntry();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
@@ -482,7 +482,7 @@ public class NodeImplTest {
     }
 
     @Test
-    public void testRemoveServerAppendEntriesResultFromRemovingNode() {
+    public void testRemoveNodeAppendEntriesResultFromRemovingNode() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
@@ -494,14 +494,14 @@ public class NodeImplTest {
         node.electionTimeout();
         connector.clearMessage();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
-        node.removeServer(NodeId.of("B"));
+        node.removeNode(NodeId.of("B"));
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("B"), createAppendEntriesRpc(2)));
     }
 
     @Test
-    public void testRemoveServerAwaitPreviousGroupConfigChange() {
+    public void testRemoveNodeAwaitPreviousGroupConfigChange() {
         NodeConfig config = new NodeConfig();
         config.setPreviousGroupConfigChangeTimeout(1);
         NodeImpl node = (NodeImpl) newNodeBuilder(
@@ -516,8 +516,8 @@ public class NodeImplTest {
         node.electionTimeout();
         connector.clearMessage();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
-        node.removeServer(NodeId.of("B"));
-        TaskReference reference = node.removeServer(NodeId.of("B"));
+        node.removeNode(NodeId.of("B"));
+        TaskReference reference = node.removeNode(NodeId.of("B"));
         Assert.assertEquals(TaskReference.Result.TIMEOUT, reference.getResult());
     }
 

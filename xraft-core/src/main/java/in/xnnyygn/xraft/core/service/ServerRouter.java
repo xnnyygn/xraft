@@ -13,7 +13,7 @@ public class ServerRouter {
     private NodeId leaderId;
 
     public Object send(Object payload) {
-        for (NodeId nodeId : this.getCandidateNodeIds()) {
+        for (NodeId nodeId : getCandidateNodeIds()) {
             try {
                 Object result = doSend(nodeId, payload);
                 this.leaderId = nodeId;
@@ -30,22 +30,22 @@ public class ServerRouter {
     }
 
     private Collection<NodeId> getCandidateNodeIds() {
-        if (this.availableServers.isEmpty()) {
+        if (availableServers.isEmpty()) {
             throw new NoAvailableServerException("no available server");
         }
 
-        if (this.leaderId != null) {
+        if (leaderId != null) {
             List<NodeId> nodeIds = new ArrayList<>();
             nodeIds.add(leaderId);
-            for (NodeId nodeId : this.availableServers.keySet()) {
-                if (!nodeId.equals(this.leaderId)) {
+            for (NodeId nodeId : availableServers.keySet()) {
+                if (!nodeId.equals(leaderId)) {
                     nodeIds.add(nodeId);
                 }
             }
             return nodeIds;
         }
 
-        return this.availableServers.keySet();
+        return availableServers.keySet();
     }
 
     private Object doSend(NodeId id, Object payload) {

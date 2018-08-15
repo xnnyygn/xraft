@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.kvstore.server;
 
-import in.xnnyygn.xraft.core.service.AddServerCommand;
-import in.xnnyygn.xraft.core.service.RemoveServerCommand;
+import in.xnnyygn.xraft.core.service.AddNodeCommand;
+import in.xnnyygn.xraft.core.service.RemoveNodeCommand;
 import in.xnnyygn.xraft.kvstore.MessageConstants;
 import in.xnnyygn.xraft.kvstore.Protos;
 import in.xnnyygn.xraft.kvstore.message.*;
@@ -40,12 +40,12 @@ public class Decoder extends ByteToMessageDecoder {
                 out.add(new Redirect(protoRedirect.getLeaderId()));
                 break;
             case MessageConstants.MSG_TYPE_ADD_SERVER_COMMAND:
-                Protos.AddServerCommand protoAddServerCommand = Protos.AddServerCommand.parseFrom(payload);
-                out.add(new AddServerCommand(protoAddServerCommand.getNodeId(), protoAddServerCommand.getHost(), protoAddServerCommand.getPort()));
+                Protos.AddNodeCommand protoAddServerCommand = Protos.AddNodeCommand.parseFrom(payload);
+                out.add(new AddNodeCommand(protoAddServerCommand.getNodeId(), protoAddServerCommand.getHost(), protoAddServerCommand.getPort()));
                 break;
             case MessageConstants.MSG_TYPE_REMOVE_SERVER_COMMAND:
-                Protos.RemoveServerCommand protoRemoveServerCommand = Protos.RemoveServerCommand.parseFrom(payload);
-                out.add(new RemoveServerCommand(protoRemoveServerCommand.getNodeId()));
+                Protos.RemoveNodeCommand protoRemoveServerCommand = Protos.RemoveNodeCommand.parseFrom(payload);
+                out.add(new RemoveNodeCommand(protoRemoveServerCommand.getNodeId()));
                 break;
             case MessageConstants.MSG_TYPE_GET_COMMAND:
                 Protos.GetCommand protoGetCommand = Protos.GetCommand.parseFrom(payload);

@@ -3,13 +3,13 @@ package in.xnnyygn.xraft.core.service;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 
 // TODO service.proto?
-public class AddServerCommand {
+public class AddNodeCommand {
 
     private final String nodeId;
     private final String host;
     private final int port;
 
-    public AddServerCommand(String nodeId, String host, int port) {
+    public AddNodeCommand(String nodeId, String host, int port) {
         this.nodeId = nodeId;
         this.host = host;
         this.port = port;
@@ -27,7 +27,7 @@ public class AddServerCommand {
         return port;
     }
 
-    public NodeEndpoint toNodeConfig() {
+    public NodeEndpoint toNodeEndpoint() {
         return new NodeEndpoint(nodeId, host, port);
     }
 

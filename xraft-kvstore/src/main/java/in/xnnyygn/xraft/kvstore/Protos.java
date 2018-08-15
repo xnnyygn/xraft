@@ -4833,8 +4833,8 @@ public final class Protos {
 
   }
 
-  public interface AddServerCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:AddServerCommand)
+  public interface AddNodeCommandOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:AddNodeCommand)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -4863,18 +4863,18 @@ public final class Protos {
     int getPort();
   }
   /**
-   * Protobuf type {@code AddServerCommand}
+   * Protobuf type {@code AddNodeCommand}
    */
-  public  static final class AddServerCommand extends
+  public  static final class AddNodeCommand extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:AddServerCommand)
-      AddServerCommandOrBuilder {
+      // @@protoc_insertion_point(message_implements:AddNodeCommand)
+      AddNodeCommandOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use AddServerCommand.newBuilder() to construct.
-    private AddServerCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use AddNodeCommand.newBuilder() to construct.
+    private AddNodeCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private AddServerCommand() {
+    private AddNodeCommand() {
       nodeId_ = "";
       host_ = "";
       port_ = 0;
@@ -4885,7 +4885,7 @@ public final class Protos {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private AddServerCommand(
+    private AddNodeCommand(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -4942,15 +4942,15 @@ public final class Protos {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return in.xnnyygn.xraft.kvstore.Protos.internal_static_AddServerCommand_descriptor;
+      return in.xnnyygn.xraft.kvstore.Protos.internal_static_AddNodeCommand_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return in.xnnyygn.xraft.kvstore.Protos.internal_static_AddServerCommand_fieldAccessorTable
+      return in.xnnyygn.xraft.kvstore.Protos.internal_static_AddNodeCommand_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              in.xnnyygn.xraft.kvstore.Protos.AddServerCommand.class, in.xnnyygn.xraft.kvstore.Protos.AddServerCommand.Builder.class);
+              in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand.class, in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand.Builder.class);
     }
 
     public static final int NODE_ID_FIELD_NUMBER = 1;
@@ -5082,10 +5082,10 @@ public final class Protos {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof in.xnnyygn.xraft.kvstore.Protos.AddServerCommand)) {
+      if (!(obj instanceof in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand)) {
         return super.equals(obj);
       }
-      in.xnnyygn.xraft.kvstore.Protos.AddServerCommand other = (in.xnnyygn.xraft.kvstore.Protos.AddServerCommand) obj;
+      in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand other = (in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand) obj;
 
       boolean result = true;
       result = result && getNodeId()
@@ -5116,69 +5116,69 @@ public final class Protos {
       return hash;
     }
 
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseFrom(byte[] data)
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseFrom(java.io.InputStream input)
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseDelimitedFrom(java.io.InputStream input)
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseDelimitedFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -5191,7 +5191,7 @@ public final class Protos {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(in.xnnyygn.xraft.kvstore.Protos.AddServerCommand prototype) {
+    public static Builder newBuilder(in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -5207,26 +5207,26 @@ public final class Protos {
       return builder;
     }
     /**
-     * Protobuf type {@code AddServerCommand}
+     * Protobuf type {@code AddNodeCommand}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:AddServerCommand)
-        in.xnnyygn.xraft.kvstore.Protos.AddServerCommandOrBuilder {
+        // @@protoc_insertion_point(builder_implements:AddNodeCommand)
+        in.xnnyygn.xraft.kvstore.Protos.AddNodeCommandOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return in.xnnyygn.xraft.kvstore.Protos.internal_static_AddServerCommand_descriptor;
+        return in.xnnyygn.xraft.kvstore.Protos.internal_static_AddNodeCommand_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return in.xnnyygn.xraft.kvstore.Protos.internal_static_AddServerCommand_fieldAccessorTable
+        return in.xnnyygn.xraft.kvstore.Protos.internal_static_AddNodeCommand_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                in.xnnyygn.xraft.kvstore.Protos.AddServerCommand.class, in.xnnyygn.xraft.kvstore.Protos.AddServerCommand.Builder.class);
+                in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand.class, in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand.Builder.class);
       }
 
-      // Construct using in.xnnyygn.xraft.kvstore.Protos.AddServerCommand.newBuilder()
+      // Construct using in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5256,17 +5256,17 @@ public final class Protos {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return in.xnnyygn.xraft.kvstore.Protos.internal_static_AddServerCommand_descriptor;
+        return in.xnnyygn.xraft.kvstore.Protos.internal_static_AddNodeCommand_descriptor;
       }
 
       @java.lang.Override
-      public in.xnnyygn.xraft.kvstore.Protos.AddServerCommand getDefaultInstanceForType() {
-        return in.xnnyygn.xraft.kvstore.Protos.AddServerCommand.getDefaultInstance();
+      public in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand getDefaultInstanceForType() {
+        return in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand.getDefaultInstance();
       }
 
       @java.lang.Override
-      public in.xnnyygn.xraft.kvstore.Protos.AddServerCommand build() {
-        in.xnnyygn.xraft.kvstore.Protos.AddServerCommand result = buildPartial();
+      public in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand build() {
+        in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -5274,8 +5274,8 @@ public final class Protos {
       }
 
       @java.lang.Override
-      public in.xnnyygn.xraft.kvstore.Protos.AddServerCommand buildPartial() {
-        in.xnnyygn.xraft.kvstore.Protos.AddServerCommand result = new in.xnnyygn.xraft.kvstore.Protos.AddServerCommand(this);
+      public in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand buildPartial() {
+        in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand result = new in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand(this);
         result.nodeId_ = nodeId_;
         result.host_ = host_;
         result.port_ = port_;
@@ -5317,16 +5317,16 @@ public final class Protos {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof in.xnnyygn.xraft.kvstore.Protos.AddServerCommand) {
-          return mergeFrom((in.xnnyygn.xraft.kvstore.Protos.AddServerCommand)other);
+        if (other instanceof in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand) {
+          return mergeFrom((in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(in.xnnyygn.xraft.kvstore.Protos.AddServerCommand other) {
-        if (other == in.xnnyygn.xraft.kvstore.Protos.AddServerCommand.getDefaultInstance()) return this;
+      public Builder mergeFrom(in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand other) {
+        if (other == in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand.getDefaultInstance()) return this;
         if (!other.getNodeId().isEmpty()) {
           nodeId_ = other.nodeId_;
           onChanged();
@@ -5353,11 +5353,11 @@ public final class Protos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        in.xnnyygn.xraft.kvstore.Protos.AddServerCommand parsedMessage = null;
+        in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (in.xnnyygn.xraft.kvstore.Protos.AddServerCommand) e.getUnfinishedMessage();
+          parsedMessage = (in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -5543,48 +5543,48 @@ public final class Protos {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:AddServerCommand)
+      // @@protoc_insertion_point(builder_scope:AddNodeCommand)
     }
 
-    // @@protoc_insertion_point(class_scope:AddServerCommand)
-    private static final in.xnnyygn.xraft.kvstore.Protos.AddServerCommand DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:AddNodeCommand)
+    private static final in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new in.xnnyygn.xraft.kvstore.Protos.AddServerCommand();
+      DEFAULT_INSTANCE = new in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand();
     }
 
-    public static in.xnnyygn.xraft.kvstore.Protos.AddServerCommand getDefaultInstance() {
+    public static in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<AddServerCommand>
-        PARSER = new com.google.protobuf.AbstractParser<AddServerCommand>() {
+    private static final com.google.protobuf.Parser<AddNodeCommand>
+        PARSER = new com.google.protobuf.AbstractParser<AddNodeCommand>() {
       @java.lang.Override
-      public AddServerCommand parsePartialFrom(
+      public AddNodeCommand parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new AddServerCommand(input, extensionRegistry);
+        return new AddNodeCommand(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<AddServerCommand> parser() {
+    public static com.google.protobuf.Parser<AddNodeCommand> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<AddServerCommand> getParserForType() {
+    public com.google.protobuf.Parser<AddNodeCommand> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public in.xnnyygn.xraft.kvstore.Protos.AddServerCommand getDefaultInstanceForType() {
+    public in.xnnyygn.xraft.kvstore.Protos.AddNodeCommand getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface RemoveServerCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:RemoveServerCommand)
+  public interface RemoveNodeCommandOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:RemoveNodeCommand)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -5598,18 +5598,18 @@ public final class Protos {
         getNodeIdBytes();
   }
   /**
-   * Protobuf type {@code RemoveServerCommand}
+   * Protobuf type {@code RemoveNodeCommand}
    */
-  public  static final class RemoveServerCommand extends
+  public  static final class RemoveNodeCommand extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:RemoveServerCommand)
-      RemoveServerCommandOrBuilder {
+      // @@protoc_insertion_point(message_implements:RemoveNodeCommand)
+      RemoveNodeCommandOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use RemoveServerCommand.newBuilder() to construct.
-    private RemoveServerCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use RemoveNodeCommand.newBuilder() to construct.
+    private RemoveNodeCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private RemoveServerCommand() {
+    private RemoveNodeCommand() {
       nodeId_ = "";
     }
 
@@ -5618,7 +5618,7 @@ public final class Protos {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private RemoveServerCommand(
+    private RemoveNodeCommand(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5664,15 +5664,15 @@ public final class Protos {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return in.xnnyygn.xraft.kvstore.Protos.internal_static_RemoveServerCommand_descriptor;
+      return in.xnnyygn.xraft.kvstore.Protos.internal_static_RemoveNodeCommand_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return in.xnnyygn.xraft.kvstore.Protos.internal_static_RemoveServerCommand_fieldAccessorTable
+      return in.xnnyygn.xraft.kvstore.Protos.internal_static_RemoveNodeCommand_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand.class, in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand.Builder.class);
+              in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand.class, in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand.Builder.class);
     }
 
     public static final int NODE_ID_FIELD_NUMBER = 1;
@@ -5748,10 +5748,10 @@ public final class Protos {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand)) {
+      if (!(obj instanceof in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand)) {
         return super.equals(obj);
       }
-      in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand other = (in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand) obj;
+      in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand other = (in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand) obj;
 
       boolean result = true;
       result = result && getNodeId()
@@ -5774,69 +5774,69 @@ public final class Protos {
       return hash;
     }
 
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseFrom(byte[] data)
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseFrom(java.io.InputStream input)
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseDelimitedFrom(java.io.InputStream input)
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseDelimitedFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parseFrom(
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -5849,7 +5849,7 @@ public final class Protos {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand prototype) {
+    public static Builder newBuilder(in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -5865,26 +5865,26 @@ public final class Protos {
       return builder;
     }
     /**
-     * Protobuf type {@code RemoveServerCommand}
+     * Protobuf type {@code RemoveNodeCommand}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:RemoveServerCommand)
-        in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommandOrBuilder {
+        // @@protoc_insertion_point(builder_implements:RemoveNodeCommand)
+        in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommandOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return in.xnnyygn.xraft.kvstore.Protos.internal_static_RemoveServerCommand_descriptor;
+        return in.xnnyygn.xraft.kvstore.Protos.internal_static_RemoveNodeCommand_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return in.xnnyygn.xraft.kvstore.Protos.internal_static_RemoveServerCommand_fieldAccessorTable
+        return in.xnnyygn.xraft.kvstore.Protos.internal_static_RemoveNodeCommand_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand.class, in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand.Builder.class);
+                in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand.class, in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand.Builder.class);
       }
 
-      // Construct using in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand.newBuilder()
+      // Construct using in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5910,17 +5910,17 @@ public final class Protos {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return in.xnnyygn.xraft.kvstore.Protos.internal_static_RemoveServerCommand_descriptor;
+        return in.xnnyygn.xraft.kvstore.Protos.internal_static_RemoveNodeCommand_descriptor;
       }
 
       @java.lang.Override
-      public in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand getDefaultInstanceForType() {
-        return in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand.getDefaultInstance();
+      public in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand getDefaultInstanceForType() {
+        return in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand.getDefaultInstance();
       }
 
       @java.lang.Override
-      public in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand build() {
-        in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand result = buildPartial();
+      public in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand build() {
+        in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -5928,8 +5928,8 @@ public final class Protos {
       }
 
       @java.lang.Override
-      public in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand buildPartial() {
-        in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand result = new in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand(this);
+      public in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand buildPartial() {
+        in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand result = new in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand(this);
         result.nodeId_ = nodeId_;
         onBuilt();
         return result;
@@ -5969,16 +5969,16 @@ public final class Protos {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand) {
-          return mergeFrom((in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand)other);
+        if (other instanceof in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand) {
+          return mergeFrom((in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand other) {
-        if (other == in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand.getDefaultInstance()) return this;
+      public Builder mergeFrom(in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand other) {
+        if (other == in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand.getDefaultInstance()) return this;
         if (!other.getNodeId().isEmpty()) {
           nodeId_ = other.nodeId_;
           onChanged();
@@ -5998,11 +5998,11 @@ public final class Protos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand parsedMessage = null;
+        in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand) e.getUnfinishedMessage();
+          parsedMessage = (in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -6093,41 +6093,41 @@ public final class Protos {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:RemoveServerCommand)
+      // @@protoc_insertion_point(builder_scope:RemoveNodeCommand)
     }
 
-    // @@protoc_insertion_point(class_scope:RemoveServerCommand)
-    private static final in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:RemoveNodeCommand)
+    private static final in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand();
+      DEFAULT_INSTANCE = new in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand();
     }
 
-    public static in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand getDefaultInstance() {
+    public static in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<RemoveServerCommand>
-        PARSER = new com.google.protobuf.AbstractParser<RemoveServerCommand>() {
+    private static final com.google.protobuf.Parser<RemoveNodeCommand>
+        PARSER = new com.google.protobuf.AbstractParser<RemoveNodeCommand>() {
       @java.lang.Override
-      public RemoveServerCommand parsePartialFrom(
+      public RemoveNodeCommand parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new RemoveServerCommand(input, extensionRegistry);
+        return new RemoveNodeCommand(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<RemoveServerCommand> parser() {
+    public static com.google.protobuf.Parser<RemoveNodeCommand> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<RemoveServerCommand> getParserForType() {
+    public com.google.protobuf.Parser<RemoveNodeCommand> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public in.xnnyygn.xraft.kvstore.Protos.RemoveServerCommand getDefaultInstanceForType() {
+    public in.xnnyygn.xraft.kvstore.Protos.RemoveNodeCommand getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -6174,15 +6174,15 @@ public final class Protos {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_EntryList_Entry_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_AddServerCommand_descriptor;
+    internal_static_AddNodeCommand_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_AddServerCommand_fieldAccessorTable;
+      internal_static_AddNodeCommand_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_RemoveServerCommand_descriptor;
+    internal_static_RemoveNodeCommand_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_RemoveServerCommand_fieldAccessorTable;
+      internal_static_RemoveNodeCommand_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -6200,11 +6200,11 @@ public final class Protos {
       " \001(\t\"2\n\022GetCommandResponse\022\r\n\005found\030\001 \001(" +
       "\010\022\r\n\005value\030\002 \001(\014\"S\n\tEntryList\022!\n\007entries" +
       "\030\001 \003(\0132\020.EntryList.Entry\032#\n\005Entry\022\013\n\003key" +
-      "\030\001 \001(\t\022\r\n\005value\030\002 \001(\014\"?\n\020AddServerComman" +
-      "d\022\017\n\007node_id\030\001 \001(\t\022\014\n\004host\030\002 \001(\t\022\014\n\004port" +
-      "\030\003 \001(\005\"&\n\023RemoveServerCommand\022\017\n\007node_id" +
-      "\030\001 \001(\tB\"\n\030in.xnnyygn.xraft.kvstoreB\006Prot" +
-      "osb\006proto3"
+      "\030\001 \001(\t\022\r\n\005value\030\002 \001(\014\"=\n\016AddNodeCommand\022" +
+      "\017\n\007node_id\030\001 \001(\t\022\014\n\004host\030\002 \001(\t\022\014\n\004port\030\003" +
+      " \001(\005\"$\n\021RemoveNodeCommand\022\017\n\007node_id\030\001 \001" +
+      "(\tB\"\n\030in.xnnyygn.xraft.kvstoreB\006Protosb\006" +
+      "proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -6266,17 +6266,17 @@ public final class Protos {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EntryList_Entry_descriptor,
         new java.lang.String[] { "Key", "Value", });
-    internal_static_AddServerCommand_descriptor =
+    internal_static_AddNodeCommand_descriptor =
       getDescriptor().getMessageTypes().get(7);
-    internal_static_AddServerCommand_fieldAccessorTable = new
+    internal_static_AddNodeCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_AddServerCommand_descriptor,
+        internal_static_AddNodeCommand_descriptor,
         new java.lang.String[] { "NodeId", "Host", "Port", });
-    internal_static_RemoveServerCommand_descriptor =
+    internal_static_RemoveNodeCommand_descriptor =
       getDescriptor().getMessageTypes().get(8);
-    internal_static_RemoveServerCommand_fieldAccessorTable = new
+    internal_static_RemoveNodeCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_RemoveServerCommand_descriptor,
+        internal_static_RemoveNodeCommand_descriptor,
         new java.lang.String[] { "NodeId", });
   }
 

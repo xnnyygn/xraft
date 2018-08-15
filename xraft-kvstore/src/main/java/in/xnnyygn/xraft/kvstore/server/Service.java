@@ -6,8 +6,8 @@ import in.xnnyygn.xraft.core.log.TaskReference;
 import in.xnnyygn.xraft.core.node.Node;
 import in.xnnyygn.xraft.core.noderole.RoleName;
 import in.xnnyygn.xraft.core.noderole.RoleNameAndLeaderId;
-import in.xnnyygn.xraft.core.service.AddServerCommand;
-import in.xnnyygn.xraft.core.service.RemoveServerCommand;
+import in.xnnyygn.xraft.core.service.AddNodeCommand;
+import in.xnnyygn.xraft.core.service.RemoveNodeCommand;
 import in.xnnyygn.xraft.kvstore.Protos;
 import in.xnnyygn.xraft.kvstore.message.*;
 import org.slf4j.Logger;
@@ -33,15 +33,15 @@ public class Service implements StateMachine {
         this.node.registerStateMachine(this);
     }
 
-    public void addServer(CommandRequest<AddServerCommand> commandRequest) {
+    public void addNode(CommandRequest<AddNodeCommand> commandRequest) {
         Redirect redirect = checkLeadership();
         if (redirect != null) {
             commandRequest.reply(redirect);
             return;
         }
 
-        AddServerCommand command = commandRequest.getCommand();
-        TaskReference taskReference = this.node.addServer(command.toNodeConfig());
+        AddNodeCommand command = commandRequest.getCommand();
+        TaskReference taskReference = this.node.addNode(command.toNodeEndpoint());
         awaitResult(taskReference, commandRequest);
     }
 
@@ -58,15 +58,15 @@ public class Service implements StateMachine {
         }
     }
 
-    public void removeServer(CommandRequest<RemoveServerCommand> commandRequest) {
+    public void removeNode(CommandRequest<RemoveNodeCommand> commandRequest) {
         Redirect redirect = checkLeadership();
         if (redirect != null) {
             commandRequest.reply(redirect);
             return;
         }
 
-        RemoveServerCommand command = commandRequest.getCommand();
-        TaskReference taskReference = node.removeServer(command.getNodeId());
+        RemoveNodeCommand command = commandRequest.getCommand();
+        TaskReference taskReference = node.removeNode(command.getNodeId());
         awaitResult(taskReference, commandRequest);
     }
 

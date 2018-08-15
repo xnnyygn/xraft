@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.kvstore.server;
 
-import in.xnnyygn.xraft.core.service.AddServerCommand;
-import in.xnnyygn.xraft.core.service.RemoveServerCommand;
+import in.xnnyygn.xraft.core.service.AddNodeCommand;
+import in.xnnyygn.xraft.core.service.RemoveNodeCommand;
 import in.xnnyygn.xraft.kvstore.message.CommandRequest;
 import in.xnnyygn.xraft.kvstore.message.GetCommand;
 import in.xnnyygn.xraft.kvstore.message.SetCommand;
@@ -18,10 +18,10 @@ public class ServiceHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        if (msg instanceof AddServerCommand) {
-            service.addServer(new CommandRequest<>((AddServerCommand) msg, ctx.channel()));
-        } else if (msg instanceof RemoveServerCommand) {
-            service.removeServer(new CommandRequest<>((RemoveServerCommand) msg, ctx.channel()));
+        if (msg instanceof AddNodeCommand) {
+            service.addNode(new CommandRequest<>((AddNodeCommand) msg, ctx.channel()));
+        } else if (msg instanceof RemoveNodeCommand) {
+            service.removeNode(new CommandRequest<>((RemoveNodeCommand) msg, ctx.channel()));
         } else if (msg instanceof GetCommand) {
             service.get(new CommandRequest<>((GetCommand) msg, ctx.channel()));
         } else if (msg instanceof SetCommand) {

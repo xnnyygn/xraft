@@ -26,8 +26,8 @@ public class Console {
                 new ClientListServerCommand(),
                 new ClientGetLeaderCommand(),
                 new ClientSetLeaderCommand(),
-                new RaftAddServerCommand(),
-                new RaftRemoveServerCommand(),
+                new RaftAddNodeCommand(),
+                new RaftRemoveNodeCommand(),
                 new KVStoreGetCommand(),
                 new KVStoreSetCommand()
         ));
