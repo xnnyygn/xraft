@@ -2,8 +2,8 @@ package in.xnnyygn.xraft.core.rpc.nio;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageLite;
+import in.xnnyygn.xraft.core.Protos;
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.Protos;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.noderole;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
+// TODO move to package node
 public abstract class AbstractNodeRole {
 
     private final RoleName name;

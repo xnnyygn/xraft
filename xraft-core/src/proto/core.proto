@@ -1,7 +1,17 @@
 syntax = "proto3";
 
-option java_package = "in.xnnyygn.xraft.core.rpc";
+option java_package = "in.xnnyygn.xraft.core";
 option java_outer_classname = "Protos";
+
+// common
+
+message NodeEndpoint {
+    string id = 1;
+    string host = 2;
+    int32 port = 3;
+}
+
+// rpc
 
 message RequestVoteRpc {
     int32 term = 1;
@@ -51,4 +61,34 @@ message InstallSnapshotRpc {
 
 message InstallSnapshotResult {
     int32 term = 1;
+}
+
+message AddServerRpc {
+    NodeEndpoint new_server = 1;
+}
+
+message AddServerResult {
+    string status = 1;
+    NodeEndpoint leader_hint = 2;
+}
+
+message RemoveServerRpc {
+    NodeEndpoint old_server = 1;
+}
+
+message RemoveServerResult {
+    string status = 1;
+    NodeEndpoint leader_hint = 2;
+}
+
+// log
+
+message AddNodeCommand {
+    repeated NodeEndpoint node_endpoints = 1;
+    NodeEndpoint new_node_endpoint = 2;
+}
+
+message RemoveNodeCommand {
+    repeated NodeEndpoint node_endpoints = 1;
+    string node_to_remove = 2;
 }

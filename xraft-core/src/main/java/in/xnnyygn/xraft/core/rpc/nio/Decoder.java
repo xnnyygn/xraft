@@ -1,8 +1,8 @@
 package in.xnnyygn.xraft.core.rpc.nio;
 
+import in.xnnyygn.xraft.core.Protos;
 import in.xnnyygn.xraft.core.log.entry.EntryFactory;
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.rpc.Protos;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

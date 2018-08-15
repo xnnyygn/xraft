@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.core.log.entry;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import in.xnnyygn.xraft.core.log.Protos;
+import in.xnnyygn.xraft.core.Protos;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 
