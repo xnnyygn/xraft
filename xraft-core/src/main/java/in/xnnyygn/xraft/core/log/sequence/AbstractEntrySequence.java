@@ -75,6 +75,7 @@ abstract class AbstractEntrySequence implements EntrySequence {
     // [fromIndex, toIndex)
     @Override
     public List<Entry> subList(int fromIndex, int toIndex) {
+        // TODO return empty list when list is empty?
         if (isEmpty()) {
             throw new IllegalStateException("sequence is empty");
         }
@@ -111,11 +112,7 @@ abstract class AbstractEntrySequence implements EntrySequence {
 
     @Override
     public void removeAfter(int index) {
-        if (isEmpty()) {
-            // TODO just do nothing
-            throw new IllegalStateException("empty sequence");
-        }
-        if (index >= doGetLastLogIndex()) {
+        if (isEmpty() || index >= doGetLastLogIndex()) {
             return;
         }
         doRemoveAfter(index);

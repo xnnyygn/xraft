@@ -125,7 +125,7 @@ public class MemoryEntrySequenceTest {
         Assert.assertFalse(iterator.hasNext());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testRemoveAfterEmpty() {
         MemoryEntrySequence sequence = new MemoryEntrySequence();
         sequence.removeAfter(1);

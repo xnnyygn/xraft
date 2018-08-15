@@ -307,7 +307,7 @@ public class FileEntrySequenceTest {
         Assert.assertEquals(2, entryIndexFile.getMaxEntryIndex());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testRemoveAfterEmpty() {
         FileEntrySequence sequence = new FileEntrySequence(entriesFile, entryIndexFile, 1);
         sequence.removeAfter(1);
