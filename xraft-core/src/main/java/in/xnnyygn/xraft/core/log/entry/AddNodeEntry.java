@@ -20,6 +20,7 @@ public class AddNodeEntry extends GroupConfigEntry {
         return newNodeEndpoint;
     }
 
+    // TODO add test
     public Set<NodeEndpoint> getResultNodeConfigs() {
         Set<NodeEndpoint> configs = new HashSet<>(getNodeEndpoints());
         configs.add(newNodeEndpoint);

@@ -8,6 +8,7 @@ public class InstallSnapshotResultMessage {
     private final NodeId sourceNodeId;
     private final InstallSnapshotRpc rpc;
 
+    // TODO add not-null to rpc
     public InstallSnapshotResultMessage(InstallSnapshotResult result, NodeId sourceNodeId, InstallSnapshotRpc rpc) {
         this.result = result;
         this.sourceNodeId = sourceNodeId;

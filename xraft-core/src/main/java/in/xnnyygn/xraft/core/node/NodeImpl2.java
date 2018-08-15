@@ -333,10 +333,15 @@ public class NodeImpl2 implements Node {
 
     @Subscribe
     public void onReceiveAppendEntriesRpc(AppendEntriesRpcMessage rpcMessage) {
-        context.taskExecutor().submit(() -> context.connector().replyAppendEntries(processAppendEntriesRpc(rpcMessage), rpcMessage));
+        context.taskExecutor().submit(() ->
+                        context.connector().replyAppendEntries(processAppendEntriesRpc(rpcMessage), rpcMessage),
+                LOGGING_FUTURE_CALLBACK
+        );
     }
 
     private AppendEntriesResult processAppendEntriesRpc(AppendEntriesRpcMessage rpcMessage) {
+        // leader id is not set when node starts
+        // so it's ok not to check if source node id is current leader id
         AppendEntriesRpc rpc = rpcMessage.get();
         if (rpc.getTerm() < role.getTerm()) {
             return new AppendEntriesResult(rpc.getMessageId(), role.getTerm(), false);
@@ -348,19 +353,15 @@ public class NodeImpl2 implements Node {
         assert rpc.getTerm() == role.getTerm();
         switch (role.getName()) {
             case FOLLOWER:
-                FollowerNodeRole2 follower = (FollowerNodeRole2) role;
-                // TODO not atomic operation
-                role = new FollowerNodeRole2(role.getTerm(), follower.getVotedFor(), rpc.getLeaderId(),
-                        follower.resetElectionTimeout());
-                return new AppendEntriesResult(rpc.getMessageId(), role.getTerm(), appendEntries(rpc));
+                becomeFollower(rpc.getTerm(), ((FollowerNodeRole2) role).getVotedFor(), rpc.getLeaderId(), true);
+                return new AppendEntriesResult(rpc.getMessageId(), rpc.getTerm(), appendEntries(rpc));
             case CANDIDATE:
                 // more than 1 candidate but another node win the election
-                role.cancelTimeoutOrTask();
-                changeToRole(new FollowerNodeRole2(role.getTerm(), null, rpc.getLeaderId(), scheduleElectionTimeout()));
-                return new AppendEntriesResult(rpc.getMessageId(), role.getTerm(), appendEntries(rpc));
+                becomeFollower(rpc.getTerm(), null, rpc.getLeaderId(), true);
+                return new AppendEntriesResult(rpc.getMessageId(), rpc.getTerm(), appendEntries(rpc));
             case LEADER:
-                logger.warn("Node {}, ignore append entries rpc from another leader, node {}", context.selfId(), rpc.getLeaderId());
-                return new AppendEntriesResult(rpc.getMessageId(), role.getTerm(), false);
+                logger.warn("receive append entries rpc from another leader {}, ignore", rpc.getLeaderId());
+                return new AppendEntriesResult(rpc.getMessageId(), rpc.getTerm(), false);
             default:
                 throw new IllegalStateException("unexpected node role [" + role.getName() + "]");
         }
@@ -447,7 +448,10 @@ public class NodeImpl2 implements Node {
 
     @Subscribe
     public void onReceiveInstallSnapshotRpc(InstallSnapshotRpcMessage rpcMessage) {
-        context.taskExecutor().submit(() -> context.connector().replyInstallSnapshot(processInstallSnapshotRpc(rpcMessage), rpcMessage));
+        context.taskExecutor().submit(
+                () -> context.connector().replyInstallSnapshot(processInstallSnapshotRpc(rpcMessage), rpcMessage),
+                LOGGING_FUTURE_CALLBACK
+        );
     }
 
     private InstallSnapshotResult processInstallSnapshotRpc(InstallSnapshotRpcMessage rpcMessage) {
@@ -464,7 +468,10 @@ public class NodeImpl2 implements Node {
 
     @Subscribe
     public void onReceiveInstallSnapshotResult(InstallSnapshotResultMessage resultMessage) {
-        context.taskExecutor().submit(() -> processInstallSnapshotResult(resultMessage));
+        context.taskExecutor().submit(
+                () -> processInstallSnapshotResult(resultMessage),
+                LOGGING_FUTURE_CALLBACK
+        );
     }
 
     private void processInstallSnapshotResult(InstallSnapshotResultMessage resultMessage) {
@@ -493,12 +500,15 @@ public class NodeImpl2 implements Node {
         context.taskExecutor().submit(() -> {
             GroupConfigEntry entry = event.getEntry();
             context.group().updateNodes(entry.getResultNodeConfigs());
-        });
+        }, LOGGING_FUTURE_CALLBACK);
     }
 
     @Subscribe
     public void onGroupConfigEntryCommitted(GroupConfigEntryCommittedEvent event) {
-        context.taskExecutor().submit(() -> processGroupConfigEntryCommittedEvent(event), LOGGING_FUTURE_CALLBACK);
+        context.taskExecutor().submit(
+                () -> processGroupConfigEntryCommittedEvent(event),
+                LOGGING_FUTURE_CALLBACK
+        );
     }
 
     private void processGroupConfigEntryCommittedEvent(GroupConfigEntryCommittedEvent event) {
@@ -513,7 +523,7 @@ public class NodeImpl2 implements Node {
             context.group().removeNode(nodeToRemove);
         } else if (entry.getKind() == Entry.KIND_ADD_NODE) {
             AddNodeEntry addNodeEntry = (AddNodeEntry) entry;
-            logger.info("node {} added successfully", addNodeEntry.getNewNodeEndpoint().getId());
+            logger.info("node {} added", addNodeEntry.getNewNodeEndpoint().getId());
         }
         taskReferenceHolder.done(entry.getIndex());
     }
@@ -523,7 +533,7 @@ public class NodeImpl2 implements Node {
         context.taskExecutor().submit(() -> {
             GroupConfigEntry entry = event.getFirstRemovedEntry();
             context.group().updateNodes(entry.getNodeEndpoints());
-        });
+        }, LOGGING_FUTURE_CALLBACK);
     }
 
     @Subscribe

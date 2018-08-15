@@ -1,11 +1,11 @@
 package in.xnnyygn.xraft.core.node;
 
+import com.google.common.collect.ImmutableSet;
 import in.xnnyygn.xraft.core.log.TaskReference;
-import in.xnnyygn.xraft.core.log.entry.AddNodeEntry;
-import in.xnnyygn.xraft.core.log.entry.Entry;
-import in.xnnyygn.xraft.core.log.entry.EntryMeta;
-import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
+import in.xnnyygn.xraft.core.log.entry.*;
+import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
+import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
 import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
 import in.xnnyygn.xraft.core.noderole.RoleName;
 import in.xnnyygn.xraft.core.noderole.RoleState;
@@ -844,11 +844,126 @@ public class NodeImpl2Test {
         Assert.assertEquals(2, state.getVotesCount());
     }
 
-    //
-//    @Test
-//    public void onReceiveAppendEntriesRpc() {
-//    }
-//
+    @Test
+    public void testOnReceiveAppendEntriesRpcSmallerTerm() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(2, null))
+                .build();
+        node.start();
+        AppendEntriesRpc rpc = new AppendEntriesRpc();
+        rpc.setTerm(1);
+        node.onReceiveAppendEntriesRpc(new AppendEntriesRpcMessage(rpc, NodeId.of("B"), null));
+        MockConnector connector = (MockConnector) node.getContext().connector();
+        AppendEntriesResult result = (AppendEntriesResult) connector.getResult();
+        Assert.assertEquals(2, result.getTerm());
+        Assert.assertFalse(result.isSuccess());
+    }
+
+    @Test
+    public void testOnReceiveAppendEntriesRpcLargerTerm() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        AppendEntriesRpc rpc = new AppendEntriesRpc();
+        rpc.setTerm(2);
+        rpc.setLeaderId(NodeId.of("B"));
+        node.onReceiveAppendEntriesRpc(new AppendEntriesRpcMessage(rpc, NodeId.of("B"), null));
+        MockConnector connector = (MockConnector) node.getContext().connector();
+        AppendEntriesResult result = (AppendEntriesResult) connector.getResult();
+        Assert.assertEquals(2, result.getTerm());
+        Assert.assertTrue(result.isSuccess());
+
+        RoleState state = node.getRoleState2();
+        Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
+        Assert.assertEquals(NodeId.of("B"), state.getLeaderId());
+    }
+
+    @Test
+    public void testOnReceiveAppendEntriesRpcFollower() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        AppendEntriesRpc rpc = new AppendEntriesRpc();
+        rpc.setTerm(1);
+        rpc.setLeaderId(NodeId.of("B"));
+        node.onReceiveAppendEntriesRpc(new AppendEntriesRpcMessage(rpc, NodeId.of("B"), null));
+        MockConnector connector = (MockConnector) node.getContext().connector();
+        AppendEntriesResult result = (AppendEntriesResult) connector.getResult();
+        Assert.assertEquals(1, result.getTerm());
+        Assert.assertTrue(result.isSuccess());
+
+        RoleState state = node.getRoleState2();
+        Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
+        Assert.assertEquals(1, state.getTerm());
+        Assert.assertEquals(NodeId.of("B"), state.getLeaderId());
+    }
+
+    @Test
+    public void testOnReceiveAppendEntriesRpcCandidate() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        node.electionTimeout();
+        AppendEntriesRpc rpc = new AppendEntriesRpc();
+        rpc.setTerm(2);
+        rpc.setLeaderId(NodeId.of("B"));
+        node.onReceiveAppendEntriesRpc(new AppendEntriesRpcMessage(rpc, NodeId.of("B"), null));
+        MockConnector connector = (MockConnector) node.getContext().connector();
+        AppendEntriesResult result = (AppendEntriesResult) connector.getResult();
+        Assert.assertEquals(2, result.getTerm());
+        Assert.assertTrue(result.isSuccess());
+
+        RoleState state = node.getRoleState2();
+        Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
+        Assert.assertEquals(2, state.getTerm());
+        Assert.assertEquals(NodeId.of("B"), state.getLeaderId());
+    }
+
+    @Test
+    public void testOnReceiveAppendEntriesRpcLeader() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        node.electionTimeout();
+        node.onReceiveRequestVoteResult(new RequestVoteResult(2, true));
+        AppendEntriesRpc rpc = new AppendEntriesRpc();
+        rpc.setTerm(2);
+        rpc.setLeaderId(NodeId.of("B"));
+        node.onReceiveAppendEntriesRpc(new AppendEntriesRpcMessage(rpc, NodeId.of("B"), null));
+        MockConnector connector = (MockConnector) node.getContext().connector();
+        AppendEntriesResult result = (AppendEntriesResult) connector.getResult();
+        Assert.assertEquals(2, result.getTerm());
+        Assert.assertFalse(result.isSuccess());
+
+        RoleState state = node.getRoleState2();
+        Assert.assertEquals(RoleName.LEADER, state.getRoleName());
+        Assert.assertEquals(2, state.getTerm());
+    }
+
     @Test
     public void testOnReceiveAppendEntriesResultPeerCatchUp() {
         NodeImpl2 node = (NodeImpl2) newNodeBuilder(
@@ -1063,18 +1178,151 @@ public class NodeImpl2Test {
         Assert.assertEquals(2, mockConnector.getMessageCount());
     }
 
-    //    @Test
-//    public void onReceiveInstallSnapshotRpc() {
-//    }
-//
-//    @Test
-//    public void onReceiveInstallSnapshotResult() {
-//    }
-//
-//    @Test
-//    public void onGroupConfigEntryFromLeaderAppend() {
-//    }
-//
+    @Test
+    public void testOnReceiveInstallSnapshotRpcSmallerTerm() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(3, null))
+                .build();
+        node.start();
+        InstallSnapshotRpc rpc = new InstallSnapshotRpc();
+        rpc.setTerm(2);
+        node.onReceiveInstallSnapshotRpc(new InstallSnapshotRpcMessage(rpc, NodeId.of("B"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        InstallSnapshotResult result = (InstallSnapshotResult) mockConnector.getResult();
+        Assert.assertEquals(3, result.getTerm());
+    }
+
+    @Test
+    public void testOnReceiveInstallSnapshotRpc() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        InstallSnapshotRpc rpc = new InstallSnapshotRpc();
+        rpc.setTerm(1);
+        rpc.setLastIncludedTerm(1);
+        rpc.setLastIncludedIndex(2);
+        rpc.setData(new byte[0]);
+        rpc.setDone(true);
+        node.onReceiveInstallSnapshotRpc(new InstallSnapshotRpcMessage(rpc, NodeId.of("B"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        InstallSnapshotResult result = (InstallSnapshotResult) mockConnector.getResult();
+        Assert.assertEquals(1, result.getTerm());
+    }
+
+    @Test
+    public void testOnReceiveInstallSnapshotRpcLargerTerm() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        InstallSnapshotRpc rpc = new InstallSnapshotRpc();
+        rpc.setTerm(2);
+        rpc.setLeaderId(NodeId.of("B"));
+        rpc.setLastIncludedTerm(1);
+        rpc.setLastIncludedIndex(2);
+        rpc.setData(new byte[0]);
+        rpc.setDone(true);
+        node.onReceiveInstallSnapshotRpc(new InstallSnapshotRpcMessage(rpc, NodeId.of("B"), null));
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        InstallSnapshotResult result = (InstallSnapshotResult) mockConnector.getResult();
+        Assert.assertEquals(2, result.getTerm());
+        RoleState state = node.getRoleState2();
+        Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
+        Assert.assertEquals(NodeId.of("B"), state.getLeaderId());
+    }
+
+
+    @Test
+    public void testOnReceiveInstallSnapshotResultLargerTerm() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        node.onReceiveInstallSnapshotResult(new InstallSnapshotResultMessage(
+                new InstallSnapshotResult(2), NodeId.of("C"), new InstallSnapshotRpc()));
+        RoleState state = node.getRoleState2();
+        Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
+        Assert.assertEquals(2, state.getTerm());
+    }
+
+    @Test
+    public void testOnReceiveInstallSnapshotResultDone() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        node.start();
+        node.electionTimeout();
+        mockConnector.clearMessage();
+        node.onReceiveRequestVoteResult(new RequestVoteResult(2, true));
+        InstallSnapshotRpc installSnapshotRpc = new InstallSnapshotRpc();
+        installSnapshotRpc.setDone(true);
+        node.onReceiveInstallSnapshotResult(new InstallSnapshotResultMessage(
+                new InstallSnapshotResult(2), NodeId.of("C"), installSnapshotRpc));
+        Assert.assertEquals(NodeId.of("C"), mockConnector.getDestinationNodeId());
+        Assert.assertTrue(mockConnector.getRpc() instanceof AppendEntriesRpc);
+    }
+
+    @Test
+    public void testOnReceiveInstallSnapshotResult() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+        node.start();
+        node.electionTimeout();
+        mockConnector.clearMessage();
+        node.onReceiveRequestVoteResult(new RequestVoteResult(2, true));
+        InstallSnapshotRpc installSnapshotRpc = new InstallSnapshotRpc();
+        installSnapshotRpc.setDone(false);
+        installSnapshotRpc.setData(new byte[0]);
+        node.onReceiveInstallSnapshotResult(new InstallSnapshotResultMessage(
+                new InstallSnapshotResult(2), NodeId.of("C"), installSnapshotRpc));
+        Assert.assertEquals(NodeId.of("C"), mockConnector.getDestinationNodeId());
+        Assert.assertTrue(mockConnector.getRpc() instanceof InstallSnapshotRpc);
+    }
+
+    @Test
+    public void testOnGroupConfigEntryFromLeaderAppend() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .build();
+        node.start();
+        GroupConfigEntry groupConfigEntry = new AddNodeEntry(1, 1,
+                node.getContext().group().getNodeEndpointsOfMajor(),
+                new NodeEndpoint("D", "localhost", 2336));
+        node.onGroupConfigEntryFromLeaderAppend(new GroupConfigEntryFromLeaderAppendEvent(groupConfigEntry));
+        Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
+    }
+
     @Test
     public void testOnGroupConfigEntryCommittedAddNode() {
         NodeImpl2 node = (NodeImpl2) newNodeBuilder(
@@ -1086,7 +1334,9 @@ public class NodeImpl2Test {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        AddNodeEntry groupConfigEntry = new AddNodeEntry(2, 1, Collections.emptySet(), new NodeEndpoint("D", "localhost", 2336));
+        AddNodeEntry groupConfigEntry = new AddNodeEntry(2, 1,
+                node.getContext().group().getNodeEndpointsOfMajor(),
+                new NodeEndpoint("D", "localhost", 2336));
         node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
     }
 
@@ -1101,10 +1351,48 @@ public class NodeImpl2Test {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        // TODO here
+        RemoveNodeEntry groupConfigEntry = new RemoveNodeEntry(1, 1,
+                node.getContext().group().getNodeEndpointsOfMajor(), NodeId.of("C"));
+        node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
+        Assert.assertNull(node.getContext().group().getState(NodeId.of("C")));
     }
-//
-//    @Test
-//    public void onGroupConfigEntryBatchRemoved() {
-//    }
+
+    @Test
+    public void testOnGroupConfigEntryCommittedRemoveNodeSelf() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .build();
+        node.start();
+        node.electionTimeout(); // become candidate
+        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
+        RemoveNodeEntry groupConfigEntry = new RemoveNodeEntry(1, 1,
+                node.getContext().group().getNodeEndpointsOfMajor(), NodeId.of("A"));
+        node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
+        RoleState state = node.getRoleState2();
+        Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
+        Assert.assertEquals(1, state.getTerm());
+    }
+
+    @Test
+    public void testOnGroupConfigEntryBatchRemoved() {
+        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .build();
+        node.start();
+        GroupConfigEntry groupConfigEntry = new RemoveNodeEntry(1, 1, ImmutableSet.of(
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335),
+                new NodeEndpoint("D", "localhost", 2336)
+        ), NodeId.of("D"));
+        node.onGroupConfigEntryBatchRemoved(new GroupConfigEntryBatchRemovedEvent(groupConfigEntry));
+        Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
+    }
+
 }
