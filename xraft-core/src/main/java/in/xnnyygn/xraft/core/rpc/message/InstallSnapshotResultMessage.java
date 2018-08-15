@@ -1,6 +1,9 @@
 package in.xnnyygn.xraft.core.rpc.message;
 
+import com.google.common.base.Preconditions;
 import in.xnnyygn.xraft.core.node.NodeId;
+
+import javax.annotation.Nonnull;
 
 public class InstallSnapshotResultMessage {
 
@@ -8,8 +11,8 @@ public class InstallSnapshotResultMessage {
     private final NodeId sourceNodeId;
     private final InstallSnapshotRpc rpc;
 
-    // TODO add not-null to rpc
-    public InstallSnapshotResultMessage(InstallSnapshotResult result, NodeId sourceNodeId, InstallSnapshotRpc rpc) {
+    public InstallSnapshotResultMessage(InstallSnapshotResult result, NodeId sourceNodeId, @Nonnull InstallSnapshotRpc rpc) {
+        Preconditions.checkNotNull(rpc);
         this.result = result;
         this.sourceNodeId = sourceNodeId;
         this.rpc = rpc;
