@@ -1,6 +1,6 @@
-package in.xnnyygn.xraft.core.noderole;
+package in.xnnyygn.xraft.core.node;
 
-import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.node.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import org.junit.Assert;
 import org.junit.Test;

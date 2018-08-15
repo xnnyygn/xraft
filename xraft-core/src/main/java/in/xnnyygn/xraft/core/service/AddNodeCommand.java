@@ -2,7 +2,8 @@ package in.xnnyygn.xraft.core.service;
 
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 
-// TODO service.proto?
+// TODO remove me
+@Deprecated
 public class AddNodeCommand {
 
     private final String nodeId;

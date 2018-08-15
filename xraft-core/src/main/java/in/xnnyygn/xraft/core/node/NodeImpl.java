@@ -11,7 +11,6 @@ import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
 import in.xnnyygn.xraft.core.log.replication.NewNodeReplicatingState;
 import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
 import in.xnnyygn.xraft.core.log.snapshot.EntryInSnapshotException;
-import in.xnnyygn.xraft.core.noderole.*;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;

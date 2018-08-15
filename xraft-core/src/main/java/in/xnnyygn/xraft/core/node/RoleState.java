@@ -1,6 +1,4 @@
-package in.xnnyygn.xraft.core.noderole;
-
-import in.xnnyygn.xraft.core.node.NodeId;
+package in.xnnyygn.xraft.core.node;
 
 public class RoleState {
 

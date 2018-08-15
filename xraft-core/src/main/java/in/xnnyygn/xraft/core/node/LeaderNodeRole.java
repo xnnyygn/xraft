@@ -1,6 +1,5 @@
-package in.xnnyygn.xraft.core.noderole;
+package in.xnnyygn.xraft.core.node;
 
-import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
 
 public class LeaderNodeRole extends AbstractNodeRole {

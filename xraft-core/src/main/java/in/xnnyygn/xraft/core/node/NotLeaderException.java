@@ -1,7 +1,5 @@
 package in.xnnyygn.xraft.core.node;
 
-import in.xnnyygn.xraft.core.noderole.RoleName;
-
 public class NotLeaderException extends RuntimeException {
 
     private final RoleName roleName;

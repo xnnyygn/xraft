@@ -2,9 +2,6 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.log.StateMachine;
 import in.xnnyygn.xraft.core.log.TaskReference;
-import in.xnnyygn.xraft.core.noderole.NodeRoleListener;
-import in.xnnyygn.xraft.core.noderole.RoleNameAndLeaderId;
-import in.xnnyygn.xraft.core.noderole.RoleState;
 
 public interface Node {
 

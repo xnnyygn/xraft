@@ -7,8 +7,6 @@ import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
 import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
-import in.xnnyygn.xraft.core.noderole.RoleName;
-import in.xnnyygn.xraft.core.noderole.RoleState;
 import in.xnnyygn.xraft.core.rpc.MockConnector;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.NullScheduler;
