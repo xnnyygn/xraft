@@ -188,16 +188,8 @@ public class FileEntrySequence extends AbstractEntrySequence {
         }
     }
 
-    // TODO refactor
     @Override
-    public void removeAfter(int index) {
-        if (isEmpty()) {
-            // TODO just do nothing
-            throw new IllegalStateException("empty sequence");
-        }
-        if (index >= doGetLastLogIndex()) {
-            return;
-        }
+    protected void doRemoveAfter(int index) {
         if (!pendingEntries.isEmpty() && index >= pendingEntries.getFirst().getIndex() - 1) {
             // remove last n entries in pending entries
             for (int i = index + 1; i <= doGetLastLogIndex(); i++) {

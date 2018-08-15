@@ -109,4 +109,18 @@ abstract class AbstractEntrySequence implements EntrySequence {
 
     protected abstract void doAppend(Entry entry);
 
+    @Override
+    public void removeAfter(int index) {
+        if (isEmpty()) {
+            // TODO just do nothing
+            throw new IllegalStateException("empty sequence");
+        }
+        if (index >= doGetLastLogIndex()) {
+            return;
+        }
+        doRemoveAfter(index);
+    }
+
+    protected abstract void doRemoveAfter(int index);
+
 }

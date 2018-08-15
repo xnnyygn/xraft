@@ -50,13 +50,7 @@ public class MemoryEntrySequence extends AbstractEntrySequence {
     }
 
     @Override
-    public void removeAfter(int index) {
-        if (isEmpty()) {
-            throw new IllegalStateException("empty sequence");
-        }
-        if (isEmpty() || index >= doGetLastLogIndex()) {
-            return;
-        }
+    protected void doRemoveAfter(int index) {
         if (index < doGetFirstLogIndex()) {
             entries.clear();
             nextLogIndex = logIndexOffset;
