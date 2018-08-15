@@ -16,7 +16,6 @@ public class RemoveNodeEntry extends GroupConfigEntry {
         this.nodeToRemove = nodeToRemove;
     }
 
-    // TODO add test
     public Set<NodeEndpoint> getResultNodeEndpoints() {
         return getNodeEndpoints().stream()
                 .filter(c -> !c.getId().equals(nodeToRemove))
