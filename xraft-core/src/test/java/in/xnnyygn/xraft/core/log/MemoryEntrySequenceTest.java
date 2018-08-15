@@ -65,10 +65,10 @@ public class MemoryEntrySequenceTest {
         Assert.assertFalse(sequence.isEntryPresent(2));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testSubListEmpty() {
         MemoryEntrySequence sequence = new MemoryEntrySequence(2);
-        sequence.subList(2, 2);
+        Assert.assertTrue(sequence.subList(2, 2).isEmpty());
     }
 
     @Test

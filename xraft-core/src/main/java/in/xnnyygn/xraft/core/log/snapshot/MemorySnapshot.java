@@ -62,9 +62,9 @@ public class MemorySnapshot implements Snapshot {
     @Override
     public String toString() {
         return "MemorySnapshot{" +
-                "getDataSize=" + data.length +
-                ", lastIncludedIndex=" + lastIncludedIndex +
+                "lastIncludedIndex=" + lastIncludedIndex +
                 ", lastIncludedTerm=" + lastIncludedTerm +
+                ", data.size=" + data.length +
                 '}';
     }
 

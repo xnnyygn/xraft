@@ -67,9 +67,9 @@ public class MemoryEntrySequence extends AbstractEntrySequence {
     @Override
     public String toString() {
         return "MemoryEntrySequence{" +
-                "entries.size=" + entries.size() +
-                ", logIndexOffset=" + logIndexOffset +
+                "logIndexOffset=" + logIndexOffset +
                 ", nextLogIndex=" + nextLogIndex +
+                ", entries.size=" + entries.size() +
                 '}';
     }
 

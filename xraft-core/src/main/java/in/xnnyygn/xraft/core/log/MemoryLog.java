@@ -7,12 +7,16 @@ import in.xnnyygn.xraft.core.log.sequence.EntrySequence;
 import in.xnnyygn.xraft.core.log.sequence.MemoryEntrySequence;
 import in.xnnyygn.xraft.core.log.snapshot.*;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
 public class MemoryLog extends AbstractLog {
+
+    private static final Logger logger = LoggerFactory.getLogger(MemoryLog.class);
 
     public MemoryLog() {
         this(new EventBus());
@@ -48,13 +52,11 @@ public class MemoryLog extends AbstractLog {
     protected void replaceSnapshot(Snapshot newSnapshot) {
         int logIndexOffset = newSnapshot.getLastIncludedIndex() + 1;
         EntrySequence newEntrySequence = new MemoryEntrySequence(logIndexOffset);
-        // when install snapshot from fresh
-        // entry sequence maybe empty
-        if (!entrySequence.isEmpty()) {
-            List<Entry> remainingEntries = entrySequence.subList(logIndexOffset);
-            newEntrySequence.append(remainingEntries);
-        }
+        List<Entry> remainingEntries = entrySequence.subList(logIndexOffset);
+        newEntrySequence.append(remainingEntries);
+        logger.debug("snapshot -> {}", newSnapshot);
         snapshot = newSnapshot;
+        logger.debug("entry sequence -> {}", entrySequence);
         entrySequence = newEntrySequence;
     }
 

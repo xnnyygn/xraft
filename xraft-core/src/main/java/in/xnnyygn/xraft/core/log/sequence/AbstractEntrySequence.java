@@ -3,6 +3,7 @@ package in.xnnyygn.xraft.core.log.sequence;
 import in.xnnyygn.xraft.core.log.entry.Entry;
 import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 
+import java.util.Collections;
 import java.util.List;
 
 abstract class AbstractEntrySequence implements EntrySequence {
@@ -22,8 +23,9 @@ abstract class AbstractEntrySequence implements EntrySequence {
 
     @Override
     public int getFirstLogIndex() {
-        if (isEmpty()) throw new EmptySequenceException();
-
+        if (isEmpty()) {
+            throw new EmptySequenceException();
+        }
         return doGetFirstLogIndex();
     }
 
@@ -33,8 +35,9 @@ abstract class AbstractEntrySequence implements EntrySequence {
 
     @Override
     public int getLastLogIndex() {
-        if (isEmpty()) throw new EmptySequenceException();
-
+        if (isEmpty()) {
+            throw new EmptySequenceException();
+        }
         return doGetLastLogIndex();
     }
 
@@ -49,8 +52,9 @@ abstract class AbstractEntrySequence implements EntrySequence {
 
     @Override
     public Entry getEntry(int index) {
-        if (!isEntryPresent(index))
+        if (!isEntryPresent(index)) {
             return null;
+        }
         return doGetEntry(index);
     }
 
@@ -75,9 +79,8 @@ abstract class AbstractEntrySequence implements EntrySequence {
     // [fromIndex, toIndex)
     @Override
     public List<Entry> subList(int fromIndex, int toIndex) {
-        // TODO return empty list when list is empty?
         if (isEmpty()) {
-            throw new IllegalStateException("sequence is empty");
+            return Collections.emptyList();
         }
         if (fromIndex < doGetFirstLogIndex() || toIndex > doGetLastLogIndex() + 1 || fromIndex > toIndex) {
             throw new IllegalArgumentException("illegal from index " + fromIndex + " or to index " + toIndex);
