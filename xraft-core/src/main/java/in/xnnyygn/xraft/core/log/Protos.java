@@ -14,8 +14,8 @@ public final class Protos {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
-  public interface NodeConfigOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:NodeConfig)
+  public interface NodeEndpointOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:NodeEndpoint)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -44,18 +44,18 @@ public final class Protos {
     int getPort();
   }
   /**
-   * Protobuf type {@code NodeConfig}
+   * Protobuf type {@code NodeEndpoint}
    */
-  public  static final class NodeConfig extends
+  public  static final class NodeEndpoint extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:NodeConfig)
-      NodeConfigOrBuilder {
+      // @@protoc_insertion_point(message_implements:NodeEndpoint)
+      NodeEndpointOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use NodeConfig.newBuilder() to construct.
-    private NodeConfig(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use NodeEndpoint.newBuilder() to construct.
+    private NodeEndpoint(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private NodeConfig() {
+    private NodeEndpoint() {
       id_ = "";
       host_ = "";
       port_ = 0;
@@ -66,7 +66,7 @@ public final class Protos {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private NodeConfig(
+    private NodeEndpoint(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -123,15 +123,15 @@ public final class Protos {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return in.xnnyygn.xraft.core.log.Protos.internal_static_NodeConfig_descriptor;
+      return in.xnnyygn.xraft.core.log.Protos.internal_static_NodeEndpoint_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return in.xnnyygn.xraft.core.log.Protos.internal_static_NodeConfig_fieldAccessorTable
+      return in.xnnyygn.xraft.core.log.Protos.internal_static_NodeEndpoint_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              in.xnnyygn.xraft.core.log.Protos.NodeConfig.class, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder.class);
+              in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.class, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder.class);
     }
 
     public static final int ID_FIELD_NUMBER = 1;
@@ -263,10 +263,10 @@ public final class Protos {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof in.xnnyygn.xraft.core.log.Protos.NodeConfig)) {
+      if (!(obj instanceof in.xnnyygn.xraft.core.log.Protos.NodeEndpoint)) {
         return super.equals(obj);
       }
-      in.xnnyygn.xraft.core.log.Protos.NodeConfig other = (in.xnnyygn.xraft.core.log.Protos.NodeConfig) obj;
+      in.xnnyygn.xraft.core.log.Protos.NodeEndpoint other = (in.xnnyygn.xraft.core.log.Protos.NodeEndpoint) obj;
 
       boolean result = true;
       result = result && getId()
@@ -297,69 +297,69 @@ public final class Protos {
       return hash;
     }
 
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseFrom(
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseFrom(
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseFrom(
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseFrom(
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseFrom(byte[] data)
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseFrom(
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseFrom(java.io.InputStream input)
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseFrom(
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseDelimitedFrom(java.io.InputStream input)
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseDelimitedFrom(
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseFrom(
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig parseFrom(
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -372,7 +372,7 @@ public final class Protos {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(in.xnnyygn.xraft.core.log.Protos.NodeConfig prototype) {
+    public static Builder newBuilder(in.xnnyygn.xraft.core.log.Protos.NodeEndpoint prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -388,26 +388,26 @@ public final class Protos {
       return builder;
     }
     /**
-     * Protobuf type {@code NodeConfig}
+     * Protobuf type {@code NodeEndpoint}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:NodeConfig)
-        in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder {
+        // @@protoc_insertion_point(builder_implements:NodeEndpoint)
+        in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return in.xnnyygn.xraft.core.log.Protos.internal_static_NodeConfig_descriptor;
+        return in.xnnyygn.xraft.core.log.Protos.internal_static_NodeEndpoint_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return in.xnnyygn.xraft.core.log.Protos.internal_static_NodeConfig_fieldAccessorTable
+        return in.xnnyygn.xraft.core.log.Protos.internal_static_NodeEndpoint_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                in.xnnyygn.xraft.core.log.Protos.NodeConfig.class, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder.class);
+                in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.class, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder.class);
       }
 
-      // Construct using in.xnnyygn.xraft.core.log.Protos.NodeConfig.newBuilder()
+      // Construct using in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -437,17 +437,17 @@ public final class Protos {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return in.xnnyygn.xraft.core.log.Protos.internal_static_NodeConfig_descriptor;
+        return in.xnnyygn.xraft.core.log.Protos.internal_static_NodeEndpoint_descriptor;
       }
 
       @java.lang.Override
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig getDefaultInstanceForType() {
-        return in.xnnyygn.xraft.core.log.Protos.NodeConfig.getDefaultInstance();
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getDefaultInstanceForType() {
+        return in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.getDefaultInstance();
       }
 
       @java.lang.Override
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig build() {
-        in.xnnyygn.xraft.core.log.Protos.NodeConfig result = buildPartial();
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint build() {
+        in.xnnyygn.xraft.core.log.Protos.NodeEndpoint result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -455,8 +455,8 @@ public final class Protos {
       }
 
       @java.lang.Override
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig buildPartial() {
-        in.xnnyygn.xraft.core.log.Protos.NodeConfig result = new in.xnnyygn.xraft.core.log.Protos.NodeConfig(this);
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint buildPartial() {
+        in.xnnyygn.xraft.core.log.Protos.NodeEndpoint result = new in.xnnyygn.xraft.core.log.Protos.NodeEndpoint(this);
         result.id_ = id_;
         result.host_ = host_;
         result.port_ = port_;
@@ -498,16 +498,16 @@ public final class Protos {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof in.xnnyygn.xraft.core.log.Protos.NodeConfig) {
-          return mergeFrom((in.xnnyygn.xraft.core.log.Protos.NodeConfig)other);
+        if (other instanceof in.xnnyygn.xraft.core.log.Protos.NodeEndpoint) {
+          return mergeFrom((in.xnnyygn.xraft.core.log.Protos.NodeEndpoint)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(in.xnnyygn.xraft.core.log.Protos.NodeConfig other) {
-        if (other == in.xnnyygn.xraft.core.log.Protos.NodeConfig.getDefaultInstance()) return this;
+      public Builder mergeFrom(in.xnnyygn.xraft.core.log.Protos.NodeEndpoint other) {
+        if (other == in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.getDefaultInstance()) return this;
         if (!other.getId().isEmpty()) {
           id_ = other.id_;
           onChanged();
@@ -534,11 +534,11 @@ public final class Protos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        in.xnnyygn.xraft.core.log.Protos.NodeConfig parsedMessage = null;
+        in.xnnyygn.xraft.core.log.Protos.NodeEndpoint parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (in.xnnyygn.xraft.core.log.Protos.NodeConfig) e.getUnfinishedMessage();
+          parsedMessage = (in.xnnyygn.xraft.core.log.Protos.NodeEndpoint) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -724,41 +724,41 @@ public final class Protos {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:NodeConfig)
+      // @@protoc_insertion_point(builder_scope:NodeEndpoint)
     }
 
-    // @@protoc_insertion_point(class_scope:NodeConfig)
-    private static final in.xnnyygn.xraft.core.log.Protos.NodeConfig DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:NodeEndpoint)
+    private static final in.xnnyygn.xraft.core.log.Protos.NodeEndpoint DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new in.xnnyygn.xraft.core.log.Protos.NodeConfig();
+      DEFAULT_INSTANCE = new in.xnnyygn.xraft.core.log.Protos.NodeEndpoint();
     }
 
-    public static in.xnnyygn.xraft.core.log.Protos.NodeConfig getDefaultInstance() {
+    public static in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<NodeConfig>
-        PARSER = new com.google.protobuf.AbstractParser<NodeConfig>() {
+    private static final com.google.protobuf.Parser<NodeEndpoint>
+        PARSER = new com.google.protobuf.AbstractParser<NodeEndpoint>() {
       @java.lang.Override
-      public NodeConfig parsePartialFrom(
+      public NodeEndpoint parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new NodeConfig(input, extensionRegistry);
+        return new NodeEndpoint(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<NodeConfig> parser() {
+    public static com.google.protobuf.Parser<NodeEndpoint> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<NodeConfig> getParserForType() {
+    public com.google.protobuf.Parser<NodeEndpoint> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public in.xnnyygn.xraft.core.log.Protos.NodeConfig getDefaultInstanceForType() {
+    public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -769,41 +769,41 @@ public final class Protos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig> 
-        getNodeConfigsList();
+    java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> 
+        getNodeEndpointsList();
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    in.xnnyygn.xraft.core.log.Protos.NodeConfig getNodeConfigs(int index);
+    in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getNodeEndpoints(int index);
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    int getNodeConfigsCount();
+    int getNodeEndpointsCount();
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> 
-        getNodeConfigsOrBuilderList();
+    java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> 
+        getNodeEndpointsOrBuilderList();
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder getNodeConfigsOrBuilder(
+    in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder getNodeEndpointsOrBuilder(
         int index);
 
     /**
-     * <code>.NodeConfig new_node_config = 2;</code>
+     * <code>.NodeEndpoint new_node_endpoint = 2;</code>
      */
-    boolean hasNewNodeConfig();
+    boolean hasNewNodeEndpoint();
     /**
-     * <code>.NodeConfig new_node_config = 2;</code>
+     * <code>.NodeEndpoint new_node_endpoint = 2;</code>
      */
-    in.xnnyygn.xraft.core.log.Protos.NodeConfig getNewNodeConfig();
+    in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getNewNodeEndpoint();
     /**
-     * <code>.NodeConfig new_node_config = 2;</code>
+     * <code>.NodeEndpoint new_node_endpoint = 2;</code>
      */
-    in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder getNewNodeConfigOrBuilder();
+    in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder getNewNodeEndpointOrBuilder();
   }
   /**
    * Protobuf type {@code AddNodeCommand}
@@ -818,7 +818,7 @@ public final class Protos {
       super(builder);
     }
     private AddNodeCommand() {
-      nodeConfigs_ = java.util.Collections.emptyList();
+      nodeEndpoints_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -847,22 +847,22 @@ public final class Protos {
               break;
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                nodeConfigs_ = new java.util.ArrayList<in.xnnyygn.xraft.core.log.Protos.NodeConfig>();
+                nodeEndpoints_ = new java.util.ArrayList<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              nodeConfigs_.add(
-                  input.readMessage(in.xnnyygn.xraft.core.log.Protos.NodeConfig.parser(), extensionRegistry));
+              nodeEndpoints_.add(
+                  input.readMessage(in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.parser(), extensionRegistry));
               break;
             }
             case 18: {
-              in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder subBuilder = null;
-              if (newNodeConfig_ != null) {
-                subBuilder = newNodeConfig_.toBuilder();
+              in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder subBuilder = null;
+              if (newNodeEndpoint_ != null) {
+                subBuilder = newNodeEndpoint_.toBuilder();
               }
-              newNodeConfig_ = input.readMessage(in.xnnyygn.xraft.core.log.Protos.NodeConfig.parser(), extensionRegistry);
+              newNodeEndpoint_ = input.readMessage(in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(newNodeConfig_);
-                newNodeConfig_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(newNodeEndpoint_);
+                newNodeEndpoint_ = subBuilder.buildPartial();
               }
 
               break;
@@ -883,7 +883,7 @@ public final class Protos {
             e).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-          nodeConfigs_ = java.util.Collections.unmodifiableList(nodeConfigs_);
+          nodeEndpoints_ = java.util.Collections.unmodifiableList(nodeEndpoints_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -903,60 +903,60 @@ public final class Protos {
     }
 
     private int bitField0_;
-    public static final int NODE_CONFIGS_FIELD_NUMBER = 1;
-    private java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig> nodeConfigs_;
+    public static final int NODE_ENDPOINTS_FIELD_NUMBER = 1;
+    private java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> nodeEndpoints_;
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig> getNodeConfigsList() {
-      return nodeConfigs_;
+    public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> getNodeEndpointsList() {
+      return nodeEndpoints_;
     }
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    public java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> 
-        getNodeConfigsOrBuilderList() {
-      return nodeConfigs_;
+    public java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> 
+        getNodeEndpointsOrBuilderList() {
+      return nodeEndpoints_;
     }
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    public int getNodeConfigsCount() {
-      return nodeConfigs_.size();
+    public int getNodeEndpointsCount() {
+      return nodeEndpoints_.size();
     }
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    public in.xnnyygn.xraft.core.log.Protos.NodeConfig getNodeConfigs(int index) {
-      return nodeConfigs_.get(index);
+    public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getNodeEndpoints(int index) {
+      return nodeEndpoints_.get(index);
     }
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    public in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder getNodeConfigsOrBuilder(
+    public in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder getNodeEndpointsOrBuilder(
         int index) {
-      return nodeConfigs_.get(index);
+      return nodeEndpoints_.get(index);
     }
 
-    public static final int NEW_NODE_CONFIG_FIELD_NUMBER = 2;
-    private in.xnnyygn.xraft.core.log.Protos.NodeConfig newNodeConfig_;
+    public static final int NEW_NODE_ENDPOINT_FIELD_NUMBER = 2;
+    private in.xnnyygn.xraft.core.log.Protos.NodeEndpoint newNodeEndpoint_;
     /**
-     * <code>.NodeConfig new_node_config = 2;</code>
+     * <code>.NodeEndpoint new_node_endpoint = 2;</code>
      */
-    public boolean hasNewNodeConfig() {
-      return newNodeConfig_ != null;
+    public boolean hasNewNodeEndpoint() {
+      return newNodeEndpoint_ != null;
     }
     /**
-     * <code>.NodeConfig new_node_config = 2;</code>
+     * <code>.NodeEndpoint new_node_endpoint = 2;</code>
      */
-    public in.xnnyygn.xraft.core.log.Protos.NodeConfig getNewNodeConfig() {
-      return newNodeConfig_ == null ? in.xnnyygn.xraft.core.log.Protos.NodeConfig.getDefaultInstance() : newNodeConfig_;
+    public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getNewNodeEndpoint() {
+      return newNodeEndpoint_ == null ? in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.getDefaultInstance() : newNodeEndpoint_;
     }
     /**
-     * <code>.NodeConfig new_node_config = 2;</code>
+     * <code>.NodeEndpoint new_node_endpoint = 2;</code>
      */
-    public in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder getNewNodeConfigOrBuilder() {
-      return getNewNodeConfig();
+    public in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder getNewNodeEndpointOrBuilder() {
+      return getNewNodeEndpoint();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -973,11 +973,11 @@ public final class Protos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      for (int i = 0; i < nodeConfigs_.size(); i++) {
-        output.writeMessage(1, nodeConfigs_.get(i));
+      for (int i = 0; i < nodeEndpoints_.size(); i++) {
+        output.writeMessage(1, nodeEndpoints_.get(i));
       }
-      if (newNodeConfig_ != null) {
-        output.writeMessage(2, getNewNodeConfig());
+      if (newNodeEndpoint_ != null) {
+        output.writeMessage(2, getNewNodeEndpoint());
       }
       unknownFields.writeTo(output);
     }
@@ -988,13 +988,13 @@ public final class Protos {
       if (size != -1) return size;
 
       size = 0;
-      for (int i = 0; i < nodeConfigs_.size(); i++) {
+      for (int i = 0; i < nodeEndpoints_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, nodeConfigs_.get(i));
+          .computeMessageSize(1, nodeEndpoints_.get(i));
       }
-      if (newNodeConfig_ != null) {
+      if (newNodeEndpoint_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getNewNodeConfig());
+          .computeMessageSize(2, getNewNodeEndpoint());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1012,12 +1012,12 @@ public final class Protos {
       in.xnnyygn.xraft.core.log.Protos.AddNodeCommand other = (in.xnnyygn.xraft.core.log.Protos.AddNodeCommand) obj;
 
       boolean result = true;
-      result = result && getNodeConfigsList()
-          .equals(other.getNodeConfigsList());
-      result = result && (hasNewNodeConfig() == other.hasNewNodeConfig());
-      if (hasNewNodeConfig()) {
-        result = result && getNewNodeConfig()
-            .equals(other.getNewNodeConfig());
+      result = result && getNodeEndpointsList()
+          .equals(other.getNodeEndpointsList());
+      result = result && (hasNewNodeEndpoint() == other.hasNewNodeEndpoint());
+      if (hasNewNodeEndpoint()) {
+        result = result && getNewNodeEndpoint()
+            .equals(other.getNewNodeEndpoint());
       }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
@@ -1030,13 +1030,13 @@ public final class Protos {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (getNodeConfigsCount() > 0) {
-        hash = (37 * hash) + NODE_CONFIGS_FIELD_NUMBER;
-        hash = (53 * hash) + getNodeConfigsList().hashCode();
+      if (getNodeEndpointsCount() > 0) {
+        hash = (37 * hash) + NODE_ENDPOINTS_FIELD_NUMBER;
+        hash = (53 * hash) + getNodeEndpointsList().hashCode();
       }
-      if (hasNewNodeConfig()) {
-        hash = (37 * hash) + NEW_NODE_CONFIG_FIELD_NUMBER;
-        hash = (53 * hash) + getNewNodeConfig().hashCode();
+      if (hasNewNodeEndpoint()) {
+        hash = (37 * hash) + NEW_NODE_ENDPOINT_FIELD_NUMBER;
+        hash = (53 * hash) + getNewNodeEndpoint().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -1166,23 +1166,23 @@ public final class Protos {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
-          getNodeConfigsFieldBuilder();
+          getNodeEndpointsFieldBuilder();
         }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (nodeConfigsBuilder_ == null) {
-          nodeConfigs_ = java.util.Collections.emptyList();
+        if (nodeEndpointsBuilder_ == null) {
+          nodeEndpoints_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
         } else {
-          nodeConfigsBuilder_.clear();
+          nodeEndpointsBuilder_.clear();
         }
-        if (newNodeConfigBuilder_ == null) {
-          newNodeConfig_ = null;
+        if (newNodeEndpointBuilder_ == null) {
+          newNodeEndpoint_ = null;
         } else {
-          newNodeConfig_ = null;
-          newNodeConfigBuilder_ = null;
+          newNodeEndpoint_ = null;
+          newNodeEndpointBuilder_ = null;
         }
         return this;
       }
@@ -1212,19 +1212,19 @@ public final class Protos {
         in.xnnyygn.xraft.core.log.Protos.AddNodeCommand result = new in.xnnyygn.xraft.core.log.Protos.AddNodeCommand(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        if (nodeConfigsBuilder_ == null) {
+        if (nodeEndpointsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
-            nodeConfigs_ = java.util.Collections.unmodifiableList(nodeConfigs_);
+            nodeEndpoints_ = java.util.Collections.unmodifiableList(nodeEndpoints_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
-          result.nodeConfigs_ = nodeConfigs_;
+          result.nodeEndpoints_ = nodeEndpoints_;
         } else {
-          result.nodeConfigs_ = nodeConfigsBuilder_.build();
+          result.nodeEndpoints_ = nodeEndpointsBuilder_.build();
         }
-        if (newNodeConfigBuilder_ == null) {
-          result.newNodeConfig_ = newNodeConfig_;
+        if (newNodeEndpointBuilder_ == null) {
+          result.newNodeEndpoint_ = newNodeEndpoint_;
         } else {
-          result.newNodeConfig_ = newNodeConfigBuilder_.build();
+          result.newNodeEndpoint_ = newNodeEndpointBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -1275,34 +1275,34 @@ public final class Protos {
 
       public Builder mergeFrom(in.xnnyygn.xraft.core.log.Protos.AddNodeCommand other) {
         if (other == in.xnnyygn.xraft.core.log.Protos.AddNodeCommand.getDefaultInstance()) return this;
-        if (nodeConfigsBuilder_ == null) {
-          if (!other.nodeConfigs_.isEmpty()) {
-            if (nodeConfigs_.isEmpty()) {
-              nodeConfigs_ = other.nodeConfigs_;
+        if (nodeEndpointsBuilder_ == null) {
+          if (!other.nodeEndpoints_.isEmpty()) {
+            if (nodeEndpoints_.isEmpty()) {
+              nodeEndpoints_ = other.nodeEndpoints_;
               bitField0_ = (bitField0_ & ~0x00000001);
             } else {
-              ensureNodeConfigsIsMutable();
-              nodeConfigs_.addAll(other.nodeConfigs_);
+              ensureNodeEndpointsIsMutable();
+              nodeEndpoints_.addAll(other.nodeEndpoints_);
             }
             onChanged();
           }
         } else {
-          if (!other.nodeConfigs_.isEmpty()) {
-            if (nodeConfigsBuilder_.isEmpty()) {
-              nodeConfigsBuilder_.dispose();
-              nodeConfigsBuilder_ = null;
-              nodeConfigs_ = other.nodeConfigs_;
+          if (!other.nodeEndpoints_.isEmpty()) {
+            if (nodeEndpointsBuilder_.isEmpty()) {
+              nodeEndpointsBuilder_.dispose();
+              nodeEndpointsBuilder_ = null;
+              nodeEndpoints_ = other.nodeEndpoints_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              nodeConfigsBuilder_ = 
+              nodeEndpointsBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getNodeConfigsFieldBuilder() : null;
+                   getNodeEndpointsFieldBuilder() : null;
             } else {
-              nodeConfigsBuilder_.addAllMessages(other.nodeConfigs_);
+              nodeEndpointsBuilder_.addAllMessages(other.nodeEndpoints_);
             }
           }
         }
-        if (other.hasNewNodeConfig()) {
-          mergeNewNodeConfig(other.getNewNodeConfig());
+        if (other.hasNewNodeEndpoint()) {
+          mergeNewNodeEndpoint(other.getNewNodeEndpoint());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1334,361 +1334,361 @@ public final class Protos {
       }
       private int bitField0_;
 
-      private java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig> nodeConfigs_ =
+      private java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> nodeEndpoints_ =
         java.util.Collections.emptyList();
-      private void ensureNodeConfigsIsMutable() {
+      private void ensureNodeEndpointsIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          nodeConfigs_ = new java.util.ArrayList<in.xnnyygn.xraft.core.log.Protos.NodeConfig>(nodeConfigs_);
+          nodeEndpoints_ = new java.util.ArrayList<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint>(nodeEndpoints_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          in.xnnyygn.xraft.core.log.Protos.NodeConfig, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder, in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> nodeConfigsBuilder_;
+          in.xnnyygn.xraft.core.log.Protos.NodeEndpoint, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> nodeEndpointsBuilder_;
 
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig> getNodeConfigsList() {
-        if (nodeConfigsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(nodeConfigs_);
+      public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> getNodeEndpointsList() {
+        if (nodeEndpointsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(nodeEndpoints_);
         } else {
-          return nodeConfigsBuilder_.getMessageList();
+          return nodeEndpointsBuilder_.getMessageList();
         }
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public int getNodeConfigsCount() {
-        if (nodeConfigsBuilder_ == null) {
-          return nodeConfigs_.size();
+      public int getNodeEndpointsCount() {
+        if (nodeEndpointsBuilder_ == null) {
+          return nodeEndpoints_.size();
         } else {
-          return nodeConfigsBuilder_.getCount();
+          return nodeEndpointsBuilder_.getCount();
         }
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig getNodeConfigs(int index) {
-        if (nodeConfigsBuilder_ == null) {
-          return nodeConfigs_.get(index);
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getNodeEndpoints(int index) {
+        if (nodeEndpointsBuilder_ == null) {
+          return nodeEndpoints_.get(index);
         } else {
-          return nodeConfigsBuilder_.getMessage(index);
+          return nodeEndpointsBuilder_.getMessage(index);
         }
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder setNodeConfigs(
-          int index, in.xnnyygn.xraft.core.log.Protos.NodeConfig value) {
-        if (nodeConfigsBuilder_ == null) {
+      public Builder setNodeEndpoints(
+          int index, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint value) {
+        if (nodeEndpointsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.set(index, value);
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.set(index, value);
           onChanged();
         } else {
-          nodeConfigsBuilder_.setMessage(index, value);
+          nodeEndpointsBuilder_.setMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder setNodeConfigs(
-          int index, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder builderForValue) {
-        if (nodeConfigsBuilder_ == null) {
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.set(index, builderForValue.build());
+      public Builder setNodeEndpoints(
+          int index, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder builderForValue) {
+        if (nodeEndpointsBuilder_ == null) {
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.set(index, builderForValue.build());
           onChanged();
         } else {
-          nodeConfigsBuilder_.setMessage(index, builderForValue.build());
+          nodeEndpointsBuilder_.setMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder addNodeConfigs(in.xnnyygn.xraft.core.log.Protos.NodeConfig value) {
-        if (nodeConfigsBuilder_ == null) {
+      public Builder addNodeEndpoints(in.xnnyygn.xraft.core.log.Protos.NodeEndpoint value) {
+        if (nodeEndpointsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.add(value);
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.add(value);
           onChanged();
         } else {
-          nodeConfigsBuilder_.addMessage(value);
+          nodeEndpointsBuilder_.addMessage(value);
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder addNodeConfigs(
-          int index, in.xnnyygn.xraft.core.log.Protos.NodeConfig value) {
-        if (nodeConfigsBuilder_ == null) {
+      public Builder addNodeEndpoints(
+          int index, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint value) {
+        if (nodeEndpointsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.add(index, value);
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.add(index, value);
           onChanged();
         } else {
-          nodeConfigsBuilder_.addMessage(index, value);
+          nodeEndpointsBuilder_.addMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder addNodeConfigs(
-          in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder builderForValue) {
-        if (nodeConfigsBuilder_ == null) {
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.add(builderForValue.build());
+      public Builder addNodeEndpoints(
+          in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder builderForValue) {
+        if (nodeEndpointsBuilder_ == null) {
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.add(builderForValue.build());
           onChanged();
         } else {
-          nodeConfigsBuilder_.addMessage(builderForValue.build());
+          nodeEndpointsBuilder_.addMessage(builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder addNodeConfigs(
-          int index, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder builderForValue) {
-        if (nodeConfigsBuilder_ == null) {
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.add(index, builderForValue.build());
+      public Builder addNodeEndpoints(
+          int index, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder builderForValue) {
+        if (nodeEndpointsBuilder_ == null) {
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.add(index, builderForValue.build());
           onChanged();
         } else {
-          nodeConfigsBuilder_.addMessage(index, builderForValue.build());
+          nodeEndpointsBuilder_.addMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder addAllNodeConfigs(
-          java.lang.Iterable<? extends in.xnnyygn.xraft.core.log.Protos.NodeConfig> values) {
-        if (nodeConfigsBuilder_ == null) {
-          ensureNodeConfigsIsMutable();
+      public Builder addAllNodeEndpoints(
+          java.lang.Iterable<? extends in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> values) {
+        if (nodeEndpointsBuilder_ == null) {
+          ensureNodeEndpointsIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, nodeConfigs_);
+              values, nodeEndpoints_);
           onChanged();
         } else {
-          nodeConfigsBuilder_.addAllMessages(values);
+          nodeEndpointsBuilder_.addAllMessages(values);
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder clearNodeConfigs() {
-        if (nodeConfigsBuilder_ == null) {
-          nodeConfigs_ = java.util.Collections.emptyList();
+      public Builder clearNodeEndpoints() {
+        if (nodeEndpointsBuilder_ == null) {
+          nodeEndpoints_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
-          nodeConfigsBuilder_.clear();
+          nodeEndpointsBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder removeNodeConfigs(int index) {
-        if (nodeConfigsBuilder_ == null) {
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.remove(index);
+      public Builder removeNodeEndpoints(int index) {
+        if (nodeEndpointsBuilder_ == null) {
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.remove(index);
           onChanged();
         } else {
-          nodeConfigsBuilder_.remove(index);
+          nodeEndpointsBuilder_.remove(index);
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder getNodeConfigsBuilder(
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder getNodeEndpointsBuilder(
           int index) {
-        return getNodeConfigsFieldBuilder().getBuilder(index);
+        return getNodeEndpointsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder getNodeConfigsOrBuilder(
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder getNodeEndpointsOrBuilder(
           int index) {
-        if (nodeConfigsBuilder_ == null) {
-          return nodeConfigs_.get(index);  } else {
-          return nodeConfigsBuilder_.getMessageOrBuilder(index);
+        if (nodeEndpointsBuilder_ == null) {
+          return nodeEndpoints_.get(index);  } else {
+          return nodeEndpointsBuilder_.getMessageOrBuilder(index);
         }
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> 
-           getNodeConfigsOrBuilderList() {
-        if (nodeConfigsBuilder_ != null) {
-          return nodeConfigsBuilder_.getMessageOrBuilderList();
+      public java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> 
+           getNodeEndpointsOrBuilderList() {
+        if (nodeEndpointsBuilder_ != null) {
+          return nodeEndpointsBuilder_.getMessageOrBuilderList();
         } else {
-          return java.util.Collections.unmodifiableList(nodeConfigs_);
+          return java.util.Collections.unmodifiableList(nodeEndpoints_);
         }
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder addNodeConfigsBuilder() {
-        return getNodeConfigsFieldBuilder().addBuilder(
-            in.xnnyygn.xraft.core.log.Protos.NodeConfig.getDefaultInstance());
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder addNodeEndpointsBuilder() {
+        return getNodeEndpointsFieldBuilder().addBuilder(
+            in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.getDefaultInstance());
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder addNodeConfigsBuilder(
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder addNodeEndpointsBuilder(
           int index) {
-        return getNodeConfigsFieldBuilder().addBuilder(
-            index, in.xnnyygn.xraft.core.log.Protos.NodeConfig.getDefaultInstance());
+        return getNodeEndpointsFieldBuilder().addBuilder(
+            index, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.getDefaultInstance());
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder> 
-           getNodeConfigsBuilderList() {
-        return getNodeConfigsFieldBuilder().getBuilderList();
+      public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder> 
+           getNodeEndpointsBuilderList() {
+        return getNodeEndpointsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          in.xnnyygn.xraft.core.log.Protos.NodeConfig, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder, in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> 
-          getNodeConfigsFieldBuilder() {
-        if (nodeConfigsBuilder_ == null) {
-          nodeConfigsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              in.xnnyygn.xraft.core.log.Protos.NodeConfig, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder, in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder>(
-                  nodeConfigs_,
+          in.xnnyygn.xraft.core.log.Protos.NodeEndpoint, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> 
+          getNodeEndpointsFieldBuilder() {
+        if (nodeEndpointsBuilder_ == null) {
+          nodeEndpointsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              in.xnnyygn.xraft.core.log.Protos.NodeEndpoint, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder>(
+                  nodeEndpoints_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
                   isClean());
-          nodeConfigs_ = null;
+          nodeEndpoints_ = null;
         }
-        return nodeConfigsBuilder_;
+        return nodeEndpointsBuilder_;
       }
 
-      private in.xnnyygn.xraft.core.log.Protos.NodeConfig newNodeConfig_ = null;
+      private in.xnnyygn.xraft.core.log.Protos.NodeEndpoint newNodeEndpoint_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          in.xnnyygn.xraft.core.log.Protos.NodeConfig, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder, in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> newNodeConfigBuilder_;
+          in.xnnyygn.xraft.core.log.Protos.NodeEndpoint, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> newNodeEndpointBuilder_;
       /**
-       * <code>.NodeConfig new_node_config = 2;</code>
+       * <code>.NodeEndpoint new_node_endpoint = 2;</code>
        */
-      public boolean hasNewNodeConfig() {
-        return newNodeConfigBuilder_ != null || newNodeConfig_ != null;
+      public boolean hasNewNodeEndpoint() {
+        return newNodeEndpointBuilder_ != null || newNodeEndpoint_ != null;
       }
       /**
-       * <code>.NodeConfig new_node_config = 2;</code>
+       * <code>.NodeEndpoint new_node_endpoint = 2;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig getNewNodeConfig() {
-        if (newNodeConfigBuilder_ == null) {
-          return newNodeConfig_ == null ? in.xnnyygn.xraft.core.log.Protos.NodeConfig.getDefaultInstance() : newNodeConfig_;
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getNewNodeEndpoint() {
+        if (newNodeEndpointBuilder_ == null) {
+          return newNodeEndpoint_ == null ? in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.getDefaultInstance() : newNodeEndpoint_;
         } else {
-          return newNodeConfigBuilder_.getMessage();
+          return newNodeEndpointBuilder_.getMessage();
         }
       }
       /**
-       * <code>.NodeConfig new_node_config = 2;</code>
+       * <code>.NodeEndpoint new_node_endpoint = 2;</code>
        */
-      public Builder setNewNodeConfig(in.xnnyygn.xraft.core.log.Protos.NodeConfig value) {
-        if (newNodeConfigBuilder_ == null) {
+      public Builder setNewNodeEndpoint(in.xnnyygn.xraft.core.log.Protos.NodeEndpoint value) {
+        if (newNodeEndpointBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          newNodeConfig_ = value;
+          newNodeEndpoint_ = value;
           onChanged();
         } else {
-          newNodeConfigBuilder_.setMessage(value);
+          newNodeEndpointBuilder_.setMessage(value);
         }
 
         return this;
       }
       /**
-       * <code>.NodeConfig new_node_config = 2;</code>
+       * <code>.NodeEndpoint new_node_endpoint = 2;</code>
        */
-      public Builder setNewNodeConfig(
-          in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder builderForValue) {
-        if (newNodeConfigBuilder_ == null) {
-          newNodeConfig_ = builderForValue.build();
+      public Builder setNewNodeEndpoint(
+          in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder builderForValue) {
+        if (newNodeEndpointBuilder_ == null) {
+          newNodeEndpoint_ = builderForValue.build();
           onChanged();
         } else {
-          newNodeConfigBuilder_.setMessage(builderForValue.build());
+          newNodeEndpointBuilder_.setMessage(builderForValue.build());
         }
 
         return this;
       }
       /**
-       * <code>.NodeConfig new_node_config = 2;</code>
+       * <code>.NodeEndpoint new_node_endpoint = 2;</code>
        */
-      public Builder mergeNewNodeConfig(in.xnnyygn.xraft.core.log.Protos.NodeConfig value) {
-        if (newNodeConfigBuilder_ == null) {
-          if (newNodeConfig_ != null) {
-            newNodeConfig_ =
-              in.xnnyygn.xraft.core.log.Protos.NodeConfig.newBuilder(newNodeConfig_).mergeFrom(value).buildPartial();
+      public Builder mergeNewNodeEndpoint(in.xnnyygn.xraft.core.log.Protos.NodeEndpoint value) {
+        if (newNodeEndpointBuilder_ == null) {
+          if (newNodeEndpoint_ != null) {
+            newNodeEndpoint_ =
+              in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.newBuilder(newNodeEndpoint_).mergeFrom(value).buildPartial();
           } else {
-            newNodeConfig_ = value;
+            newNodeEndpoint_ = value;
           }
           onChanged();
         } else {
-          newNodeConfigBuilder_.mergeFrom(value);
+          newNodeEndpointBuilder_.mergeFrom(value);
         }
 
         return this;
       }
       /**
-       * <code>.NodeConfig new_node_config = 2;</code>
+       * <code>.NodeEndpoint new_node_endpoint = 2;</code>
        */
-      public Builder clearNewNodeConfig() {
-        if (newNodeConfigBuilder_ == null) {
-          newNodeConfig_ = null;
+      public Builder clearNewNodeEndpoint() {
+        if (newNodeEndpointBuilder_ == null) {
+          newNodeEndpoint_ = null;
           onChanged();
         } else {
-          newNodeConfig_ = null;
-          newNodeConfigBuilder_ = null;
+          newNodeEndpoint_ = null;
+          newNodeEndpointBuilder_ = null;
         }
 
         return this;
       }
       /**
-       * <code>.NodeConfig new_node_config = 2;</code>
+       * <code>.NodeEndpoint new_node_endpoint = 2;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder getNewNodeConfigBuilder() {
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder getNewNodeEndpointBuilder() {
         
         onChanged();
-        return getNewNodeConfigFieldBuilder().getBuilder();
+        return getNewNodeEndpointFieldBuilder().getBuilder();
       }
       /**
-       * <code>.NodeConfig new_node_config = 2;</code>
+       * <code>.NodeEndpoint new_node_endpoint = 2;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder getNewNodeConfigOrBuilder() {
-        if (newNodeConfigBuilder_ != null) {
-          return newNodeConfigBuilder_.getMessageOrBuilder();
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder getNewNodeEndpointOrBuilder() {
+        if (newNodeEndpointBuilder_ != null) {
+          return newNodeEndpointBuilder_.getMessageOrBuilder();
         } else {
-          return newNodeConfig_ == null ?
-              in.xnnyygn.xraft.core.log.Protos.NodeConfig.getDefaultInstance() : newNodeConfig_;
+          return newNodeEndpoint_ == null ?
+              in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.getDefaultInstance() : newNodeEndpoint_;
         }
       }
       /**
-       * <code>.NodeConfig new_node_config = 2;</code>
+       * <code>.NodeEndpoint new_node_endpoint = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          in.xnnyygn.xraft.core.log.Protos.NodeConfig, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder, in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> 
-          getNewNodeConfigFieldBuilder() {
-        if (newNodeConfigBuilder_ == null) {
-          newNodeConfigBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              in.xnnyygn.xraft.core.log.Protos.NodeConfig, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder, in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder>(
-                  getNewNodeConfig(),
+          in.xnnyygn.xraft.core.log.Protos.NodeEndpoint, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> 
+          getNewNodeEndpointFieldBuilder() {
+        if (newNodeEndpointBuilder_ == null) {
+          newNodeEndpointBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              in.xnnyygn.xraft.core.log.Protos.NodeEndpoint, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder>(
+                  getNewNodeEndpoint(),
                   getParentForChildren(),
                   isClean());
-          newNodeConfig_ = null;
+          newNodeEndpoint_ = null;
         }
-        return newNodeConfigBuilder_;
+        return newNodeEndpointBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -1748,27 +1748,27 @@ public final class Protos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig> 
-        getNodeConfigsList();
+    java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> 
+        getNodeEndpointsList();
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    in.xnnyygn.xraft.core.log.Protos.NodeConfig getNodeConfigs(int index);
+    in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getNodeEndpoints(int index);
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    int getNodeConfigsCount();
+    int getNodeEndpointsCount();
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> 
-        getNodeConfigsOrBuilderList();
+    java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> 
+        getNodeEndpointsOrBuilderList();
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder getNodeConfigsOrBuilder(
+    in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder getNodeEndpointsOrBuilder(
         int index);
 
     /**
@@ -1794,7 +1794,7 @@ public final class Protos {
       super(builder);
     }
     private RemoveNodeCommand() {
-      nodeConfigs_ = java.util.Collections.emptyList();
+      nodeEndpoints_ = java.util.Collections.emptyList();
       nodeToRemove_ = "";
     }
 
@@ -1824,11 +1824,11 @@ public final class Protos {
               break;
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                nodeConfigs_ = new java.util.ArrayList<in.xnnyygn.xraft.core.log.Protos.NodeConfig>();
+                nodeEndpoints_ = new java.util.ArrayList<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              nodeConfigs_.add(
-                  input.readMessage(in.xnnyygn.xraft.core.log.Protos.NodeConfig.parser(), extensionRegistry));
+              nodeEndpoints_.add(
+                  input.readMessage(in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.parser(), extensionRegistry));
               break;
             }
             case 18: {
@@ -1853,7 +1853,7 @@ public final class Protos {
             e).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-          nodeConfigs_ = java.util.Collections.unmodifiableList(nodeConfigs_);
+          nodeEndpoints_ = java.util.Collections.unmodifiableList(nodeEndpoints_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -1873,39 +1873,39 @@ public final class Protos {
     }
 
     private int bitField0_;
-    public static final int NODE_CONFIGS_FIELD_NUMBER = 1;
-    private java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig> nodeConfigs_;
+    public static final int NODE_ENDPOINTS_FIELD_NUMBER = 1;
+    private java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> nodeEndpoints_;
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig> getNodeConfigsList() {
-      return nodeConfigs_;
+    public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> getNodeEndpointsList() {
+      return nodeEndpoints_;
     }
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    public java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> 
-        getNodeConfigsOrBuilderList() {
-      return nodeConfigs_;
+    public java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> 
+        getNodeEndpointsOrBuilderList() {
+      return nodeEndpoints_;
     }
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    public int getNodeConfigsCount() {
-      return nodeConfigs_.size();
+    public int getNodeEndpointsCount() {
+      return nodeEndpoints_.size();
     }
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    public in.xnnyygn.xraft.core.log.Protos.NodeConfig getNodeConfigs(int index) {
-      return nodeConfigs_.get(index);
+    public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getNodeEndpoints(int index) {
+      return nodeEndpoints_.get(index);
     }
     /**
-     * <code>repeated .NodeConfig node_configs = 1;</code>
+     * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
-    public in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder getNodeConfigsOrBuilder(
+    public in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder getNodeEndpointsOrBuilder(
         int index) {
-      return nodeConfigs_.get(index);
+      return nodeEndpoints_.get(index);
     }
 
     public static final int NODE_TO_REMOVE_FIELD_NUMBER = 2;
@@ -1956,8 +1956,8 @@ public final class Protos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      for (int i = 0; i < nodeConfigs_.size(); i++) {
-        output.writeMessage(1, nodeConfigs_.get(i));
+      for (int i = 0; i < nodeEndpoints_.size(); i++) {
+        output.writeMessage(1, nodeEndpoints_.get(i));
       }
       if (!getNodeToRemoveBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, nodeToRemove_);
@@ -1971,9 +1971,9 @@ public final class Protos {
       if (size != -1) return size;
 
       size = 0;
-      for (int i = 0; i < nodeConfigs_.size(); i++) {
+      for (int i = 0; i < nodeEndpoints_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, nodeConfigs_.get(i));
+          .computeMessageSize(1, nodeEndpoints_.get(i));
       }
       if (!getNodeToRemoveBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, nodeToRemove_);
@@ -1994,8 +1994,8 @@ public final class Protos {
       in.xnnyygn.xraft.core.log.Protos.RemoveNodeCommand other = (in.xnnyygn.xraft.core.log.Protos.RemoveNodeCommand) obj;
 
       boolean result = true;
-      result = result && getNodeConfigsList()
-          .equals(other.getNodeConfigsList());
+      result = result && getNodeEndpointsList()
+          .equals(other.getNodeEndpointsList());
       result = result && getNodeToRemove()
           .equals(other.getNodeToRemove());
       result = result && unknownFields.equals(other.unknownFields);
@@ -2009,9 +2009,9 @@ public final class Protos {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (getNodeConfigsCount() > 0) {
-        hash = (37 * hash) + NODE_CONFIGS_FIELD_NUMBER;
-        hash = (53 * hash) + getNodeConfigsList().hashCode();
+      if (getNodeEndpointsCount() > 0) {
+        hash = (37 * hash) + NODE_ENDPOINTS_FIELD_NUMBER;
+        hash = (53 * hash) + getNodeEndpointsList().hashCode();
       }
       hash = (37 * hash) + NODE_TO_REMOVE_FIELD_NUMBER;
       hash = (53 * hash) + getNodeToRemove().hashCode();
@@ -2143,17 +2143,17 @@ public final class Protos {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
-          getNodeConfigsFieldBuilder();
+          getNodeEndpointsFieldBuilder();
         }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (nodeConfigsBuilder_ == null) {
-          nodeConfigs_ = java.util.Collections.emptyList();
+        if (nodeEndpointsBuilder_ == null) {
+          nodeEndpoints_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
         } else {
-          nodeConfigsBuilder_.clear();
+          nodeEndpointsBuilder_.clear();
         }
         nodeToRemove_ = "";
 
@@ -2185,14 +2185,14 @@ public final class Protos {
         in.xnnyygn.xraft.core.log.Protos.RemoveNodeCommand result = new in.xnnyygn.xraft.core.log.Protos.RemoveNodeCommand(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        if (nodeConfigsBuilder_ == null) {
+        if (nodeEndpointsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
-            nodeConfigs_ = java.util.Collections.unmodifiableList(nodeConfigs_);
+            nodeEndpoints_ = java.util.Collections.unmodifiableList(nodeEndpoints_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
-          result.nodeConfigs_ = nodeConfigs_;
+          result.nodeEndpoints_ = nodeEndpoints_;
         } else {
-          result.nodeConfigs_ = nodeConfigsBuilder_.build();
+          result.nodeEndpoints_ = nodeEndpointsBuilder_.build();
         }
         result.nodeToRemove_ = nodeToRemove_;
         result.bitField0_ = to_bitField0_;
@@ -2244,29 +2244,29 @@ public final class Protos {
 
       public Builder mergeFrom(in.xnnyygn.xraft.core.log.Protos.RemoveNodeCommand other) {
         if (other == in.xnnyygn.xraft.core.log.Protos.RemoveNodeCommand.getDefaultInstance()) return this;
-        if (nodeConfigsBuilder_ == null) {
-          if (!other.nodeConfigs_.isEmpty()) {
-            if (nodeConfigs_.isEmpty()) {
-              nodeConfigs_ = other.nodeConfigs_;
+        if (nodeEndpointsBuilder_ == null) {
+          if (!other.nodeEndpoints_.isEmpty()) {
+            if (nodeEndpoints_.isEmpty()) {
+              nodeEndpoints_ = other.nodeEndpoints_;
               bitField0_ = (bitField0_ & ~0x00000001);
             } else {
-              ensureNodeConfigsIsMutable();
-              nodeConfigs_.addAll(other.nodeConfigs_);
+              ensureNodeEndpointsIsMutable();
+              nodeEndpoints_.addAll(other.nodeEndpoints_);
             }
             onChanged();
           }
         } else {
-          if (!other.nodeConfigs_.isEmpty()) {
-            if (nodeConfigsBuilder_.isEmpty()) {
-              nodeConfigsBuilder_.dispose();
-              nodeConfigsBuilder_ = null;
-              nodeConfigs_ = other.nodeConfigs_;
+          if (!other.nodeEndpoints_.isEmpty()) {
+            if (nodeEndpointsBuilder_.isEmpty()) {
+              nodeEndpointsBuilder_.dispose();
+              nodeEndpointsBuilder_ = null;
+              nodeEndpoints_ = other.nodeEndpoints_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              nodeConfigsBuilder_ = 
+              nodeEndpointsBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getNodeConfigsFieldBuilder() : null;
+                   getNodeEndpointsFieldBuilder() : null;
             } else {
-              nodeConfigsBuilder_.addAllMessages(other.nodeConfigs_);
+              nodeEndpointsBuilder_.addAllMessages(other.nodeEndpoints_);
             }
           }
         }
@@ -2304,244 +2304,244 @@ public final class Protos {
       }
       private int bitField0_;
 
-      private java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig> nodeConfigs_ =
+      private java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> nodeEndpoints_ =
         java.util.Collections.emptyList();
-      private void ensureNodeConfigsIsMutable() {
+      private void ensureNodeEndpointsIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          nodeConfigs_ = new java.util.ArrayList<in.xnnyygn.xraft.core.log.Protos.NodeConfig>(nodeConfigs_);
+          nodeEndpoints_ = new java.util.ArrayList<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint>(nodeEndpoints_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          in.xnnyygn.xraft.core.log.Protos.NodeConfig, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder, in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> nodeConfigsBuilder_;
+          in.xnnyygn.xraft.core.log.Protos.NodeEndpoint, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> nodeEndpointsBuilder_;
 
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig> getNodeConfigsList() {
-        if (nodeConfigsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(nodeConfigs_);
+      public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> getNodeEndpointsList() {
+        if (nodeEndpointsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(nodeEndpoints_);
         } else {
-          return nodeConfigsBuilder_.getMessageList();
+          return nodeEndpointsBuilder_.getMessageList();
         }
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public int getNodeConfigsCount() {
-        if (nodeConfigsBuilder_ == null) {
-          return nodeConfigs_.size();
+      public int getNodeEndpointsCount() {
+        if (nodeEndpointsBuilder_ == null) {
+          return nodeEndpoints_.size();
         } else {
-          return nodeConfigsBuilder_.getCount();
+          return nodeEndpointsBuilder_.getCount();
         }
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig getNodeConfigs(int index) {
-        if (nodeConfigsBuilder_ == null) {
-          return nodeConfigs_.get(index);
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint getNodeEndpoints(int index) {
+        if (nodeEndpointsBuilder_ == null) {
+          return nodeEndpoints_.get(index);
         } else {
-          return nodeConfigsBuilder_.getMessage(index);
+          return nodeEndpointsBuilder_.getMessage(index);
         }
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder setNodeConfigs(
-          int index, in.xnnyygn.xraft.core.log.Protos.NodeConfig value) {
-        if (nodeConfigsBuilder_ == null) {
+      public Builder setNodeEndpoints(
+          int index, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint value) {
+        if (nodeEndpointsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.set(index, value);
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.set(index, value);
           onChanged();
         } else {
-          nodeConfigsBuilder_.setMessage(index, value);
+          nodeEndpointsBuilder_.setMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder setNodeConfigs(
-          int index, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder builderForValue) {
-        if (nodeConfigsBuilder_ == null) {
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.set(index, builderForValue.build());
+      public Builder setNodeEndpoints(
+          int index, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder builderForValue) {
+        if (nodeEndpointsBuilder_ == null) {
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.set(index, builderForValue.build());
           onChanged();
         } else {
-          nodeConfigsBuilder_.setMessage(index, builderForValue.build());
+          nodeEndpointsBuilder_.setMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder addNodeConfigs(in.xnnyygn.xraft.core.log.Protos.NodeConfig value) {
-        if (nodeConfigsBuilder_ == null) {
+      public Builder addNodeEndpoints(in.xnnyygn.xraft.core.log.Protos.NodeEndpoint value) {
+        if (nodeEndpointsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.add(value);
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.add(value);
           onChanged();
         } else {
-          nodeConfigsBuilder_.addMessage(value);
+          nodeEndpointsBuilder_.addMessage(value);
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder addNodeConfigs(
-          int index, in.xnnyygn.xraft.core.log.Protos.NodeConfig value) {
-        if (nodeConfigsBuilder_ == null) {
+      public Builder addNodeEndpoints(
+          int index, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint value) {
+        if (nodeEndpointsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.add(index, value);
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.add(index, value);
           onChanged();
         } else {
-          nodeConfigsBuilder_.addMessage(index, value);
+          nodeEndpointsBuilder_.addMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder addNodeConfigs(
-          in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder builderForValue) {
-        if (nodeConfigsBuilder_ == null) {
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.add(builderForValue.build());
+      public Builder addNodeEndpoints(
+          in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder builderForValue) {
+        if (nodeEndpointsBuilder_ == null) {
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.add(builderForValue.build());
           onChanged();
         } else {
-          nodeConfigsBuilder_.addMessage(builderForValue.build());
+          nodeEndpointsBuilder_.addMessage(builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder addNodeConfigs(
-          int index, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder builderForValue) {
-        if (nodeConfigsBuilder_ == null) {
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.add(index, builderForValue.build());
+      public Builder addNodeEndpoints(
+          int index, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder builderForValue) {
+        if (nodeEndpointsBuilder_ == null) {
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.add(index, builderForValue.build());
           onChanged();
         } else {
-          nodeConfigsBuilder_.addMessage(index, builderForValue.build());
+          nodeEndpointsBuilder_.addMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder addAllNodeConfigs(
-          java.lang.Iterable<? extends in.xnnyygn.xraft.core.log.Protos.NodeConfig> values) {
-        if (nodeConfigsBuilder_ == null) {
-          ensureNodeConfigsIsMutable();
+      public Builder addAllNodeEndpoints(
+          java.lang.Iterable<? extends in.xnnyygn.xraft.core.log.Protos.NodeEndpoint> values) {
+        if (nodeEndpointsBuilder_ == null) {
+          ensureNodeEndpointsIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, nodeConfigs_);
+              values, nodeEndpoints_);
           onChanged();
         } else {
-          nodeConfigsBuilder_.addAllMessages(values);
+          nodeEndpointsBuilder_.addAllMessages(values);
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder clearNodeConfigs() {
-        if (nodeConfigsBuilder_ == null) {
-          nodeConfigs_ = java.util.Collections.emptyList();
+      public Builder clearNodeEndpoints() {
+        if (nodeEndpointsBuilder_ == null) {
+          nodeEndpoints_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
-          nodeConfigsBuilder_.clear();
+          nodeEndpointsBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public Builder removeNodeConfigs(int index) {
-        if (nodeConfigsBuilder_ == null) {
-          ensureNodeConfigsIsMutable();
-          nodeConfigs_.remove(index);
+      public Builder removeNodeEndpoints(int index) {
+        if (nodeEndpointsBuilder_ == null) {
+          ensureNodeEndpointsIsMutable();
+          nodeEndpoints_.remove(index);
           onChanged();
         } else {
-          nodeConfigsBuilder_.remove(index);
+          nodeEndpointsBuilder_.remove(index);
         }
         return this;
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder getNodeConfigsBuilder(
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder getNodeEndpointsBuilder(
           int index) {
-        return getNodeConfigsFieldBuilder().getBuilder(index);
+        return getNodeEndpointsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder getNodeConfigsOrBuilder(
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder getNodeEndpointsOrBuilder(
           int index) {
-        if (nodeConfigsBuilder_ == null) {
-          return nodeConfigs_.get(index);  } else {
-          return nodeConfigsBuilder_.getMessageOrBuilder(index);
+        if (nodeEndpointsBuilder_ == null) {
+          return nodeEndpoints_.get(index);  } else {
+          return nodeEndpointsBuilder_.getMessageOrBuilder(index);
         }
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> 
-           getNodeConfigsOrBuilderList() {
-        if (nodeConfigsBuilder_ != null) {
-          return nodeConfigsBuilder_.getMessageOrBuilderList();
+      public java.util.List<? extends in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> 
+           getNodeEndpointsOrBuilderList() {
+        if (nodeEndpointsBuilder_ != null) {
+          return nodeEndpointsBuilder_.getMessageOrBuilderList();
         } else {
-          return java.util.Collections.unmodifiableList(nodeConfigs_);
+          return java.util.Collections.unmodifiableList(nodeEndpoints_);
         }
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder addNodeConfigsBuilder() {
-        return getNodeConfigsFieldBuilder().addBuilder(
-            in.xnnyygn.xraft.core.log.Protos.NodeConfig.getDefaultInstance());
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder addNodeEndpointsBuilder() {
+        return getNodeEndpointsFieldBuilder().addBuilder(
+            in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.getDefaultInstance());
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder addNodeConfigsBuilder(
+      public in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder addNodeEndpointsBuilder(
           int index) {
-        return getNodeConfigsFieldBuilder().addBuilder(
-            index, in.xnnyygn.xraft.core.log.Protos.NodeConfig.getDefaultInstance());
+        return getNodeEndpointsFieldBuilder().addBuilder(
+            index, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.getDefaultInstance());
       }
       /**
-       * <code>repeated .NodeConfig node_configs = 1;</code>
+       * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
        */
-      public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder> 
-           getNodeConfigsBuilderList() {
-        return getNodeConfigsFieldBuilder().getBuilderList();
+      public java.util.List<in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder> 
+           getNodeEndpointsBuilderList() {
+        return getNodeEndpointsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          in.xnnyygn.xraft.core.log.Protos.NodeConfig, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder, in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder> 
-          getNodeConfigsFieldBuilder() {
-        if (nodeConfigsBuilder_ == null) {
-          nodeConfigsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              in.xnnyygn.xraft.core.log.Protos.NodeConfig, in.xnnyygn.xraft.core.log.Protos.NodeConfig.Builder, in.xnnyygn.xraft.core.log.Protos.NodeConfigOrBuilder>(
-                  nodeConfigs_,
+          in.xnnyygn.xraft.core.log.Protos.NodeEndpoint, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder> 
+          getNodeEndpointsFieldBuilder() {
+        if (nodeEndpointsBuilder_ == null) {
+          nodeEndpointsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              in.xnnyygn.xraft.core.log.Protos.NodeEndpoint, in.xnnyygn.xraft.core.log.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.log.Protos.NodeEndpointOrBuilder>(
+                  nodeEndpoints_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
                   isClean());
-          nodeConfigs_ = null;
+          nodeEndpoints_ = null;
         }
-        return nodeConfigsBuilder_;
+        return nodeEndpointsBuilder_;
       }
 
       private java.lang.Object nodeToRemove_ = "";
@@ -2666,10 +2666,10 @@ public final class Protos {
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_NodeConfig_descriptor;
+    internal_static_NodeEndpoint_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_NodeConfig_fieldAccessorTable;
+      internal_static_NodeEndpoint_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_AddNodeCommand_descriptor;
   private static final 
@@ -2689,14 +2689,14 @@ public final class Protos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\023src/proto/log.proto\"4\n\nNodeConfig\022\n\n\002i" +
-      "d\030\001 \001(\t\022\014\n\004host\030\002 \001(\t\022\014\n\004port\030\003 \001(\005\"Y\n\016A" +
-      "ddNodeCommand\022!\n\014node_configs\030\001 \003(\0132\013.No" +
-      "deConfig\022$\n\017new_node_config\030\002 \001(\0132\013.Node" +
-      "Config\"N\n\021RemoveNodeCommand\022!\n\014node_conf" +
-      "igs\030\001 \003(\0132\013.NodeConfig\022\026\n\016node_to_remove" +
-      "\030\002 \001(\tB#\n\031in.xnnyygn.xraft.core.logB\006Pro" +
-      "tosb\006proto3"
+      "\n\023src/proto/log.proto\"6\n\014NodeEndpoint\022\n\n" +
+      "\002id\030\001 \001(\t\022\014\n\004host\030\002 \001(\t\022\014\n\004port\030\003 \001(\005\"a\n" +
+      "\016AddNodeCommand\022%\n\016node_endpoints\030\001 \003(\0132" +
+      "\r.NodeEndpoint\022(\n\021new_node_endpoint\030\002 \001(" +
+      "\0132\r.NodeEndpoint\"R\n\021RemoveNodeCommand\022%\n" +
+      "\016node_endpoints\030\001 \003(\0132\r.NodeEndpoint\022\026\n\016" +
+      "node_to_remove\030\002 \001(\tB#\n\031in.xnnyygn.xraft" +
+      ".core.logB\006Protosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2710,24 +2710,24 @@ public final class Protos {
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
-    internal_static_NodeConfig_descriptor =
+    internal_static_NodeEndpoint_descriptor =
       getDescriptor().getMessageTypes().get(0);
-    internal_static_NodeConfig_fieldAccessorTable = new
+    internal_static_NodeEndpoint_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_NodeConfig_descriptor,
+        internal_static_NodeEndpoint_descriptor,
         new java.lang.String[] { "Id", "Host", "Port", });
     internal_static_AddNodeCommand_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_AddNodeCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_AddNodeCommand_descriptor,
-        new java.lang.String[] { "NodeConfigs", "NewNodeConfig", });
+        new java.lang.String[] { "NodeEndpoints", "NewNodeEndpoint", });
     internal_static_RemoveNodeCommand_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_RemoveNodeCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RemoveNodeCommand_descriptor,
-        new java.lang.String[] { "NodeConfigs", "NodeToRemove", });
+        new java.lang.String[] { "NodeEndpoints", "NodeToRemove", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

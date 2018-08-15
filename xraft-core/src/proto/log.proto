@@ -3,18 +3,18 @@ syntax = "proto3";
 option java_package = "in.xnnyygn.xraft.core.log";
 option java_outer_classname = "Protos";
 
-message NodeConfig {
+message NodeEndpoint {
     string id = 1;
     string host = 2;
     int32 port = 3;
 }
 
 message AddNodeCommand {
-    repeated NodeConfig node_configs = 1;
-    NodeConfig new_node_config = 2;
+    repeated NodeEndpoint node_endpoints = 1;
+    NodeEndpoint new_node_endpoint = 2;
 }
 
 message RemoveNodeCommand {
-    repeated NodeConfig node_configs = 1;
+    repeated NodeEndpoint node_endpoints = 1;
     string node_to_remove = 2;
 }

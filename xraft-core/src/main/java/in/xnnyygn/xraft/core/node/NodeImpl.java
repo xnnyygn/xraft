@@ -495,7 +495,7 @@ public class NodeImpl implements Node {
     public void onGroupConfigEntryFromLeaderAppend(GroupConfigEntryFromLeaderAppendEvent event) {
         context.taskExecutor().submit(() -> {
             GroupConfigEntry entry = event.getEntry();
-            context.group().updateNodes(entry.getResultNodeConfigs());
+            context.group().updateNodes(entry.getResultNodeEndpoints());
         }, LOGGING_FUTURE_CALLBACK);
     }
 

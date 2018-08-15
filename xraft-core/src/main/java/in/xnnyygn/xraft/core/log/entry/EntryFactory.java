@@ -20,10 +20,10 @@ public class EntryFactory {
                     return new GeneralEntry(index, term, commandBytes);
                 case Entry.KIND_ADD_NODE:
                     Protos.AddNodeCommand addNodeCommand = Protos.AddNodeCommand.parseFrom(commandBytes);
-                    return new AddNodeEntry(index, term, asNodeConfigs(addNodeCommand.getNodeConfigsList()), asNodeConfig(addNodeCommand.getNewNodeConfig()));
+                    return new AddNodeEntry(index, term, asNodeEndpoints(addNodeCommand.getNodeEndpointsList()), asNodeEndpoint(addNodeCommand.getNewNodeEndpoint()));
                 case Entry.KIND_REMOVE_NODE:
                     Protos.RemoveNodeCommand removeNodeCommand = Protos.RemoveNodeCommand.parseFrom(commandBytes);
-                    return new RemoveNodeEntry(index, term, asNodeConfigs(removeNodeCommand.getNodeConfigsList()), new NodeId(removeNodeCommand.getNodeToRemove()));
+                    return new RemoveNodeEntry(index, term, asNodeEndpoints(removeNodeCommand.getNodeEndpointsList()), new NodeId(removeNodeCommand.getNodeToRemove()));
                 default:
                     throw new IllegalArgumentException("unexpected entry kind " + kind);
             }
@@ -32,12 +32,12 @@ public class EntryFactory {
         }
     }
 
-    private Set<NodeEndpoint> asNodeConfigs(Collection<Protos.NodeConfig> protoNodeConfigs) {
-        return protoNodeConfigs.stream().map(this::asNodeConfig).collect(Collectors.toSet());
+    private Set<NodeEndpoint> asNodeEndpoints(Collection<Protos.NodeEndpoint> protoNodeEndpoints) {
+        return protoNodeEndpoints.stream().map(this::asNodeEndpoint).collect(Collectors.toSet());
     }
 
-    private NodeEndpoint asNodeConfig(Protos.NodeConfig protoNodeConfig) {
-        return new NodeEndpoint(protoNodeConfig.getId(), protoNodeConfig.getHost(), protoNodeConfig.getPort());
+    private NodeEndpoint asNodeEndpoint(Protos.NodeEndpoint protoNodeEndpoint) {
+        return new NodeEndpoint(protoNodeEndpoint.getId(), protoNodeEndpoint.getHost(), protoNodeEndpoint.getPort());
     }
 
 }

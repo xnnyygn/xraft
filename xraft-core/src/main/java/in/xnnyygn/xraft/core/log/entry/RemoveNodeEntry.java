@@ -17,7 +17,7 @@ public class RemoveNodeEntry extends GroupConfigEntry {
     }
 
     // TODO add test
-    public Set<NodeEndpoint> getResultNodeConfigs() {
+    public Set<NodeEndpoint> getResultNodeEndpoints() {
         return getNodeEndpoints().stream()
                 .filter(c -> !c.getId().equals(nodeToRemove))
                 .collect(Collectors.toSet());
@@ -30,8 +30,8 @@ public class RemoveNodeEntry extends GroupConfigEntry {
     @Override
     public byte[] getCommandBytes() {
         return Protos.RemoveNodeCommand.newBuilder()
-                .addAllNodeConfigs(getNodeEndpoints().stream().map(c ->
-                        Protos.NodeConfig.newBuilder()
+                .addAllNodeEndpoints(getNodeEndpoints().stream().map(c ->
+                        Protos.NodeEndpoint.newBuilder()
                                 .setId(c.getId().getValue())
                                 .setHost(c.getHost())
                                 .setPort(c.getPort())
@@ -46,7 +46,7 @@ public class RemoveNodeEntry extends GroupConfigEntry {
         return "RemoveNodeEntry{" +
                 "index=" + index +
                 ", term=" + term +
-                ", nodeConfigs=" + getNodeEndpoints() +
+                ", nodeEndpoints=" + getNodeEndpoints() +
                 ", nodeToRemove=" + nodeToRemove +
                 '}';
     }

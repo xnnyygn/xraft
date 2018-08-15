@@ -18,6 +18,6 @@ public abstract class GroupConfigEntry extends AbstractEntry {
         return nodeEndpoints;
     }
 
-    public abstract Set<NodeEndpoint> getResultNodeConfigs();
+    public abstract Set<NodeEndpoint> getResultNodeEndpoints();
 
 }

@@ -21,7 +21,7 @@ public class AddNodeEntry extends GroupConfigEntry {
     }
 
     // TODO add test
-    public Set<NodeEndpoint> getResultNodeConfigs() {
+    public Set<NodeEndpoint> getResultNodeEndpoints() {
         Set<NodeEndpoint> configs = new HashSet<>(getNodeEndpoints());
         configs.add(newNodeEndpoint);
         return configs;
@@ -30,14 +30,14 @@ public class AddNodeEntry extends GroupConfigEntry {
     @Override
     public byte[] getCommandBytes() {
         return Protos.AddNodeCommand.newBuilder()
-                .addAllNodeConfigs(getNodeEndpoints().stream().map(c ->
-                        Protos.NodeConfig.newBuilder()
+                .addAllNodeEndpoints(getNodeEndpoints().stream().map(c ->
+                        Protos.NodeEndpoint.newBuilder()
                                 .setId(c.getId().getValue())
                                 .setHost(c.getHost())
                                 .setPort(c.getPort())
                                 .build()
                 ).collect(Collectors.toList()))
-                .setNewNodeConfig(Protos.NodeConfig.newBuilder()
+                .setNewNodeEndpoint(Protos.NodeEndpoint.newBuilder()
                         .setId(newNodeEndpoint.getId().getValue())
                         .setHost(newNodeEndpoint.getHost())
                         .setPort(newNodeEndpoint.getPort())
@@ -50,7 +50,7 @@ public class AddNodeEntry extends GroupConfigEntry {
         return "AddNodeEntry{" +
                 "index=" + index +
                 ", term=" + term +
-                ", nodeConfigs=" + getNodeEndpoints() +
+                ", nodeEndpoints=" + getNodeEndpoints() +
                 ", newNodeEndpoint=" + newNodeEndpoint +
                 '}';
     }

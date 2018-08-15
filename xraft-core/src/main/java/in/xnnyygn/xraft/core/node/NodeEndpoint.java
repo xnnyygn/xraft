@@ -2,9 +2,7 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.rpc.Address;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 public class NodeEndpoint {
 
@@ -52,23 +50,6 @@ public class NodeEndpoint {
     @Override
     public String toString() {
         return "NodeEndpoint{id=" + id + ", address=" + address + '}';
-    }
-
-    public static Set<NodeEndpoint> merge(Set<NodeEndpoint> oldNodeEndpoints, Set<NodeEndpoint> newNodeEndpoints) {
-        Set<NodeEndpoint> nodeEndpoints = new HashSet<>(oldNodeEndpoints);
-        nodeEndpoints.addAll(newNodeEndpoints);
-        return nodeEndpoints;
-    }
-
-    public static boolean isSame(Set<NodeEndpoint> nodeConfigs1, Set<NodeEndpoint> nodeConfigs2) {
-        if (nodeConfigs1.size() != nodeConfigs2.size()) return false;
-
-        for (NodeEndpoint config : nodeConfigs1) {
-            if (!nodeConfigs2.contains(config)) {
-                return false;
-            }
-        }
-        return true;
     }
 
 }
