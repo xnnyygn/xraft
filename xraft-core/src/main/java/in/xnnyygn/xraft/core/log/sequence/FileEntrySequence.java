@@ -174,17 +174,16 @@ public class FileEntrySequence extends AbstractEntrySequence {
             throw new IllegalArgumentException("no entry to commit or commit index exceed");
         }
         long offset;
-        Entry entry;
-        for (int i = commitIndex + 1; i <= index; i++) {
-            entry = pendingEntries.removeFirst();
-            try {
+        Entry entry = null;
+        try {
+            for (int i = commitIndex + 1; i <= index; i++) {
+                entry = pendingEntries.removeFirst();
                 offset = entriesFile.appendEntry(entry);
-                entryIndexFile.appendEntryIndex(new EntryIndexItem(i, offset, entry.getKind(), entry.getTerm()));
-            } catch (IOException e) {
-                throw new LogException("failed to commit entry " + i, e);
+                entryIndexFile.appendEntryIndex(i, offset, entry.getKind(), entry.getTerm());
+                commitIndex = i;
             }
-            // TODO move to out of loop?
-            commitIndex = i;
+        } catch (IOException e) {
+            throw new LogException("failed to commit entry " + entry, e);
         }
     }
 

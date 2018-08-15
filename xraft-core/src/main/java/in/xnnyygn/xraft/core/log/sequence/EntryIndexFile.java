@@ -77,10 +77,6 @@ public class EntryIndexFile implements Iterable<EntryIndexItem> {
         return entryIndexCount;
     }
 
-    public void appendEntryIndex(EntryIndexItem item) throws IOException {
-        appendEntryIndex(item.getIndex(), item.getOffset(), item.getKind(), item.getTerm());
-    }
-
     public void appendEntryIndex(int index, long offset, int kind, int term) throws IOException {
         if (seekableFile.size() == 0L) {
             seekableFile.writeInt(index);
