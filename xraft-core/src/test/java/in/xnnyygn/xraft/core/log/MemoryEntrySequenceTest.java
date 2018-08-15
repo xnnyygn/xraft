@@ -55,6 +55,17 @@ public class MemoryEntrySequenceTest {
         Assert.assertEquals(1, meta.getTerm());
     }
 
+
+    @Test
+    public void testIsEntryPresent() {
+        MemoryEntrySequence sequence = new MemoryEntrySequence(1);
+        Assert.assertFalse(sequence.isEntryPresent(1));
+        sequence.append(new NoOpEntry(1, 1));
+        Assert.assertTrue(sequence.isEntryPresent(1));
+        Assert.assertFalse(sequence.isEntryPresent(0));
+        Assert.assertFalse(sequence.isEntryPresent(2));
+    }
+
     @Test(expected = IllegalStateException.class)
     public void testSubListEmpty() {
         MemoryEntrySequence sequence = new MemoryEntrySequence(2);

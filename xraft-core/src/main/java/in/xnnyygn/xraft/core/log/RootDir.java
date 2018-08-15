@@ -83,5 +83,4 @@ class RootDir {
         return latest;
     }
 
-    // TODO remove generations before xxx
 }

@@ -42,7 +42,6 @@ abstract class AbstractEntrySequence implements EntrySequence {
         return nextLogIndex - 1;
     }
 
-    // TODO add test
     @Override
     public boolean isEntryPresent(int index) {
         return !isEmpty() && index >= doGetFirstLogIndex() && index <= doGetLastLogIndex();
