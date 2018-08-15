@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// TODO configs
 public class ServerLauncher {
 
     private static final Logger logger = LoggerFactory.getLogger(ServerLauncher.class);

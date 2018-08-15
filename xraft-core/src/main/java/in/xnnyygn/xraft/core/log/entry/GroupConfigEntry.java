@@ -4,7 +4,6 @@ import in.xnnyygn.xraft.core.node.NodeEndpoint;
 
 import java.util.Set;
 
-// TODO handle removing entries
 public abstract class GroupConfigEntry extends AbstractEntry {
 
     private final Set<NodeEndpoint> nodeEndpoints;
