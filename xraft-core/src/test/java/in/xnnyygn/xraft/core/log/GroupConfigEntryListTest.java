@@ -45,4 +45,25 @@ public class GroupConfigEntryListTest {
         Assert.assertNull(list.removeAfter(3));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testSubListIllegalArgument() {
+        GroupConfigEntryList list = new GroupConfigEntryList();
+        list.subList(2, 1);
+    }
+
+    @Test
+    public void testSubList() {
+        GroupConfigEntryList list = new GroupConfigEntryList();
+        list.add(new AddNodeEntry(1, 1, Collections.<NodeEndpoint>emptySet(), new NodeEndpoint("A", "localhost", 2333)));
+        list.add(new AddNodeEntry(4, 1, Collections.<NodeEndpoint>emptySet(), new NodeEndpoint("A", "localhost", 2333)));
+        list.add(new AddNodeEntry(10, 1, Collections.<NodeEndpoint>emptySet(), new NodeEndpoint("A", "localhost", 2333)));
+        Assert.assertEquals(0, list.subList(1, 1).size());
+        Assert.assertEquals(1, list.subList(10, 11).size());
+        Assert.assertEquals(3, list.subList(1, 11).size());
+        Assert.assertEquals(1, list.subList(1, 4).size());
+        Assert.assertEquals(2, list.subList(1, 5).size());
+        Assert.assertEquals(2, list.subList(4, 11).size());
+        Assert.assertEquals(1, list.subList(4, 10).size());
+    }
+
 }

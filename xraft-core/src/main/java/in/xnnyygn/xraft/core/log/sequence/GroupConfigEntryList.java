@@ -41,7 +41,6 @@ public class GroupConfigEntryList implements Iterable<GroupConfigEntry> {
         return firstRemovedEntry;
     }
 
-    // TODO add test
     public List<GroupConfigEntry> subList(int fromIndex, int toIndex) {
         if (fromIndex > toIndex) {
             throw new IllegalArgumentException("from index > to index");

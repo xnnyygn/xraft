@@ -50,7 +50,6 @@ public class Service implements StateMachine {
             if (taskReference.await(3000L)) {
                 commandRequest.reply(Success.INSTANCE);
             } else {
-                // TODO cancel?
                 commandRequest.reply(new Failure(101, "timeout"));
             }
         } catch (InterruptedException e) {
