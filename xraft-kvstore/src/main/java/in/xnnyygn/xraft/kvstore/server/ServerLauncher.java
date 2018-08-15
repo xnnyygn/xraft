@@ -105,7 +105,7 @@ public class ServerLauncher {
         int portService = ((Long) cmdLine.getParsedOptionValue("p2")).intValue();
 
         NodeEndpoint nodeEndpoint = new NodeEndpoint(id, host, portRaftServer);
-        Node node = new NodeBuilder2(nodeEndpoint.getId(), new NodeGroup(nodeEndpoint))
+        Node node = new NodeBuilder(nodeEndpoint.getId(), new NodeGroup(nodeEndpoint))
                 .setStandby(standby)
                 .setDataDir(cmdLine.getOptionValue('d'))
                 .build();
@@ -129,7 +129,7 @@ public class ServerLauncher {
                 .collect(Collectors.toSet());
 
         NodeGroup nodeGroup = new NodeGroup(nodeEndpoints);
-        Node node = new NodeBuilder2(new NodeId(rawNodeId), nodeGroup)
+        Node node = new NodeBuilder(new NodeId(rawNodeId), nodeGroup)
                 .setDataDir(cmdLine.getOptionValue('d'))
                 .build();
         Server server = new Server(node, portService);

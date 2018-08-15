@@ -17,15 +17,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class NodeImpl2Test {
+public class NodeImplTest {
 
-    private NodeBuilder2 newNodeBuilder(NodeId selfId, NodeEndpoint... endpoints) {
-        return new NodeBuilder2(selfId, new NodeGroup(Arrays.asList(endpoints)))
+    private NodeBuilder newNodeBuilder(NodeId selfId, NodeEndpoint... endpoints) {
+        return new NodeBuilder(selfId, new NodeGroup(Arrays.asList(endpoints)))
                 .setScheduler(new NullScheduler())
                 .setConnector(new MockConnector())
                 .setTaskExecutor(new DirectTaskExecutor(true));
@@ -39,12 +38,12 @@ public class NodeImpl2Test {
 
     @Test
     public void testStartFresh() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
+        NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
                 .build();
 
         node.start();
 
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(0, state.getTerm());
         Assert.assertNull(state.getVotedFor());
@@ -52,13 +51,13 @@ public class NodeImpl2Test {
 
     @Test
     public void testStartLoadFromStore() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
+        NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
                 .setStore(new MemoryNodeStore(1, NodeId.of("B")))
                 .build();
 
         node.start();
 
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(1, state.getTerm());
         Assert.assertEquals(NodeId.of("B"), state.getVotedFor());
@@ -66,13 +65,13 @@ public class NodeImpl2Test {
 
     @Test
     public void testElectionTimeoutStandalone() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
+        NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
                 .build();
         node.start();
 
         node.electionTimeout();
 
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.LEADER, state.getRoleName());
         Assert.assertEquals(1, state.getTerm());
 
@@ -88,14 +87,14 @@ public class NodeImpl2Test {
 
     @Test
     public void testElectionTimeoutStandby() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
+        NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
                 .setStore(new MemoryNodeStore(1, null))
                 .setStandby(true)
                 .build();
         node.start();
         node.electionTimeout();
 
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(1, state.getTerm());
         // timeout was cancelled
@@ -103,7 +102,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testElectionTimeoutWhenLeader() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
+        NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
                 .build();
         node.start();
         node.electionTimeout();
@@ -112,7 +111,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testElectionTimeoutWhenFollower() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -121,7 +120,7 @@ public class NodeImpl2Test {
         node.start();
         node.electionTimeout();
 
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.CANDIDATE, state.getRoleName());
         Assert.assertEquals(1, state.getTerm());
         Assert.assertEquals(1, state.getVotesCount());
@@ -136,7 +135,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testElectionTimeoutWhenCandidate() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -146,7 +145,7 @@ public class NodeImpl2Test {
         node.electionTimeout(); // become candidate
         node.electionTimeout();
 
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.CANDIDATE, state.getRoleName());
         Assert.assertEquals(2, state.getTerm());
         Assert.assertEquals(1, state.getVotesCount());
@@ -161,7 +160,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testReplicateLogStandalone() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
+        NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
                 .build();
         node.start();
         node.electionTimeout();
@@ -172,7 +171,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testReplicateLog() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -201,7 +200,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testReplicateLogSkipReplicating() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -220,7 +219,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testReplicateLogForceReplicating() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -240,7 +239,7 @@ public class NodeImpl2Test {
 
     @Test(expected = NotLeaderException.class)
     public void testAppendLogWhenFollower() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -252,7 +251,7 @@ public class NodeImpl2Test {
 
     @Test(expected = NotLeaderException.class)
     public void testAppendLogWhenCandidate() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -266,7 +265,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testAppendLog() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -284,7 +283,7 @@ public class NodeImpl2Test {
 
     @Test(expected = NotLeaderException.class)
     public void testAddServerWhenFollower() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -296,7 +295,7 @@ public class NodeImpl2Test {
 
     @Test(expected = NotLeaderException.class)
     public void testAddServerWhenCandidate() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -309,7 +308,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testAddServer() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -351,7 +350,7 @@ public class NodeImpl2Test {
         NodeConfig2 config = new NodeConfig2();
         config.setNewNodeMaxRound(1);
 
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -380,7 +379,7 @@ public class NodeImpl2Test {
     public void testAddServerAwaitPreviousGroupConfigChange() {
         NodeConfig2 config = new NodeConfig2();
         config.setPreviousGroupConfigChangeTimeout(1);
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -406,7 +405,7 @@ public class NodeImpl2Test {
 
     @Test(expected = NotLeaderException.class)
     public void testRemoveServerWhenFollower() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -418,7 +417,7 @@ public class NodeImpl2Test {
 
     @Test(expected = NotLeaderException.class)
     public void testRemoveServerWhenCandidate() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -431,7 +430,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testRemoveServer() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -456,7 +455,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testRemoveServerSelf() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -477,14 +476,14 @@ public class NodeImpl2Test {
         Assert.assertEquals(TaskReference.Result.OK, reference.getResult());
         Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
         Assert.assertNull(node.getContext().group().getState(NodeId.of("A")));
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(1, state.getTerm());
     }
 
     @Test
     public void testRemoveServerAppendEntriesResultFromRemovingNode() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -505,7 +504,7 @@ public class NodeImpl2Test {
     public void testRemoveServerAwaitPreviousGroupConfigChange() {
         NodeConfig2 config = new NodeConfig2();
         config.setPreviousGroupConfigChangeTimeout(1);
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -524,7 +523,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteRpcNotMajor() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -543,7 +542,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteRpcUnknownNode() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -561,7 +560,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteRpcSmallerTerm() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -580,7 +579,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteRpcLargerTerm() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -598,7 +597,7 @@ public class NodeImpl2Test {
         RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
         Assert.assertEquals(2, result.getTerm());
         Assert.assertTrue(result.isVoteGranted());
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(NodeId.of("C"), state.getVotedFor());
         Assert.assertEquals(NodeId.of("C"), node.getContext().store().getVotedFor());
@@ -606,7 +605,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteRpcLargerTermButNotVote() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -629,7 +628,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteRpcFollower() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -647,12 +646,12 @@ public class NodeImpl2Test {
         RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
         Assert.assertEquals(1, result.getTerm());
         Assert.assertTrue(result.isVoteGranted());
-        Assert.assertEquals(NodeId.of("C"), node.getRoleState2().getVotedFor());
+        Assert.assertEquals(NodeId.of("C"), node.getRoleState().getVotedFor());
     }
 
     @Test
     public void testOnReceiveRequestVoteRpcFollowerVoted() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -670,12 +669,12 @@ public class NodeImpl2Test {
         RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
         Assert.assertEquals(1, result.getTerm());
         Assert.assertTrue(result.isVoteGranted());
-        Assert.assertEquals(NodeId.of("C"), node.getRoleState2().getVotedFor());
+        Assert.assertEquals(NodeId.of("C"), node.getRoleState().getVotedFor());
     }
 
     @Test
     public void testOnReceiveRequestVoteRpcFollowerNotVote() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -698,7 +697,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteRpcCandidate() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -721,7 +720,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteRpcLeader() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -745,7 +744,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteResult() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -757,7 +756,7 @@ public class NodeImpl2Test {
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
 
         // role state
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.LEADER, state.getRoleName());
         Assert.assertEquals(1, state.getTerm());
 
@@ -775,7 +774,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteResultNotGranted() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -789,7 +788,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteResultLargerTerm() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -799,14 +798,14 @@ public class NodeImpl2Test {
         node.electionTimeout(); // become candidate
 
         node.onReceiveRequestVoteResult(new RequestVoteResult(2, false));
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(2, state.getTerm());
     }
 
     @Test
     public void testOnReceiveRequestVoteResultWhenLeader() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
+        NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
                 .build();
         node.start();
         node.electionTimeout(); // become leader
@@ -816,7 +815,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteResultWhenFollower() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
+        NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
                 .setStore(new MemoryNodeStore(1, null))
                 .build();
         node.start();
@@ -826,7 +825,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveRequestVoteResultLessThanHalfOfMajorCount() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2333),
@@ -839,14 +838,14 @@ public class NodeImpl2Test {
         node.electionTimeout();
 
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.CANDIDATE, state.getRoleName());
         Assert.assertEquals(2, state.getVotesCount());
     }
 
     @Test
     public void testOnReceiveAppendEntriesRpcSmallerTerm() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -865,7 +864,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveAppendEntriesRpcLargerTerm() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -882,14 +881,14 @@ public class NodeImpl2Test {
         Assert.assertEquals(2, result.getTerm());
         Assert.assertTrue(result.isSuccess());
 
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(NodeId.of("B"), state.getLeaderId());
     }
 
     @Test
     public void testOnReceiveAppendEntriesRpcFollower() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -906,7 +905,7 @@ public class NodeImpl2Test {
         Assert.assertEquals(1, result.getTerm());
         Assert.assertTrue(result.isSuccess());
 
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(1, state.getTerm());
         Assert.assertEquals(NodeId.of("B"), state.getLeaderId());
@@ -914,7 +913,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveAppendEntriesRpcCandidate() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -932,7 +931,7 @@ public class NodeImpl2Test {
         Assert.assertEquals(2, result.getTerm());
         Assert.assertTrue(result.isSuccess());
 
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(2, state.getTerm());
         Assert.assertEquals(NodeId.of("B"), state.getLeaderId());
@@ -940,7 +939,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveAppendEntriesRpcLeader() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -959,14 +958,14 @@ public class NodeImpl2Test {
         Assert.assertEquals(2, result.getTerm());
         Assert.assertFalse(result.isSuccess());
 
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.LEADER, state.getRoleName());
         Assert.assertEquals(2, state.getTerm());
     }
 
     @Test
     public void testOnReceiveAppendEntriesResultPeerCatchUp() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -986,7 +985,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveAppendEntriesResultPeerNotCatchUp() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1011,7 +1010,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveAppendEntriesResultBackOff() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1035,7 +1034,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveAppendEntriesResultBackOffFailed() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1055,7 +1054,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveAppendEntriesResultLargerTerm() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1067,14 +1066,14 @@ public class NodeImpl2Test {
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 3, false),
                 NodeId.of("B"), createAppendEntriesRpc(1)));
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(3, state.getTerm());
     }
 
     @Test
     public void testOnReceiveAppendEntriesResultUnexpectedSourceNodeId() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1090,7 +1089,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveAppendEntriesResultNodeRemoving() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1110,7 +1109,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveAppendEntriesResultNewNodeCatchUp() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1137,7 +1136,7 @@ public class NodeImpl2Test {
     public void testOnReceiveAppendEntriesResultNewNodeCannotCatchUp() {
         NodeConfig2 config = new NodeConfig2();
         config.setNewNodeMaxRound(1);
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1157,7 +1156,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveAppendEntriesResultNewNodeContinue() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1180,7 +1179,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveInstallSnapshotRpcSmallerTerm() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1198,7 +1197,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveInstallSnapshotRpc() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1220,7 +1219,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveInstallSnapshotRpcLargerTerm() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1239,7 +1238,7 @@ public class NodeImpl2Test {
         MockConnector mockConnector = (MockConnector) node.getContext().connector();
         InstallSnapshotResult result = (InstallSnapshotResult) mockConnector.getResult();
         Assert.assertEquals(2, result.getTerm());
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(NodeId.of("B"), state.getLeaderId());
     }
@@ -1247,7 +1246,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveInstallSnapshotResultLargerTerm() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1257,14 +1256,14 @@ public class NodeImpl2Test {
         node.start();
         node.onReceiveInstallSnapshotResult(new InstallSnapshotResultMessage(
                 new InstallSnapshotResult(2), NodeId.of("C"), new InstallSnapshotRpc()));
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(2, state.getTerm());
     }
 
     @Test
     public void testOnReceiveInstallSnapshotResultDone() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1286,7 +1285,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnReceiveInstallSnapshotResult() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1309,7 +1308,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnGroupConfigEntryFromLeaderAppend() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1325,7 +1324,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnGroupConfigEntryCommittedAddNode() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1342,7 +1341,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnGroupConfigEntryCommittedRemoveNode() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1359,7 +1358,7 @@ public class NodeImpl2Test {
 
     @Test
     public void testOnGroupConfigEntryCommittedRemoveNodeSelf() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1371,14 +1370,14 @@ public class NodeImpl2Test {
         RemoveNodeEntry groupConfigEntry = new RemoveNodeEntry(1, 1,
                 node.getContext().group().getNodeEndpointsOfMajor(), NodeId.of("A"));
         node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
-        RoleState state = node.getRoleState2();
+        RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(1, state.getTerm());
     }
 
     @Test
     public void testOnGroupConfigEntryBatchRemoved() {
-        NodeImpl2 node = (NodeImpl2) newNodeBuilder(
+        NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),

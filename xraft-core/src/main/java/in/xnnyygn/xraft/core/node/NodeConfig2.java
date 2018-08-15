@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.log.Log;
 
+// TODO rename to NodeConfig
 public class NodeConfig2 {
 
     private int minElectionTimeout = 3000;

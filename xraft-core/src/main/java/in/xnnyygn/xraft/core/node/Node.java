@@ -4,7 +4,7 @@ import in.xnnyygn.xraft.core.log.StateMachine;
 import in.xnnyygn.xraft.core.log.TaskReference;
 import in.xnnyygn.xraft.core.noderole.NodeRoleListener;
 import in.xnnyygn.xraft.core.noderole.RoleNameAndLeaderId;
-import in.xnnyygn.xraft.core.noderole.RoleStateSnapshot;
+import in.xnnyygn.xraft.core.noderole.RoleState;
 
 public interface Node {
 
@@ -12,8 +12,7 @@ public interface Node {
 
     RoleNameAndLeaderId getRoleNameAndLeaderId();
 
-    @Deprecated
-    RoleStateSnapshot getRoleState();
+    RoleState getRoleState();
 
     void addNodeRoleListener(NodeRoleListener listener);
 
