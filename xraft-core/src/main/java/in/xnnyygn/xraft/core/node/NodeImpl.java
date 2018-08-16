@@ -3,13 +3,15 @@ package in.xnnyygn.xraft.core.node;
 import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
-import in.xnnyygn.xraft.core.log.*;
-import in.xnnyygn.xraft.core.log.entry.*;
+import in.xnnyygn.xraft.core.log.StateMachine;
+import in.xnnyygn.xraft.core.log.entry.EntryMeta;
+import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
 import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
 import in.xnnyygn.xraft.core.log.snapshot.EntryInSnapshotException;
+import in.xnnyygn.xraft.core.node.task.*;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
@@ -42,6 +44,8 @@ public class NodeImpl implements Node {
     private final NodeContext context;
     private volatile AbstractNodeRole role;
     private final List<NodeRoleListener> roleListeners = new ArrayList<>();
+    private final NewNodeCatchUpTaskContext newNodeCatchUpTaskContext = new NewNodeCatchUpTaskContextImpl();
+    private final NewNodeCatchUpTaskGroup newNodeCatchUpTaskGroup = new NewNodeCatchUpTaskGroup();
     private final GroupConfigChangeTaskContext groupConfigChangeTaskContext = new GroupConfigChangeTaskContextImpl();
     private volatile GroupConfigChangeTaskHolder groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder();
 
@@ -92,26 +96,54 @@ public class NodeImpl implements Node {
 
     @Override
     public GroupConfigChangeTaskReference addNode(NodeEndpoint newNodeEndpoint) {
+        ensureLeader();
         // TODO add test
-        if(context.selfId().equals(newNodeEndpoint.getId())) {
+        if (context.selfId().equals(newNodeEndpoint.getId())) {
             throw new IllegalArgumentException("new node id cannot be self id");
         }
-        ensureLeader();
+        NewNodeCatchUpTask newNodeCatchUpTask = new NewNodeCatchUpTask(newNodeCatchUpTaskContext, newNodeEndpoint, context.config());
+        // TODO test same node id
+        if (!newNodeCatchUpTaskGroup.add(newNodeCatchUpTask)) {
+            throw new IllegalArgumentException("node " + newNodeEndpoint.getId() + " is adding");
+        }
+        NewNodeCatchUpTaskResult newNodeCatchUpTaskResult;
         try {
-            groupConfigChangeTaskHolder.await(context.config().getPreviousGroupConfigChangeTimeout());
-        } catch (InterruptedException | TimeoutException e) {
-            logger.debug("previous group config change task not completed within timeout");
-            return new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.TIMEOUT);
+            newNodeCatchUpTaskResult = newNodeCatchUpTask.call();
+            switch (newNodeCatchUpTaskResult.getState()) {
+                case REPLICATION_FAILED:
+                    return new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.REPLICATION_FAILED);
+                case TIMEOUT:
+                    return new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.TIMEOUT);
+            }
+        } catch (Exception e) {
+            logger.warn("failed to catch up new node " + newNodeEndpoint.getId(), e);
+            return new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.ERROR);
+        }
+        GroupConfigChangeTaskResult result = awaitPreviousGroupConfigChangeTask();
+        if(result != null) {
+            return new FixedResultGroupConfigTaskReference(result);
         }
         synchronized (this) {
             if (!groupConfigChangeTaskHolder.isEmpty()) {
                 throw new IllegalStateException("group config change concurrently");
             }
-            AddNodeTask task = new AddNodeTask(newNodeEndpoint, context.config(), groupConfigChangeTaskContext);
+            AddNodeTask task = new AddNodeTask(groupConfigChangeTaskContext, newNodeEndpoint, newNodeCatchUpTaskResult.getNextIndex(), newNodeCatchUpTaskResult.getMatchIndex());
             Future<GroupConfigChangeTaskResult> future = context.groupConfigChangeTaskExecutor().submit(task);
             GroupConfigChangeTaskReference reference = new FutureGroupConfigChangeTaskReference(future);
             groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder(task, reference);
             return reference;
+        }
+    }
+
+    private GroupConfigChangeTaskResult awaitPreviousGroupConfigChangeTask() {
+        try {
+            groupConfigChangeTaskHolder.awaitDone(context.config().getPreviousGroupConfigChangeTimeout());
+            return null;
+        } catch (InterruptedException ignored) {
+            return GroupConfigChangeTaskResult.ERROR;
+        }catch (TimeoutException ignored) {
+            logger.info("previous cannot complete within timeout");
+            return GroupConfigChangeTaskResult.TIMEOUT;
         }
     }
 
@@ -125,11 +157,9 @@ public class NodeImpl implements Node {
     @Override
     public GroupConfigChangeTaskReference removeNode(NodeId id) {
         ensureLeader();
-        try {
-            groupConfigChangeTaskHolder.await(context.config().getPreviousGroupConfigChangeTimeout());
-        } catch (InterruptedException | TimeoutException e) {
-            logger.debug("previous group config change task not completed within timeout");
-            return new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.TIMEOUT);
+        GroupConfigChangeTaskResult result = awaitPreviousGroupConfigChangeTask();
+        if(result != null) {
+            return new FixedResultGroupConfigTaskReference(result);
         }
         synchronized (this) {
             if (!groupConfigChangeTaskHolder.isEmpty()) {
@@ -144,6 +174,10 @@ public class NodeImpl implements Node {
     }
 
     synchronized void cancelGroupConfigChangeTask() {
+        if (groupConfigChangeTaskHolder.isEmpty()) {
+            return;
+        }
+        logger.info("cancel group config change task");
         groupConfigChangeTaskHolder.cancel();
         groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder();
     }
@@ -403,7 +437,7 @@ public class NodeImpl implements Node {
             return;
         }
         // new node
-        if (groupConfigChangeTaskHolder.onReceiveAppendEntriesResult(resultMessage, context.log().getNextIndex())) {
+        if (newNodeCatchUpTaskGroup.onReceiveAppendEntriesResult(resultMessage, context.log().getNextIndex())) {
             return;
         }
         NodeId sourceNodeId = resultMessage.getSourceNodeId();
@@ -538,15 +572,7 @@ public class NodeImpl implements Node {
         context.groupConfigChangeTaskExecutor().shutdown();
     }
 
-    private class GroupConfigChangeTaskContextImpl implements GroupConfigChangeTaskContext {
-
-        @Override
-        public void doAddNode(NodeEndpoint endpoint, int nextIndex, int matchIndex) {
-            context.log().appendEntryForAddNode(role.getTerm(), context.group().getNodeEndpointsOfMajor(), endpoint);
-            assert !context.selfId().equals(endpoint.getId());
-            context.group().addNode(endpoint, nextIndex, matchIndex, true);
-            NodeImpl.this.doReplicateLog();
-        }
+    private class NewNodeCatchUpTaskContextImpl implements NewNodeCatchUpTaskContext {
 
         @Override
         public void replicateLog(NodeEndpoint endpoint) {
@@ -558,7 +584,6 @@ public class NodeImpl implements Node {
 
         @Override
         public void doReplicateLog(NodeEndpoint endpoint, int nextIndex) {
-            // refactor
             try {
                 AppendEntriesRpc rpc = context.log().createAppendEntriesRpc(role.getTerm(), context.selfId(), context.log().getNextIndex(),
                         context.config().getMaxReplicationEntriesForNewNode());
@@ -568,6 +593,22 @@ public class NodeImpl implements Node {
                 InstallSnapshotRpc rpc = context.log().createInstallSnapshotRpc(role.getTerm(), context.selfId(), 0, context.config().getSnapshotDataLength());
                 context.connector().sendInstallSnapshot(rpc, endpoint);
             }
+        }
+
+        @Override
+        public void done(NewNodeCatchUpTask task) {
+            newNodeCatchUpTaskGroup.remove(task);
+        }
+    }
+
+    private class GroupConfigChangeTaskContextImpl implements GroupConfigChangeTaskContext {
+
+        @Override
+        public void doAddNode(NodeEndpoint endpoint, int nextIndex, int matchIndex) {
+            context.log().appendEntryForAddNode(role.getTerm(), context.group().getNodeEndpointsOfMajor(), endpoint);
+            assert !context.selfId().equals(endpoint.getId());
+            context.group().addNode(endpoint, nextIndex, matchIndex, true);
+            NodeImpl.this.doReplicateLog();
         }
 
         @Override
@@ -592,7 +633,7 @@ public class NodeImpl implements Node {
         }
 
         @Override
-        public void taskDone() {
+        public void done() {
             synchronized (NodeImpl.this) {
                 groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder();
             }

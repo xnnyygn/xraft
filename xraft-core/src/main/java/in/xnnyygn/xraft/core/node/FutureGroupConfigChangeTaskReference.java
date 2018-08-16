@@ -1,5 +1,7 @@
 package in.xnnyygn.xraft.core.node;
 
+import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskReference;
+import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +17,16 @@ public class FutureGroupConfigChangeTaskReference implements GroupConfigChangeTa
 
     public FutureGroupConfigChangeTaskReference(Future<GroupConfigChangeTaskResult> future) {
         this.future = future;
+    }
+
+    @Override
+    public GroupConfigChangeTaskResult getResult() throws InterruptedException {
+        try {
+            return future.get();
+        } catch (ExecutionException e) {
+            logger.warn("task execution failed", e);
+            return GroupConfigChangeTaskResult.ERROR;
+        }
     }
 
     @Override

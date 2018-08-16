@@ -1,4 +1,7 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.task;
+
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
+import in.xnnyygn.xraft.core.node.NodeId;
 
 public interface GroupConfigChangeTaskContext {
 
@@ -7,11 +10,6 @@ public interface GroupConfigChangeTaskContext {
     // add log entry
     // replicate
     void doAddNode(NodeEndpoint endpoint, int nextIndex, int matchIndex);
-
-    // in node thread
-    void replicateLog(NodeEndpoint endpoint);
-
-    void doReplicateLog(NodeEndpoint endpoint, int nextIndex);
 
     // downgrade node
     // add log entry
@@ -23,6 +21,6 @@ public interface GroupConfigChangeTaskContext {
     void removeNode(NodeId nodeId);
 
     // remove task
-    void taskDone();
+    void done();
 
 }

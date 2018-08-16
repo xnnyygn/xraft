@@ -14,8 +14,8 @@ public class NodeConfig {
     private int snapshotDataLength = 1024;
     private int nioWorkerThreads = Runtime.getRuntime().availableProcessors() * 2;
     private int newNodeMaxRound = 10;
-    private int newNodeTimeout = 3000;
-    private int previousGroupConfigChangeTimeout = 1000;
+    private int newNodeRoundTimeout = 3000; // default to election timeout
+    private int previousGroupConfigChangeTimeout = 0;
 
     public int getMinElectionTimeout() {
         return minElectionTimeout;
@@ -97,12 +97,12 @@ public class NodeConfig {
         this.newNodeMaxRound = newNodeMaxRound;
     }
 
-    public int getNewNodeTimeout() {
-        return newNodeTimeout;
+    public int getNewNodeRoundTimeout() {
+        return newNodeRoundTimeout;
     }
 
-    public void setNewNodeTimeout(int newNodeTimeout) {
-        this.newNodeTimeout = newNodeTimeout;
+    public void setNewNodeRoundTimeout(int newNodeRoundTimeout) {
+        this.newNodeRoundTimeout = newNodeRoundTimeout;
     }
 
     public int getPreviousGroupConfigChangeTimeout() {

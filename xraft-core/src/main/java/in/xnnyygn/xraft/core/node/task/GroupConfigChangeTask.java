@@ -1,4 +1,6 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.task;
+
+import in.xnnyygn.xraft.core.node.NodeId;
 
 import java.util.concurrent.Callable;
 
@@ -9,7 +11,5 @@ public interface GroupConfigChangeTask extends Callable<GroupConfigChangeTaskRes
     boolean isTargetNode(NodeId nodeId);
 
     void onLogCommitted();
-
-    long getStartTime();
 
 }

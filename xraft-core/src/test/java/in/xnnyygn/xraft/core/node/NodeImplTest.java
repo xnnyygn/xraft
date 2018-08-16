@@ -6,6 +6,8 @@ import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
 import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
+import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskReference;
+import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskResult;
 import in.xnnyygn.xraft.core.rpc.ConnectorAdapter;
 import in.xnnyygn.xraft.core.rpc.MockConnector;
 import in.xnnyygn.xraft.core.rpc.message.*;
@@ -18,36 +20,44 @@ import org.junit.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class NodeImplTest {
 
     private static class WaitableConnector extends ConnectorAdapter {
 
-        private final CountDownLatch latch = new CountDownLatch(1);
+        private boolean sent = false;
 
         @Override
-        public void sendAppendEntries(AppendEntriesRpc rpc, NodeId destinationNodeId) {
-            latch.countDown();
+        public synchronized void sendAppendEntries(AppendEntriesRpc rpc, NodeId destinationNodeId) {
+            appendEntriesRpcSent();
         }
 
         @Override
-        public void sendAppendEntries(AppendEntriesRpc rpc, NodeEndpoint destinationEndpoint) {
-            latch.countDown();
+        public synchronized void sendAppendEntries(AppendEntriesRpc rpc, NodeEndpoint destinationEndpoint) {
+            appendEntriesRpcSent();
         }
 
-        void awaitAppendEntriesRpc() throws InterruptedException {
-            latch.await();
+        private void appendEntriesRpcSent() {
+            sent = true;
+            notify();
+        }
+
+        synchronized void awaitAppendEntriesRpc() throws InterruptedException {
+            if(!sent) {
+                wait();
+            }
+            sent = false;
         }
 
     }
 
     private static TaskExecutor taskExecutor;
     private static TaskExecutor groupConfigChangeTaskExecutor;
+    private static TaskExecutor cachedThreadTaskExecutor;
+    private static final AtomicInteger cachedThreadId = new AtomicInteger(0);
 
     private NodeBuilder newNodeBuilder(NodeId selfId, NodeEndpoint... endpoints) {
         return new NodeBuilder(selfId, new NodeGroup(Arrays.asList(endpoints)))
@@ -74,6 +84,7 @@ public class NodeImplTest {
     public static void beforeClass() throws Exception {
         taskExecutor = new ListeningTaskExecutor(Executors.newSingleThreadExecutor(r -> new Thread(r, "node-test")));
         groupConfigChangeTaskExecutor = new ListeningTaskExecutor(Executors.newSingleThreadExecutor(r -> new Thread(r, "group-config-change-test")));
+        cachedThreadTaskExecutor = new ListeningTaskExecutor(Executors.newCachedThreadPool(r -> new Thread(r, "cached-thread-" + cachedThreadId.incrementAndGet())));
     }
 
     @Test
@@ -361,13 +372,16 @@ public class NodeImplTest {
         node.electionTimeout();
         node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
 
-        GroupConfigChangeTaskReference reference = node.addNode(new NodeEndpoint("D", "localhost", 2336));
+        Future<GroupConfigChangeTaskReference> future = cachedThreadTaskExecutor.submit(()-> node.addNode(new NodeEndpoint("D", "localhost", 2336)));
         connector.awaitAppendEntriesRpc();
 
         // catch up
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("D"), createAppendEntriesRpc(1)));
+
+        GroupConfigChangeTaskReference reference = future.get();
+        connector.awaitAppendEntriesRpc();
 
         // send replication to B, C, D
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
@@ -379,6 +393,8 @@ public class NodeImplTest {
             Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
         });
     }
+
+    // TODO add test for not response within timeout
 
     @Test
     public void testAddNodeCannotCatchUp() throws TimeoutException, InterruptedException, ExecutionException {
@@ -400,26 +416,28 @@ public class NodeImplTest {
         node.electionTimeout();
         node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
 
-        GroupConfigChangeTaskReference reference = node.addNode(new NodeEndpoint("D", "localhost", 2336));
+        Future<GroupConfigChangeTaskReference> future = cachedThreadTaskExecutor.submit(()->node.addNode(new NodeEndpoint("D", "localhost", 2336)));
         connector.awaitAppendEntriesRpc();
         // cannot catch up
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("D"), createAppendEntriesRpc(0)));
 
-        Assert.assertEquals(GroupConfigChangeTaskResult.TIMEOUT, reference.getResult(1000L));
+        Assert.assertEquals(GroupConfigChangeTaskResult.TIMEOUT, future.get().getResult(1000L));
     }
 
     @Test
     public void testAddNodeAwaitPreviousGroupConfigChange() throws TimeoutException, InterruptedException, ExecutionException {
         NodeConfig config = new NodeConfig();
         config.setPreviousGroupConfigChangeTimeout(1);
+        WaitableConnector connector = new WaitableConnector();
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
                 new NodeEndpoint("C", "localhost", 2335))
                 .setConfig(config)
+                .setConnector(connector)
                 .setTaskExecutor(taskExecutor)
                 .setGroupConfigChangeTaskExecutor(groupConfigChangeTaskExecutor)
                 .build();
@@ -427,10 +445,21 @@ public class NodeImplTest {
         node.electionTimeout();
         node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
 
-        node.addNode(new NodeEndpoint("D", "localhost", 2336));
-        GroupConfigChangeTaskReference taskE = node.addNode(new NodeEndpoint("E", "localhost", 2337));
-        Assert.assertEquals(GroupConfigChangeTaskResult.TIMEOUT, taskE.getResult(1000L));
+        cachedThreadTaskExecutor.submit(()-> node.addNode(new NodeEndpoint("D", "localhost", 2337)));
+        connector.awaitAppendEntriesRpc();
+        node.processAppendEntriesResult(new AppendEntriesResultMessage(
+                new AppendEntriesResult("", 1, true),
+                NodeId.of("D"), createAppendEntriesRpc(1))).get();
+        connector.awaitAppendEntriesRpc();
+        Future<GroupConfigChangeTaskReference> future2 = cachedThreadTaskExecutor.submit(()-> node.addNode(new NodeEndpoint("E", "localhost", 2337)));
+        connector.awaitAppendEntriesRpc();
+        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
+                new AppendEntriesResult("", 1, true),
+                NodeId.of("E"), createAppendEntriesRpc(2)));
+
+        Assert.assertEquals(GroupConfigChangeTaskResult.TIMEOUT, future2.get().getResult(1000L));
         node.cancelGroupConfigChangeTask();
+        future2.cancel(true);
     }
 
     @Test(expected = NotLeaderException.class)
@@ -1331,6 +1360,7 @@ public class NodeImplTest {
     public static void afterClass() throws Exception {
         taskExecutor.shutdown();
         groupConfigChangeTaskExecutor.shutdown();
+        cachedThreadTaskExecutor.shutdown();
     }
 
 }

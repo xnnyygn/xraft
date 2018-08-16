@@ -1,4 +1,6 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.task;
+
+import in.xnnyygn.xraft.core.node.NodeId;
 
 public class NullGroupConfigChangeTask implements GroupConfigChangeTask {
 
@@ -14,11 +16,6 @@ public class NullGroupConfigChangeTask implements GroupConfigChangeTask {
     @Override
     public GroupConfigChangeTaskResult call() throws Exception {
         return null;
-    }
-
-    @Override
-    public long getStartTime() {
-        return 0;
     }
 
     @Override

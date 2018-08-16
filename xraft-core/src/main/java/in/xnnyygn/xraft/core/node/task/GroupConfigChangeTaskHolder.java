@@ -1,8 +1,9 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.task;
 
 import in.xnnyygn.xraft.core.log.entry.AddNodeEntry;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 import in.xnnyygn.xraft.core.log.entry.RemoveNodeEntry;
+import in.xnnyygn.xraft.core.node.FixedResultGroupConfigTaskReference;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResultMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,20 +16,24 @@ public class GroupConfigChangeTaskHolder {
     private final GroupConfigChangeTask task;
     private final GroupConfigChangeTaskReference reference;
 
-    GroupConfigChangeTaskHolder() {
+    public GroupConfigChangeTaskHolder() {
         this(GroupConfigChangeTask.NONE, new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.OK));
     }
 
-    GroupConfigChangeTaskHolder(GroupConfigChangeTask task, GroupConfigChangeTaskReference reference) {
+    public GroupConfigChangeTaskHolder(GroupConfigChangeTask task, GroupConfigChangeTaskReference reference) {
         this.task = task;
         this.reference = reference;
     }
 
-    void await(long timeout) throws TimeoutException, InterruptedException {
-        reference.getResult(timeout);
+    public void awaitDone(long timeout) throws TimeoutException, InterruptedException {
+        if(timeout == 0) {
+            reference.getResult();
+        } else {
+            reference.getResult(timeout);
+        }
     }
 
-    void cancel() {
+    public void cancel() {
         reference.cancel();
     }
 
@@ -36,19 +41,7 @@ public class GroupConfigChangeTaskHolder {
         return task == GroupConfigChangeTask.NONE;
     }
 
-    boolean onReceiveAppendEntriesResult(AppendEntriesResultMessage resultMessage, int nextLogIndex) {
-        if(isEmpty()) {
-            return false;
-        }
-        logger.debug("receive append entries result, current task {}", task);
-        if(task.isTargetNode(resultMessage.getSourceNodeId()) && task instanceof AddNodeTask) {
-            ((AddNodeTask) task).onReceiveAppendEntriesResult(resultMessage, nextLogIndex);
-            return true;
-        }
-        return false;
-    }
-
-    boolean onLogCommitted(GroupConfigEntry entry) {
+    public boolean onLogCommitted(GroupConfigEntry entry) {
         if(isEmpty()) {
             return false;
         }

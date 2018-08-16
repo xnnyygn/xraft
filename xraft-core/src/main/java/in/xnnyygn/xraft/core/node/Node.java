@@ -1,6 +1,7 @@
 package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.log.StateMachine;
+import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskReference;
 
 public interface Node {
 

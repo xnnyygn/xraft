@@ -1,5 +1,6 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.task;
 
+import in.xnnyygn.xraft.core.node.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,12 +9,10 @@ public class RemoveNodeTask implements GroupConfigChangeTask {
     private static final Logger logger = LoggerFactory.getLogger(RemoveNodeTask.class);
     private final GroupConfigChangeTaskContext context;
     private final NodeId nodeId;
-    private final long startTime;
 
     public RemoveNodeTask(GroupConfigChangeTaskContext context, NodeId nodeId) {
         this.context = context;
         this.nodeId = nodeId;
-        startTime = System.currentTimeMillis();
     }
 
     @Override
@@ -22,17 +21,12 @@ public class RemoveNodeTask implements GroupConfigChangeTask {
     }
 
     @Override
-    public long getStartTime() {
-        return startTime;
-    }
-
-    @Override
     public synchronized GroupConfigChangeTaskResult call() throws Exception {
         logger.info("task start");
         context.downgradeNode(nodeId);
         wait();
         logger.info("task done");
-        context.taskDone();
+        context.done();
         return GroupConfigChangeTaskResult.OK;
     }
 

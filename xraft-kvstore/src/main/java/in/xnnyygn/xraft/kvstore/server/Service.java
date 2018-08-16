@@ -2,7 +2,7 @@ package in.xnnyygn.xraft.kvstore.server;
 
 import com.google.protobuf.ByteString;
 import in.xnnyygn.xraft.core.log.StateMachine;
-import in.xnnyygn.xraft.core.node.GroupConfigChangeTaskReference;
+import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskReference;
 import in.xnnyygn.xraft.core.node.Node;
 import in.xnnyygn.xraft.core.node.RoleName;
 import in.xnnyygn.xraft.core.node.RoleNameAndLeaderId;
