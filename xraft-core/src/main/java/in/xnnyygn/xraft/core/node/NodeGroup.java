@@ -1,7 +1,9 @@
 package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.log.Log;
-import in.xnnyygn.xraft.core.log.replication.*;
+import in.xnnyygn.xraft.core.log.replication.PeerReplicatingState;
+import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
+import in.xnnyygn.xraft.core.log.replication.SelfReplicatingState;
 import in.xnnyygn.xraft.core.rpc.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,26 +135,9 @@ public class NodeGroup {
                 .collect(Collectors.toList());
     }
 
-    @Deprecated
-    public NodeState addNode(NodeEndpoint endpoint, int nextLogIndex, boolean memberOfMajor) {
-        logger.info("add node {} to group, endpoint {}, member of group {}", endpoint.getId(), endpoint, memberOfMajor);
-        if (stateMap.containsKey(endpoint.getId())) {
-            throw new IllegalArgumentException("node " + endpoint.getId() + " exists");
-        }
-        NewNodeReplicatingState replicationState = new NewNodeReplicatingState(endpoint.getId(), nextLogIndex);
-        NodeState state = new NodeState(endpoint, replicationState, memberOfMajor);
-        stateMap.put(endpoint.getId(), state);
-        return state;
-    }
-
-    // TODO add test
-    public NodeState addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex) {
+    public NodeState addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex, boolean memberOfMajor) {
         logger.info("add node {} to group, endpoint {}", endpoint.getId(), endpoint);
-        // TODO remove this check
-        if (stateMap.containsKey(endpoint.getId())) {
-            throw new IllegalArgumentException("node " + endpoint.getId() + " exists");
-        }
-        NodeState state = new NodeState(endpoint, new PeerReplicatingState(endpoint.getId(), nextIndex, matchIndex));
+        NodeState state = new NodeState(endpoint, new PeerReplicatingState(endpoint.getId(), nextIndex, matchIndex), memberOfMajor);
         stateMap.put(endpoint.getId(), state);
         return state;
     }
@@ -192,10 +177,6 @@ public class NodeGroup {
         NodeState(NodeEndpoint endpoint, boolean memberOfMajor) {
             this.endpoint = endpoint;
             this.memberOfMajor = memberOfMajor;
-        }
-
-        NodeState(NodeEndpoint endpoint, ReplicatingState replicatingState) {
-            this(endpoint, replicatingState, true);
         }
 
         NodeState(NodeEndpoint endpoint, ReplicatingState replicatingState, boolean memberOfMajor) {

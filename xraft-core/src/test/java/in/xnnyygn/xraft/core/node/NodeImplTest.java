@@ -1137,7 +1137,7 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        NodeGroup.NodeState nodeState = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2, false);
+        NodeGroup.NodeState nodeState = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2,0, false);
         nodeState.getReplicatingState().startReplicating();
         nodeState.setRemoving(true);
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(

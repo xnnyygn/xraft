@@ -18,8 +18,8 @@ public class NodeGroupTest {
     @Test
     public void testGetCountOfMajor() {
         NodeGroup group = new NodeGroup(new NodeEndpoint("A", "localhost", 2333));
-        group.addNode(new NodeEndpoint("B", "localhost", 2334), 1, true);
-        group.addNode(new NodeEndpoint("C", "localhost", 2335), 1, false);
+        group.addNode(new NodeEndpoint("B", "localhost", 2334), 1, 0,true);
+        group.addNode(new NodeEndpoint("C", "localhost", 2335), 1, 0,false);
         Assert.assertEquals(2, group.getCountOfMajor());
     }
 
@@ -27,7 +27,7 @@ public class NodeGroupTest {
     public void testUpgrade() {
         NodeGroup group = new NodeGroup(new NodeEndpoint("A", "localhost", 2333));
         NodeEndpoint endpoint = new NodeEndpoint("B", "localhost", 2334);
-        group.addNode(endpoint, 1, false);
+        group.addNode(endpoint, 1, 0,false);
         Assert.assertEquals(1, group.getCountOfMajor());
         group.upgrade(endpoint.getId());
         Assert.assertEquals(2, group.getCountOfMajor());
@@ -119,8 +119,15 @@ public class NodeGroupTest {
     @Test
     public void testAddNode() {
         NodeGroup group = new NodeGroup(new NodeEndpoint("A", "localhost", 2333));
-        group.addNode(new NodeEndpoint("B", "localhost", 2334), 10, false);
+        group.addNode(new NodeEndpoint("B", "localhost", 2334), 10, 0,false);
         Assert.assertFalse(group.getState(NodeId.of("B")).isMemberOfMajor());
+    }
+
+    @Test
+    public void testAddNodeExists() {
+        NodeGroup group = new NodeGroup(new NodeEndpoint("A", "localhost", 2333));
+        group.addNode(new NodeEndpoint("A", "localhost", 2333), 10, 0,false);
+        Assert.assertFalse(group.getState(NodeId.of("A")).isMemberOfMajor());
     }
 
     @Test
@@ -144,7 +151,7 @@ public class NodeGroupTest {
         endpoints.add(new NodeEndpoint("B", "localhost", 2334)); // peer
         endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
         NodeGroup group = new NodeGroup(endpoints);
-        group.addNode(new NodeEndpoint("D", "localhost", 2336), 10, false);
+        group.addNode(new NodeEndpoint("D", "localhost", 2336), 10, 0,false);
         Assert.assertEquals(3, group.getNodeEndpointsOfMajor().size());
     }
 
@@ -153,7 +160,7 @@ public class NodeGroupTest {
         NodeGroup group = new NodeGroup(new NodeEndpoint("A", "localhost", 2333));
         Assert.assertTrue(group.isUniqueNode(NodeId.of("A")));
         Assert.assertFalse(group.isUniqueNode(NodeId.of("B")));
-        group.addNode(new NodeEndpoint("B", "localhost", 2334), 10, false);
+        group.addNode(new NodeEndpoint("B", "localhost", 2334), 10, 0,false);
         Assert.assertFalse(group.isUniqueNode(NodeId.of("A")));
     }
 }

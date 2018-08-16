@@ -92,6 +92,10 @@ public class NodeImpl implements Node {
 
     @Override
     public GroupConfigChangeTaskReference addNode(NodeEndpoint newNodeEndpoint) {
+        // TODO add test
+        if(context.selfId().equals(newNodeEndpoint.getId())) {
+            throw new IllegalArgumentException("new node id cannot be self id");
+        }
         ensureLeader();
         try {
             groupConfigChangeTaskHolder.await(context.config().getPreviousGroupConfigChangeTimeout());
@@ -539,7 +543,8 @@ public class NodeImpl implements Node {
         @Override
         public void doAddNode(NodeEndpoint endpoint, int nextIndex, int matchIndex) {
             context.log().appendEntryForAddNode(role.getTerm(), context.group().getNodeEndpointsOfMajor(), endpoint);
-            context.group().addNode(endpoint, nextIndex, matchIndex);
+            assert !context.selfId().equals(endpoint.getId());
+            context.group().addNode(endpoint, nextIndex, matchIndex, true);
             NodeImpl.this.doReplicateLog();
         }
 
