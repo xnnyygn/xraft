@@ -84,9 +84,14 @@ public class NioConnector implements Connector {
 
     @Override
     public void sendAppendEntries(AppendEntriesRpc rpc, NodeId destinationNodeId) {
-        logger.debug("send {} to node {}", rpc, destinationNodeId);
+        sendAppendEntries(rpc, context.nodeGroup().findEndpoint(destinationNodeId));
+    }
+
+    @Override
+    public void sendAppendEntries(AppendEntriesRpc rpc, NodeEndpoint destinationEndpoint) {
+        logger.debug("send {} to node {}", rpc, destinationEndpoint.getId());
         try {
-            getChannel(destinationNodeId).writeAppendEntriesRpc(rpc);
+            getChannel(destinationEndpoint).writeAppendEntriesRpc(rpc);
         } catch (Exception e) {
             logException(e);
         }
@@ -104,9 +109,14 @@ public class NioConnector implements Connector {
 
     @Override
     public void sendInstallSnapshot(InstallSnapshotRpc rpc, NodeId destinationNodeId) {
-        logger.debug("send {} to node {}", rpc, destinationNodeId);
+        sendInstallSnapshot(rpc, context.nodeGroup().findEndpoint(destinationNodeId));
+    }
+
+    @Override
+    public void sendInstallSnapshot(InstallSnapshotRpc rpc, NodeEndpoint destinationEndpoint) {
+        logger.debug("send {} to node {}", rpc, destinationEndpoint.getId());
         try {
-            getChannel(destinationNodeId).writeInstallSnapshotRpc(rpc);
+            getChannel(destinationEndpoint).writeInstallSnapshotRpc(rpc);
         } catch (Exception e) {
             logException(e);
         }

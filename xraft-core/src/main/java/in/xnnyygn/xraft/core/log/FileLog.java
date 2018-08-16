@@ -29,6 +29,7 @@ public class FileLog extends AbstractLog {
             FileEntrySequence fileEntrySequence = new FileEntrySequence(latestGeneration, snapshot.getLastIncludedIndex() + 1);
             commitIndex = fileEntrySequence.getCommitIndex();
             entrySequence = fileEntrySequence;
+            // TODO apply last group config entry
             groupConfigEntryList = entrySequence.buildGroupConfigEntryList();
         } else {
             LogGeneration firstGeneration = rootDir.createFirstGeneration();

@@ -8,7 +8,6 @@ import in.xnnyygn.xraft.core.log.entry.*;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
-import in.xnnyygn.xraft.core.log.replication.NewNodeReplicatingState;
 import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
 import in.xnnyygn.xraft.core.log.snapshot.EntryInSnapshotException;
 import in.xnnyygn.xraft.core.rpc.message.*;
@@ -23,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 public class NodeImpl implements Node {
 
@@ -41,8 +42,8 @@ public class NodeImpl implements Node {
     private final NodeContext context;
     private volatile AbstractNodeRole role;
     private final List<NodeRoleListener> roleListeners = new ArrayList<>();
-    private final TaskReferenceHolder taskReferenceHolder = new TaskReferenceHolder();
-
+    private final GroupConfigChangeTaskContext groupConfigChangeTaskContext = new GroupConfigChangeTaskContextImpl();
+    private volatile GroupConfigChangeTaskHolder groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder();
 
     NodeImpl(NodeContext context) {
         this.context = context;
@@ -90,22 +91,24 @@ public class NodeImpl implements Node {
     }
 
     @Override
-    public TaskReference addNode(NodeEndpoint newNodeEndpoint) {
+    public GroupConfigChangeTaskReference addNode(NodeEndpoint newNodeEndpoint) {
         ensureLeader();
-        AddNodeTaskReference taskReference = new AddNodeTaskReference(newNodeEndpoint.getId());
-        context.taskExecutor().submit(() -> {
-            GroupConfigEntry lastUncommittedGroupConfigEntry = context.log().getLastUncommittedGroupConfigEntry();
-            if (!taskReferenceHolder.awaitPreviousGroupConfigChange(
-                    lastUncommittedGroupConfigEntry, taskReference,
-                    context.config().getPreviousGroupConfigChangeTimeout())) {
-                logger.info("previous group config change cannot complete with specified timeout, skip adding server");
-                return;
+        try {
+            groupConfigChangeTaskHolder.await(context.config().getPreviousGroupConfigChangeTimeout());
+        } catch (InterruptedException | TimeoutException e) {
+            logger.debug("previous group config change task not completed within timeout");
+            return new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.TIMEOUT);
+        }
+        synchronized (this) {
+            if (!groupConfigChangeTaskHolder.isEmpty()) {
+                throw new IllegalStateException("group config change concurrently");
             }
-            context.group().addNode(newNodeEndpoint, context.log().getNextIndex(), false);
-            doReplicateLog(newNodeEndpoint.getId(), context.config().getMaxReplicationEntriesForNewNode());
-            taskReferenceHolder.set(taskReference);
-        }, LOGGING_FUTURE_CALLBACK);
-        return taskReference;
+            AddNodeTask task = new AddNodeTask(newNodeEndpoint, context.config(), groupConfigChangeTaskContext);
+            Future<GroupConfigChangeTaskResult> future = context.groupConfigChangeTaskExecutor().submit(task);
+            GroupConfigChangeTaskReference reference = new FutureGroupConfigChangeTaskReference(future);
+            groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder(task, reference);
+            return reference;
+        }
     }
 
     private void ensureLeader() {
@@ -116,35 +119,39 @@ public class NodeImpl implements Node {
     }
 
     @Override
-    public TaskReference removeNode(NodeId id) {
+    public GroupConfigChangeTaskReference removeNode(NodeId id) {
         ensureLeader();
-        EntryTaskReference taskReference = new EntryTaskReference();
-        context.taskExecutor().submit(() -> {
-            GroupConfigEntry lastUncommittedGroupConfigEntry = context.log().getLastUncommittedGroupConfigEntry();
-            if (!taskReferenceHolder.awaitPreviousGroupConfigChange(
-                    lastUncommittedGroupConfigEntry, taskReference,
-                    context.config().getPreviousGroupConfigChangeTimeout())) {
-                logger.info("previous group config change cannot complete with specified timeout, skip removing server");
-                return;
+        try {
+            groupConfigChangeTaskHolder.await(context.config().getPreviousGroupConfigChangeTimeout());
+        } catch (InterruptedException | TimeoutException e) {
+            logger.debug("previous group config change task not completed within timeout");
+            return new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.TIMEOUT);
+        }
+        synchronized (this) {
+            if (!groupConfigChangeTaskHolder.isEmpty()) {
+                throw new IllegalStateException("group config change concurrently");
             }
-            Set<NodeEndpoint> nodeEndpoints = context.group().getNodeEndpointsOfMajor();
-            RemoveNodeEntry entry = context.log().appendEntryForRemoveNode(role.getTerm(), nodeEndpoints, id);
-            taskReference.setEntryIndex(entry.getIndex());
-            taskReferenceHolder.set(taskReference);
-            context.group().downgrade(id);
-            doReplicateLog();
-        }, LOGGING_FUTURE_CALLBACK);
-        return taskReference;
+            RemoveNodeTask task = new RemoveNodeTask(groupConfigChangeTaskContext, id);
+            Future<GroupConfigChangeTaskResult> future = context.groupConfigChangeTaskExecutor().submit(task);
+            GroupConfigChangeTaskReference reference = new FutureGroupConfigChangeTaskReference(future);
+            groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder(task, reference);
+            return reference;
+        }
+    }
+
+    synchronized void cancelGroupConfigChangeTask() {
+        groupConfigChangeTaskHolder.cancel();
+        groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder();
     }
 
     /**
      * event: election timeout
      */
     void electionTimeout() {
-        context.taskExecutor().submit(this::processElectionTimeout, LOGGING_FUTURE_CALLBACK);
+        context.taskExecutor().submit(this::doProcessElectionTimeout, LOGGING_FUTURE_CALLBACK);
     }
 
-    private void processElectionTimeout() {
+    private void doProcessElectionTimeout() {
         if (role.getName() == RoleName.LEADER) {
             logger.warn("node {}, current role is leader, ignore election timeout", context.selfId());
             return;
@@ -224,6 +231,7 @@ public class NodeImpl implements Node {
             context.log().advanceCommitIndex(context.log().getNextIndex() - 1, role.getTerm());
             return;
         }
+        logger.debug("replicate log");
         for (ReplicatingState replicatingState : context.group().getReplicationTargets()) {
             if (replicatingState.isReplicating() &&
                     System.currentTimeMillis() - replicatingState.getLastReplicatedAt() <= context.config().getMinReplicationInterval()) {
@@ -254,12 +262,12 @@ public class NodeImpl implements Node {
     @Subscribe
     public void onReceiveRequestVoteRpc(RequestVoteRpcMessage rpcMessage) {
         context.taskExecutor().submit(() ->
-                        context.connector().replyRequestVote(processRequestVoteRpc(rpcMessage), rpcMessage),
+                        context.connector().replyRequestVote(doProcessRequestVoteRpc(rpcMessage), rpcMessage),
                 LOGGING_FUTURE_CALLBACK
         );
     }
 
-    private RequestVoteResult processRequestVoteRpc(RequestVoteRpcMessage rpcMessage) {
+    private RequestVoteResult doProcessRequestVoteRpc(RequestVoteRpcMessage rpcMessage) {
         if (!context.group().isMemberOfMajor(rpcMessage.getSourceNodeId())) {
             logger.warn("receive request vote rpc from node {} which is not major node, ignore", rpcMessage.getSourceNodeId());
             return new RequestVoteResult(role.getTerm(), false);
@@ -295,12 +303,17 @@ public class NodeImpl implements Node {
         }
     }
 
+    // TODO change to RequestVoteResultMessage
     @Subscribe
     public void onReceiveRequestVoteResult(RequestVoteResult result) {
-        context.taskExecutor().submit(() -> processRequestVoteResult(result), LOGGING_FUTURE_CALLBACK);
+        context.taskExecutor().submit(() -> doProcessRequestVoteResult(result), LOGGING_FUTURE_CALLBACK);
     }
 
-    private void processRequestVoteResult(RequestVoteResult result) {
+    Future<?> processRequestVoteResult(RequestVoteResult result) {
+        return context.taskExecutor().submit(() -> doProcessRequestVoteResult(result));
+    }
+
+    private void doProcessRequestVoteResult(RequestVoteResult result) {
         if (result.getTerm() > role.getTerm()) {
             becomeFollower(result.getTerm(), null, null, true);
             return;
@@ -329,12 +342,12 @@ public class NodeImpl implements Node {
     @Subscribe
     public void onReceiveAppendEntriesRpc(AppendEntriesRpcMessage rpcMessage) {
         context.taskExecutor().submit(() ->
-                        context.connector().replyAppendEntries(processAppendEntriesRpc(rpcMessage), rpcMessage),
+                        context.connector().replyAppendEntries(doProcessAppendEntriesRpc(rpcMessage), rpcMessage),
                 LOGGING_FUTURE_CALLBACK
         );
     }
 
-    private AppendEntriesResult processAppendEntriesRpc(AppendEntriesRpcMessage rpcMessage) {
+    private AppendEntriesResult doProcessAppendEntriesRpc(AppendEntriesRpcMessage rpcMessage) {
         // leader id is not set when node starts
         // so it's ok not to check if source node id is current leader id
         AppendEntriesRpc rpc = rpcMessage.get();
@@ -372,13 +385,21 @@ public class NodeImpl implements Node {
 
     @Subscribe
     public void onReceiveAppendEntriesResult(AppendEntriesResultMessage resultMessage) {
-        context.taskExecutor().submit(() -> processAppendEntriesResult(resultMessage));
+        context.taskExecutor().submit(() -> doProcessAppendEntriesResult(resultMessage), LOGGING_FUTURE_CALLBACK);
     }
 
-    private void processAppendEntriesResult(AppendEntriesResultMessage resultMessage) {
+    Future<?> processAppendEntriesResult(AppendEntriesResultMessage resultMessage) {
+        return context.taskExecutor().submit(() -> doProcessAppendEntriesResult(resultMessage));
+    }
+
+    private void doProcessAppendEntriesResult(AppendEntriesResultMessage resultMessage) {
         AppendEntriesResult result = resultMessage.get();
         if (result.getTerm() > role.getTerm()) {
             becomeFollower(result.getTerm(), null, null, true);
+            return;
+        }
+        // new node
+        if (groupConfigChangeTaskHolder.onReceiveAppendEntriesResult(resultMessage, context.log().getNextIndex())) {
             return;
         }
         NodeId sourceNodeId = resultMessage.getSourceNodeId();
@@ -389,10 +410,8 @@ public class NodeImpl implements Node {
         }
         ReplicatingState replicatingState = nodeState.getReplicatingState();
         AppendEntriesRpc rpc = resultMessage.getRpc();
-        int maxEntries = context.config().getMaxReplicationEntries();
-        // TODO refactor
         if (result.isSuccess()) {
-            if (nodeState.isMemberOfMajor()) { // peer
+            if (nodeState.isMemberOfMajor()) {
                 // peer
                 if (replicatingState.advance(rpc.getLastEntryIndex())) {
                     context.log().advanceCommitIndex(context.group().getMatchIndexOfMajor(), role.getTerm());
@@ -401,55 +420,35 @@ public class NodeImpl implements Node {
                     replicatingState.stopReplicating();
                     return;
                 }
-            } else { // new node
+            } else {
+                // removing node
                 if (nodeState.isRemoving()) {
                     logger.debug("node {} is removing, skip", sourceNodeId);
-                    replicatingState.stopReplicating();
-                    return;
+                } else {
+                    logger.warn("unexpected append entries result from node {}, not major and not removing", sourceNodeId);
                 }
-                logger.debug("replication state of new node, {}", replicatingState);
-                replicatingState.advance(rpc.getLastEntryIndex());
-                if (replicatingState.catchUp(context.log().getNextIndex())) {
-                    NodeEndpoint newNodeEndpoint = context.group().findEndpoint(sourceNodeId);
-                    AddNodeEntry entry = context.log().appendEntryForAddNode(role.getTerm(), context.group().getNodeEndpointsOfMajor(), newNodeEndpoint);
-                    context.group().upgrade(sourceNodeId);
-                    taskReferenceHolder.setEntryIndexForAddNode(entry.getIndex());
-                    replicatingState.stopReplicating();
-                    return;
-                }
-
-                NewNodeReplicatingState newNodeReplicationState = (NewNodeReplicatingState) replicatingState;
-                newNodeReplicationState.increaseRound();
-                if (newNodeReplicationState.roundExceedOrTimeout(context.config().getNewNodeMaxRound(),
-                        context.config().getNewNodeTimeout())) {
-                    logger.info("node {} cannot catch up within max round and timeout", sourceNodeId);
-                    context.group().removeNode(sourceNodeId);
-                    taskReferenceHolder.doneForAddNode(TaskReference.Result.TIMEOUT);
-                    return;
-                }
-                maxEntries = context.config().getMaxReplicationEntriesForNewNode();
+                replicatingState.stopReplicating();
+                return;
             }
         } else {
-            // TODO handle new node
-            // TODO handle timeout
             if (!replicatingState.backOffNextIndex()) {
                 logger.warn("cannot back off next index more, node {}", sourceNodeId);
                 replicatingState.stopReplicating();
                 return;
             }
         }
-        doReplicateLog(replicatingState, maxEntries);
+        doReplicateLog(replicatingState, context.config().getMaxReplicationEntries());
     }
 
     @Subscribe
     public void onReceiveInstallSnapshotRpc(InstallSnapshotRpcMessage rpcMessage) {
         context.taskExecutor().submit(
-                () -> context.connector().replyInstallSnapshot(processInstallSnapshotRpc(rpcMessage), rpcMessage),
+                () -> context.connector().replyInstallSnapshot(doProcessInstallSnapshotRpc(rpcMessage), rpcMessage),
                 LOGGING_FUTURE_CALLBACK
         );
     }
 
-    private InstallSnapshotResult processInstallSnapshotRpc(InstallSnapshotRpcMessage rpcMessage) {
+    private InstallSnapshotResult doProcessInstallSnapshotRpc(InstallSnapshotRpcMessage rpcMessage) {
         InstallSnapshotRpc rpc = rpcMessage.get();
         if (rpc.getTerm() < role.getTerm()) {
             return new InstallSnapshotResult(role.getTerm());
@@ -464,12 +463,12 @@ public class NodeImpl implements Node {
     @Subscribe
     public void onReceiveInstallSnapshotResult(InstallSnapshotResultMessage resultMessage) {
         context.taskExecutor().submit(
-                () -> processInstallSnapshotResult(resultMessage),
+                () -> doProcessInstallSnapshotResult(resultMessage),
                 LOGGING_FUTURE_CALLBACK
         );
     }
 
-    private void processInstallSnapshotResult(InstallSnapshotResultMessage resultMessage) {
+    private void doProcessInstallSnapshotResult(InstallSnapshotResultMessage resultMessage) {
         InstallSnapshotResult result = resultMessage.get();
         if (result.getTerm() > role.getTerm()) {
             becomeFollower(result.getTerm(), null, null, true);
@@ -501,26 +500,15 @@ public class NodeImpl implements Node {
     @Subscribe
     public void onGroupConfigEntryCommitted(GroupConfigEntryCommittedEvent event) {
         context.taskExecutor().submit(
-                () -> processGroupConfigEntryCommittedEvent(event),
+                () -> doProcessGroupConfigEntryCommittedEvent(event),
                 LOGGING_FUTURE_CALLBACK
         );
     }
 
-    private void processGroupConfigEntryCommittedEvent(GroupConfigEntryCommittedEvent event) {
+    private void doProcessGroupConfigEntryCommittedEvent(GroupConfigEntryCommittedEvent event) {
         GroupConfigEntry entry = event.getEntry();
-        if (entry.getKind() == Entry.KIND_REMOVE_NODE) {
-            RemoveNodeEntry removeNodeEntry = (RemoveNodeEntry) entry;
-            NodeId nodeToRemove = removeNodeEntry.getNodeToRemove();
-            if (nodeToRemove.equals(context.selfId())) {
-                logger.info("remove leader from group, step down");
-                becomeFollower(role.getTerm(), null, null, false);
-            }
-            context.group().removeNode(nodeToRemove);
-        } else if (entry.getKind() == Entry.KIND_ADD_NODE) {
-            AddNodeEntry addNodeEntry = (AddNodeEntry) entry;
-            logger.info("node {} added", addNodeEntry.getNewNodeEndpoint().getId());
-        }
-        taskReferenceHolder.done(entry.getIndex());
+        groupConfigChangeTaskHolder.onLogCommitted(entry);
+        // group config was applied when append except leader
     }
 
     @Subscribe
@@ -543,6 +531,68 @@ public class NodeImpl implements Node {
         context.connector().close();
         context.store().close();
         context.taskExecutor().shutdown();
+        context.groupConfigChangeTaskExecutor().shutdown();
+    }
+
+    private class GroupConfigChangeTaskContextImpl implements GroupConfigChangeTaskContext {
+
+        @Override
+        public void doAddNode(NodeEndpoint endpoint, int nextIndex, int matchIndex) {
+            context.log().appendEntryForAddNode(role.getTerm(), context.group().getNodeEndpointsOfMajor(), endpoint);
+            context.group().addNode(endpoint, nextIndex, matchIndex);
+            NodeImpl.this.doReplicateLog();
+        }
+
+        @Override
+        public void replicateLog(NodeEndpoint endpoint) {
+            context.taskExecutor().submit(
+                    () -> doReplicateLog(endpoint, context.log().getNextIndex()),
+                    LOGGING_FUTURE_CALLBACK
+            );
+        }
+
+        @Override
+        public void doReplicateLog(NodeEndpoint endpoint, int nextIndex) {
+            // refactor
+            try {
+                AppendEntriesRpc rpc = context.log().createAppendEntriesRpc(role.getTerm(), context.selfId(), context.log().getNextIndex(),
+                        context.config().getMaxReplicationEntriesForNewNode());
+                context.connector().sendAppendEntries(rpc, endpoint);
+            } catch (EntryInSnapshotException e) {
+                logger.debug("log entry {} in snapshot, replicate with install snapshot RPC", nextIndex);
+                InstallSnapshotRpc rpc = context.log().createInstallSnapshotRpc(role.getTerm(), context.selfId(), 0, context.config().getSnapshotDataLength());
+                context.connector().sendInstallSnapshot(rpc, endpoint);
+            }
+        }
+
+        @Override
+        public void downgradeNode(NodeId nodeId) {
+            context.taskExecutor().submit(() -> {
+                context.group().downgrade(nodeId);
+                Set<NodeEndpoint> nodeEndpoints = context.group().getNodeEndpointsOfMajor();
+                context.log().appendEntryForRemoveNode(role.getTerm(), nodeEndpoints, nodeId);
+                NodeImpl.this.doReplicateLog();
+            }, LOGGING_FUTURE_CALLBACK);
+        }
+
+        @Override
+        public void removeNode(NodeId nodeId) {
+            context.taskExecutor().submit(() -> {
+                if (nodeId.equals(context.selfId())) {
+                    logger.info("remove self from group, step down and standby");
+                    becomeFollower(role.getTerm(), null, null, false);
+                }
+                context.group().removeNode(nodeId);
+            }, LOGGING_FUTURE_CALLBACK);
+        }
+
+        @Override
+        public void taskDone() {
+            synchronized (NodeImpl.this) {
+                groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder();
+            }
+        }
+
     }
 
 }

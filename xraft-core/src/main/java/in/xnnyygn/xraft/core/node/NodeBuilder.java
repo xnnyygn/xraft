@@ -28,6 +28,7 @@ public class NodeBuilder {
     private Scheduler scheduler = null;
     private Connector connector = null;
     private TaskExecutor taskExecutor = null;
+    private TaskExecutor groupConfigChangeTaskExecutor = null;
     private NioEventLoopGroup workerNioEventLoopGroup = null;
 
     public NodeBuilder(NodeId selfId, NodeGroup group) {
@@ -66,6 +67,11 @@ public class NodeBuilder {
         return this;
     }
 
+    public NodeBuilder setGroupConfigChangeTaskExecutor(TaskExecutor groupConfigChangeTaskExecutor) {
+        this.groupConfigChangeTaskExecutor = groupConfigChangeTaskExecutor;
+        return this;
+    }
+
     public NodeBuilder setStore(NodeStore store) {
         this.store = store;
         return this;
@@ -92,7 +98,7 @@ public class NodeBuilder {
         NodeContext context = new NodeContext();
         context.setGroup(group);
         context.setMode(evaluateMode());
-        context.setLog(log != null ? log : new MemoryLog());
+        context.setLog(log != null ? log : new MemoryLog(eventBus));
         context.setStore(store != null ? store : new MemoryNodeStore());
         context.setSelfId(selfId);
         context.setConfig(config);
@@ -102,6 +108,9 @@ public class NodeBuilder {
         context.setTaskExecutor(taskExecutor != null ? taskExecutor : new ListeningTaskExecutor(
                 Executors.newSingleThreadExecutor(r -> new Thread(r, "node"))
         ));
+        // TODO share monitor
+        context.setGroupConfigChangeTaskExecutor(groupConfigChangeTaskExecutor != null ? groupConfigChangeTaskExecutor :
+                new ListeningTaskExecutor(Executors.newSingleThreadExecutor(r-> new Thread(r, "group-config-change"))));
         return context;
     }
 

@@ -18,6 +18,7 @@ public class NodeContext {
     private NodeConfig config;
     private EventBus eventBus;
     private TaskExecutor taskExecutor;
+    private TaskExecutor groupConfigChangeTaskExecutor;
 
     public NodeId selfId() {
         return selfId;
@@ -97,6 +98,14 @@ public class NodeContext {
 
     public void setTaskExecutor(TaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
+    }
+
+    public TaskExecutor groupConfigChangeTaskExecutor() {
+        return groupConfigChangeTaskExecutor;
+    }
+
+    public void setGroupConfigChangeTaskExecutor(TaskExecutor groupConfigChangeTaskExecutor) {
+        this.groupConfigChangeTaskExecutor = groupConfigChangeTaskExecutor;
     }
 
 }

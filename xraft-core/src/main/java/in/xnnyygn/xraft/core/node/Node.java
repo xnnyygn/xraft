@@ -1,7 +1,6 @@
 package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.log.StateMachine;
-import in.xnnyygn.xraft.core.log.TaskReference;
 
 public interface Node {
 
@@ -17,9 +16,9 @@ public interface Node {
 
     void appendLog(byte[] commandBytes);
 
-    TaskReference addNode(NodeEndpoint newNodeEndpoint);
+    GroupConfigChangeTaskReference addNode(NodeEndpoint newNodeEndpoint);
 
-    TaskReference removeNode(NodeId id);
+    GroupConfigChangeTaskReference removeNode(NodeId id);
 
     void stop() throws InterruptedException;
 

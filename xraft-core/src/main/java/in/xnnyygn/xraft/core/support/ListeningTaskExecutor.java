@@ -3,10 +3,7 @@ package in.xnnyygn.xraft.core.support;
 import com.google.common.util.concurrent.*;
 
 import java.util.Collection;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class ListeningTaskExecutor extends AbstractTaskExecutor {
 
@@ -34,6 +31,11 @@ public class ListeningTaskExecutor extends AbstractTaskExecutor {
 
     @Override
     public Future<?> submit(Runnable task) {
+        return listeningExecutorService.submit(task);
+    }
+
+    @Override
+    public <V> Future<V> submit(Callable<V> task) {
         return listeningExecutorService.submit(task);
     }
 

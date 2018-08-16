@@ -6,7 +6,7 @@ public class PeerReplicatingState extends AbstractReplicatingState {
 
     protected final NodeId nodeId;
     int nextIndex;
-    int matchIndex = 0;
+    int matchIndex;
 
     public PeerReplicatingState(ReplicatingState replicatingState) {
         super(true);
@@ -16,9 +16,14 @@ public class PeerReplicatingState extends AbstractReplicatingState {
     }
 
     public PeerReplicatingState(NodeId nodeId, int nextIndex) {
+        this(nodeId, nextIndex, 0);
+    }
+
+    public PeerReplicatingState(NodeId nodeId, int nextIndex, int matchIndex) {
         super(true);
         this.nodeId = nodeId;
         this.nextIndex = nextIndex;
+        this.matchIndex = matchIndex;
     }
 
     @Override

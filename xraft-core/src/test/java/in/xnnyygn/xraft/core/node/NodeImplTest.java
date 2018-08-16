@@ -1,25 +1,53 @@
 package in.xnnyygn.xraft.core.node;
 
 import com.google.common.collect.ImmutableSet;
-import in.xnnyygn.xraft.core.log.TaskReference;
 import in.xnnyygn.xraft.core.log.entry.*;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
 import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
+import in.xnnyygn.xraft.core.rpc.ConnectorAdapter;
 import in.xnnyygn.xraft.core.rpc.MockConnector;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.NullScheduler;
 import in.xnnyygn.xraft.core.support.DirectTaskExecutor;
-import org.junit.Assert;
-import org.junit.Test;
+import in.xnnyygn.xraft.core.support.ListeningTaskExecutor;
+import in.xnnyygn.xraft.core.support.TaskExecutor;
+import org.junit.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 public class NodeImplTest {
+
+    private static class WaitableConnector extends ConnectorAdapter {
+
+        private final CountDownLatch latch = new CountDownLatch(1);
+
+        @Override
+        public void sendAppendEntries(AppendEntriesRpc rpc, NodeId destinationNodeId) {
+            latch.countDown();
+        }
+
+        @Override
+        public void sendAppendEntries(AppendEntriesRpc rpc, NodeEndpoint destinationEndpoint) {
+            latch.countDown();
+        }
+
+        void awaitAppendEntriesRpc() throws InterruptedException {
+            latch.await();
+        }
+
+    }
+
+    private static TaskExecutor taskExecutor;
+    private static TaskExecutor groupConfigChangeTaskExecutor;
 
     private NodeBuilder newNodeBuilder(NodeId selfId, NodeEndpoint... endpoints) {
         return new NodeBuilder(selfId, new NodeGroup(Arrays.asList(endpoints)))
@@ -32,6 +60,20 @@ public class NodeImplTest {
         AppendEntriesRpc rpc = new AppendEntriesRpc();
         rpc.setPrevLogIndex(lastEntryIndex);
         return rpc;
+    }
+
+    private void checkWithinTaskExecutor(NodeImpl node, Runnable r) throws Throwable {
+        try {
+            node.getContext().taskExecutor().submit(r).get();
+        } catch (ExecutionException e) {
+            throw e.getCause();
+        }
+    }
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        taskExecutor = new ListeningTaskExecutor(Executors.newSingleThreadExecutor(r -> new Thread(r, "node-test")));
+        groupConfigChangeTaskExecutor = new ListeningTaskExecutor(Executors.newSingleThreadExecutor(r -> new Thread(r, "group-config-change-test")));
     }
 
     @Test
@@ -278,7 +320,6 @@ public class NodeImplTest {
         Assert.assertEquals(3, mockConnector.getMessageCount());
     }
 
-
     @Test(expected = NotLeaderException.class)
     public void testAddNodeWhenFollower() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
@@ -305,76 +346,72 @@ public class NodeImplTest {
     }
 
     @Test
-    public void testAddNode() {
+    public void testAddNode() throws Throwable {
+        WaitableConnector connector = new WaitableConnector();
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335)
-        ).build();
-        MockConnector connector = (MockConnector) node.getContext().connector();
+                new NodeEndpoint("C", "localhost", 2335))
+                .setConnector(connector)
+                .setTaskExecutor(taskExecutor)
+                .setGroupConfigChangeTaskExecutor(groupConfigChangeTaskExecutor)
+                .build();
         node.start();
         node.electionTimeout();
-        connector.clearMessage();
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
+        node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
 
-        TaskReference reference = node.addNode(new NodeEndpoint("D", "localhost", 2336));
-        Assert.assertEquals(1, connector.getMessageCount());
-        connector.clearMessage();
+        GroupConfigChangeTaskReference reference = node.addNode(new NodeEndpoint("D", "localhost", 2336));
+        connector.awaitAppendEntriesRpc();
 
         // catch up
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("D"), createAppendEntriesRpc(1)));
 
-        node.replicateLog();
-        Assert.assertEquals(3, connector.getMessageCount()); // B, C, D
-        connector.clearMessage();
-
-        GroupConfigEntry groupConfigEntry = node.getContext().log().getLastUncommittedGroupConfigEntry();
-
+        // send replication to B, C, D
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("B"), createAppendEntriesRpc(2)));
 
-        // commit new node log
-        node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
-        Assert.assertEquals(TaskReference.Result.OK, reference.getResult());
-        Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
+        Assert.assertEquals(GroupConfigChangeTaskResult.OK, reference.getResult(1000L));
+        checkWithinTaskExecutor(node, ()->{
+            Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
+        });
     }
 
     @Test
-    public void testAddNodeCannotCatchUp() {
+    public void testAddNodeCannotCatchUp() throws TimeoutException, InterruptedException, ExecutionException {
         NodeConfig config = new NodeConfig();
         config.setNewNodeMaxRound(1);
 
+        WaitableConnector connector = new WaitableConnector();
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
                 new NodeEndpoint("C", "localhost", 2335))
                 .setConfig(config)
+                .setConnector(connector)
+                .setTaskExecutor(taskExecutor)
+                .setGroupConfigChangeTaskExecutor(groupConfigChangeTaskExecutor)
                 .build();
-        MockConnector connector = (MockConnector) node.getContext().connector();
         node.start();
         node.electionTimeout();
-        connector.clearMessage();
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
+        node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
 
-        TaskReference reference = node.addNode(new NodeEndpoint("D", "localhost", 2336));
-        Assert.assertEquals(1, connector.getMessageCount());
-        connector.clearMessage();
-
+        GroupConfigChangeTaskReference reference = node.addNode(new NodeEndpoint("D", "localhost", 2336));
+        connector.awaitAppendEntriesRpc();
         // cannot catch up
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("D"), createAppendEntriesRpc(0)));
 
-        Assert.assertEquals(TaskReference.Result.TIMEOUT, reference.getResult());
+        Assert.assertEquals(GroupConfigChangeTaskResult.TIMEOUT, reference.getResult(1000L));
     }
 
     @Test
-    public void testAddNodeAwaitPreviousGroupConfigChange() {
+    public void testAddNodeAwaitPreviousGroupConfigChange() throws TimeoutException, InterruptedException, ExecutionException {
         NodeConfig config = new NodeConfig();
         config.setPreviousGroupConfigChangeTimeout(1);
         NodeImpl node = (NodeImpl) newNodeBuilder(
@@ -383,22 +420,17 @@ public class NodeImplTest {
                 new NodeEndpoint("B", "localhost", 2334),
                 new NodeEndpoint("C", "localhost", 2335))
                 .setConfig(config)
+                .setTaskExecutor(taskExecutor)
+                .setGroupConfigChangeTaskExecutor(groupConfigChangeTaskExecutor)
                 .build();
-        MockConnector connector = (MockConnector) node.getContext().connector();
         node.start();
         node.electionTimeout();
-        connector.clearMessage();
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
+        node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
 
         node.addNode(new NodeEndpoint("D", "localhost", 2336));
-        System.out.println(connector.getMessages());
-        connector.clearMessage();
-        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
-                new AppendEntriesResult("", 1, true),
-                NodeId.of("D"), createAppendEntriesRpc(1)));
-
-        TaskReference reference = node.addNode(new NodeEndpoint("E", "localhost", 2337));
-        Assert.assertEquals(TaskReference.Result.TIMEOUT, reference.getResult());
+        GroupConfigChangeTaskReference taskE = node.addNode(new NodeEndpoint("E", "localhost", 2337));
+        Assert.assertEquals(GroupConfigChangeTaskResult.TIMEOUT, taskE.getResult(1000L));
+        node.cancelGroupConfigChangeTask();
     }
 
     @Test(expected = NotLeaderException.class)
@@ -419,87 +451,95 @@ public class NodeImplTest {
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335)
-        ).build();
+                new NodeEndpoint("C", "localhost", 2335))
+                .build();
         node.start();
         node.electionTimeout();
         node.removeNode(NodeId.of("A"));
     }
 
     @Test
-    public void testRemoveNode() {
+    public void testRemoveNode() throws Throwable {
+        WaitableConnector connector = new WaitableConnector();
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335)
-        ).build();
-        MockConnector connector = (MockConnector) node.getContext().connector();
+                new NodeEndpoint("C", "localhost", 2335))
+                .setConnector(connector)
+                .setTaskExecutor(taskExecutor)
+                .setGroupConfigChangeTaskExecutor(groupConfigChangeTaskExecutor)
+                .build();
         node.start();
         node.electionTimeout();
-        connector.clearMessage();
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
-        TaskReference reference = node.removeNode(NodeId.of("B"));
-
-        GroupConfigEntry groupConfigEntry = node.getContext().log().getLastUncommittedGroupConfigEntry();
+        node.processRequestVoteResult(new RequestVoteResult(1, true)).get(); // become leader, add no-op log
+        GroupConfigChangeTaskReference reference = node.removeNode(NodeId.of("B"));
+        connector.awaitAppendEntriesRpc();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("C"), createAppendEntriesRpc(2)));
-        node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
-        Assert.assertEquals(TaskReference.Result.OK, reference.getResult());
-        Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
-        Assert.assertNull(node.getContext().group().getState(NodeId.of("B")));
+        Assert.assertEquals(GroupConfigChangeTaskResult.OK, reference.getResult(1000L));
+        checkWithinTaskExecutor(node, ()->{
+            Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
+            Assert.assertNull(node.getContext().group().getState(NodeId.of("B")));
+        });
     }
 
     @Test
-    public void testRemoveNodeSelf() {
+    public void testRemoveNodeSelf() throws Throwable {
+        WaitableConnector connector = new WaitableConnector();
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335)
-        ).build();
-        MockConnector connector = (MockConnector) node.getContext().connector();
+                new NodeEndpoint("C", "localhost", 2335))
+                .setConnector(connector)
+                .setTaskExecutor(taskExecutor)
+                .setGroupConfigChangeTaskExecutor(groupConfigChangeTaskExecutor)
+                .build();
         node.start();
         node.electionTimeout();
-        connector.clearMessage();
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
-        TaskReference reference = node.removeNode(NodeId.of("A"));
-
-        GroupConfigEntry groupConfigEntry = node.getContext().log().getLastUncommittedGroupConfigEntry();
+        node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
+        GroupConfigChangeTaskReference reference = node.removeNode(NodeId.of("A"));
+        connector.awaitAppendEntriesRpc();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("B"), createAppendEntriesRpc(2)));
-        node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
-        Assert.assertEquals(TaskReference.Result.OK, reference.getResult());
-        Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
-        Assert.assertNull(node.getContext().group().getState(NodeId.of("A")));
+        Assert.assertEquals(GroupConfigChangeTaskResult.OK, reference.getResult(1000L));
+        checkWithinTaskExecutor(node, ()->{
+            Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
+            Assert.assertNull(node.getContext().group().getState(NodeId.of("A")));
+        });
         RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(1, state.getTerm());
     }
 
     @Test
-    public void testRemoveNodeAppendEntriesResultFromRemovingNode() {
+    public void testRemoveNodeAppendEntriesResultFromRemovingNode() throws ExecutionException, InterruptedException {
+        WaitableConnector connector = new WaitableConnector();
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335)
-        ).build();
-        MockConnector connector = (MockConnector) node.getContext().connector();
+                new NodeEndpoint("C", "localhost", 2335))
+                .setConnector(connector)
+                .setTaskExecutor(taskExecutor)
+                .setGroupConfigChangeTaskExecutor(groupConfigChangeTaskExecutor)
+                .build();
         node.start();
         node.electionTimeout();
-        connector.clearMessage();
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
+        node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
         node.removeNode(NodeId.of("B"));
-        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
+        connector.awaitAppendEntriesRpc();
+        node.processAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
-                NodeId.of("B"), createAppendEntriesRpc(2)));
+                NodeId.of("B"), createAppendEntriesRpc(2))).get();
+        node.cancelGroupConfigChangeTask();
     }
 
     @Test
-    public void testRemoveNodeAwaitPreviousGroupConfigChange() {
+    public void testRemoveNodeAwaitPreviousGroupConfigChange() throws TimeoutException, InterruptedException, ExecutionException {
         NodeConfig config = new NodeConfig();
         config.setPreviousGroupConfigChangeTimeout(1);
         NodeImpl node = (NodeImpl) newNodeBuilder(
@@ -508,15 +548,16 @@ public class NodeImplTest {
                 new NodeEndpoint("B", "localhost", 2334),
                 new NodeEndpoint("C", "localhost", 2335))
                 .setConfig(config)
+                .setTaskExecutor(taskExecutor)
+                .setGroupConfigChangeTaskExecutor(groupConfigChangeTaskExecutor)
                 .build();
-        MockConnector connector = (MockConnector) node.getContext().connector();
         node.start();
         node.electionTimeout();
-        connector.clearMessage();
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
+        node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
         node.removeNode(NodeId.of("B"));
-        TaskReference reference = node.removeNode(NodeId.of("B"));
-        Assert.assertEquals(TaskReference.Result.TIMEOUT, reference.getResult());
+        GroupConfigChangeTaskReference reference = node.removeNode(NodeId.of("B"));
+        Assert.assertEquals(GroupConfigChangeTaskResult.TIMEOUT, reference.getResult(1000L));
+        node.cancelGroupConfigChangeTask();
     }
 
     @Test
@@ -1106,76 +1147,6 @@ public class NodeImplTest {
     }
 
     @Test
-    public void testOnReceiveAppendEntriesResultNewNodeCatchUp() {
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .build();
-        node.start();
-        node.electionTimeout(); // become candidate
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        NodeGroup.NodeState nodeState = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2, false);
-        nodeState.getReplicatingState().startReplicating();
-        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
-                new AppendEntriesResult("", 1, true),
-                NodeId.of("D"), createAppendEntriesRpc(1)));
-        Assert.assertTrue(nodeState.isMemberOfMajor());
-        Assert.assertFalse(nodeState.getReplicatingState().isReplicating());
-
-        EntryMeta lastEntryMeta = node.getContext().log().getLastEntryMeta();
-        Assert.assertEquals(Entry.KIND_ADD_NODE, lastEntryMeta.getKind());
-        Assert.assertEquals(2, lastEntryMeta.getIndex());
-        Assert.assertEquals(1, lastEntryMeta.getTerm());
-    }
-
-    @Test
-    public void testOnReceiveAppendEntriesResultNewNodeCannotCatchUp() {
-        NodeConfig config = new NodeConfig();
-        config.setNewNodeMaxRound(1);
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .setConfig(config)
-                .build();
-        node.start();
-        node.electionTimeout(); // become candidate
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        NodeGroup.NodeState nodeState = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2, false);
-        nodeState.getReplicatingState().startReplicating();
-        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
-                new AppendEntriesResult("", 1, true),
-                NodeId.of("D"), createAppendEntriesRpc(0)));
-        Assert.assertNull(node.getContext().group().getState(NodeId.of("D")));
-    }
-
-    @Test
-    public void testOnReceiveAppendEntriesResultNewNodeContinue() {
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .build();
-        node.start();
-        node.electionTimeout(); // become candidate
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        NodeGroup.NodeState nodeState = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2, false);
-        nodeState.getReplicatingState().startReplicating();
-        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
-                new AppendEntriesResult("", 1, true),
-                NodeId.of("D"), createAppendEntriesRpc(0)));
-        Assert.assertFalse(nodeState.isMemberOfMajor());
-        Assert.assertTrue(nodeState.getReplicatingState().isReplicating());
-        MockConnector mockConnector = (MockConnector) node.getContext().connector();
-        // request vote rpc + append entries rpc
-        Assert.assertEquals(2, mockConnector.getMessageCount());
-    }
-
-    @Test
     public void testOnReceiveInstallSnapshotRpcSmallerTerm() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
@@ -1338,42 +1309,6 @@ public class NodeImplTest {
     }
 
     @Test
-    public void testOnGroupConfigEntryCommittedRemoveNode() {
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .build();
-        node.start();
-        node.electionTimeout(); // become candidate
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        RemoveNodeEntry groupConfigEntry = new RemoveNodeEntry(1, 1,
-                node.getContext().group().getNodeEndpointsOfMajor(), NodeId.of("C"));
-        node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
-        Assert.assertNull(node.getContext().group().getState(NodeId.of("C")));
-    }
-
-    @Test
-    public void testOnGroupConfigEntryCommittedRemoveNodeSelf() {
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .build();
-        node.start();
-        node.electionTimeout(); // become candidate
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        RemoveNodeEntry groupConfigEntry = new RemoveNodeEntry(1, 1,
-                node.getContext().group().getNodeEndpointsOfMajor(), NodeId.of("A"));
-        node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
-        RoleState state = node.getRoleState();
-        Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
-        Assert.assertEquals(1, state.getTerm());
-    }
-
-    @Test
     public void testOnGroupConfigEntryBatchRemoved() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
@@ -1390,6 +1325,12 @@ public class NodeImplTest {
         ), NodeId.of("D"));
         node.onGroupConfigEntryBatchRemoved(new GroupConfigEntryBatchRemovedEvent(groupConfigEntry));
         Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        taskExecutor.shutdown();
+        groupConfigChangeTaskExecutor.shutdown();
     }
 
 }

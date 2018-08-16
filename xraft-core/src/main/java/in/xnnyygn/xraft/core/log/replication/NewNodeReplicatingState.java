@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.log.replication;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
+@Deprecated
 public class NewNodeReplicatingState extends PeerReplicatingState {
 
     private final long startTime;

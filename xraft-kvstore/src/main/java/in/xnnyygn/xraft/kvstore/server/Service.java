@@ -2,7 +2,7 @@ package in.xnnyygn.xraft.kvstore.server;
 
 import com.google.protobuf.ByteString;
 import in.xnnyygn.xraft.core.log.StateMachine;
-import in.xnnyygn.xraft.core.log.TaskReference;
+import in.xnnyygn.xraft.core.node.GroupConfigChangeTaskReference;
 import in.xnnyygn.xraft.core.node.Node;
 import in.xnnyygn.xraft.core.node.RoleName;
 import in.xnnyygn.xraft.core.node.RoleNameAndLeaderId;
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeoutException;
 
 public class Service implements StateMachine {
 
@@ -41,19 +42,26 @@ public class Service implements StateMachine {
         }
 
         AddNodeCommand command = commandRequest.getCommand();
-        TaskReference taskReference = this.node.addNode(command.toNodeEndpoint());
+        GroupConfigChangeTaskReference taskReference = this.node.addNode(command.toNodeEndpoint());
         awaitResult(taskReference, commandRequest);
     }
 
-    private <T> void awaitResult(TaskReference taskReference, CommandRequest<T> commandRequest) {
+    private <T> void awaitResult(GroupConfigChangeTaskReference taskReference, CommandRequest<T> commandRequest) {
         try {
-            if (taskReference.await(3000L)) {
-                commandRequest.reply(Success.INSTANCE);
-            } else {
-                commandRequest.reply(new Failure(101, "timeout"));
+            switch (taskReference.getResult(3000L)) {
+                case OK:
+                    commandRequest.reply(Success.INSTANCE);
+                    break;
+                case TIMEOUT:
+                    commandRequest.reply(new Failure(101, "timeout"));
+                    break;
+                default:
+                    commandRequest.reply(new Failure(100, "error"));
             }
-        } catch (InterruptedException e) {
-            commandRequest.reply(new Failure(100, "unknown"));
+        } catch (TimeoutException e) {
+            commandRequest.reply(new Failure(101, "timeout"));
+        } catch (InterruptedException ignored) {
+            commandRequest.reply(new Failure(100, "error"));
         }
     }
 
@@ -65,7 +73,7 @@ public class Service implements StateMachine {
         }
 
         RemoveNodeCommand command = commandRequest.getCommand();
-        TaskReference taskReference = node.removeNode(command.getNodeId());
+        GroupConfigChangeTaskReference taskReference = node.removeNode(command.getNodeId());
         awaitResult(taskReference, commandRequest);
     }
 

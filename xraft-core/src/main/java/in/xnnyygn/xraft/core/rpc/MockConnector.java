@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.rpc;
 
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.*;
 
@@ -7,17 +8,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MockConnector implements Connector {
+public class MockConnector extends ConnectorAdapter {
 
     private LinkedList<Message> messages = new LinkedList<>();
-
-    @Override
-    public void initialize() {
-    }
-
-    @Override
-    public void resetChannels() {
-    }
 
     @Override
     public void sendRequestVote(RequestVoteRpc rpc) {
@@ -43,6 +36,14 @@ public class MockConnector implements Connector {
     }
 
     @Override
+    public void sendAppendEntries(AppendEntriesRpc rpc, NodeEndpoint destinationEndpoint) {
+        Message m = new Message();
+        m.rpc = rpc;
+        m.destinationNodeId = destinationEndpoint.getId();
+        messages.add(m);
+    }
+
+    @Override
     public void replyAppendEntries(AppendEntriesResult result, AppendEntriesRpcMessage rpcMessage) {
         Message m = new Message();
         m.result = result;
@@ -55,6 +56,14 @@ public class MockConnector implements Connector {
         Message m = new Message();
         m.rpc = rpc;
         m.destinationNodeId = destinationNodeId;
+        messages.add(m);
+    }
+
+    @Override
+    public void sendInstallSnapshot(InstallSnapshotRpc rpc, NodeEndpoint destinationEndpoint) {
+        Message m = new Message();
+        m.rpc = rpc;
+        m.destinationNodeId = destinationEndpoint.getId();
         messages.add(m);
     }
 
@@ -96,10 +105,6 @@ public class MockConnector implements Connector {
 
     public void clearMessage() {
         messages.clear();
-    }
-
-    @Override
-    public void close() {
     }
 
     public static class Message {
