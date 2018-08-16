@@ -97,12 +97,10 @@ public class NodeImpl implements Node {
     @Override
     public GroupConfigChangeTaskReference addNode(NodeEndpoint newNodeEndpoint) {
         ensureLeader();
-        // TODO add test
         if (context.selfId().equals(newNodeEndpoint.getId())) {
             throw new IllegalArgumentException("new node id cannot be self id");
         }
         NewNodeCatchUpTask newNodeCatchUpTask = new NewNodeCatchUpTask(newNodeCatchUpTaskContext, newNodeEndpoint, context.config());
-        // TODO test same node id
         if (!newNodeCatchUpTaskGroup.add(newNodeCatchUpTask)) {
             throw new IllegalArgumentException("node " + newNodeEndpoint.getId() + " is adding");
         }
@@ -116,7 +114,9 @@ public class NodeImpl implements Node {
                     return new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.TIMEOUT);
             }
         } catch (Exception e) {
-            logger.warn("failed to catch up new node " + newNodeEndpoint.getId(), e);
+            if(!(e instanceof InterruptedException)) {
+                logger.warn("failed to catch up new node " + newNodeEndpoint.getId(), e);
+            }
             return new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.ERROR);
         }
         GroupConfigChangeTaskResult result = awaitPreviousGroupConfigChangeTask();
@@ -604,11 +604,13 @@ public class NodeImpl implements Node {
     private class GroupConfigChangeTaskContextImpl implements GroupConfigChangeTaskContext {
 
         @Override
-        public void doAddNode(NodeEndpoint endpoint, int nextIndex, int matchIndex) {
-            context.log().appendEntryForAddNode(role.getTerm(), context.group().getNodeEndpointsOfMajor(), endpoint);
-            assert !context.selfId().equals(endpoint.getId());
-            context.group().addNode(endpoint, nextIndex, matchIndex, true);
-            NodeImpl.this.doReplicateLog();
+        public void addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex) {
+            context.taskExecutor().submit(()->{
+                context.log().appendEntryForAddNode(role.getTerm(), context.group().getNodeEndpointsOfMajor(), endpoint);
+                assert !context.selfId().equals(endpoint.getId());
+                context.group().addNode(endpoint, nextIndex, matchIndex, true);
+                NodeImpl.this.doReplicateLog();
+            }, LOGGING_FUTURE_CALLBACK);
         }
 
         @Override

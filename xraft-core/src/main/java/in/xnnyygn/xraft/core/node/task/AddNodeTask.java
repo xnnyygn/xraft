@@ -5,6 +5,7 @@ import in.xnnyygn.xraft.core.node.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO create abstract group config change task
 public class AddNodeTask implements GroupConfigChangeTask {
 
     private enum State {
@@ -37,7 +38,7 @@ public class AddNodeTask implements GroupConfigChangeTask {
     public synchronized GroupConfigChangeTaskResult call() throws Exception {
         logger.info("task start");
         setState(State.START);
-        context.doAddNode(endpoint, nextIndex, matchIndex);
+        context.addNode(endpoint, nextIndex, matchIndex);
         setState(State.GROUP_CONFIG_APPENDED);
         wait();
         logger.info("task done");

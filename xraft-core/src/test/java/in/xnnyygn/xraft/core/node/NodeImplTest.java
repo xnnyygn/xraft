@@ -356,6 +356,46 @@ public class NodeImplTest {
         node.addNode(new NodeEndpoint("D", "localhost", 2336));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddNodeSelf() throws ExecutionException, InterruptedException {
+        NodeImpl node = (NodeImpl) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335)
+        ).build();
+        node.start();
+        node.electionTimeout();
+        node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
+        node.addNode(new NodeEndpoint("A", "localhost", 2333));
+    }
+
+    @Test
+    public void testAddNodeSameNode() throws Throwable {
+        WaitableConnector connector = new WaitableConnector();
+        NodeImpl node = (NodeImpl) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setConnector(connector)
+                .setTaskExecutor(taskExecutor)
+                .setGroupConfigChangeTaskExecutor(groupConfigChangeTaskExecutor)
+                .build();
+        node.start();
+        node.electionTimeout();
+        node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
+
+        Future<GroupConfigChangeTaskReference> future = cachedThreadTaskExecutor.submit(() -> node.addNode(new NodeEndpoint("D", "localhost", 2336)));
+        connector.awaitAppendEntriesRpc();
+        try {
+            node.addNode(new NodeEndpoint("D", "localhost", 2336));
+            Assert.fail();
+        } catch (IllegalArgumentException ignored) {
+        }
+        future.cancel(true);
+    }
+
     @Test
     public void testAddNode() throws Throwable {
         WaitableConnector connector = new WaitableConnector();

@@ -5,11 +5,10 @@ import in.xnnyygn.xraft.core.node.NodeId;
 
 public interface GroupConfigChangeTaskContext {
 
-    // in node thread
     // add node to group
     // add log entry
     // replicate
-    void doAddNode(NodeEndpoint endpoint, int nextIndex, int matchIndex);
+    void addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex);
 
     // downgrade node
     // add log entry
