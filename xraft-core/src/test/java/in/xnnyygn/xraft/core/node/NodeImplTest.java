@@ -434,8 +434,6 @@ public class NodeImplTest {
         });
     }
 
-    // TODO add test for not response within timeout
-
     @Test
     public void testAddNodeCannotCatchUp() throws TimeoutException, InterruptedException, ExecutionException {
         NodeConfig config = new NodeConfig();

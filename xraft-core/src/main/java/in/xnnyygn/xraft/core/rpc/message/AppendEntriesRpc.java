@@ -73,10 +73,6 @@ public class AppendEntriesRpc implements Serializable {
         this.leaderCommit = leaderCommit;
     }
 
-    public boolean hasEntry() {
-        return !this.entries.isEmpty();
-    }
-
     public int getLastEntryIndex() {
         return this.entries.isEmpty() ? this.prevLogIndex : this.entries.get(this.entries.size() - 1).getIndex();
     }

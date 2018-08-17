@@ -7,10 +7,6 @@ import static org.junit.Assert.*;
 public class AddNodeTaskTest {
 
     @Test
-    public void testOnReceiveAppendEntriesResult() {
-    }
-
-    @Test
     public void testOnLogCommitted() {
     }
 

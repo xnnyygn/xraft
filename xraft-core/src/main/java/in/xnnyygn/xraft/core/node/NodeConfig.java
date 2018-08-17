@@ -15,6 +15,7 @@ public class NodeConfig {
     private int nioWorkerThreads = Runtime.getRuntime().availableProcessors() * 2;
     private int newNodeMaxRound = 10;
     private int newNodeRoundTimeout = 3000; // default to election timeout
+    private int newNodeAdvanceTimeout = 3000; // default to election timeout
     private int previousGroupConfigChangeTimeout = 0;
 
     public int getMinElectionTimeout() {
@@ -111,6 +112,14 @@ public class NodeConfig {
 
     public void setPreviousGroupConfigChangeTimeout(int previousGroupConfigChangeTimeout) {
         this.previousGroupConfigChangeTimeout = previousGroupConfigChangeTimeout;
+    }
+
+    public int getNewNodeAdvanceTimeout() {
+        return newNodeAdvanceTimeout;
+    }
+
+    public void setNewNodeAdvanceTimeout(int newNodeAdvanceTimeout) {
+        this.newNodeAdvanceTimeout = newNodeAdvanceTimeout;
     }
 
 }
