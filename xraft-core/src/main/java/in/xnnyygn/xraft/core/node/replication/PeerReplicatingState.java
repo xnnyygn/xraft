@@ -2,6 +2,8 @@ package in.xnnyygn.xraft.core.node.replication;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
+import javax.annotation.Nonnull;
+
 // TODO add test
 public class PeerReplicatingState implements ReplicatingState {
 
@@ -22,6 +24,7 @@ public class PeerReplicatingState implements ReplicatingState {
     }
 
     @Override
+    @Nonnull
     public NodeId getNodeId() {
         return nodeId;
     }

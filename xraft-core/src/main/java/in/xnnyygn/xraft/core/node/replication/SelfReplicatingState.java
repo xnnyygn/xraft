@@ -3,6 +3,8 @@ package in.xnnyygn.xraft.core.node.replication;
 import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.node.NodeId;
 
+import javax.annotation.Nonnull;
+
 public class SelfReplicatingState implements ReplicatingState {
 
     private final NodeId selfNodeId;
@@ -14,6 +16,7 @@ public class SelfReplicatingState implements ReplicatingState {
     }
 
     @Override
+    @Nonnull
     public NodeId getNodeId() {
         return selfNodeId;
     }
