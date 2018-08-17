@@ -5,7 +5,6 @@ import in.xnnyygn.xraft.core.log.entry.*;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
-import in.xnnyygn.xraft.core.node.replication.ReplicatingState;
 import in.xnnyygn.xraft.core.node.role.RoleName;
 import in.xnnyygn.xraft.core.node.role.RoleState;
 import in.xnnyygn.xraft.core.node.store.MemoryNodeStore;
@@ -1224,7 +1223,7 @@ public class NodeImplTest {
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
         GroupMember member = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2, 0, false);
         member.startReplicating();
-        member.setRemoving(true);
+        member.setRemoving();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("D"), createAppendEntriesRpc(1)));

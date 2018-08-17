@@ -2,25 +2,20 @@ package in.xnnyygn.xraft.core.node.replication;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
-public class PeerReplicatingState extends AbstractReplicatingState {
+// TODO add test
+public class PeerReplicatingState implements ReplicatingState {
 
     protected final NodeId nodeId;
-    int nextIndex;
-    int matchIndex;
-
-    public PeerReplicatingState(ReplicatingState replicatingState) {
-        super(true);
-        this.nodeId = replicatingState.getNodeId();
-        this.nextIndex = replicatingState.getNextIndex();
-        this.matchIndex = replicatingState.getMatchIndex();
-    }
+    private int nextIndex;
+    private int matchIndex;
+    private boolean replicating = false;
+    private long lastReplicatedAt = 0;
 
     public PeerReplicatingState(NodeId nodeId, int nextIndex) {
         this(nodeId, nextIndex, 0);
     }
 
     public PeerReplicatingState(NodeId nodeId, int nextIndex, int matchIndex) {
-        super(true);
         this.nodeId = nodeId;
         this.nextIndex = nextIndex;
         this.matchIndex = matchIndex;
@@ -41,10 +36,6 @@ public class PeerReplicatingState extends AbstractReplicatingState {
         return matchIndex;
     }
 
-    public void setMatchIndex(int matchIndex) {
-        this.matchIndex = matchIndex;
-    }
-
     @Override
     public boolean backOffNextIndex() {
         if (this.nextIndex > 1) {
@@ -63,6 +54,31 @@ public class PeerReplicatingState extends AbstractReplicatingState {
         this.nextIndex = lastEntryIndex + 1;
 
         return result;
+    }
+
+    @Override
+    public boolean isTarget() {
+        return true;
+    }
+
+    @Override
+    public boolean isReplicating() {
+        return replicating;
+    }
+
+    @Override
+    public long getLastReplicatedAt() {
+        return lastReplicatedAt;
+    }
+
+    @Override
+    public void setReplicating(boolean replicating) {
+        this.replicating = replicating;
+    }
+
+    @Override
+    public void setLastReplicatedAt(long lastReplicatedAt) {
+        this.lastReplicatedAt = lastReplicatedAt;
     }
 
     @Override

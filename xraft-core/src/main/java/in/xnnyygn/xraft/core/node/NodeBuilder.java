@@ -121,7 +121,7 @@ public class NodeBuilder {
         if (workerNioEventLoopGroup != null) {
             return new NioConnector(workerNioEventLoopGroup, selfId, eventBus, port);
         }
-        return new NioConnector(new NioEventLoopGroup(config.getNioWorkerThreads()), selfId, eventBus, port);
+        return new NioConnector(new NioEventLoopGroup(config.getNioWorkerThreads()), false, selfId, eventBus, port);
     }
 
     private NodeMode evaluateMode() {

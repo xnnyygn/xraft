@@ -2,6 +2,10 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.node.replication.ReplicatingState;
 
+/**
+ * State of group member.
+ * @see ReplicatingState
+ */
 class GroupMember {
 
     private final NodeEndpoint endpoint;
@@ -35,14 +39,14 @@ class GroupMember {
         return replicatingState != null;
     }
 
-    public ReplicatingState getReplicatingState() {
+    private ReplicatingState ensureReplicatingState() {
         if (replicatingState == null) {
             throw new IllegalStateException("replication state not set");
         }
         return replicatingState;
     }
 
-    public boolean isMajor() {
+    boolean isMajor() {
         return major;
     }
 
@@ -50,53 +54,55 @@ class GroupMember {
         this.major = major;
     }
 
-    public boolean isRemoving() {
+    boolean isRemoving() {
         return removing;
     }
 
-    public void setRemoving(boolean removing) {
-        this.removing = removing;
+    void setRemoving() {
+        removing = true;
     }
 
-    public int getNextIndex() {
-        return getReplicatingState().getNextIndex();
+    int getNextIndex() {
+        return ensureReplicatingState().getNextIndex();
     }
 
-    public int getMatchIndex() {
-        return getReplicatingState().getMatchIndex();
+    int getMatchIndex() {
+        return ensureReplicatingState().getMatchIndex();
     }
 
-    public boolean advanceReplicatingState(int lastEntryIndex) {
-        return getReplicatingState().advance(lastEntryIndex);
+    boolean advanceReplicatingState(int lastEntryIndex) {
+        return ensureReplicatingState().advance(lastEntryIndex);
     }
 
-    public boolean backOffNextIndex() {
-        return getReplicatingState().backOffNextIndex();
+    boolean backOffNextIndex() {
+        return ensureReplicatingState().backOffNextIndex();
     }
 
-    public void startReplicating() {
-        getReplicatingState().startReplicating();
+    void startReplicating() {
+        startReplicating(System.currentTimeMillis());
     }
 
-    public void startReplicating(long replicatedAt) {
-        getReplicatingState().startReplicating(replicatedAt);
+    void startReplicating(long replicatedAt) {
+        ReplicatingState replicatingState = ensureReplicatingState();
+        replicatingState.setReplicating(true);
+        replicatingState.setLastReplicatedAt(replicatedAt);
     }
 
-    public boolean isReplicating() {
-        return getReplicatingState().isReplicating();
+    boolean isReplicating() {
+        return ensureReplicatingState().isReplicating();
     }
 
-    public boolean isReplicationTarget() {
-        return getReplicatingState().isReplicationTarget();
+    boolean isReplicationTarget() {
+        return ensureReplicatingState().isTarget();
     }
 
-    public void stopReplicating() {
-        getReplicatingState().stopReplicating();
+    void stopReplicating() {
+        ensureReplicatingState().setReplicating(false);
     }
 
     // TODO add test
-    public boolean shouldReplicate(long minReplicationInterval) {
-        ReplicatingState replicatingState = getReplicatingState();
+    boolean shouldReplicate(long minReplicationInterval) {
+        ReplicatingState replicatingState = ensureReplicatingState();
         return !replicatingState.isReplicating() ||
                 System.currentTimeMillis() - replicatingState.getLastReplicatedAt() > minReplicationInterval;
     }

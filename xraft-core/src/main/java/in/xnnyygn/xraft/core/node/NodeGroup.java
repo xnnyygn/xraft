@@ -2,7 +2,6 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.node.replication.PeerReplicatingState;
-import in.xnnyygn.xraft.core.node.replication.ReplicatingState;
 import in.xnnyygn.xraft.core.node.replication.SelfReplicatingState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,7 +130,7 @@ public class NodeGroup {
         logger.info("downgrade node {}", id);
         GroupMember member = findMember(id);
         member.setMajor(false);
-        member.setRemoving(true);
+        member.setRemoving();
     }
 
     /**
@@ -170,7 +169,7 @@ public class NodeGroup {
         List<NodeMatchIndex> matchIndices = new ArrayList<>();
         for (GroupMember member : memberMap.values()) {
             if (member.isMajor()) {
-                matchIndices.add(new NodeMatchIndex(member.getReplicatingState()));
+                matchIndices.add(new NodeMatchIndex(member.getId(), member.getMatchIndex()));
             }
         }
         if (matchIndices.isEmpty()) {
@@ -275,10 +274,6 @@ public class NodeGroup {
 
         private final NodeId nodeId;
         private final int matchIndex;
-
-        NodeMatchIndex(ReplicatingState state) {
-            this(state.getNodeId(), state.getMatchIndex());
-        }
 
         NodeMatchIndex(NodeId nodeId, int matchIndex) {
             this.nodeId = nodeId;

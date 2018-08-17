@@ -15,18 +15,14 @@ public interface ReplicatingState {
 
     boolean advance(int lastEntryIndex);
 
-    // TODO rename to isTarget
-    boolean isReplicationTarget();
+    boolean isTarget();
 
     boolean isReplicating();
 
     long getLastReplicatedAt();
 
-    // TODO change to POJO
-    void startReplicating();
+    void setReplicating(boolean replicating);
 
-    void startReplicating(long replicatedAt);
-
-    void stopReplicating();
+    void setLastReplicatedAt(long lastReplicatedAt);
 
 }
