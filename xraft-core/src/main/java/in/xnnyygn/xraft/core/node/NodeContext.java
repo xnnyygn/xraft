@@ -6,6 +6,12 @@ import in.xnnyygn.xraft.core.rpc.Connector;
 import in.xnnyygn.xraft.core.schedule.Scheduler;
 import in.xnnyygn.xraft.core.support.TaskExecutor;
 
+/**
+ * Node context.
+ * <p>
+ * Node context should not change after initialization. e.g {@link NodeBuilder}.
+ * </p>
+ */
 public class NodeContext {
 
     private NodeId selfId;

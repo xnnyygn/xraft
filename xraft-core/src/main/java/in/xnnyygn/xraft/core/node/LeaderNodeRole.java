@@ -2,6 +2,9 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class LeaderNodeRole extends AbstractNodeRole {
 
     private final LogReplicationTask logReplicationTask;

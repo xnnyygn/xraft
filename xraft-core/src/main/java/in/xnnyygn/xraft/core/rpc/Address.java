@@ -1,5 +1,8 @@
 package in.xnnyygn.xraft.core.rpc;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class Address {
 
     private final String host;

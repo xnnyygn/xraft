@@ -7,12 +7,14 @@ import in.xnnyygn.xraft.core.log.entry.EntryFactory;
 import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+@NotThreadSafe
 public class FileEntrySequence extends AbstractEntrySequence {
 
     private final EntryFactory entryFactory = new EntryFactory();

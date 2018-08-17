@@ -12,9 +12,11 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.net.ConnectException;
 import java.util.concurrent.*;
 
+@ThreadSafe
 class OutboundChannelGroup {
 
     private static final Logger logger = LoggerFactory.getLogger(OutboundChannelGroup.class);

@@ -5,9 +5,11 @@ import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@ThreadSafe
 class InboundChannelGroup {
 
     private static final Logger logger = LoggerFactory.getLogger(InboundChannelGroup.class);

@@ -1,12 +1,13 @@
 package in.xnnyygn.xraft.core.log.sequence;
 
 import in.xnnyygn.xraft.core.log.entry.Entry;
-import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
 
+@NotThreadSafe
 public class MemoryEntrySequence extends AbstractEntrySequence {
 
     private final List<Entry> entries = new ArrayList<>();

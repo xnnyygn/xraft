@@ -5,6 +5,12 @@ import in.xnnyygn.xraft.core.node.NodeGroup;
 import in.xnnyygn.xraft.core.node.NodeId;
 import io.netty.channel.nio.NioEventLoopGroup;
 
+/**
+ * Context for {@link NioConnector}.
+ * <p>
+ * Context should not change after initialization.
+ * </p>
+ */
 public class NioConnectorContext {
 
     private boolean workerGroupShared = false;

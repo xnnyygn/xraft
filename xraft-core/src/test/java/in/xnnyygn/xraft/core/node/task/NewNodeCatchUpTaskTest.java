@@ -8,42 +8,16 @@ import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResultMessage;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
 import in.xnnyygn.xraft.core.support.ListeningTaskExecutor;
 import in.xnnyygn.xraft.core.support.TaskExecutor;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class NewNodeCatchUpTaskTest {
-
-    private static class WaitableNewNodeCatchUpTaskContext implements NewNodeCatchUpTaskContext {
-
-        private boolean replicated = false;
-
-        @Override
-        public synchronized void replicateLog(NodeEndpoint endpoint) {
-            replicated = true;
-            notify();
-        }
-
-        @Override
-        public synchronized void doReplicateLog(NodeEndpoint endpoint, int nextIndex) {
-            replicated = true;
-            notify();
-        }
-
-        @Override
-        public void done(NewNodeCatchUpTask task) {
-
-        }
-
-        synchronized void awaitReplicateLog() throws InterruptedException {
-            if(!replicated) {
-                wait();
-            }
-            replicated = false;
-        }
-    }
 
     private static TaskExecutor taskExecutor;
 

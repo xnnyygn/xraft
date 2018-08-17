@@ -2,6 +2,12 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.log.Log;
 
+/**
+ * Node configuration.
+ * <p>
+ * Node configuration should not change after initialization. e.g {@link NodeBuilder}.
+ * </p>
+ */
 public class NodeConfig {
 
     private int minElectionTimeout = 3000;

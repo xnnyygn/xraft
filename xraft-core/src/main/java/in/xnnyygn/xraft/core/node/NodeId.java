@@ -1,8 +1,10 @@
 package in.xnnyygn.xraft.core.node;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Immutable
 public class NodeId implements Serializable {
 
     private final String value;

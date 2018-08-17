@@ -1,7 +1,5 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.task;
 
-import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskReference;
-import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

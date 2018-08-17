@@ -2,7 +2,6 @@ package in.xnnyygn.xraft.core.node.task;
 
 import in.xnnyygn.xraft.core.log.entry.AddNodeEntry;
 import in.xnnyygn.xraft.core.log.entry.RemoveNodeEntry;
-import in.xnnyygn.xraft.core.node.FixedResultGroupConfigTaskReference;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.support.ListeningTaskExecutor;
@@ -16,8 +15,6 @@ import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import static org.junit.Assert.*;
 
 public class GroupConfigChangeTaskHolderTest {
 

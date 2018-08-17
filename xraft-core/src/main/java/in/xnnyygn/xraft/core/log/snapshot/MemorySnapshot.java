@@ -1,8 +1,11 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
+import jdk.nashorn.internal.ir.annotations.Immutable;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+@Immutable
 public class MemorySnapshot implements Snapshot {
 
     private final int lastIncludedIndex;

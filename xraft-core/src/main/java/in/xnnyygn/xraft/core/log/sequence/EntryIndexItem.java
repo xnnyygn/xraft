@@ -2,6 +2,9 @@ package in.xnnyygn.xraft.core.log.sequence;
 
 import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 class EntryIndexItem {
 
     private final int index;

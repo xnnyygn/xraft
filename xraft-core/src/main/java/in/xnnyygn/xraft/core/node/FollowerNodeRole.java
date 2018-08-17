@@ -2,8 +2,10 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
+@Immutable
 public class FollowerNodeRole extends AbstractNodeRole {
 
     private final NodeId votedFor;

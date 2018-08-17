@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,6 +28,8 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
+// TODO refactor to thread safe
+@NotThreadSafe
 public class NodeImpl implements Node {
 
     private static final Logger logger = LoggerFactory.getLogger(NodeImpl.class);
@@ -44,6 +47,7 @@ public class NodeImpl implements Node {
     private final NodeContext context;
     private volatile AbstractNodeRole role;
     private final List<NodeRoleListener> roleListeners = new ArrayList<>();
+
     private final NewNodeCatchUpTaskContext newNodeCatchUpTaskContext = new NewNodeCatchUpTaskContextImpl();
     private final NewNodeCatchUpTaskGroup newNodeCatchUpTaskGroup = new NewNodeCatchUpTaskGroup();
     private final GroupConfigChangeTaskContext groupConfigChangeTaskContext = new GroupConfigChangeTaskContextImpl();
@@ -53,7 +57,7 @@ public class NodeImpl implements Node {
         this.context = context;
     }
 
-    public NodeContext getContext() {
+    NodeContext getContext() {
         return context;
     }
 
@@ -278,11 +282,6 @@ public class NodeImpl implements Node {
                 doReplicateLog(replicatingState, context.config().getMaxReplicationEntries());
             }
         }
-    }
-
-    private void doReplicateLog(NodeId id, int maxEntries) {
-        ReplicatingState replicatingState = context.group().findReplicationState(id);
-        doReplicateLog(replicatingState, maxEntries);
     }
 
     private void doReplicateLog(ReplicatingState replicatingState, int maxEntries) {

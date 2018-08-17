@@ -1,8 +1,10 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+@Immutable
 public class EmptySnapshot implements Snapshot {
 
     @Override

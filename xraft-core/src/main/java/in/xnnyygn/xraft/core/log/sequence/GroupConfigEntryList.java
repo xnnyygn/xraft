@@ -3,11 +3,13 @@ package in.xnnyygn.xraft.core.log.sequence;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@NotThreadSafe
 public class GroupConfigEntryList implements Iterable<GroupConfigEntry> {
 
     private final LinkedList<GroupConfigEntry> entries = new LinkedList<>();

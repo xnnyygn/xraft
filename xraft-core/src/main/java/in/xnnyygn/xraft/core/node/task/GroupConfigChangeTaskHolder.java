@@ -3,12 +3,13 @@ package in.xnnyygn.xraft.core.node.task;
 import in.xnnyygn.xraft.core.log.entry.AddNodeEntry;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 import in.xnnyygn.xraft.core.log.entry.RemoveNodeEntry;
-import in.xnnyygn.xraft.core.node.FixedResultGroupConfigTaskReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.concurrent.TimeoutException;
 
+@Immutable
 public class GroupConfigChangeTaskHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupConfigChangeTaskHolder.class);

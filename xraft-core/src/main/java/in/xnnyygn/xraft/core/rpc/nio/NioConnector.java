@@ -15,6 +15,10 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
+// TODO refactor to thread-safe
+@NotThreadSafe
 public class NioConnector implements Connector {
 
     private static final Logger logger = LoggerFactory.getLogger(NioConnector.class);
@@ -135,10 +139,6 @@ public class NioConnector implements Connector {
     @Override
     public void resetChannels() {
         inboundChannelGroup.closeAll();
-    }
-
-    private Channel getChannel(NodeId nodeId) {
-        return getChannel(context.nodeGroup().findEndpoint(nodeId));
     }
 
     private Channel getChannel(NodeEndpoint endpoint) {

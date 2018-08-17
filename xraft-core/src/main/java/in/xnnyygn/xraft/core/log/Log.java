@@ -1,7 +1,6 @@
 package in.xnnyygn.xraft.core.log;
 
 import in.xnnyygn.xraft.core.log.entry.*;
-import in.xnnyygn.xraft.core.log.sequence.EntrySequence;
 import in.xnnyygn.xraft.core.log.snapshot.SnapshotGenerateStrategy;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
@@ -16,7 +15,7 @@ import java.util.Set;
 /**
  * Log.
  *
- * @see EntrySequence
+ * @see in.xnnyygn.xraft.core.log.sequence.EntrySequence
  * @see in.xnnyygn.xraft.core.log.snapshot.Snapshot
  */
 public interface Log {

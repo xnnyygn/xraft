@@ -2,6 +2,9 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public class CandidateNodeRole extends AbstractNodeRole {
 
     private final int votesCount;

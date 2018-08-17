@@ -2,8 +2,10 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.rpc.Address;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
+@Immutable
 public class NodeEndpoint {
 
     private final NodeId id;
