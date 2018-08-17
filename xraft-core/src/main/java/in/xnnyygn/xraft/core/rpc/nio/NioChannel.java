@@ -4,6 +4,8 @@ import in.xnnyygn.xraft.core.rpc.Channel;
 import in.xnnyygn.xraft.core.rpc.ChannelException;
 import in.xnnyygn.xraft.core.rpc.message.*;
 
+import javax.annotation.Nonnull;
+
 class NioChannel implements Channel {
 
     private final io.netty.channel.Channel nettyChannel;
@@ -13,32 +15,32 @@ class NioChannel implements Channel {
     }
 
     @Override
-    public void writeRequestVoteRpc(RequestVoteRpc rpc) {
+    public void writeRequestVoteRpc(@Nonnull RequestVoteRpc rpc) {
         nettyChannel.writeAndFlush(rpc);
     }
 
     @Override
-    public void writeRequestVoteResult(RequestVoteResult result) {
+    public void writeRequestVoteResult(@Nonnull RequestVoteResult result) {
         nettyChannel.writeAndFlush(result);
     }
 
     @Override
-    public void writeAppendEntriesRpc(AppendEntriesRpc rpc) {
+    public void writeAppendEntriesRpc(@Nonnull AppendEntriesRpc rpc) {
         nettyChannel.writeAndFlush(rpc);
     }
 
     @Override
-    public void writeAppendEntriesResult(AppendEntriesResult result) {
+    public void writeAppendEntriesResult(@Nonnull AppendEntriesResult result) {
         nettyChannel.writeAndFlush(result);
     }
 
     @Override
-    public void writeInstallSnapshotRpc(InstallSnapshotRpc rpc) {
+    public void writeInstallSnapshotRpc(@Nonnull InstallSnapshotRpc rpc) {
         nettyChannel.writeAndFlush(rpc);
     }
 
     @Override
-    public void writeInstallSnapshotResult(InstallSnapshotResult result) {
+    public void writeInstallSnapshotResult(@Nonnull InstallSnapshotResult result) {
         nettyChannel.writeAndFlush(result);
     }
 
