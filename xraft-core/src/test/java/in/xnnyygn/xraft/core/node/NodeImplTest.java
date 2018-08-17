@@ -18,12 +18,18 @@ import in.xnnyygn.xraft.core.support.DirectTaskExecutor;
 import in.xnnyygn.xraft.core.support.ListeningTaskExecutor;
 import in.xnnyygn.xraft.core.support.SingleThreadTaskExecutor;
 import in.xnnyygn.xraft.core.support.TaskExecutor;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -83,7 +89,7 @@ public class NodeImplTest {
     }
 
     @BeforeClass
-    public static void beforeClass() throws Exception {
+    public static void beforeClass() {
         taskExecutor = new SingleThreadTaskExecutor("node-test");
         groupConfigChangeTaskExecutor = new SingleThreadTaskExecutor("group-config-change-test");
         cachedThreadTaskExecutor = new ListeningTaskExecutor(Executors.newCachedThreadPool(r -> new Thread(r, "cached-thread-" + cachedThreadId.incrementAndGet())));
@@ -144,7 +150,7 @@ public class NodeImplTest {
         Assert.assertEquals(1, state.getTerm());
 
         // replication state set
-        Assert.assertTrue(node.getContext().group().getMember(NodeId.of("A")).isReplicationStateSet());
+        Assert.assertTrue(node.getContext().group().findMember(NodeId.of("A")).isReplicationStateSet());
 
         // no-op log
         EntryMeta lastEntryMeta = node.getContext().log().getLastEntryMeta();
@@ -277,7 +283,7 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
-        node.getContext().group().getMember(NodeId.of("B")).startReplicating();
+        node.getContext().group().findMember(NodeId.of("B")).startReplicating();
         node.replicateLog();
 
         MockConnector mockConnector = (MockConnector) node.getContext().connector();
@@ -297,7 +303,7 @@ public class NodeImplTest {
         node.electionTimeout();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
         long replicatedAt = System.currentTimeMillis() - node.getContext().config().getMinReplicationInterval() - 1;
-        node.getContext().group().getMember(NodeId.of("B")).startReplicating(replicatedAt);
+        node.getContext().group().findMember(NodeId.of("B")).startReplicating(replicatedAt);
         node.replicateLog();
 
         MockConnector mockConnector = (MockConnector) node.getContext().connector();
@@ -446,9 +452,7 @@ public class NodeImplTest {
                 NodeId.of("B"), createAppendEntriesRpc(2)));
 
         Assert.assertEquals(GroupConfigChangeTaskResult.OK, reference.getResult(1000L));
-        checkWithinTaskExecutor(node, () -> {
-            Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
-        });
+        checkWithinTaskExecutor(node, () -> Assert.assertEquals(4, node.getContext().group().getCountOfMajor()));
     }
 
     @Test
@@ -884,9 +888,9 @@ public class NodeImplTest {
         Assert.assertEquals(1, state.getTerm());
 
         // replication state set
-        Assert.assertTrue(node.getContext().group().getMember(NodeId.of("A")).isReplicationStateSet());
-        Assert.assertTrue(node.getContext().group().getMember(NodeId.of("B")).isReplicationStateSet());
-        Assert.assertTrue(node.getContext().group().getMember(NodeId.of("C")).isReplicationStateSet());
+        Assert.assertTrue(node.getContext().group().findMember(NodeId.of("A")).isReplicationStateSet());
+        Assert.assertTrue(node.getContext().group().findMember(NodeId.of("B")).isReplicationStateSet());
+        Assert.assertTrue(node.getContext().group().findMember(NodeId.of("C")).isReplicationStateSet());
 
         // no-op log
         EntryMeta lastEntryMeta = node.getContext().log().getLastEntryMeta();
@@ -1097,7 +1101,7 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        GroupMember member = node.getContext().group().getMember(NodeId.of("B"));
+        GroupMember member = node.getContext().group().findMember(NodeId.of("B"));
         member.startReplicating();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
@@ -1117,7 +1121,7 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        GroupMember member = node.getContext().group().getMember(NodeId.of("B"));
+        GroupMember member = node.getContext().group().findMember(NodeId.of("B"));
         member.startReplicating();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
@@ -1144,7 +1148,7 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(2, true)); // become leader
-        GroupMember member = node.getContext().group().getMember(NodeId.of("B"));
+        GroupMember member = node.getContext().group().findMember(NodeId.of("B"));
         member.startReplicating();
         Assert.assertEquals(2, member.getNextIndex());
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
@@ -1166,7 +1170,7 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        GroupMember member = node.getContext().group().getMember(NodeId.of("B"));
+        GroupMember member = node.getContext().group().findMember(NodeId.of("B"));
         member.startReplicating();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, false),

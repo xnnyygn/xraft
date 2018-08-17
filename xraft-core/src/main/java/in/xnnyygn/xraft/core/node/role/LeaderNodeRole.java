@@ -27,7 +27,7 @@ public class LeaderNodeRole extends AbstractNodeRole {
 
     @Override
     public RoleState getState() {
-        return new RoleState(RoleName.LEADER, term);
+        return new DefaultRoleState(RoleName.LEADER, term);
     }
 
     @Override

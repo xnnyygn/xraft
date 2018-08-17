@@ -37,7 +37,7 @@ public class CandidateNodeRole extends AbstractNodeRole {
 
     @Override
     public RoleState getState() {
-        RoleState state = new RoleState(RoleName.CANDIDATE, term);
+        DefaultRoleState state = new DefaultRoleState(RoleName.CANDIDATE, term);
         state.setVotesCount(votesCount);
         return state;
     }

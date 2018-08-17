@@ -40,7 +40,7 @@ public class FollowerNodeRole extends AbstractNodeRole {
 
     @Override
     public RoleState getState() {
-        RoleState state = new RoleState(RoleName.FOLLOWER, term);
+        DefaultRoleState state = new DefaultRoleState(RoleName.FOLLOWER, term);
         state.setVotedFor(votedFor);
         state.setLeaderId(leaderId);
         return state;

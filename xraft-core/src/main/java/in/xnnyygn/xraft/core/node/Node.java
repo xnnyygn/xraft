@@ -2,7 +2,6 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.log.StateMachine;
 import in.xnnyygn.xraft.core.node.role.RoleNameAndLeaderId;
-import in.xnnyygn.xraft.core.node.role.RoleState;
 import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskReference;
 
 import javax.annotation.Nonnull;
