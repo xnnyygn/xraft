@@ -13,6 +13,7 @@ import in.xnnyygn.xraft.kvstore.message.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -100,7 +101,7 @@ public class Service implements StateMachine {
     }
 
     @Override
-    public void applyLog(int index, byte[] commandBytes) {
+    public void applyLog(int index, @Nonnull byte[] commandBytes) {
         SetCommand command = SetCommand.fromBytes(commandBytes);
         map.put(command.getKey(), command.getValue());
         CommandRequest<?> commandRequest = pendingCommands.remove(command.getRequestId());
@@ -110,12 +111,12 @@ public class Service implements StateMachine {
     }
 
     @Override
-    public void generateSnapshot(OutputStream output) throws IOException {
+    public void generateSnapshot(@Nonnull OutputStream output) throws IOException {
         toSnapshot(map, output);
     }
 
     @Override
-    public void applySnapshot(InputStream input) throws IOException {
+    public void applySnapshot(@Nonnull InputStream input) throws IOException {
         logger.info("apply snapshot");
         this.map = fromSnapshot(input);
     }
