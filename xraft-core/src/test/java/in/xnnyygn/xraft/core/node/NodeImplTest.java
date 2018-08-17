@@ -1363,7 +1363,7 @@ public class NodeImplTest {
                 .build();
         node.start();
         GroupConfigEntry groupConfigEntry = new AddNodeEntry(1, 1,
-                node.getContext().group().getNodeEndpointsOfMajor(),
+                node.getContext().group().listEndpointOfMajor(),
                 new NodeEndpoint("D", "localhost", 2336));
         node.onGroupConfigEntryFromLeaderAppend(new GroupConfigEntryFromLeaderAppendEvent(groupConfigEntry));
         Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
@@ -1381,7 +1381,7 @@ public class NodeImplTest {
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
         AddNodeEntry groupConfigEntry = new AddNodeEntry(2, 1,
-                node.getContext().group().getNodeEndpointsOfMajor(),
+                node.getContext().group().listEndpointOfMajor(),
                 new NodeEndpoint("D", "localhost", 2336));
         node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
     }

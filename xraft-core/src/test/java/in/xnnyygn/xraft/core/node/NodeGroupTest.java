@@ -152,7 +152,7 @@ public class NodeGroupTest {
         endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
         NodeGroup group = new NodeGroup(endpoints);
         group.addNode(new NodeEndpoint("D", "localhost", 2336), 10, 0,false);
-        Assert.assertEquals(3, group.getNodeEndpointsOfMajor().size());
+        Assert.assertEquals(3, group.listEndpointOfMajor().size());
     }
 
     @Test

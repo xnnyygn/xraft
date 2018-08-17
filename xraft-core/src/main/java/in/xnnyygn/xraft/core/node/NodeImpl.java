@@ -228,7 +228,7 @@ public class NodeImpl implements Node {
             rpc.setCandidateId(context.selfId());
             rpc.setLastLogIndex(lastEntryMeta.getIndex());
             rpc.setLastLogTerm(lastEntryMeta.getTerm());
-            context.connector().sendRequestVote(rpc, context.group().getNodeEndpointsOfMajor());
+            context.connector().sendRequestVote(rpc, context.group().listEndpointOfMajorExclude(context.selfId()));
         }
     }
 
@@ -616,7 +616,7 @@ public class NodeImpl implements Node {
         @Override
         public void addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex) {
             context.taskExecutor().submit(() -> {
-                context.log().appendEntryForAddNode(role.getTerm(), context.group().getNodeEndpointsOfMajor(), endpoint);
+                context.log().appendEntryForAddNode(role.getTerm(), context.group().listEndpointOfMajor(), endpoint);
                 assert !context.selfId().equals(endpoint.getId());
                 context.group().addNode(endpoint, nextIndex, matchIndex, true);
                 NodeImpl.this.doReplicateLog();
@@ -627,7 +627,7 @@ public class NodeImpl implements Node {
         public void downgradeNode(NodeId nodeId) {
             context.taskExecutor().submit(() -> {
                 context.group().downgrade(nodeId);
-                Set<NodeEndpoint> nodeEndpoints = context.group().getNodeEndpointsOfMajor();
+                Set<NodeEndpoint> nodeEndpoints = context.group().listEndpointOfMajor();
                 context.log().appendEntryForRemoveNode(role.getTerm(), nodeEndpoints, nodeId);
                 NodeImpl.this.doReplicateLog();
             }, LOGGING_FUTURE_CALLBACK);

@@ -27,7 +27,6 @@ public class NioConnector implements Connector {
     private final NioEventLoopGroup bossNioEventLoopGroup = new NioEventLoopGroup(1);
     private final NioEventLoopGroup workerNioEventLoopGroup;
     private final boolean workerGroupShared;
-    private final NodeId selfNodeId; // remove me
     private final EventBus eventBus;
     private final int port;
     @GuardedBy("this")
@@ -46,7 +45,6 @@ public class NioConnector implements Connector {
     private NioConnector(NioEventLoopGroup workerNioEventLoopGroup, boolean workerGroupShared, NodeId selfNodeId, EventBus eventBus, int port) {
         this.workerNioEventLoopGroup = workerNioEventLoopGroup;
         this.workerGroupShared = workerGroupShared;
-        this.selfNodeId = selfNodeId;
         this.eventBus = eventBus;
         this.port = port;
         outboundChannelGroup = new OutboundChannelGroup(workerNioEventLoopGroup, eventBus, selfNodeId);
@@ -81,10 +79,6 @@ public class NioConnector implements Connector {
     @Override
     public void sendRequestVote(RequestVoteRpc rpc, Collection<NodeEndpoint> destinationEndpoints) {
         for (NodeEndpoint endpoint : destinationEndpoints) {
-            // TODO remove me
-            if (endpoint.getId().equals(selfNodeId)) {
-                continue;
-            }
             logger.debug("send {} to node {}", rpc, endpoint.getId());
             try {
                 getChannel(endpoint).writeRequestVoteRpc(rpc);

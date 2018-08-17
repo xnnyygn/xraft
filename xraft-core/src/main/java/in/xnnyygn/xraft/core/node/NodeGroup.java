@@ -13,6 +13,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO fix test
 @NotThreadSafe
 public class NodeGroup {
 
@@ -131,6 +132,7 @@ public class NodeGroup {
     }
 
     // TODO add test
+    // TODO rename to listReplicationTarget
     public Collection<NodeGroup.NodeState> getReplicationTargets() {
         return stateMap.values().stream()
                 .filter(NodeState::isReplicationTarget)
@@ -154,12 +156,24 @@ public class NodeGroup {
         stateMap = buildStateMap(endpoints);
     }
 
-    // TODO optimize
-    public Set<NodeEndpoint> getNodeEndpointsOfMajor() {
-        return stateMap.values().stream()
-                .filter(NodeState::isMemberOfMajor)
-                .map(NodeState::getEndpoint)
-                .collect(Collectors.toSet());
+    public Set<NodeEndpoint> listEndpointOfMajor() {
+        Set<NodeEndpoint> endpoints = new HashSet<>();
+        for (NodeState state : stateMap.values()) {
+            if (state.isMemberOfMajor()) {
+                endpoints.add(state.getEndpoint());
+            }
+        }
+        return endpoints;
+    }
+
+    public Set<NodeEndpoint> listEndpointOfMajorExclude(NodeId selfId) {
+        Set<NodeEndpoint> endpoints = new HashSet<>();
+        for (NodeState state : stateMap.values()) {
+            if (state.isMemberOfMajor() && !state.getId().equals(selfId)) {
+                endpoints.add(state.getEndpoint());
+            }
+        }
+        return endpoints;
     }
 
     public boolean isUniqueNode(NodeId id) {
