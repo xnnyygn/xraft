@@ -5,9 +5,11 @@ import in.xnnyygn.xraft.core.support.Files;
 import in.xnnyygn.xraft.core.support.RandomAccessFileAdapter;
 import in.xnnyygn.xraft.core.support.SeekableFile;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.File;
 import java.io.IOException;
 
+@NotThreadSafe
 public class FileNodeStore implements NodeStore {
 
     public static final String FILE_NAME = "node.bin";

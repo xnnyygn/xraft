@@ -2,6 +2,9 @@ package in.xnnyygn.xraft.core.node.store;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
+@NotThreadSafe
 public class MemoryNodeStore implements NodeStore {
 
     private int term;
