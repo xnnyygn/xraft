@@ -6,6 +6,7 @@ import in.xnnyygn.xraft.core.rpc.message.*;
 
 import java.util.Collection;
 
+// TODO add doc
 public interface Connector {
 
     void initialize();

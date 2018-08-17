@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.node.replication;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
+// TODO add doc
 public interface ReplicatingState {
 
     NodeId getNodeId();

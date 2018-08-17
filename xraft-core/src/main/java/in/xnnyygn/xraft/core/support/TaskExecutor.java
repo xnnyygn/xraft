@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+// TODO add doc
 public interface TaskExecutor {
 
     Future<?> submit(Runnable task);

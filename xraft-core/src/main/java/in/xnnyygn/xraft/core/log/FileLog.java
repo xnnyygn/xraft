@@ -8,10 +8,12 @@ import in.xnnyygn.xraft.core.log.sequence.FileEntrySequence;
 import in.xnnyygn.xraft.core.log.snapshot.*;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+@NotThreadSafe
 public class FileLog extends AbstractLog {
 
     private final RootDir rootDir;

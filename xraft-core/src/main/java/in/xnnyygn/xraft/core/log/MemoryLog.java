@@ -10,10 +10,12 @@ import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+@NotThreadSafe
 public class MemoryLog extends AbstractLog {
 
     private static final Logger logger = LoggerFactory.getLogger(MemoryLog.class);

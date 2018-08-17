@@ -8,6 +8,7 @@ import in.xnnyygn.xraft.core.log.Log;
  * Node configuration should not change after initialization. e.g {@link NodeBuilder}.
  * </p>
  */
+// TODO add doc
 public class NodeConfig {
 
     private int minElectionTimeout = 3000;

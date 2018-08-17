@@ -28,10 +28,6 @@ public class FollowerNodeRole extends AbstractNodeRole {
         return leaderId;
     }
 
-    public ElectionTimeout resetElectionTimeout() {
-        return electionTimeout.reset();
-    }
-
     @Override
     public NodeId getLeaderId(NodeId selfId) {
         return leaderId;

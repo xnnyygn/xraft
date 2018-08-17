@@ -9,24 +9,17 @@ import java.util.concurrent.TimeUnit;
 public class ElectionTimeout {
 
     private static final Logger logger = LoggerFactory.getLogger(ElectionTimeout.class);
-    public static final ElectionTimeout NONE = new ElectionTimeout(new NullScheduledFuture(), new NullElectionTimeoutScheduler());
+    public static final ElectionTimeout NONE = new ElectionTimeout(new NullScheduledFuture());
 
     private final ScheduledFuture<?> scheduledFuture;
-    private final ElectionTimeoutScheduler schedulerCallback;
 
-    public ElectionTimeout(ScheduledFuture<?> scheduledFuture, ElectionTimeoutScheduler schedulerCallback) {
+    public ElectionTimeout(ScheduledFuture<?> scheduledFuture) {
         this.scheduledFuture = scheduledFuture;
-        this.schedulerCallback = schedulerCallback;
     }
 
     public void cancel() {
         logger.debug("cancel election timeout");
         this.scheduledFuture.cancel(false);
-    }
-
-    public ElectionTimeout reset() {
-        this.cancel();
-        return schedulerCallback.scheduleElectionTimeout();
     }
 
     @Override
