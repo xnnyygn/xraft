@@ -1,4 +1,6 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.role;
+
+import in.xnnyygn.xraft.core.node.NodeId;
 
 public abstract class AbstractNodeRole {
 

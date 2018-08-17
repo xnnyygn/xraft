@@ -1,5 +1,6 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.store;
 
+import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.support.Files;
 import in.xnnyygn.xraft.core.support.RandomAccessFileAdapter;
 import in.xnnyygn.xraft.core.support.SeekableFile;

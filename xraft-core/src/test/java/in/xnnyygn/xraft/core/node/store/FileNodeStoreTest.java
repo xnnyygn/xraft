@@ -1,5 +1,7 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.store;
 
+import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.node.store.FileNodeStore;
 import in.xnnyygn.xraft.core.support.ByteArraySeekableFile;
 import org.junit.Assert;
 import org.junit.Test;

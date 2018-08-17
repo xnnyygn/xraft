@@ -2,7 +2,6 @@ package in.xnnyygn.xraft.core.node;
 
 import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.log.MemoryLog;
-import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
 import in.xnnyygn.xraft.core.log.sequence.MemoryEntrySequence;
 import in.xnnyygn.xraft.core.log.snapshot.MemorySnapshot;
 import org.junit.Assert;
@@ -46,7 +45,7 @@ public class NodeGroupTest {
         Assert.assertEquals(1, group.getCountOfMajor());
         group.downgrade(endpoint.getId());
         Assert.assertEquals(0, group.getCountOfMajor());
-        Assert.assertTrue(group.getState(endpoint.getId()).isRemoving());
+        Assert.assertTrue(group.getMember(endpoint.getId()).isRemoving());
     }
 
     @Test
@@ -110,9 +109,9 @@ public class NodeGroupTest {
         endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
         NodeGroup group = new NodeGroup(endpoints);
         group.resetReplicationStates(NodeId.of("A"), new MemoryLog());
-        Collection<NodeGroup.NodeState> replicatingStates = group.getReplicationTargets();
+        Collection<GroupMember> replicatingStates = group.listReplicationTarget();
         Assert.assertEquals(2, replicatingStates.size());
-        Set<NodeId> nodeIds = replicatingStates.stream().map(NodeGroup.NodeState::getId).collect(Collectors.toSet());
+        Set<NodeId> nodeIds = replicatingStates.stream().map(GroupMember::getId).collect(Collectors.toSet());
         Assert.assertFalse(nodeIds.contains(NodeId.of("A")));
     }
 
@@ -120,14 +119,14 @@ public class NodeGroupTest {
     public void testAddNode() {
         NodeGroup group = new NodeGroup(new NodeEndpoint("A", "localhost", 2333));
         group.addNode(new NodeEndpoint("B", "localhost", 2334), 10, 0,false);
-        Assert.assertFalse(group.getState(NodeId.of("B")).isMemberOfMajor());
+        Assert.assertFalse(group.getMember(NodeId.of("B")).isMajor());
     }
 
     @Test
     public void testAddNodeExists() {
         NodeGroup group = new NodeGroup(new NodeEndpoint("A", "localhost", 2333));
         group.addNode(new NodeEndpoint("A", "localhost", 2333), 10, 0,false);
-        Assert.assertFalse(group.getState(NodeId.of("A")).isMemberOfMajor());
+        Assert.assertFalse(group.getMember(NodeId.of("A")).isMajor());
     }
 
     @Test
@@ -138,9 +137,9 @@ public class NodeGroupTest {
         endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
         NodeGroup group = new NodeGroup(endpoints);
         NodeId nodeId = NodeId.of("B");
-        Assert.assertNotNull(group.getState(nodeId));
+        Assert.assertNotNull(group.getMember(nodeId));
         group.removeNode(nodeId);
-        Assert.assertNull(group.getState(nodeId));
+        Assert.assertNull(group.getMember(nodeId));
 
     }
 

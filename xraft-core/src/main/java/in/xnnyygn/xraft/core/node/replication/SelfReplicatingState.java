@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.log.replication;
+package in.xnnyygn.xraft.core.node.replication;
 
 import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.node.NodeId;

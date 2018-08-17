@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.log;
+package in.xnnyygn.xraft.core.log.snapshot;
 
 import in.xnnyygn.xraft.core.log.snapshot.MemorySnapshot;
 import in.xnnyygn.xraft.core.log.snapshot.SnapshotChunk;

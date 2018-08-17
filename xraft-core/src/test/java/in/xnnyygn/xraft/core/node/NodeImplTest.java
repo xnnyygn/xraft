@@ -5,7 +5,10 @@ import in.xnnyygn.xraft.core.log.entry.*;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
-import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
+import in.xnnyygn.xraft.core.node.replication.ReplicatingState;
+import in.xnnyygn.xraft.core.node.role.RoleName;
+import in.xnnyygn.xraft.core.node.role.RoleState;
+import in.xnnyygn.xraft.core.node.store.MemoryNodeStore;
 import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskReference;
 import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskResult;
 import in.xnnyygn.xraft.core.rpc.ConnectorAdapter;
@@ -559,7 +562,7 @@ public class NodeImplTest {
         Assert.assertEquals(GroupConfigChangeTaskResult.OK, reference.getResult(1000L));
         checkWithinTaskExecutor(node, () -> {
             Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
-            Assert.assertNull(node.getContext().group().getState(NodeId.of("B")));
+            Assert.assertNull(node.getContext().group().getMember(NodeId.of("B")));
         });
     }
 
@@ -586,7 +589,7 @@ public class NodeImplTest {
         Assert.assertEquals(GroupConfigChangeTaskResult.OK, reference.getResult(1000L));
         checkWithinTaskExecutor(node, () -> {
             Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
-            Assert.assertNull(node.getContext().group().getState(NodeId.of("A")));
+            Assert.assertNull(node.getContext().group().getMember(NodeId.of("A")));
         });
         RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
@@ -1215,13 +1218,13 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        NodeGroup.NodeState nodeState = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2, 0, false);
-        nodeState.getReplicatingState().startReplicating();
-        nodeState.setRemoving(true);
+        GroupMember member = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2, 0, false);
+        member.startReplicating();
+        member.setRemoving(true);
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("D"), createAppendEntriesRpc(1)));
-        Assert.assertFalse(nodeState.getReplicatingState().isReplicating());
+        Assert.assertFalse(member.isReplicating());
     }
 
     @Test

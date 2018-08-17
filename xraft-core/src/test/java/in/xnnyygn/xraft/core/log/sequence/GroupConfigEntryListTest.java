@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.log;
+package in.xnnyygn.xraft.core.log.sequence;
 
 import in.xnnyygn.xraft.core.log.entry.AddNodeEntry;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;

@@ -1,10 +1,9 @@
 package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.log.Log;
-import in.xnnyygn.xraft.core.log.replication.PeerReplicatingState;
-import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
-import in.xnnyygn.xraft.core.log.replication.SelfReplicatingState;
-import in.xnnyygn.xraft.core.rpc.Address;
+import in.xnnyygn.xraft.core.node.replication.PeerReplicatingState;
+import in.xnnyygn.xraft.core.node.replication.ReplicatingState;
+import in.xnnyygn.xraft.core.node.replication.SelfReplicatingState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,20 +17,20 @@ import java.util.stream.Collectors;
 public class NodeGroup {
 
     private static final Logger logger = LoggerFactory.getLogger(NodeGroup.class);
-    private Map<NodeId, NodeState> stateMap;
+    private Map<NodeId, GroupMember> memberMap;
 
     public NodeGroup(NodeEndpoint endpoint) {
         this(Collections.singleton(endpoint));
     }
 
     public NodeGroup(Collection<NodeEndpoint> endpoints) {
-        this.stateMap = buildStateMap(endpoints);
+        this.memberMap = buildMemberMap(endpoints);
     }
 
-    private Map<NodeId, NodeState> buildStateMap(Collection<NodeEndpoint> endpoints) {
-        Map<NodeId, NodeState> map = new HashMap<>();
+    private Map<NodeId, GroupMember> buildMemberMap(Collection<NodeEndpoint> endpoints) {
+        Map<NodeId, GroupMember> map = new HashMap<>();
         for (NodeEndpoint endpoint : endpoints) {
-            map.put(endpoint.getId(), new NodeState(endpoint));
+            map.put(endpoint.getId(), new GroupMember(endpoint));
         }
         if (map.isEmpty()) {
             throw new IllegalArgumentException("endpoints is empty");
@@ -46,78 +45,70 @@ public class NodeGroup {
      * @return count
      */
     public int getCountOfMajor() {
-        return (int) stateMap.values().stream().filter(NodeState::isMemberOfMajor).count();
+        return (int) memberMap.values().stream().filter(GroupMember::isMajor).count();
     }
 
-    private NodeState findState(NodeId id) {
-        NodeState state = stateMap.get(id);
-        if (state == null) {
+    private GroupMember findMember(NodeId id) {
+        GroupMember member = memberMap.get(id);
+        if (member == null) {
             throw new IllegalArgumentException("no such node " + id);
         }
-        return state;
+        return member;
     }
 
-    public NodeState getState(NodeId id) {
-        return stateMap.get(id);
+    public GroupMember getMember(NodeId id) {
+        return memberMap.get(id);
     }
 
-    @Deprecated
-    public Address findAddress(NodeId id) {
-        return findState(id).getAddress();
-    }
-
+    // TODO remove me?
     public ReplicatingState findReplicationState(NodeId id) {
-        return findState(id).getReplicatingState();
+        return findMember(id).getReplicatingState();
     }
 
     public boolean isMemberOfMajor(NodeId id) {
-        NodeState state = stateMap.get(id);
-        return state != null && state.isMemberOfMajor();
+        GroupMember member = memberMap.get(id);
+        return member != null && member.isMajor();
     }
 
     public NodeEndpoint findEndpoint(NodeId id) {
-        return findState(id).getEndpoint();
+        return findMember(id).getEndpoint();
     }
 
     public void upgrade(NodeId id) {
         logger.info("upgrade node {}", id);
-        NodeState state = findState(id);
-        state.setMemberOfMajor(true);
-
-        // replication state of new node -> peer
-        PeerReplicatingState newReplicationState = new PeerReplicatingState(state.getReplicatingState());
-        state.setReplicatingState(newReplicationState);
+        GroupMember member = findMember(id);
+        member.setMajor(true);
     }
 
     public void downgrade(NodeId id) {
         logger.info("downgrade node {}", id);
-        NodeState state = findState(id);
-        state.setMemberOfMajor(false);
+        GroupMember state = findMember(id);
+        state.setMajor(false);
         state.setRemoving(true);
     }
 
     public void resetReplicationStates(NodeId selfId, Log log) {
-        for (NodeState state : stateMap.values()) {
-            if (state.getId().equals(selfId)) {
-                state.setReplicatingState(new SelfReplicatingState(selfId, log));
+        for (GroupMember member : memberMap.values()) {
+            if (member.getId().equals(selfId)) {
+                member.setReplicatingState(new SelfReplicatingState(selfId, log));
             } else {
-                state.setReplicatingState(new PeerReplicatingState(state.getId(), log.getNextIndex()));
+                member.setReplicatingState(new PeerReplicatingState(member.getId(), log.getNextIndex()));
             }
         }
     }
 
     @Deprecated
     public void resetReplicationStates(int nextLogIndex) {
-        for (NodeState state : stateMap.values()) {
-            state.setReplicatingState(new PeerReplicatingState(state.getId(), nextLogIndex));
+        for (GroupMember member : memberMap.values()) {
+            member.setReplicatingState(new PeerReplicatingState(member.getId(), nextLogIndex));
         }
     }
 
     public int getMatchIndexOfMajor() {
         List<NodeMatchIndex> matchIndices = new ArrayList<>();
-        for (NodeState state : stateMap.values()) {
-            if (state.isMemberOfMajor()) {
-                matchIndices.add(new NodeMatchIndex(state.getReplicatingState()));
+        for (GroupMember member : memberMap.values()) {
+            if (member.isMajor()) {
+                matchIndices.add(new NodeMatchIndex(member.getReplicatingState()));
             }
         }
         if (matchIndices.isEmpty()) {
@@ -132,35 +123,34 @@ public class NodeGroup {
     }
 
     // TODO add test
-    // TODO rename to listReplicationTarget
-    public Collection<NodeGroup.NodeState> getReplicationTargets() {
-        return stateMap.values().stream()
-                .filter(NodeState::isReplicationTarget)
+    public Collection<GroupMember> listReplicationTarget() {
+        return memberMap.values().stream()
+                .filter(GroupMember::isReplicationTarget)
                 .collect(Collectors.toList());
     }
 
-    public NodeState addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex, boolean memberOfMajor) {
+    public GroupMember addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex, boolean memberOfMajor) {
         logger.info("add node {} to group, endpoint {}", endpoint.getId(), endpoint);
-        NodeState state = new NodeState(endpoint, new PeerReplicatingState(endpoint.getId(), nextIndex, matchIndex), memberOfMajor);
-        stateMap.put(endpoint.getId(), state);
-        return state;
+        GroupMember member = new GroupMember(endpoint, new PeerReplicatingState(endpoint.getId(), nextIndex, matchIndex), memberOfMajor);
+        memberMap.put(endpoint.getId(), member);
+        return member;
     }
 
     public void removeNode(NodeId id) {
         logger.info("node {} removed", id);
-        stateMap.remove(id);
+        memberMap.remove(id);
     }
 
     public void updateNodes(Set<NodeEndpoint> endpoints) {
         logger.info("update nodes to {}", endpoints);
-        stateMap = buildStateMap(endpoints);
+        memberMap = buildMemberMap(endpoints);
     }
 
     public Set<NodeEndpoint> listEndpointOfMajor() {
         Set<NodeEndpoint> endpoints = new HashSet<>();
-        for (NodeState state : stateMap.values()) {
-            if (state.isMemberOfMajor()) {
-                endpoints.add(state.getEndpoint());
+        for (GroupMember member : memberMap.values()) {
+            if (member.isMajor()) {
+                endpoints.add(member.getEndpoint());
             }
         }
         return endpoints;
@@ -168,108 +158,16 @@ public class NodeGroup {
 
     public Set<NodeEndpoint> listEndpointOfMajorExclude(NodeId selfId) {
         Set<NodeEndpoint> endpoints = new HashSet<>();
-        for (NodeState state : stateMap.values()) {
-            if (state.isMemberOfMajor() && !state.getId().equals(selfId)) {
-                endpoints.add(state.getEndpoint());
+        for (GroupMember member : memberMap.values()) {
+            if (member.isMajor() && !member.getId().equals(selfId)) {
+                endpoints.add(member.getEndpoint());
             }
         }
         return endpoints;
     }
 
     public boolean isUniqueNode(NodeId id) {
-        return stateMap.size() == 1 && stateMap.containsKey(id);
-    }
-
-    public static class NodeState {
-
-        private final NodeEndpoint endpoint;
-        private ReplicatingState replicatingState;
-        private boolean memberOfMajor;
-        private boolean removing = false;
-
-        NodeState(NodeEndpoint endpoint) {
-            this(endpoint, true);
-        }
-
-        NodeState(NodeEndpoint endpoint, boolean memberOfMajor) {
-            this.endpoint = endpoint;
-            this.memberOfMajor = memberOfMajor;
-        }
-
-        NodeState(NodeEndpoint endpoint, ReplicatingState replicatingState, boolean memberOfMajor) {
-            this.endpoint = endpoint;
-            this.replicatingState = replicatingState;
-            this.memberOfMajor = memberOfMajor;
-        }
-
-        NodeEndpoint getEndpoint() {
-            return endpoint;
-        }
-
-        NodeId getId() {
-            return endpoint.getId();
-        }
-
-        Address getAddress() {
-            return endpoint.getAddress();
-        }
-
-        void setReplicatingState(ReplicatingState replicatingState) {
-            this.replicatingState = replicatingState;
-        }
-
-        public ReplicatingState getReplicatingState() {
-            if (replicatingState == null) {
-                throw new IllegalStateException("replication state not set");
-            }
-            return replicatingState;
-        }
-
-        public boolean isMemberOfMajor() {
-            return memberOfMajor;
-        }
-
-        void setMemberOfMajor(boolean memberOfMajor) {
-            this.memberOfMajor = memberOfMajor;
-        }
-
-        public boolean isRemoving() {
-            return removing;
-        }
-
-        public void setRemoving(boolean removing) {
-            this.removing = removing;
-        }
-
-        public int getNextIndex() {
-            return getReplicatingState().getNextIndex();
-        }
-
-        public void startReplicating() {
-            getReplicatingState().startReplicating();
-        }
-
-        public boolean isReplicationTarget() {
-            return getReplicatingState().isReplicationTarget();
-        }
-
-        // TODO add test
-        public boolean shouldReplicate(long minReplicationInterval) {
-            ReplicatingState replicatingState = getReplicatingState();
-            return !replicatingState.isReplicating() ||
-                    System.currentTimeMillis() - replicatingState.getLastReplicatedAt() > minReplicationInterval;
-        }
-
-        @Override
-        public String toString() {
-            return "NodeState{" +
-                    "endpoint=" + endpoint +
-                    ", memberOfMajor=" + memberOfMajor +
-                    ", removing=" + removing +
-                    ", replicatingState=" + replicatingState +
-                    '}';
-        }
-
+        return memberMap.size() == 1 && memberMap.containsKey(id);
     }
 
     private static class NodeMatchIndex implements Comparable<NodeMatchIndex> {

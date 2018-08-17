@@ -9,8 +9,9 @@ import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
-import in.xnnyygn.xraft.core.log.replication.ReplicatingState;
 import in.xnnyygn.xraft.core.log.snapshot.EntryInSnapshotException;
+import in.xnnyygn.xraft.core.node.role.*;
+import in.xnnyygn.xraft.core.node.store.NodeStore;
 import in.xnnyygn.xraft.core.node.task.*;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
@@ -281,24 +282,24 @@ public class NodeImpl implements Node {
             return;
         }
         logger.debug("replicate log");
-        for (NodeGroup.NodeState nodeState : context.group().getReplicationTargets()) {
-            if (nodeState.shouldReplicate(context.config().getMinReplicationInterval())) {
-                doReplicateLog(nodeState, context.config().getMaxReplicationEntries());
+        for (GroupMember member : context.group().listReplicationTarget()) {
+            if (member.shouldReplicate(context.config().getMinReplicationInterval())) {
+                doReplicateLog(member, context.config().getMaxReplicationEntries());
             } else {
-                logger.debug("node {} is replicating, skip replication task", nodeState.getId());
+                logger.debug("node {} is replicating, skip replication task", member.getId());
             }
         }
     }
 
-    private void doReplicateLog(NodeGroup.NodeState nodeState, int maxEntries) {
-        nodeState.startReplicating();
+    private void doReplicateLog(GroupMember member, int maxEntries) {
+        member.startReplicating();
         try {
-            AppendEntriesRpc rpc = context.log().createAppendEntriesRpc(role.getTerm(), context.selfId(), nodeState.getNextIndex(), maxEntries);
-            context.connector().sendAppendEntries(rpc, nodeState.getEndpoint());
+            AppendEntriesRpc rpc = context.log().createAppendEntriesRpc(role.getTerm(), context.selfId(), member.getNextIndex(), maxEntries);
+            context.connector().sendAppendEntries(rpc, member.getEndpoint());
         } catch (EntryInSnapshotException e) {
-            logger.debug("log entry {} in snapshot, replicate with install snapshot RPC", nodeState.getNextIndex());
+            logger.debug("log entry {} in snapshot, replicate with install snapshot RPC", member.getNextIndex());
             InstallSnapshotRpc rpc = context.log().createInstallSnapshotRpc(role.getTerm(), context.selfId(), 0, context.config().getSnapshotDataLength());
-            context.connector().sendInstallSnapshot(rpc, nodeState.getEndpoint());
+            context.connector().sendInstallSnapshot(rpc, member.getEndpoint());
         }
     }
 
@@ -446,41 +447,40 @@ public class NodeImpl implements Node {
             return;
         }
         NodeId sourceNodeId = resultMessage.getSourceNodeId();
-        NodeGroup.NodeState nodeState = context.group().getState(sourceNodeId);
-        if (nodeState == null) {
+        GroupMember member = context.group().getMember(sourceNodeId);
+        if (member == null) {
             logger.info("unexpected append entries result from node {}, node maybe removed", sourceNodeId);
             return;
         }
-        ReplicatingState replicatingState = nodeState.getReplicatingState();
         AppendEntriesRpc rpc = resultMessage.getRpc();
         if (result.isSuccess()) {
-            if (nodeState.isMemberOfMajor()) {
+            if (member.isMajor()) {
                 // peer
-                if (replicatingState.advance(rpc.getLastEntryIndex())) {
+                if (member.advanceReplicatingState(rpc.getLastEntryIndex())) {
                     context.log().advanceCommitIndex(context.group().getMatchIndexOfMajor(), role.getTerm());
                 }
-                if (replicatingState.catchUp(context.log().getNextIndex())) {
-                    replicatingState.stopReplicating();
+                if (member.getNextIndex() >= context.log().getNextIndex()) {
+                    member.stopReplicating();
                     return;
                 }
             } else {
                 // removing node
-                if (nodeState.isRemoving()) {
+                if (member.isRemoving()) {
                     logger.debug("node {} is removing, skip", sourceNodeId);
                 } else {
                     logger.warn("unexpected append entries result from node {}, not major and not removing", sourceNodeId);
                 }
-                replicatingState.stopReplicating();
+                member.stopReplicating();
                 return;
             }
         } else {
-            if (!replicatingState.backOffNextIndex()) {
+            if (!member.backOffNextIndex()) {
                 logger.warn("cannot back off next index more, node {}", sourceNodeId);
-                replicatingState.stopReplicating();
+                member.stopReplicating();
                 return;
             }
         }
-        doReplicateLog(nodeState, context.config().getMaxReplicationEntries());
+        doReplicateLog(member, context.config().getMaxReplicationEntries());
     }
 
     @Subscribe
@@ -519,16 +519,15 @@ public class NodeImpl implements Node {
         }
         InstallSnapshotRpc rpc = resultMessage.getRpc();
         NodeId sourceNodeId = resultMessage.getSourceNodeId();
-        NodeGroup.NodeState nodeState = context.group().getState(sourceNodeId);
+        GroupMember member = context.group().getMember(sourceNodeId);
         if (rpc.isDone()) {
-            ReplicatingState replicatingState = nodeState.getReplicatingState();
-            replicatingState.advance(rpc.getLastIncludedIndex());
-            int maxEntries = nodeState.isMemberOfMajor() ? context.config().getMaxReplicationEntries() : context.config().getMaxReplicationEntriesForNewNode();
-            doReplicateLog(nodeState, maxEntries);
+            member.advanceReplicatingState(rpc.getLastIncludedIndex());
+            int maxEntries = member.isMajor() ? context.config().getMaxReplicationEntries() : context.config().getMaxReplicationEntriesForNewNode();
+            doReplicateLog(member, maxEntries);
         } else {
             InstallSnapshotRpc nextRpc = context.log().createInstallSnapshotRpc(role.getTerm(), context.selfId(),
                     rpc.getOffset() + rpc.getDataLength(), context.config().getSnapshotDataLength());
-            context.connector().sendInstallSnapshot(nextRpc, nodeState.getEndpoint());
+            context.connector().sendInstallSnapshot(nextRpc, member.getEndpoint());
         }
     }
 

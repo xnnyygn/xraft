@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.log.replication;
+package in.xnnyygn.xraft.core.node.replication;
 
 abstract class AbstractReplicatingState implements ReplicatingState {
 
@@ -13,11 +13,6 @@ abstract class AbstractReplicatingState implements ReplicatingState {
     @Override
     public boolean isReplicationTarget() {
         return replicationTarget;
-    }
-
-    @Override
-    public boolean catchUp(int nextLogIndex) {
-        return getNextIndex() >= nextLogIndex;
     }
 
     @Override
@@ -45,4 +40,5 @@ abstract class AbstractReplicatingState implements ReplicatingState {
     public void stopReplicating() {
         replicating = false;
     }
+
 }

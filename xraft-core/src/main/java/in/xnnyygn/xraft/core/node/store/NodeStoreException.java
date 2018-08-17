@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.store;
 
 public class NodeStoreException extends RuntimeException {
 

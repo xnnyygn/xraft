@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.role;
 
 public enum RoleName {
 

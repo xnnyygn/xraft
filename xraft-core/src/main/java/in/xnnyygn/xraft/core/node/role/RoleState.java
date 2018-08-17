@@ -1,4 +1,6 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.role;
+
+import in.xnnyygn.xraft.core.node.NodeId;
 
 public class RoleState {
 
@@ -25,7 +27,7 @@ public class RoleState {
         return votesCount;
     }
 
-    void setVotesCount(int votesCount) {
+    public void setVotesCount(int votesCount) {
         this.votesCount = votesCount;
     }
 
@@ -33,7 +35,7 @@ public class RoleState {
         return votedFor;
     }
 
-    void setVotedFor(NodeId votedFor) {
+    public void setVotedFor(NodeId votedFor) {
         this.votedFor = votedFor;
     }
 
@@ -41,7 +43,7 @@ public class RoleState {
         return leaderId;
     }
 
-    void setLeaderId(NodeId leaderId) {
+    public void setLeaderId(NodeId leaderId) {
         this.leaderId = leaderId;
     }
 

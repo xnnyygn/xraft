@@ -1,4 +1,4 @@
-package in.xnnyygn.xraft.core.log.replication;
+package in.xnnyygn.xraft.core.node.replication;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
@@ -15,8 +15,6 @@ public interface ReplicatingState {
     boolean advance(int lastEntryIndex);
 
     boolean isReplicationTarget();
-
-    boolean catchUp(int nextLogIndex);
 
     boolean isReplicating();
 

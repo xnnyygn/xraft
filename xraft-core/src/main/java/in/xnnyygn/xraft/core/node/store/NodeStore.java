@@ -1,4 +1,6 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.store;
+
+import in.xnnyygn.xraft.core.node.NodeId;
 
 public interface NodeStore {
 

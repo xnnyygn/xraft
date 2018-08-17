@@ -1,5 +1,6 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.role;
 
+import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
 
 import javax.annotation.concurrent.Immutable;
