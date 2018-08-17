@@ -4,14 +4,13 @@ import in.xnnyygn.xraft.core.node.NodeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RemoveNodeTask implements GroupConfigChangeTask {
+public class RemoveNodeTask extends AbstractGroupConfigChangeTask {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoveNodeTask.class);
-    private final GroupConfigChangeTaskContext context;
     private final NodeId nodeId;
 
     public RemoveNodeTask(GroupConfigChangeTaskContext context, NodeId nodeId) {
-        this.context = context;
+        super(context);
         this.nodeId = nodeId;
     }
 
@@ -21,18 +20,16 @@ public class RemoveNodeTask implements GroupConfigChangeTask {
     }
 
     @Override
-    public synchronized GroupConfigChangeTaskResult call() throws Exception {
-        logger.info("task start");
+    protected void appendGroupConfig() {
         context.downgradeNode(nodeId);
-        wait();
-        logger.info("task done");
-        context.done();
-        return GroupConfigChangeTaskResult.OK;
     }
 
     @Override
     public synchronized void onLogCommitted() {
-        logger.debug("log committed");
+        if (state != State.GROUP_CONFIG_APPENDED) {
+            throw new IllegalStateException("log committed before log appended");
+        }
+        setState(State.GROUP_CONFIG_COMMITTED);
         context.removeNode(nodeId);
         notify();
     }
