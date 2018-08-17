@@ -32,11 +32,6 @@ public class NodeImplTest {
         private boolean sent = false;
 
         @Override
-        public synchronized void sendAppendEntries(AppendEntriesRpc rpc, NodeId destinationNodeId) {
-            appendEntriesRpcSent();
-        }
-
-        @Override
         public synchronized void sendAppendEntries(AppendEntriesRpc rpc, NodeEndpoint destinationEndpoint) {
             appendEntriesRpcSent();
         }

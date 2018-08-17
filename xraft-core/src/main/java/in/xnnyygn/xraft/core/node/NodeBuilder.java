@@ -6,7 +6,6 @@ import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.log.MemoryLog;
 import in.xnnyygn.xraft.core.rpc.Connector;
 import in.xnnyygn.xraft.core.rpc.nio.NioConnector;
-import in.xnnyygn.xraft.core.rpc.nio.NioConnectorContext;
 import in.xnnyygn.xraft.core.schedule.DefaultScheduler;
 import in.xnnyygn.xraft.core.schedule.Scheduler;
 import in.xnnyygn.xraft.core.support.ListeningTaskExecutor;
@@ -104,32 +103,23 @@ public class NodeBuilder {
         context.setConfig(config);
         context.setEventBus(eventBus);
         context.setScheduler(scheduler != null ? scheduler : new DefaultScheduler(config));
-        context.setConnector(connector != null ? connector : new NioConnector(buildNioConnectorContext()));
+        context.setConnector(connector != null ? connector : createNioConnector());
         context.setTaskExecutor(taskExecutor != null ? taskExecutor : new ListeningTaskExecutor(
                 Executors.newSingleThreadExecutor(r -> new Thread(r, "node"))
         ));
         // TODO share monitor
         context.setGroupConfigChangeTaskExecutor(groupConfigChangeTaskExecutor != null ? groupConfigChangeTaskExecutor :
-                new ListeningTaskExecutor(Executors.newSingleThreadExecutor(r-> new Thread(r, "group-config-change"))));
+                new ListeningTaskExecutor(Executors.newSingleThreadExecutor(r -> new Thread(r, "group-config-change"))));
         return context;
     }
 
-    private NioConnectorContext buildNioConnectorContext() {
-        NioConnectorContext context = new NioConnectorContext();
-        context.setEventBus(eventBus);
-        context.setNodeGroup(group);
-        context.setSelfNodeId(selfId);
-        context.setPort(group.findEndpoint(selfId).getPort());
-        if (workerNioEventLoopGroup == null) {
-            context.setWorkerGroupShared(false);
-            context.setWorkerNioEventLoopGroup(new NioEventLoopGroup(config.getNioWorkerThreads()));
-        } else {
-            context.setWorkerGroupShared(true);
-            context.setWorkerNioEventLoopGroup(workerNioEventLoopGroup);
+    private NioConnector createNioConnector() {
+        int port = group.findEndpoint(selfId).getPort();
+        if (workerNioEventLoopGroup != null) {
+            return new NioConnector(workerNioEventLoopGroup, selfId, eventBus, port);
         }
-        return context;
+        return new NioConnector(new NioEventLoopGroup(config.getNioWorkerThreads()), selfId, eventBus, port);
     }
-
 
     private NodeMode evaluateMode() {
         if (standby) {

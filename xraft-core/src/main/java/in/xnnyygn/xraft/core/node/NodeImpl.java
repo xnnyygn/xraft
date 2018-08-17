@@ -228,7 +228,7 @@ public class NodeImpl implements Node {
             rpc.setCandidateId(context.selfId());
             rpc.setLastLogIndex(lastEntryMeta.getIndex());
             rpc.setLastLogTerm(lastEntryMeta.getTerm());
-            context.connector().sendRequestVote(rpc);
+            context.connector().sendRequestVote(rpc, context.group().getNodeEndpointsOfMajor());
         }
     }
 
@@ -281,25 +281,24 @@ public class NodeImpl implements Node {
             return;
         }
         logger.debug("replicate log");
-        for (ReplicatingState replicatingState : context.group().getReplicationTargets()) {
-            if (replicatingState.isReplicating() &&
-                    System.currentTimeMillis() - replicatingState.getLastReplicatedAt() <= context.config().getMinReplicationInterval()) {
-                logger.debug("node {} is replicating, skip replication task", replicatingState.getNodeId());
+        for (NodeGroup.NodeState nodeState : context.group().getReplicationTargets()) {
+            if (nodeState.shouldReplicate(context.config().getMinReplicationInterval())) {
+                doReplicateLog(nodeState, context.config().getMaxReplicationEntries());
             } else {
-                doReplicateLog(replicatingState, context.config().getMaxReplicationEntries());
+                logger.debug("node {} is replicating, skip replication task", nodeState.getId());
             }
         }
     }
 
-    private void doReplicateLog(ReplicatingState replicatingState, int maxEntries) {
-        replicatingState.startReplicating();
+    private void doReplicateLog(NodeGroup.NodeState nodeState, int maxEntries) {
+        nodeState.startReplicating();
         try {
-            AppendEntriesRpc rpc = context.log().createAppendEntriesRpc(role.getTerm(), context.selfId(), replicatingState.getNextIndex(), maxEntries);
-            context.connector().sendAppendEntries(rpc, replicatingState.getNodeId());
+            AppendEntriesRpc rpc = context.log().createAppendEntriesRpc(role.getTerm(), context.selfId(), nodeState.getNextIndex(), maxEntries);
+            context.connector().sendAppendEntries(rpc, nodeState.getEndpoint());
         } catch (EntryInSnapshotException e) {
-            logger.debug("log entry {} in snapshot, replicate with install snapshot RPC", replicatingState.getNextIndex());
+            logger.debug("log entry {} in snapshot, replicate with install snapshot RPC", nodeState.getNextIndex());
             InstallSnapshotRpc rpc = context.log().createInstallSnapshotRpc(role.getTerm(), context.selfId(), 0, context.config().getSnapshotDataLength());
-            context.connector().sendInstallSnapshot(rpc, replicatingState.getNodeId());
+            context.connector().sendInstallSnapshot(rpc, nodeState.getEndpoint());
         }
     }
 
@@ -481,7 +480,7 @@ public class NodeImpl implements Node {
                 return;
             }
         }
-        doReplicateLog(replicatingState, context.config().getMaxReplicationEntries());
+        doReplicateLog(nodeState, context.config().getMaxReplicationEntries());
     }
 
     @Subscribe
@@ -520,16 +519,16 @@ public class NodeImpl implements Node {
         }
         InstallSnapshotRpc rpc = resultMessage.getRpc();
         NodeId sourceNodeId = resultMessage.getSourceNodeId();
+        NodeGroup.NodeState nodeState = context.group().getState(sourceNodeId);
         if (rpc.isDone()) {
-            NodeGroup.NodeState nodeState = context.group().getState(sourceNodeId);
             ReplicatingState replicatingState = nodeState.getReplicatingState();
             replicatingState.advance(rpc.getLastIncludedIndex());
             int maxEntries = nodeState.isMemberOfMajor() ? context.config().getMaxReplicationEntries() : context.config().getMaxReplicationEntriesForNewNode();
-            doReplicateLog(replicatingState, maxEntries);
+            doReplicateLog(nodeState, maxEntries);
         } else {
             InstallSnapshotRpc nextRpc = context.log().createInstallSnapshotRpc(role.getTerm(), context.selfId(),
                     rpc.getOffset() + rpc.getDataLength(), context.config().getSnapshotDataLength());
-            context.connector().sendInstallSnapshot(nextRpc, sourceNodeId);
+            context.connector().sendInstallSnapshot(nextRpc, nodeState.getEndpoint());
         }
     }
 

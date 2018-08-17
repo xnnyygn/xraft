@@ -130,10 +130,10 @@ public class NodeGroup {
         return matchIndices.get(matchIndices.size() / 2).getMatchIndex();
     }
 
-    public Collection<ReplicatingState> getReplicationTargets() {
+    // TODO add test
+    public Collection<NodeGroup.NodeState> getReplicationTargets() {
         return stateMap.values().stream()
-                .map(NodeState::getReplicatingState)
-                .filter(ReplicatingState::isReplicationTarget)
+                .filter(NodeState::isReplicationTarget)
                 .collect(Collectors.toList());
     }
 
@@ -154,6 +154,7 @@ public class NodeGroup {
         stateMap = buildStateMap(endpoints);
     }
 
+    // TODO optimize
     public Set<NodeEndpoint> getNodeEndpointsOfMajor() {
         return stateMap.values().stream()
                 .filter(NodeState::isMemberOfMajor)
@@ -224,6 +225,25 @@ public class NodeGroup {
 
         public void setRemoving(boolean removing) {
             this.removing = removing;
+        }
+
+        public int getNextIndex() {
+            return getReplicatingState().getNextIndex();
+        }
+
+        public void startReplicating() {
+            getReplicatingState().startReplicating();
+        }
+
+        public boolean isReplicationTarget() {
+            return getReplicatingState().isReplicationTarget();
+        }
+
+        // TODO add test
+        public boolean shouldReplicate(long minReplicationInterval) {
+            ReplicatingState replicatingState = getReplicatingState();
+            return !replicatingState.isReplicating() ||
+                    System.currentTimeMillis() - replicatingState.getLastReplicatedAt() > minReplicationInterval;
         }
 
         @Override

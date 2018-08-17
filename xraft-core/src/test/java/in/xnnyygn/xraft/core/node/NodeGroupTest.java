@@ -110,9 +110,9 @@ public class NodeGroupTest {
         endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
         NodeGroup group = new NodeGroup(endpoints);
         group.resetReplicationStates(NodeId.of("A"), new MemoryLog());
-        Collection<ReplicatingState> replicatingStates = group.getReplicationTargets();
+        Collection<NodeGroup.NodeState> replicatingStates = group.getReplicationTargets();
         Assert.assertEquals(2, replicatingStates.size());
-        Set<NodeId> nodeIds = replicatingStates.stream().map(ReplicatingState::getNodeId).collect(Collectors.toSet());
+        Set<NodeId> nodeIds = replicatingStates.stream().map(NodeGroup.NodeState::getId).collect(Collectors.toSet());
         Assert.assertFalse(nodeIds.contains(NodeId.of("A")));
     }
 
