@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.rpc.nio;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
@@ -16,6 +17,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
@@ -30,8 +32,6 @@ public class NioConnector implements Connector {
     private final boolean workerGroupShared;
     private final EventBus eventBus;
     private final int port;
-    @GuardedBy("this")
-    private boolean initialized;
     private final InboundChannelGroup inboundChannelGroup = new InboundChannelGroup();
     private final OutboundChannelGroup outboundChannelGroup;
 
@@ -51,11 +51,9 @@ public class NioConnector implements Connector {
         outboundChannelGroup = new OutboundChannelGroup(workerNioEventLoopGroup, eventBus, selfNodeId);
     }
 
+    // should not call more than once
     @Override
-    public synchronized void initialize() {
-        if (initialized) {
-            return;
-        }
+    public void initialize() {
         ServerBootstrap serverBootstrap = new ServerBootstrap()
                 .group(bossNioEventLoopGroup, workerNioEventLoopGroup)
                 .channel(NioServerSocketChannel.class)
@@ -74,11 +72,12 @@ public class NioConnector implements Connector {
         } catch (InterruptedException e) {
             throw new ConnectorException("failed to bind port", e);
         }
-        initialized = true;
     }
 
     @Override
-    public void sendRequestVote(RequestVoteRpc rpc, Collection<NodeEndpoint> destinationEndpoints) {
+    public void sendRequestVote(@Nonnull RequestVoteRpc rpc, @Nonnull Collection<NodeEndpoint> destinationEndpoints) {
+        Preconditions.checkNotNull(rpc);
+        Preconditions.checkNotNull(destinationEndpoints);
         for (NodeEndpoint endpoint : destinationEndpoints) {
             logger.debug("send {} to node {}", rpc, endpoint.getId());
             try {
@@ -98,7 +97,9 @@ public class NioConnector implements Connector {
     }
 
     @Override
-    public void replyRequestVote(RequestVoteResult result, RequestVoteRpcMessage rpcMessage) {
+    public void replyRequestVote(@Nonnull RequestVoteResult result, @Nonnull RequestVoteRpcMessage rpcMessage) {
+        Preconditions.checkNotNull(result);
+        Preconditions.checkNotNull(rpcMessage);
         logger.debug("reply {} to node {}", result, rpcMessage.getSourceNodeId());
         try {
             rpcMessage.getChannel().writeRequestVoteResult(result);
@@ -108,7 +109,9 @@ public class NioConnector implements Connector {
     }
 
     @Override
-    public void sendAppendEntries(AppendEntriesRpc rpc, NodeEndpoint destinationEndpoint) {
+    public void sendAppendEntries(@Nonnull AppendEntriesRpc rpc, @Nonnull NodeEndpoint destinationEndpoint) {
+        Preconditions.checkNotNull(rpc);
+        Preconditions.checkNotNull(destinationEndpoint);
         logger.debug("send {} to node {}", rpc, destinationEndpoint.getId());
         try {
             getChannel(destinationEndpoint).writeAppendEntriesRpc(rpc);
@@ -118,7 +121,9 @@ public class NioConnector implements Connector {
     }
 
     @Override
-    public void replyAppendEntries(AppendEntriesResult result, AppendEntriesRpcMessage rpcMessage) {
+    public void replyAppendEntries(@Nonnull AppendEntriesResult result, @Nonnull AppendEntriesRpcMessage rpcMessage) {
+        Preconditions.checkNotNull(result);
+        Preconditions.checkNotNull(rpcMessage);
         logger.debug("reply {} to node {}", result, rpcMessage.getSourceNodeId());
         try {
             rpcMessage.getChannel().writeAppendEntriesResult(result);
@@ -128,7 +133,9 @@ public class NioConnector implements Connector {
     }
 
     @Override
-    public void sendInstallSnapshot(InstallSnapshotRpc rpc, NodeEndpoint destinationEndpoint) {
+    public void sendInstallSnapshot(@Nonnull InstallSnapshotRpc rpc, @Nonnull NodeEndpoint destinationEndpoint) {
+        Preconditions.checkNotNull(rpc);
+        Preconditions.checkNotNull(destinationEndpoint);
         logger.debug("send {} to node {}", rpc, destinationEndpoint.getId());
         try {
             getChannel(destinationEndpoint).writeInstallSnapshotRpc(rpc);
@@ -138,7 +145,9 @@ public class NioConnector implements Connector {
     }
 
     @Override
-    public void replyInstallSnapshot(InstallSnapshotResult result, InstallSnapshotRpcMessage rpcMessage) {
+    public void replyInstallSnapshot(@Nonnull InstallSnapshotResult result, @Nonnull InstallSnapshotRpcMessage rpcMessage) {
+        Preconditions.checkNotNull(result);
+        Preconditions.checkNotNull(rpcMessage);
         logger.debug("reply {} to node {}", result, rpcMessage.getSourceNodeId());
         try {
             rpcMessage.getChannel().writeInstallSnapshotResult(result);

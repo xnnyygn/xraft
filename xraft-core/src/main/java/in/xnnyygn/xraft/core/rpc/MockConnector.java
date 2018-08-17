@@ -4,6 +4,7 @@ import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.*;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -14,14 +15,14 @@ public class MockConnector extends ConnectorAdapter {
     private LinkedList<Message> messages = new LinkedList<>();
 
     @Override
-    public void sendRequestVote(RequestVoteRpc rpc, Collection<NodeEndpoint> destinationEndpoints) {
+    public void sendRequestVote(@Nonnull RequestVoteRpc rpc, @Nonnull Collection<NodeEndpoint> destinationEndpoints) {
         Message m = new Message();
         m.rpc = rpc;
         messages.add(m);
     }
 
     @Override
-    public void replyRequestVote(RequestVoteResult result, RequestVoteRpcMessage rpcMessage) {
+    public void replyRequestVote(@Nonnull RequestVoteResult result, @Nonnull RequestVoteRpcMessage rpcMessage) {
         Message m = new Message();
         m.result = result;
         m.destinationNodeId = rpcMessage.getSourceNodeId();
@@ -29,7 +30,7 @@ public class MockConnector extends ConnectorAdapter {
     }
 
     @Override
-    public void sendAppendEntries(AppendEntriesRpc rpc, NodeEndpoint destinationEndpoint) {
+    public void sendAppendEntries(@Nonnull AppendEntriesRpc rpc, @Nonnull NodeEndpoint destinationEndpoint) {
         Message m = new Message();
         m.rpc = rpc;
         m.destinationNodeId = destinationEndpoint.getId();
@@ -37,7 +38,7 @@ public class MockConnector extends ConnectorAdapter {
     }
 
     @Override
-    public void replyAppendEntries(AppendEntriesResult result, AppendEntriesRpcMessage rpcMessage) {
+    public void replyAppendEntries(@Nonnull AppendEntriesResult result, @Nonnull AppendEntriesRpcMessage rpcMessage) {
         Message m = new Message();
         m.result = result;
         m.destinationNodeId = rpcMessage.getSourceNodeId();
@@ -45,7 +46,7 @@ public class MockConnector extends ConnectorAdapter {
     }
 
     @Override
-    public void sendInstallSnapshot(InstallSnapshotRpc rpc, NodeEndpoint destinationEndpoint) {
+    public void sendInstallSnapshot(@Nonnull InstallSnapshotRpc rpc, @Nonnull NodeEndpoint destinationEndpoint) {
         Message m = new Message();
         m.rpc = rpc;
         m.destinationNodeId = destinationEndpoint.getId();
@@ -53,7 +54,7 @@ public class MockConnector extends ConnectorAdapter {
     }
 
     @Override
-    public void replyInstallSnapshot(InstallSnapshotResult result, InstallSnapshotRpcMessage rpcMessage) {
+    public void replyInstallSnapshot(@Nonnull InstallSnapshotResult result, @Nonnull InstallSnapshotRpcMessage rpcMessage) {
         Message m = new Message();
         m.result = result;
         m.destinationNodeId = rpcMessage.getSourceNodeId();

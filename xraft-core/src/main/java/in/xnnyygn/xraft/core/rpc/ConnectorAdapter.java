@@ -4,6 +4,7 @@ import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.*;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public abstract class ConnectorAdapter implements Connector {
@@ -13,31 +14,31 @@ public abstract class ConnectorAdapter implements Connector {
     }
 
     @Override
-    public void sendRequestVote(RequestVoteRpc rpc, Collection<NodeEndpoint> destinationEndpoints) {
+    public void sendRequestVote(@Nonnull RequestVoteRpc rpc, @Nonnull Collection<NodeEndpoint> destinationEndpoints) {
     }
 
     @Override
-    public void replyRequestVote(RequestVoteResult result, RequestVoteRpcMessage rpcMessage) {
-
-    }
-
-    @Override
-    public void sendAppendEntries(AppendEntriesRpc rpc, NodeEndpoint destinationEndpoint) {
+    public void replyRequestVote(@Nonnull RequestVoteResult result, @Nonnull RequestVoteRpcMessage rpcMessage) {
 
     }
 
     @Override
-    public void replyAppendEntries(AppendEntriesResult result, AppendEntriesRpcMessage rpcMessage) {
+    public void sendAppendEntries(@Nonnull AppendEntriesRpc rpc, @Nonnull NodeEndpoint destinationEndpoint) {
 
     }
 
     @Override
-    public void sendInstallSnapshot(InstallSnapshotRpc rpc, NodeEndpoint destinationEndpoint) {
+    public void replyAppendEntries(@Nonnull AppendEntriesResult result, @Nonnull AppendEntriesRpcMessage rpcMessage) {
 
     }
 
     @Override
-    public void replyInstallSnapshot(InstallSnapshotResult result, InstallSnapshotRpcMessage rpcMessage) {
+    public void sendInstallSnapshot(@Nonnull InstallSnapshotRpc rpc, @Nonnull NodeEndpoint destinationEndpoint) {
+
+    }
+
+    @Override
+    public void replyInstallSnapshot(@Nonnull InstallSnapshotResult result, @Nonnull InstallSnapshotRpcMessage rpcMessage) {
 
     }
 

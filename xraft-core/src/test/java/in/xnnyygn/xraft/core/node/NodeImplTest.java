@@ -23,6 +23,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -40,7 +41,7 @@ public class NodeImplTest {
         private boolean sent = false;
 
         @Override
-        public synchronized void sendAppendEntries(AppendEntriesRpc rpc, NodeEndpoint destinationEndpoint) {
+        public synchronized void sendAppendEntries(@Nonnull AppendEntriesRpc rpc, @Nonnull NodeEndpoint destinationEndpoint) {
             appendEntriesRpcSent();
         }
 
