@@ -229,7 +229,7 @@ public class NodeImpl implements Node {
             rpc.setCandidateId(context.selfId());
             rpc.setLastLogIndex(lastEntryMeta.getIndex());
             rpc.setLastLogTerm(lastEntryMeta.getTerm());
-            context.connector().sendRequestVote(rpc, context.group().listEndpointOfMajorExclude(context.selfId()));
+            context.connector().sendRequestVote(rpc, context.group().listEndpointOfMajorExcept(context.selfId()));
         }
     }
 
@@ -262,7 +262,7 @@ public class NodeImpl implements Node {
     }
 
     private void resetReplicationStates() {
-        context.group().resetReplicationStates(context.selfId(), context.log());
+        context.group().resetReplicatingStates(context.selfId(), context.log());
     }
 
     private LogReplicationTask scheduleLogReplicationTask() {

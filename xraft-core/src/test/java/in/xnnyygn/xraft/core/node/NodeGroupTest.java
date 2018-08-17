@@ -54,7 +54,7 @@ public class NodeGroupTest {
         endpoints.add(new NodeEndpoint("A", "localhost", 2333)); // self
         endpoints.add(new NodeEndpoint("B", "localhost", 2334)); // peer
         NodeGroup group = new NodeGroup(endpoints);
-        group.resetReplicationStates(new NodeId("A"), new MemoryLog());
+        group.resetReplicatingStates(new NodeId("A"), new MemoryLog());
         Assert.assertEquals(1, group.getMember(new NodeId("B")).getNextIndex());
     }
 
@@ -67,7 +67,7 @@ public class NodeGroupTest {
         endpoints.add(new NodeEndpoint("B", "localhost", 2334)); // peer
         endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
         NodeGroup group = new NodeGroup(endpoints);
-        group.resetReplicationStates(NodeId.of("A"), new MemoryLog()); // 1
+        group.resetReplicatingStates(NodeId.of("A"), new MemoryLog()); // 1
         group.getMember(NodeId.of("B")).advanceReplicatingState(10);
         Assert.assertEquals(0, group.getMatchIndexOfMajor());
         group.getMember(NodeId.of("C")).advanceReplicatingState(10);
@@ -84,7 +84,7 @@ public class NodeGroupTest {
         endpoints.add(new NodeEndpoint("D", "localhost", 2336)); // peer
         NodeGroup group = new NodeGroup(endpoints);
         group.downgrade(NodeId.of("C"));
-        group.resetReplicationStates(NodeId.of("A"), new MemoryLog()); // 1
+        group.resetReplicatingStates(NodeId.of("A"), new MemoryLog()); // 1
         group.getMember(NodeId.of("B")).advanceReplicatingState(10);
         group.getMember(NodeId.of("D")).advanceReplicatingState(10);
         Assert.assertEquals(10, group.getMatchIndexOfMajor());
@@ -94,7 +94,7 @@ public class NodeGroupTest {
     @Test
     public void testGetMatchIndexOfMajor3() {
         NodeGroup group = new NodeGroup(new NodeEndpoint("A", "localhost", 2333));
-        group.resetReplicationStates(NodeId.of("A"), new MemoryLog(
+        group.resetReplicatingStates(NodeId.of("A"), new MemoryLog(
                 new MemorySnapshot(10, 1),
                 new MemoryEntrySequence(11),
                 new EventBus()));
@@ -108,7 +108,7 @@ public class NodeGroupTest {
         endpoints.add(new NodeEndpoint("B", "localhost", 2334)); // peer
         endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
         NodeGroup group = new NodeGroup(endpoints);
-        group.resetReplicationStates(NodeId.of("A"), new MemoryLog());
+        group.resetReplicatingStates(NodeId.of("A"), new MemoryLog());
         Collection<GroupMember> replicatingStates = group.listReplicationTarget();
         Assert.assertEquals(2, replicatingStates.size());
         Set<NodeId> nodeIds = replicatingStates.stream().map(GroupMember::getId).collect(Collectors.toSet());
