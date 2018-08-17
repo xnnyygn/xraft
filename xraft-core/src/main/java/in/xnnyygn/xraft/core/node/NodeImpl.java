@@ -20,7 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,8 +29,7 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
-// TODO refactor to thread safe
-@NotThreadSafe
+@ThreadSafe
 public class NodeImpl implements Node {
 
     private static final Logger logger = LoggerFactory.getLogger(NodeImpl.class);
@@ -45,6 +45,8 @@ public class NodeImpl implements Node {
     };
 
     private final NodeContext context;
+    @GuardedBy("this")
+    private boolean started;
     private volatile AbstractNodeRole role;
     private final List<NodeRoleListener> roleListeners = new ArrayList<>();
 
@@ -82,11 +84,16 @@ public class NodeImpl implements Node {
     }
 
     @Override
-    public void start() {
+    public synchronized void start() {
+        if (started) {
+            return;
+        }
+        logger.info("start node {}", context.selfId());
         context.eventBus().register(this);
-        changeToRole(new FollowerNodeRole(context.store().getTerm(), context.store().getVotedFor(), null,
-                scheduleElectionTimeout()));
         context.connector().initialize();
+        NodeStore store = context.store();
+        changeToRole(new FollowerNodeRole(store.getTerm(), store.getVotedFor(), null, scheduleElectionTimeout()));
+        started = true;
     }
 
     @Override
@@ -118,13 +125,13 @@ public class NodeImpl implements Node {
                     return new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.TIMEOUT);
             }
         } catch (Exception e) {
-            if(!(e instanceof InterruptedException)) {
+            if (!(e instanceof InterruptedException)) {
                 logger.warn("failed to catch up new node " + newNodeEndpoint.getId(), e);
             }
             return new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.ERROR);
         }
         GroupConfigChangeTaskResult result = awaitPreviousGroupConfigChangeTask();
-        if(result != null) {
+        if (result != null) {
             return new FixedResultGroupConfigTaskReference(result);
         }
         synchronized (this) {
@@ -145,7 +152,7 @@ public class NodeImpl implements Node {
             return null;
         } catch (InterruptedException ignored) {
             return GroupConfigChangeTaskResult.ERROR;
-        }catch (TimeoutException ignored) {
+        } catch (TimeoutException ignored) {
             logger.info("previous cannot complete within timeout");
             return GroupConfigChangeTaskResult.TIMEOUT;
         }
@@ -162,7 +169,7 @@ public class NodeImpl implements Node {
     public GroupConfigChangeTaskReference removeNode(NodeId id) {
         ensureLeader();
         GroupConfigChangeTaskResult result = awaitPreviousGroupConfigChangeTask();
-        if(result != null) {
+        if (result != null) {
             return new FixedResultGroupConfigTaskReference(result);
         }
         synchronized (this) {
@@ -562,13 +569,18 @@ public class NodeImpl implements Node {
     }
 
     @Override
-    public void stop() throws InterruptedException {
+    public synchronized void stop() throws InterruptedException {
+        if (!started) {
+            throw new IllegalStateException("node not started");
+        }
+        logger.info("stop node {}", context.selfId());
         context.scheduler().stop();
         context.log().close();
         context.connector().close();
         context.store().close();
         context.taskExecutor().shutdown();
         context.groupConfigChangeTaskExecutor().shutdown();
+        started = false;
     }
 
     private class NewNodeCatchUpTaskContextImpl implements NewNodeCatchUpTaskContext {
@@ -604,7 +616,7 @@ public class NodeImpl implements Node {
 
         @Override
         public void addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex) {
-            context.taskExecutor().submit(()->{
+            context.taskExecutor().submit(() -> {
                 context.log().appendEntryForAddNode(role.getTerm(), context.group().getNodeEndpointsOfMajor(), endpoint);
                 assert !context.selfId().equals(endpoint.getId());
                 context.group().addNode(endpoint, nextIndex, matchIndex, true);

@@ -116,6 +116,21 @@ public class NodeImplTest {
     }
 
     @Test
+    public void testStop() throws InterruptedException {
+        NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
+                .build();
+        node.start();
+        node.stop();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testStopIllegal() throws InterruptedException {
+        NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
+                .build();
+        node.stop();
+    }
+
+    @Test
     public void testElectionTimeoutStandalone() {
         NodeImpl node = (NodeImpl) newNodeBuilder(NodeId.of("A"), new NodeEndpoint("A", "localhost", 2333))
                 .build();
