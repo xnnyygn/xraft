@@ -8,7 +8,7 @@ import in.xnnyygn.xraft.core.node.NodeEndpoint;
 public interface NewNodeCatchUpTaskContext {
 
     /**
-     * Replicate log to endpoint.
+     * Replicate log to new node.
      * <p>
      * Process will be run in node task executor.
      * </p>

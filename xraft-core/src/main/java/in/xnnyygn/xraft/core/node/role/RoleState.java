@@ -2,6 +2,8 @@ package in.xnnyygn.xraft.core.node.role;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 
+// TODO extract interface
+// TODO add doc
 public class RoleState {
 
     private final RoleName roleName;
@@ -14,6 +16,8 @@ public class RoleState {
         this.roleName = roleName;
         this.term = term;
     }
+
+    // TODO add constructors
 
     public RoleName getRoleName() {
         return roleName;

@@ -31,6 +31,11 @@ public class LeaderNodeRole extends AbstractNodeRole {
     }
 
     @Override
+    protected boolean doStateEquals(AbstractNodeRole role) {
+        return true;
+    }
+
+    @Override
     public String toString() {
         return "LeaderNodeRole{term=" + term + ", logReplicationTask=" + logReplicationTask + '}';
     }

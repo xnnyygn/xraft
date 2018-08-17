@@ -9,6 +9,10 @@ public class AddNodeTask extends AbstractGroupConfigChangeTask {
     private final int nextIndex;
     private final int matchIndex;
 
+    public AddNodeTask(GroupConfigChangeTaskContext context, NodeEndpoint endpoint, NewNodeCatchUpTaskResult newNodeCatchUpTaskResult) {
+        this(context, endpoint, newNodeCatchUpTaskResult.getNextIndex(), newNodeCatchUpTaskResult.getMatchIndex());
+    }
+
     public AddNodeTask(GroupConfigChangeTaskContext context, NodeEndpoint endpoint, int nextIndex, int matchIndex) {
         super(context);
         this.endpoint = endpoint;

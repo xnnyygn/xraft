@@ -30,4 +30,14 @@ public abstract class AbstractNodeRole {
 
     public abstract RoleState getState();
 
+    // TODO add test
+    public boolean stateEquals(AbstractNodeRole that) {
+        if (this.name != that.name || this.term != that.term) {
+            return false;
+        }
+        return doStateEquals(that);
+    }
+
+    protected abstract boolean doStateEquals(AbstractNodeRole role);
+
 }
