@@ -27,7 +27,7 @@ public class NewNodeCatchUpTask implements Callable<NewNodeCatchUpTaskResult> {
     private State state = State.START;
     private boolean done = false;
     private long lastReplicateAt; // set when start
-    private long lastAdvanceAt;
+    private long lastAdvanceAt; // set when start
     private int round = 1;
     private int nextIndex = 0; // reset when receive append entries result
     private int matchIndex = 0;
@@ -83,7 +83,7 @@ public class NewNodeCatchUpTask implements Callable<NewNodeCatchUpTaskResult> {
     }
 
     // in node thread
-    public synchronized void onReceiveAppendEntriesResult(AppendEntriesResultMessage resultMessage, int nextLogIndex) {
+    synchronized void onReceiveAppendEntriesResult(AppendEntriesResultMessage resultMessage, int nextLogIndex) {
         assert nodeId.equals(resultMessage.getSourceNodeId());
         if (state != State.REPLICATING) {
             throw new IllegalStateException("receive append entries result when state is not replicating");

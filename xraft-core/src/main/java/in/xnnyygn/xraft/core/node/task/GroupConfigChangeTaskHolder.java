@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeoutException;
 
+// TODO add test
 public class GroupConfigChangeTaskHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupConfigChangeTaskHolder.class);
