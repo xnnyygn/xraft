@@ -363,8 +363,7 @@ public class NodeImpl implements Node {
      * @return true if stable, otherwise false
      * @see AbstractNodeRole#stateEquals(AbstractNodeRole)
      */
-    // TODO add test
-    boolean isStableBetween(AbstractNodeRole before, AbstractNodeRole after) {
+    private boolean isStableBetween(AbstractNodeRole before, AbstractNodeRole after) {
         assert after != null;
         return before != null && before.stateEquals(after);
     }

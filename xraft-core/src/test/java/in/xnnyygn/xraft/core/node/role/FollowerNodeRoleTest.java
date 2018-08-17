@@ -1,29 +1,12 @@
 package in.xnnyygn.xraft.core.node.role;
 
 import in.xnnyygn.xraft.core.node.NodeId;
-import in.xnnyygn.xraft.core.node.role.FollowerNodeRole;
-import in.xnnyygn.xraft.core.node.role.RoleName;
-import in.xnnyygn.xraft.core.node.role.RoleNameAndLeaderId;
-import in.xnnyygn.xraft.core.node.role.RoleState;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
+import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class FollowerNodeRoleTest {
-
-    @Test
-    public void testIsStableBetween() {
-        FollowerNodeRole role1 = new FollowerNodeRole(1, NodeId.of("A"), null, ElectionTimeout.NONE);
-        FollowerNodeRole role2 = new FollowerNodeRole(1, NodeId.of("A"), null, ElectionTimeout.NONE);
-        Assert.assertTrue(FollowerNodeRole.isStableBetween(role1, role2));
-    }
-
-    @Test
-    public void testIsStableBetween2() {
-        FollowerNodeRole role1 = new FollowerNodeRole(1, NodeId.of("A"), null, ElectionTimeout.NONE);
-        FollowerNodeRole role2 = new FollowerNodeRole(2, NodeId.of("A"), null, ElectionTimeout.NONE);
-        Assert.assertFalse(FollowerNodeRole.isStableBetween(role1, role2));
-    }
 
     @Test
     public void testGetNameAndLeaderId() {
@@ -48,6 +31,27 @@ public class FollowerNodeRoleTest {
         Assert.assertEquals(1, state.getTerm());
         Assert.assertEquals(NodeId.of("B"), state.getVotedFor());
         Assert.assertEquals(NodeId.of("A"), state.getLeaderId());
+    }
+
+    @Test
+    public void testStateEquals() {
+        FollowerNodeRole role1 = new FollowerNodeRole(1, NodeId.of("A"), null, ElectionTimeout.NONE);
+        FollowerNodeRole role2 = new FollowerNodeRole(1, NodeId.of("A"), null, ElectionTimeout.NONE);
+        Assert.assertTrue(role1.stateEquals(role2));
+    }
+
+    @Test
+    public void testStateEqualsDifferentLeaderId() {
+        FollowerNodeRole role1 = new FollowerNodeRole(1, NodeId.of("A"), null, ElectionTimeout.NONE);
+        FollowerNodeRole role2 = new FollowerNodeRole(1, NodeId.of("A"), NodeId.of("A"), ElectionTimeout.NONE);
+        Assert.assertFalse(role1.stateEquals(role2));
+    }
+
+    @Test
+    public void testStateEqualsDifferentRoleName() {
+        FollowerNodeRole role1 = new FollowerNodeRole(1, NodeId.of("A"), null, ElectionTimeout.NONE);
+        LeaderNodeRole role2 = new LeaderNodeRole(1, LogReplicationTask.NONE);
+        Assert.assertFalse(role1.stateEquals(role2));
     }
 
 }

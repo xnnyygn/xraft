@@ -46,11 +46,6 @@ public class FollowerNodeRole extends AbstractNodeRole {
         return state;
     }
 
-    @Deprecated
-    public static boolean isStableBetween(FollowerNodeRole before, FollowerNodeRole after) {
-        return before.term == after.term && Objects.equals(before.votedFor, after.votedFor) && Objects.equals(before.leaderId, after.leaderId);
-    }
-
     @Override
     protected boolean doStateEquals(AbstractNodeRole role) {
         FollowerNodeRole that = (FollowerNodeRole) role;

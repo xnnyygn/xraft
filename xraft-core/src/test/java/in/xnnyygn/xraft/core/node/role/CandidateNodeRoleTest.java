@@ -6,6 +6,7 @@ import in.xnnyygn.xraft.core.node.role.RoleName;
 import in.xnnyygn.xraft.core.node.role.RoleNameAndLeaderId;
 import in.xnnyygn.xraft.core.node.role.RoleState;
 import in.xnnyygn.xraft.core.schedule.ElectionTimeout;
+import in.xnnyygn.xraft.core.schedule.LogReplicationTask;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,6 +27,27 @@ public class CandidateNodeRoleTest {
         Assert.assertEquals(RoleName.CANDIDATE, state.getRoleName());
         Assert.assertEquals(1, state.getTerm());
         Assert.assertEquals(2, state.getVotesCount());
+    }
+
+    @Test
+    public void testStateEquals() {
+        CandidateNodeRole role1 = new CandidateNodeRole(1, 1, ElectionTimeout.NONE);
+        CandidateNodeRole role2 = new CandidateNodeRole(1, 1, ElectionTimeout.NONE);
+        Assert.assertTrue(role1.stateEquals(role2));
+    }
+
+    @Test
+    public void testStateEqualsDifferentVotesCount() {
+        CandidateNodeRole role1 = new CandidateNodeRole(1, 1, ElectionTimeout.NONE);
+        CandidateNodeRole role2 = new CandidateNodeRole(1, 2, ElectionTimeout.NONE);
+        Assert.assertFalse(role1.stateEquals(role2));
+    }
+
+    @Test
+    public void testStateEqualsDifferentRole() {
+        CandidateNodeRole role1 = new CandidateNodeRole(1, 1, ElectionTimeout.NONE);
+        LeaderNodeRole role2 = new LeaderNodeRole(1, LogReplicationTask.NONE);
+        Assert.assertFalse(role1.stateEquals(role2));
     }
 
 }
