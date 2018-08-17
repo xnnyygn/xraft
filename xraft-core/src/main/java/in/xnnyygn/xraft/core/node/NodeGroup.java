@@ -44,49 +44,45 @@ public class NodeGroup {
      *
      * @return count
      */
-    public int getCountOfMajor() {
+    int getCountOfMajor() {
         return (int) memberMap.values().stream().filter(GroupMember::isMajor).count();
     }
 
-    private GroupMember findMember(NodeId id) {
-        GroupMember member = memberMap.get(id);
+    GroupMember findMember(NodeId id) {
+        GroupMember member = getMember(id);
         if (member == null) {
             throw new IllegalArgumentException("no such node " + id);
         }
         return member;
     }
 
-    public GroupMember getMember(NodeId id) {
+    GroupMember getMember(NodeId id) {
         return memberMap.get(id);
     }
 
-    // TODO remove me?
-    public ReplicatingState findReplicationState(NodeId id) {
-        return findMember(id).getReplicatingState();
-    }
-
-    public boolean isMemberOfMajor(NodeId id) {
+    boolean isMemberOfMajor(NodeId id) {
         GroupMember member = memberMap.get(id);
         return member != null && member.isMajor();
     }
 
-    public NodeEndpoint findEndpoint(NodeId id) {
-        return findMember(id).getEndpoint();
-    }
-
-    public void upgrade(NodeId id) {
+    void upgrade(NodeId id) {
         logger.info("upgrade node {}", id);
         findMember(id).setMajor(true);
     }
 
-    public void downgrade(NodeId id) {
+    void downgrade(NodeId id) {
         logger.info("downgrade node {}", id);
         GroupMember member = findMember(id);
         member.setMajor(false);
         member.setRemoving(true);
     }
 
-    public void resetReplicationStates(NodeId selfId, Log log) {
+    void removeNode(NodeId id) {
+        logger.info("node {} removed", id);
+        memberMap.remove(id);
+    }
+
+    void resetReplicationStates(NodeId selfId, Log log) {
         for (GroupMember member : memberMap.values()) {
             if (member.getId().equals(selfId)) {
                 member.setReplicatingState(new SelfReplicatingState(selfId, log));
@@ -97,7 +93,7 @@ public class NodeGroup {
     }
 
     // TODO check test
-    public int getMatchIndexOfMajor() {
+    int getMatchIndexOfMajor() {
         List<NodeMatchIndex> matchIndices = new ArrayList<>();
         for (GroupMember member : memberMap.values()) {
             if (member.isMajor()) {
@@ -116,13 +112,13 @@ public class NodeGroup {
     }
 
     // TODO add test
-    public Collection<GroupMember> listReplicationTarget() {
+    Collection<GroupMember> listReplicationTarget() {
         return memberMap.values().stream()
                 .filter(GroupMember::isReplicationTarget)
                 .collect(Collectors.toList());
     }
 
-    public GroupMember addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex, boolean major) {
+    GroupMember addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex, boolean major) {
         logger.info("add node {} to group, endpoint {}", endpoint.getId(), endpoint);
         PeerReplicatingState replicatingState = new PeerReplicatingState(endpoint.getId(), nextIndex, matchIndex);
         GroupMember member = new GroupMember(endpoint, replicatingState, major);
@@ -130,17 +126,12 @@ public class NodeGroup {
         return member;
     }
 
-    public void removeNode(NodeId id) {
-        logger.info("node {} removed", id);
-        memberMap.remove(id);
-    }
-
-    public void updateNodes(Set<NodeEndpoint> endpoints) {
+    void updateNodes(Set<NodeEndpoint> endpoints) {
         logger.info("update nodes to {}", endpoints);
         memberMap = buildMemberMap(endpoints);
     }
 
-    public Set<NodeEndpoint> listEndpointOfMajor() {
+    Set<NodeEndpoint> listEndpointOfMajor() {
         Set<NodeEndpoint> endpoints = new HashSet<>();
         for (GroupMember member : memberMap.values()) {
             if (member.isMajor()) {
@@ -150,7 +141,7 @@ public class NodeGroup {
         return endpoints;
     }
 
-    public Set<NodeEndpoint> listEndpointOfMajorExclude(NodeId selfId) {
+    Set<NodeEndpoint> listEndpointOfMajorExclude(NodeId selfId) {
         Set<NodeEndpoint> endpoints = new HashSet<>();
         for (GroupMember member : memberMap.values()) {
             if (member.isMajor() && !member.getId().equals(selfId)) {
@@ -160,7 +151,7 @@ public class NodeGroup {
         return endpoints;
     }
 
-    public boolean isUniqueNode(NodeId id) {
+    boolean isUniqueNode(NodeId id) {
         return memberMap.size() == 1 && memberMap.containsKey(id);
     }
 

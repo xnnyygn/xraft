@@ -117,7 +117,7 @@ public class NodeBuilder {
     }
 
     private NioConnector createNioConnector() {
-        int port = group.findEndpoint(selfId).getPort();
+        int port = group.findMember(selfId).getEndpoint().getPort();
         if (workerNioEventLoopGroup != null) {
             return new NioConnector(workerNioEventLoopGroup, selfId, eventBus, port);
         }

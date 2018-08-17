@@ -14,12 +14,14 @@ public interface ReplicatingState {
 
     boolean advance(int lastEntryIndex);
 
+    // TODO rename to isTarget
     boolean isReplicationTarget();
 
     boolean isReplicating();
 
     long getLastReplicatedAt();
 
+    // TODO change to POJO
     void startReplicating();
 
     void startReplicating(long replicatedAt);

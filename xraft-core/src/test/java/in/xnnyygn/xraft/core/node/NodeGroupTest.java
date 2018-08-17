@@ -55,7 +55,7 @@ public class NodeGroupTest {
         endpoints.add(new NodeEndpoint("B", "localhost", 2334)); // peer
         NodeGroup group = new NodeGroup(endpoints);
         group.resetReplicationStates(new NodeId("A"), new MemoryLog());
-        Assert.assertEquals(1, group.findReplicationState(new NodeId("B")).getNextIndex());
+        Assert.assertEquals(1, group.getMember(new NodeId("B")).getNextIndex());
     }
 
     // (A, self, major, 0), (B, peer, major, 10), (C, peer, major, 0)
@@ -68,9 +68,9 @@ public class NodeGroupTest {
         endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
         NodeGroup group = new NodeGroup(endpoints);
         group.resetReplicationStates(NodeId.of("A"), new MemoryLog()); // 1
-        group.findReplicationState(NodeId.of("B")).advance(10);
+        group.getMember(NodeId.of("B")).advanceReplicatingState(10);
         Assert.assertEquals(0, group.getMatchIndexOfMajor());
-        group.findReplicationState(NodeId.of("C")).advance(10);
+        group.getMember(NodeId.of("C")).advanceReplicatingState(10);
         Assert.assertEquals(10, group.getMatchIndexOfMajor());
     }
 
@@ -85,8 +85,8 @@ public class NodeGroupTest {
         NodeGroup group = new NodeGroup(endpoints);
         group.downgrade(NodeId.of("C"));
         group.resetReplicationStates(NodeId.of("A"), new MemoryLog()); // 1
-        group.findReplicationState(NodeId.of("B")).advance(10);
-        group.findReplicationState(NodeId.of("D")).advance(10);
+        group.getMember(NodeId.of("B")).advanceReplicatingState(10);
+        group.getMember(NodeId.of("D")).advanceReplicatingState(10);
         Assert.assertEquals(10, group.getMatchIndexOfMajor());
     }
 

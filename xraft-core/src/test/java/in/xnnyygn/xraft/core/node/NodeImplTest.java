@@ -145,7 +145,7 @@ public class NodeImplTest {
         Assert.assertEquals(1, state.getTerm());
 
         // replication state set
-        Assert.assertNotNull(node.getContext().group().findReplicationState(NodeId.of("A")));
+        Assert.assertTrue(node.getContext().group().getMember(NodeId.of("A")).isReplicationStateSet());
 
         // no-op log
         EntryMeta lastEntryMeta = node.getContext().log().getLastEntryMeta();
@@ -278,7 +278,7 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
-        node.getContext().group().findReplicationState(NodeId.of("B")).startReplicating();
+        node.getContext().group().getMember(NodeId.of("B")).startReplicating();
         node.replicateLog();
 
         MockConnector mockConnector = (MockConnector) node.getContext().connector();
@@ -298,7 +298,7 @@ public class NodeImplTest {
         node.electionTimeout();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
         long replicatedAt = System.currentTimeMillis() - node.getContext().config().getMinReplicationInterval() - 1;
-        node.getContext().group().findReplicationState(NodeId.of("B")).startReplicating(replicatedAt);
+        node.getContext().group().getMember(NodeId.of("B")).startReplicating(replicatedAt);
         node.replicateLog();
 
         MockConnector mockConnector = (MockConnector) node.getContext().connector();
@@ -885,9 +885,9 @@ public class NodeImplTest {
         Assert.assertEquals(1, state.getTerm());
 
         // replication state set
-        Assert.assertNotNull(node.getContext().group().findReplicationState(NodeId.of("A")));
-        Assert.assertNotNull(node.getContext().group().findReplicationState(NodeId.of("B")));
-        Assert.assertNotNull(node.getContext().group().findReplicationState(NodeId.of("C")));
+        Assert.assertTrue(node.getContext().group().getMember(NodeId.of("A")).isReplicationStateSet());
+        Assert.assertTrue(node.getContext().group().getMember(NodeId.of("B")).isReplicationStateSet());
+        Assert.assertTrue(node.getContext().group().getMember(NodeId.of("C")).isReplicationStateSet());
 
         // no-op log
         EntryMeta lastEntryMeta = node.getContext().log().getLastEntryMeta();
@@ -1098,13 +1098,13 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        ReplicatingState replicatingState = node.getContext().group().findReplicationState(NodeId.of("B"));
-        replicatingState.startReplicating();
+        GroupMember member = node.getContext().group().getMember(NodeId.of("B"));
+        member.startReplicating();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("B"), createAppendEntriesRpc(1)));
-        Assert.assertFalse(replicatingState.isReplicating());
-        Assert.assertEquals(1, replicatingState.getMatchIndex());
+        Assert.assertFalse(member.isReplicating());
+        Assert.assertEquals(1, member.getMatchIndex());
     }
 
     @Test
@@ -1118,13 +1118,13 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        ReplicatingState replicatingState = node.getContext().group().findReplicationState(NodeId.of("B"));
-        replicatingState.startReplicating();
+        GroupMember member = node.getContext().group().getMember(NodeId.of("B"));
+        member.startReplicating();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("B"), createAppendEntriesRpc(0)));
-        Assert.assertTrue(replicatingState.isReplicating());
-        Assert.assertEquals(0, replicatingState.getMatchIndex());
+        Assert.assertTrue(member.isReplicating());
+        Assert.assertEquals(0, member.getMatchIndex());
         MockConnector mockConnector = (MockConnector) node.getContext().connector();
         Assert.assertEquals(2, mockConnector.getMessageCount());
         MockConnector.Message message = mockConnector.getLastMessage();
@@ -1145,15 +1145,15 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(2, true)); // become leader
-        ReplicatingState replicatingState = node.getContext().group().findReplicationState(NodeId.of("B"));
-        replicatingState.startReplicating();
-        Assert.assertEquals(2, replicatingState.getNextIndex());
+        GroupMember member = node.getContext().group().getMember(NodeId.of("B"));
+        member.startReplicating();
+        Assert.assertEquals(2, member.getNextIndex());
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, false),
                 NodeId.of("B"), createAppendEntriesRpc(1)));
-        Assert.assertTrue(replicatingState.isReplicating());
-        Assert.assertEquals(1, replicatingState.getNextIndex());
-        Assert.assertEquals(0, replicatingState.getMatchIndex());
+        Assert.assertTrue(member.isReplicating());
+        Assert.assertEquals(1, member.getNextIndex());
+        Assert.assertEquals(0, member.getMatchIndex());
     }
 
     @Test
@@ -1167,13 +1167,13 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        ReplicatingState replicatingState = node.getContext().group().findReplicationState(NodeId.of("B"));
-        replicatingState.startReplicating();
+        GroupMember member = node.getContext().group().getMember(NodeId.of("B"));
+        member.startReplicating();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, false),
                 NodeId.of("B"), createAppendEntriesRpc(1)));
-        Assert.assertFalse(replicatingState.isReplicating());
-        Assert.assertEquals(0, replicatingState.getMatchIndex());
+        Assert.assertFalse(member.isReplicating());
+        Assert.assertEquals(0, member.getMatchIndex());
     }
 
     @Test

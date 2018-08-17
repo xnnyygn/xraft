@@ -2,7 +2,7 @@ package in.xnnyygn.xraft.core.node;
 
 import in.xnnyygn.xraft.core.node.replication.ReplicatingState;
 
-public class GroupMember {
+class GroupMember {
 
     private final NodeEndpoint endpoint;
     private ReplicatingState replicatingState;
@@ -10,7 +10,7 @@ public class GroupMember {
     private boolean removing = false;
 
     GroupMember(NodeEndpoint endpoint) {
-        this(endpoint,null, true);
+        this(endpoint, null, true);
     }
 
     GroupMember(NodeEndpoint endpoint, ReplicatingState replicatingState, boolean major) {
@@ -29,6 +29,10 @@ public class GroupMember {
 
     void setReplicatingState(ReplicatingState replicatingState) {
         this.replicatingState = replicatingState;
+    }
+
+    boolean isReplicationStateSet() {
+        return replicatingState != null;
     }
 
     public ReplicatingState getReplicatingState() {
@@ -58,6 +62,10 @@ public class GroupMember {
         return getReplicatingState().getNextIndex();
     }
 
+    public int getMatchIndex() {
+        return getReplicatingState().getMatchIndex();
+    }
+
     public boolean advanceReplicatingState(int lastEntryIndex) {
         return getReplicatingState().advance(lastEntryIndex);
     }
@@ -68,6 +76,10 @@ public class GroupMember {
 
     public void startReplicating() {
         getReplicatingState().startReplicating();
+    }
+
+    public void startReplicating(long replicatedAt) {
+        getReplicatingState().startReplicating(replicatedAt);
     }
 
     public boolean isReplicating() {
