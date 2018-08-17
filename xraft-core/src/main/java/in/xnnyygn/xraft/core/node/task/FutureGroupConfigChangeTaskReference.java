@@ -3,6 +3,7 @@ package in.xnnyygn.xraft.core.node.task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +19,7 @@ public class FutureGroupConfigChangeTaskReference implements GroupConfigChangeTa
     }
 
     @Override
+    @Nonnull
     public GroupConfigChangeTaskResult getResult() throws InterruptedException {
         try {
             return future.get();
@@ -28,6 +30,7 @@ public class FutureGroupConfigChangeTaskReference implements GroupConfigChangeTa
     }
 
     @Override
+    @Nonnull
     public GroupConfigChangeTaskResult getResult(long timeout) throws InterruptedException, TimeoutException {
         try {
             return future.get(timeout, TimeUnit.MILLISECONDS);
