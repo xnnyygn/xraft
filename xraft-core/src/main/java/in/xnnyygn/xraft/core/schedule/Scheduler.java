@@ -1,12 +1,35 @@
 package in.xnnyygn.xraft.core.schedule;
 
-// TODO add doc
+import javax.annotation.Nonnull;
+
+/**
+ * Scheduler.
+ */
 public interface Scheduler {
 
-    LogReplicationTask scheduleLogReplicationTask(Runnable task);
+    /**
+     * Schedule log replication task.
+     *
+     * @param task task
+     * @return log replication task
+     */
+    @Nonnull
+    LogReplicationTask scheduleLogReplicationTask(@Nonnull Runnable task);
 
-    ElectionTimeout scheduleElectionTimeout(Runnable task);
+    /**
+     * Schedule election timeout.
+     *
+     * @param task task
+     * @return election timeout
+     */
+    @Nonnull
+    ElectionTimeout scheduleElectionTimeout(@Nonnull Runnable task);
 
+    /**
+     * Stop scheduler.
+     *
+     * @throws InterruptedException if interrupted
+     */
     void stop() throws InterruptedException;
 
 }

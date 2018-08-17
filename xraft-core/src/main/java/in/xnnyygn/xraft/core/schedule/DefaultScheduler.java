@@ -1,9 +1,11 @@
 package in.xnnyygn.xraft.core.schedule;
 
+import com.google.common.base.Preconditions;
 import in.xnnyygn.xraft.core.node.NodeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -43,7 +45,9 @@ public class DefaultScheduler implements Scheduler {
     }
 
     @Override
-    public LogReplicationTask scheduleLogReplicationTask(Runnable task) {
+    @Nonnull
+    public LogReplicationTask scheduleLogReplicationTask(@Nonnull Runnable task) {
+        Preconditions.checkNotNull(task);
         logger.debug("schedule log replication task");
         ScheduledFuture<?> scheduledFuture = this.scheduledExecutorService.scheduleWithFixedDelay(
                 task, logReplicationDelay, logReplicationInterval, TimeUnit.MILLISECONDS);
@@ -51,7 +55,9 @@ public class DefaultScheduler implements Scheduler {
     }
 
     @Override
-    public ElectionTimeout scheduleElectionTimeout(Runnable task) {
+    @Nonnull
+    public ElectionTimeout scheduleElectionTimeout(@Nonnull Runnable task) {
+        Preconditions.checkNotNull(task);
         logger.debug("schedule election timeout");
         int timeout = electionTimeoutRandom.nextInt(minElectionTimeout) + (maxElectionTimeout - minElectionTimeout);
         ScheduledFuture<?> scheduledFuture = scheduledExecutorService.schedule(task, timeout, TimeUnit.MILLISECONDS);
