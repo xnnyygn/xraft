@@ -20,6 +20,7 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
 
+// TODO add test
 @ThreadSafe
 public class NioConnector implements Connector {
 

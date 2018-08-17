@@ -865,8 +865,7 @@ public class NodeImpl implements Node {
         @Override
         public void doReplicateLog(NodeEndpoint endpoint, int nextIndex) {
             try {
-                AppendEntriesRpc rpc = context.log().createAppendEntriesRpc(role.getTerm(), context.selfId(), context.log().getNextIndex(),
-                        context.config().getMaxReplicationEntriesForNewNode());
+                AppendEntriesRpc rpc = context.log().createAppendEntriesRpc(role.getTerm(), context.selfId(), nextIndex, context.config().getMaxReplicationEntriesForNewNode());
                 context.connector().sendAppendEntries(rpc, endpoint);
             } catch (EntryInSnapshotException ignored) {
 
