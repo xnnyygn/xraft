@@ -14,6 +14,7 @@ import in.xnnyygn.xraft.core.rpc.message.*;
 import in.xnnyygn.xraft.core.schedule.NullScheduler;
 import in.xnnyygn.xraft.core.support.DirectTaskExecutor;
 import in.xnnyygn.xraft.core.support.ListeningTaskExecutor;
+import in.xnnyygn.xraft.core.support.SingleThreadTaskExecutor;
 import in.xnnyygn.xraft.core.support.TaskExecutor;
 import org.junit.*;
 
@@ -46,7 +47,7 @@ public class NodeImplTest {
         }
 
         synchronized void awaitAppendEntriesRpc() throws InterruptedException {
-            if(!sent) {
+            if (!sent) {
                 wait();
             }
             sent = false;
@@ -82,8 +83,8 @@ public class NodeImplTest {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        taskExecutor = new ListeningTaskExecutor(Executors.newSingleThreadExecutor(r -> new Thread(r, "node-test")));
-        groupConfigChangeTaskExecutor = new ListeningTaskExecutor(Executors.newSingleThreadExecutor(r -> new Thread(r, "group-config-change-test")));
+        taskExecutor = new SingleThreadTaskExecutor("node-test");
+        groupConfigChangeTaskExecutor = new SingleThreadTaskExecutor("group-config-change-test");
         cachedThreadTaskExecutor = new ListeningTaskExecutor(Executors.newCachedThreadPool(r -> new Thread(r, "cached-thread-" + cachedThreadId.incrementAndGet())));
     }
 
@@ -412,7 +413,7 @@ public class NodeImplTest {
         node.electionTimeout();
         node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
 
-        Future<GroupConfigChangeTaskReference> future = cachedThreadTaskExecutor.submit(()-> node.addNode(new NodeEndpoint("D", "localhost", 2336)));
+        Future<GroupConfigChangeTaskReference> future = cachedThreadTaskExecutor.submit(() -> node.addNode(new NodeEndpoint("D", "localhost", 2336)));
         connector.awaitAppendEntriesRpc();
 
         // catch up
@@ -429,7 +430,7 @@ public class NodeImplTest {
                 NodeId.of("B"), createAppendEntriesRpc(2)));
 
         Assert.assertEquals(GroupConfigChangeTaskResult.OK, reference.getResult(1000L));
-        checkWithinTaskExecutor(node, ()->{
+        checkWithinTaskExecutor(node, () -> {
             Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
         });
     }
@@ -454,7 +455,7 @@ public class NodeImplTest {
         node.electionTimeout();
         node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
 
-        Future<GroupConfigChangeTaskReference> future = cachedThreadTaskExecutor.submit(()->node.addNode(new NodeEndpoint("D", "localhost", 2336)));
+        Future<GroupConfigChangeTaskReference> future = cachedThreadTaskExecutor.submit(() -> node.addNode(new NodeEndpoint("D", "localhost", 2336)));
         connector.awaitAppendEntriesRpc();
         // cannot catch up
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
@@ -483,13 +484,13 @@ public class NodeImplTest {
         node.electionTimeout();
         node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
 
-        cachedThreadTaskExecutor.submit(()-> node.addNode(new NodeEndpoint("D", "localhost", 2337)));
+        cachedThreadTaskExecutor.submit(() -> node.addNode(new NodeEndpoint("D", "localhost", 2337)));
         connector.awaitAppendEntriesRpc();
         node.processAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("D"), createAppendEntriesRpc(1))).get();
         connector.awaitAppendEntriesRpc();
-        Future<GroupConfigChangeTaskReference> future2 = cachedThreadTaskExecutor.submit(()-> node.addNode(new NodeEndpoint("E", "localhost", 2337)));
+        Future<GroupConfigChangeTaskReference> future2 = cachedThreadTaskExecutor.submit(() -> node.addNode(new NodeEndpoint("E", "localhost", 2337)));
         connector.awaitAppendEntriesRpc();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
@@ -546,7 +547,7 @@ public class NodeImplTest {
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("C"), createAppendEntriesRpc(2)));
         Assert.assertEquals(GroupConfigChangeTaskResult.OK, reference.getResult(1000L));
-        checkWithinTaskExecutor(node, ()->{
+        checkWithinTaskExecutor(node, () -> {
             Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
             Assert.assertNull(node.getContext().group().getState(NodeId.of("B")));
         });
@@ -573,7 +574,7 @@ public class NodeImplTest {
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("B"), createAppendEntriesRpc(2)));
         Assert.assertEquals(GroupConfigChangeTaskResult.OK, reference.getResult(1000L));
-        checkWithinTaskExecutor(node, ()->{
+        checkWithinTaskExecutor(node, () -> {
             Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
             Assert.assertNull(node.getContext().group().getState(NodeId.of("A")));
         });
@@ -1204,7 +1205,7 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        NodeGroup.NodeState nodeState = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2,0, false);
+        NodeGroup.NodeState nodeState = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2, 0, false);
         nodeState.getReplicatingState().startReplicating();
         nodeState.setRemoving(true);
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(

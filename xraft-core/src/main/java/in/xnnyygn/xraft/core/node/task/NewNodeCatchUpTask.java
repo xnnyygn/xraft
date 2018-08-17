@@ -115,7 +115,7 @@ public class NewNodeCatchUpTask implements Callable<NewNodeCatchUpTaskResult> {
                 return;
             }
             nextIndex--;
-            if (System.currentTimeMillis() - lastAdvanceAt > config.getNewNodeAdvanceTimeout()) {
+            if (System.currentTimeMillis() - lastAdvanceAt >= config.getNewNodeAdvanceTimeout()) {
                 logger.debug("node {} cannot make progress within timeout", nodeId);
                 setStateAndNotify(State.TIMEOUT);
                 return;

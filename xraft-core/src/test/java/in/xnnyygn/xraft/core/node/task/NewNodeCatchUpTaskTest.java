@@ -6,7 +6,7 @@ import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResultMessage;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
-import in.xnnyygn.xraft.core.support.ListeningTaskExecutor;
+import in.xnnyygn.xraft.core.support.SingleThreadTaskExecutor;
 import in.xnnyygn.xraft.core.support.TaskExecutor;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -14,7 +14,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class NewNodeCatchUpTaskTest {
@@ -23,7 +22,7 @@ public class NewNodeCatchUpTaskTest {
 
     @BeforeClass
     public static void beforeClass() {
-        taskExecutor = new ListeningTaskExecutor(Executors.newSingleThreadExecutor());
+        taskExecutor = new SingleThreadTaskExecutor();
     }
 
     @Test
@@ -65,7 +64,7 @@ public class NewNodeCatchUpTaskTest {
     public void testCannotMakeProgressWithinTimeout() throws ExecutionException, InterruptedException {
         WaitableNewNodeCatchUpTaskContext taskContext = new WaitableNewNodeCatchUpTaskContext();
         NodeConfig config = new NodeConfig();
-        config.setNewNodeAdvanceTimeout(1);
+        config.setNewNodeAdvanceTimeout(0);
         NewNodeCatchUpTask task = new NewNodeCatchUpTask(
                 taskContext,
                 new NodeEndpoint("D", "localhost", 2336),
@@ -73,7 +72,6 @@ public class NewNodeCatchUpTaskTest {
         );
         Future<NewNodeCatchUpTaskResult> future = taskExecutor.submit(task);
         taskContext.awaitReplicateLog();
-        Thread.sleep(1);
         task.onReceiveAppendEntriesResult(
                 new AppendEntriesResultMessage(
                         new AppendEntriesResult("", 1, false),

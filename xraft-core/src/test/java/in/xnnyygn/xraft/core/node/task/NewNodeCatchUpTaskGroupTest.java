@@ -12,6 +12,7 @@ import in.xnnyygn.xraft.core.support.TaskExecutor;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -57,7 +58,7 @@ public class NewNodeCatchUpTaskGroupTest {
     }
 
     @Test
-    public void testOnReceiveAppendEntriesResult() throws InterruptedException {
+    public void testOnReceiveAppendEntriesResult() throws InterruptedException, ExecutionException {
         NewNodeCatchUpTaskGroup group = new NewNodeCatchUpTaskGroup();
         WaitableNewNodeCatchUpTaskContext taskContext = new WaitableNewNodeCatchUpTaskContext();
         NewNodeCatchUpTask task = new NewNodeCatchUpTask(
@@ -69,15 +70,17 @@ public class NewNodeCatchUpTaskGroupTest {
         TaskExecutor taskExecutor = new SingleThreadTaskExecutor();
         Future<NewNodeCatchUpTaskResult> future = taskExecutor.submit(task);
         taskContext.awaitReplicateLog();
+        AppendEntriesRpc rpc = new AppendEntriesRpc();
+        rpc.setPrevLogIndex(1);
         Assert.assertTrue(group.onReceiveAppendEntriesResult(
                 new AppendEntriesResultMessage(
                         new AppendEntriesResult("", 1, true),
                         NodeId.of("D"),
-                        new AppendEntriesRpc()
+                        rpc
                 ),
-                10
+                2
         ));
-        future.cancel(true);
+        future.get();
         taskExecutor.shutdown();
     }
 
