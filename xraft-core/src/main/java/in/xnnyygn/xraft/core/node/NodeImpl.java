@@ -414,7 +414,7 @@ public class NodeImpl implements Node {
         }
         logger.debug("replicate log");
         for (GroupMember member : context.group().listReplicationTarget()) {
-            if (member.shouldReplicate(context.config().getMinReplicationInterval())) {
+            if (member.shouldReplicate(context.config().getLogReplicationReadTimeout())) {
                 doReplicateLog(member, context.config().getMaxReplicationEntries());
             } else {
                 logger.debug("node {} is replicating, skip replication task", member.getId());
@@ -433,7 +433,7 @@ public class NodeImpl implements Node {
      * @see EntryInSnapshotException
      */
     private void doReplicateLog(GroupMember member, int maxEntries) {
-        member.startReplicating();
+        member.replicateNow();
         try {
             AppendEntriesRpc rpc = context.log().createAppendEntriesRpc(role.getTerm(), context.selfId(), member.getNextIndex(), maxEntries);
             context.connector().sendAppendEntries(rpc, member.getEndpoint());

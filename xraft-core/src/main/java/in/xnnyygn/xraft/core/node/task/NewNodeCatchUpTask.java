@@ -52,10 +52,10 @@ public class NewNodeCatchUpTask implements Callable<NewNodeCatchUpTaskResult> {
         lastAdvanceAt = lastReplicateAt;
         setState(State.REPLICATING);
         while (!done) {
-            wait(config.getNewNodeRoundTimeout());
+            wait(config.getNewNodeReadTimeout());
             // 1. done
             // 2. replicate -> no response within timeout
-            if (System.currentTimeMillis() - lastReplicateAt >= config.getNewNodeRoundTimeout()) {
+            if (System.currentTimeMillis() - lastReplicateAt >= config.getNewNodeReadTimeout()) {
                 logger.debug("node {} not response within round timeout", endpoint.getId());
                 state = State.TIMEOUT;
                 break;

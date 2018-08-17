@@ -28,7 +28,7 @@ public class NewNodeCatchUpTaskTest {
     @Test
     public void testNoResponseWithinTimeout() throws Exception {
         NodeConfig config = new NodeConfig();
-        config.setNewNodeRoundTimeout(1);
+        config.setNewNodeReadTimeout(1);
         NewNodeCatchUpTask task = new NewNodeCatchUpTask(
                 new WaitableNewNodeCatchUpTaskContext(),
                 new NodeEndpoint("D", "localhost", 2336),

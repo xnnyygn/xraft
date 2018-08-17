@@ -283,7 +283,7 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
-        node.getContext().group().findMember(NodeId.of("B")).startReplicating();
+        node.getContext().group().findMember(NodeId.of("B")).replicateNow();
         node.replicateLog();
 
         MockConnector mockConnector = (MockConnector) node.getContext().connector();
@@ -302,8 +302,8 @@ public class NodeImplTest {
         node.start();
         node.electionTimeout();
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true));
-        long replicatedAt = System.currentTimeMillis() - node.getContext().config().getMinReplicationInterval() - 1;
-        node.getContext().group().findMember(NodeId.of("B")).startReplicating(replicatedAt);
+        long replicatedAt = System.currentTimeMillis() - node.getContext().config().getLogReplicationReadTimeout() - 1;
+        node.getContext().group().findMember(NodeId.of("B")).replicateAt(replicatedAt);
         node.replicateLog();
 
         MockConnector mockConnector = (MockConnector) node.getContext().connector();
@@ -1102,7 +1102,7 @@ public class NodeImplTest {
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
         GroupMember member = node.getContext().group().findMember(NodeId.of("B"));
-        member.startReplicating();
+        member.replicateNow();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("B"), createAppendEntriesRpc(1)));
@@ -1122,7 +1122,7 @@ public class NodeImplTest {
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
         GroupMember member = node.getContext().group().findMember(NodeId.of("B"));
-        member.startReplicating();
+        member.replicateNow();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("B"), createAppendEntriesRpc(0)));
@@ -1149,7 +1149,7 @@ public class NodeImplTest {
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(2, true)); // become leader
         GroupMember member = node.getContext().group().findMember(NodeId.of("B"));
-        member.startReplicating();
+        member.replicateNow();
         Assert.assertEquals(2, member.getNextIndex());
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, false),
@@ -1171,7 +1171,7 @@ public class NodeImplTest {
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
         GroupMember member = node.getContext().group().findMember(NodeId.of("B"));
-        member.startReplicating();
+        member.replicateNow();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, false),
                 NodeId.of("B"), createAppendEntriesRpc(1)));
@@ -1226,7 +1226,7 @@ public class NodeImplTest {
         node.electionTimeout(); // become candidate
         node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
         GroupMember member = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2, 0, false);
-        member.startReplicating();
+        member.replicateNow();
         member.setRemoving();
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),

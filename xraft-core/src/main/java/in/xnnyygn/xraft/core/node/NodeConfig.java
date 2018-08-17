@@ -8,21 +8,79 @@ import in.xnnyygn.xraft.core.log.Log;
  * Node configuration should not change after initialization. e.g {@link NodeBuilder}.
  * </p>
  */
-// TODO add doc
 public class NodeConfig {
 
+    /**
+     * Minimum election timeout
+     */
     private int minElectionTimeout = 3000;
+
+    /**
+     * Maximum election timeout
+     */
     private int maxElectionTimeout = 4000;
+
+    /**
+     * Delay for first log replication after becoming leader
+     */
     private int logReplicationDelay = 0;
+
+    /**
+     * Interval for log replication task.
+     * More specifically, interval for heartbeat rpc.
+     * Append entries rpc may be sent less than this interval.
+     * e.g after receiving append entries result from followers.
+     */
     private int logReplicationInterval = 1000;
-    private int minReplicationInterval = 900;
+
+    /**
+     * Read timeout to receive response from follower.
+     * If no response received from follower, resend log replication rpc.
+     */
+    private int logReplicationReadTimeout = 900;
+
+    /**
+     * Max entries to send when replicate log to followers
+     */
     private int maxReplicationEntries = Log.ALL_ENTRIES;
+
+    /**
+     * Max entries to send when replicate log to new node
+     */
     private int maxReplicationEntriesForNewNode = Log.ALL_ENTRIES;
+
+    /**
+     * Data length in install snapshot rpc.
+     */
     private int snapshotDataLength = 1024;
+
+    /**
+     * Worker thread count in nio connector.
+     */
     private int nioWorkerThreads = Runtime.getRuntime().availableProcessors() * 2;
+
+    /**
+     * Max round for new node to catch up.
+     */
     private int newNodeMaxRound = 10;
-    private int newNodeRoundTimeout = 3000; // default to election timeout
-    private int newNodeAdvanceTimeout = 3000; // default to election timeout
+
+    /**
+     * Read timeout to receive response from new node.
+     * Default to election timeout.
+     */
+    private int newNodeReadTimeout = 3000;
+
+    /**
+     * Timeout for new node to make progress.
+     * If new node cannot make progress after this timeout, new node cannot be added and reply TIMEOUT.
+     * Default to election timeout
+     */
+    private int newNodeAdvanceTimeout = 3000;
+
+    /**
+     * Timeout to wait for previous group config change to complete.
+     * Default is {@code 0}, forever.
+     */
     private int previousGroupConfigChangeTimeout = 0;
 
     public int getMinElectionTimeout() {
@@ -57,12 +115,12 @@ public class NodeConfig {
         this.logReplicationInterval = logReplicationInterval;
     }
 
-    public int getMinReplicationInterval() {
-        return minReplicationInterval;
+    public int getLogReplicationReadTimeout() {
+        return logReplicationReadTimeout;
     }
 
-    public void setMinReplicationInterval(int minReplicationInterval) {
-        this.minReplicationInterval = minReplicationInterval;
+    public void setLogReplicationReadTimeout(int logReplicationReadTimeout) {
+        this.logReplicationReadTimeout = logReplicationReadTimeout;
     }
 
     public int getMaxReplicationEntries() {
@@ -105,12 +163,12 @@ public class NodeConfig {
         this.newNodeMaxRound = newNodeMaxRound;
     }
 
-    public int getNewNodeRoundTimeout() {
-        return newNodeRoundTimeout;
+    public int getNewNodeReadTimeout() {
+        return newNodeReadTimeout;
     }
 
-    public void setNewNodeRoundTimeout(int newNodeRoundTimeout) {
-        this.newNodeRoundTimeout = newNodeRoundTimeout;
+    public void setNewNodeReadTimeout(int newNodeReadTimeout) {
+        this.newNodeReadTimeout = newNodeReadTimeout;
     }
 
     public int getPreviousGroupConfigChangeTimeout() {

@@ -78,11 +78,11 @@ class GroupMember {
         return ensureReplicatingState().backOffNextIndex();
     }
 
-    void startReplicating() {
-        startReplicating(System.currentTimeMillis());
+    void replicateNow() {
+        replicateAt(System.currentTimeMillis());
     }
 
-    void startReplicating(long replicatedAt) {
+    void replicateAt(long replicatedAt) {
         ReplicatingState replicatingState = ensureReplicatingState();
         replicatingState.setReplicating(true);
         replicatingState.setLastReplicatedAt(replicatedAt);
