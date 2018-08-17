@@ -222,10 +222,12 @@ public class NodeImpl implements Node {
      * @throws NotLeaderException if not leader
      */
     private void ensureLeader() {
-        RoleNameAndLeaderId roleNameAndLeaderId = role.getNameAndLeaderId(context.selfId());
-        if (roleNameAndLeaderId.getRoleName() != RoleName.LEADER) {
-            throw new NotLeaderException(roleNameAndLeaderId.getRoleName(), roleNameAndLeaderId.getLeaderId());
+        RoleNameAndLeaderId result = role.getNameAndLeaderId(context.selfId());
+        if (result.getRoleName() == RoleName.LEADER) {
+            return;
         }
+        NodeEndpoint endpoint = result.getLeaderId() != null ? context.group().findMember(result.getLeaderId()).getEndpoint() : null;
+        throw new NotLeaderException(result.getRoleName(), endpoint);
     }
 
     @Override

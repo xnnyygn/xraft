@@ -24,6 +24,7 @@ public class FileLog extends AbstractLog {
 
         LogGeneration latestGeneration = rootDir.getLatestGeneration();
         snapshot = new EmptySnapshot();
+        // TODO add log
         if (latestGeneration != null) {
             if (latestGeneration.getSnapshotFile().exists()) {
                 snapshot = new FileSnapshot(latestGeneration);

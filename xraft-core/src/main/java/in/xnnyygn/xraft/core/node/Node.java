@@ -51,6 +51,7 @@ public interface Node {
      * Append log.
      *
      * @param commandBytes command bytes
+     * @throws NotLeaderException if not leader
      */
     void appendLog(@Nonnull byte[] commandBytes);
 
@@ -59,6 +60,7 @@ public interface Node {
      *
      * @param endpoint new node endpoint
      * @return task reference
+     * @throws NotLeaderException if not leader
      * @throws IllegalStateException if group config change concurrently
      */
     @Nonnull
@@ -69,6 +71,7 @@ public interface Node {
      *
      * @param id id
      * @return task reference
+     * @throws NotLeaderException if not leader
      * @throws IllegalStateException if group config change concurrently
      */
     @Nonnull
