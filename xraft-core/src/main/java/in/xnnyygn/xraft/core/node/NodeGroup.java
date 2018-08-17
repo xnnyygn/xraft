@@ -76,15 +76,14 @@ public class NodeGroup {
 
     public void upgrade(NodeId id) {
         logger.info("upgrade node {}", id);
-        GroupMember member = findMember(id);
-        member.setMajor(true);
+        findMember(id).setMajor(true);
     }
 
     public void downgrade(NodeId id) {
         logger.info("downgrade node {}", id);
-        GroupMember state = findMember(id);
-        state.setMajor(false);
-        state.setRemoving(true);
+        GroupMember member = findMember(id);
+        member.setMajor(false);
+        member.setRemoving(true);
     }
 
     public void resetReplicationStates(NodeId selfId, Log log) {
@@ -97,13 +96,7 @@ public class NodeGroup {
         }
     }
 
-    @Deprecated
-    public void resetReplicationStates(int nextLogIndex) {
-        for (GroupMember member : memberMap.values()) {
-            member.setReplicatingState(new PeerReplicatingState(member.getId(), nextLogIndex));
-        }
-    }
-
+    // TODO check test
     public int getMatchIndexOfMajor() {
         List<NodeMatchIndex> matchIndices = new ArrayList<>();
         for (GroupMember member : memberMap.values()) {
@@ -129,9 +122,10 @@ public class NodeGroup {
                 .collect(Collectors.toList());
     }
 
-    public GroupMember addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex, boolean memberOfMajor) {
+    public GroupMember addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex, boolean major) {
         logger.info("add node {} to group, endpoint {}", endpoint.getId(), endpoint);
-        GroupMember member = new GroupMember(endpoint, new PeerReplicatingState(endpoint.getId(), nextIndex, matchIndex), memberOfMajor);
+        PeerReplicatingState replicatingState = new PeerReplicatingState(endpoint.getId(), nextIndex, matchIndex);
+        GroupMember member = new GroupMember(endpoint, replicatingState, major);
         memberMap.put(endpoint.getId(), member);
         return member;
     }

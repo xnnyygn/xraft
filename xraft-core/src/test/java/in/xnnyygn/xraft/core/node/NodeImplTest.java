@@ -51,6 +51,10 @@ public class NodeImplTest {
             sent = false;
         }
 
+        void reset() {
+            sent = false;
+        }
+
     }
 
     private static TaskExecutor taskExecutor;
@@ -495,8 +499,8 @@ public class NodeImplTest {
                 .build();
         node.start();
         node.electionTimeout();
+        connector.reset();
         node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
-
         cachedThreadTaskExecutor.submit(() -> node.addNode(new NodeEndpoint("D", "localhost", 2337)));
         connector.awaitAppendEntriesRpc();
         node.processAppendEntriesResult(new AppendEntriesResultMessage(

@@ -520,6 +520,11 @@ public class NodeImpl implements Node {
         InstallSnapshotRpc rpc = resultMessage.getRpc();
         NodeId sourceNodeId = resultMessage.getSourceNodeId();
         GroupMember member = context.group().getMember(sourceNodeId);
+        // TODO add test
+        if (member == null) {
+            logger.info("unexpected install snapshot result from node {}, node maybe removed", sourceNodeId);
+            return;
+        }
         if (rpc.isDone()) {
             member.advanceReplicatingState(rpc.getLastIncludedIndex());
             int maxEntries = member.isMajor() ? context.config().getMaxReplicationEntries() : context.config().getMaxReplicationEntriesForNewNode();
