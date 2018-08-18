@@ -1,22 +1,18 @@
 package in.xnnyygn.xraft.core.node.task;
 
-import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.node.config.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResult;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResultMessage;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
-import in.xnnyygn.xraft.core.support.ListeningTaskExecutor;
 import in.xnnyygn.xraft.core.support.SingleThreadTaskExecutor;
 import in.xnnyygn.xraft.core.support.TaskExecutor;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import static org.junit.Assert.*;
 
 public class NewNodeCatchUpTaskGroupTest {
 

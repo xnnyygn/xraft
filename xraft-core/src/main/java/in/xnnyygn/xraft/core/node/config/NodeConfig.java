@@ -1,6 +1,7 @@
-package in.xnnyygn.xraft.core.node;
+package in.xnnyygn.xraft.core.node.config;
 
 import in.xnnyygn.xraft.core.log.Log;
+import in.xnnyygn.xraft.core.node.NodeBuilder;
 
 /**
  * Node configuration.
@@ -57,6 +58,7 @@ public class NodeConfig {
     /**
      * Worker thread count in nio connector.
      */
+    // TODO change to 0
     private int nioWorkerThreads = Runtime.getRuntime().availableProcessors() * 2;
 
     /**

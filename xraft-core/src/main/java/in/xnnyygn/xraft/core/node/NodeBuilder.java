@@ -5,6 +5,7 @@ import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.log.FileLog;
 import in.xnnyygn.xraft.core.log.Log;
 import in.xnnyygn.xraft.core.log.MemoryLog;
+import in.xnnyygn.xraft.core.node.config.NodeConfig;
 import in.xnnyygn.xraft.core.node.store.FileNodeStore;
 import in.xnnyygn.xraft.core.node.store.MemoryNodeStore;
 import in.xnnyygn.xraft.core.node.store.NodeStore;
@@ -18,7 +19,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.Executors;

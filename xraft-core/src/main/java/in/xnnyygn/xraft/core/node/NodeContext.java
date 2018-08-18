@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.node;
 
 import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.log.Log;
+import in.xnnyygn.xraft.core.node.config.NodeConfig;
 import in.xnnyygn.xraft.core.node.store.NodeStore;
 import in.xnnyygn.xraft.core.rpc.Connector;
 import in.xnnyygn.xraft.core.schedule.Scheduler;

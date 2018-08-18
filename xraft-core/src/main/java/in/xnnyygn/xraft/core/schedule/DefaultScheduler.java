@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.core.schedule;
 
 import com.google.common.base.Preconditions;
-import in.xnnyygn.xraft.core.node.NodeConfig;
+import in.xnnyygn.xraft.core.node.config.NodeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

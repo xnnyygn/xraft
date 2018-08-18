@@ -5,6 +5,7 @@ import in.xnnyygn.xraft.core.log.entry.*;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
+import in.xnnyygn.xraft.core.node.config.NodeConfig;
 import in.xnnyygn.xraft.core.node.role.RoleName;
 import in.xnnyygn.xraft.core.node.role.RoleState;
 import in.xnnyygn.xraft.core.node.store.MemoryNodeStore;
