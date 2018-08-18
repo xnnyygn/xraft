@@ -23,7 +23,7 @@ public class SelfReplicatingState implements ReplicatingState {
 
     @Override
     public int getNextIndex() {
-        return log.getNextIndex();
+        throw new UnsupportedOperationException("self");
     }
 
     @Override

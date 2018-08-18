@@ -452,6 +452,10 @@ public class NodeImplTest {
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("B"), createAppendEntriesRpc(2)));
 
+        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
+                new AppendEntriesResult("", 1, true),
+                NodeId.of("C"), createAppendEntriesRpc(2)));
+
         Assert.assertEquals(GroupConfigChangeTaskResult.OK, reference.getResult(1000L));
         checkWithinTaskExecutor(node, () -> Assert.assertEquals(4, node.getContext().group().getCountOfMajor()));
     }
@@ -594,6 +598,9 @@ public class NodeImplTest {
         node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
                 new AppendEntriesResult("", 1, true),
                 NodeId.of("B"), createAppendEntriesRpc(2)));
+        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
+                new AppendEntriesResult("", 1, true),
+                NodeId.of("C"), createAppendEntriesRpc(2)));
         Assert.assertEquals(GroupConfigChangeTaskResult.OK, reference.getResult(1000L));
         checkWithinTaskExecutor(node, () -> {
             Assert.assertEquals(2, node.getContext().group().getCountOfMajor());

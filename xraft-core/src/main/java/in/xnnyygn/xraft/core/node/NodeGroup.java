@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 /**
  * Node group.
  */
-// TODO fix test
 @NotThreadSafe
 public class NodeGroup {
 
@@ -164,7 +163,6 @@ public class NodeGroup {
      *
      * @return match index
      */
-    // TODO check test
     int getMatchIndexOfMajor() {
         List<NodeMatchIndex> matchIndices = new ArrayList<>();
         for (GroupMember member : memberMap.values()) {
@@ -172,15 +170,13 @@ public class NodeGroup {
                 matchIndices.add(new NodeMatchIndex(member.getId(), member.getMatchIndex()));
             }
         }
-        if (matchIndices.isEmpty()) {
+        int count = matchIndices.size();
+        if (count == 0) {
             throw new IllegalArgumentException("no replication state");
         }
         Collections.sort(matchIndices);
         logger.debug("match indices {}", matchIndices);
-
-        // 5 nodes, A B C D E => C, index 5 / 2 => 2
-        // 6 nodes, A B C D E F => D, index 6 / 2 => 3
-        return matchIndices.get(matchIndices.size() / 2).getMatchIndex();
+        return matchIndices.get((count - 1) / 2).getMatchIndex();
     }
 
     /**
@@ -189,7 +185,6 @@ public class NodeGroup {
      *
      * @return replication targets.
      */
-    // TODO add test
     Collection<GroupMember> listReplicationTarget() {
         return memberMap.values().stream()
                 .filter(GroupMember::isReplicationTarget)
