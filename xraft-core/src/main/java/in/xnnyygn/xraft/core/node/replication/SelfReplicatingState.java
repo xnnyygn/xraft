@@ -5,6 +5,7 @@ import in.xnnyygn.xraft.core.node.NodeId;
 
 import javax.annotation.Nonnull;
 
+// TODO remove me
 public class SelfReplicatingState implements ReplicatingState {
 
     private final NodeId selfNodeId;

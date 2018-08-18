@@ -23,6 +23,7 @@ public class PeerReplicatingState implements ReplicatingState {
         this.matchIndex = matchIndex;
     }
 
+    // TODO remove me
     @Override
     @Nonnull
     public NodeId getNodeId() {

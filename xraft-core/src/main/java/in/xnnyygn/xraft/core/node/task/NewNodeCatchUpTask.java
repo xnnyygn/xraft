@@ -56,7 +56,7 @@ public class NewNodeCatchUpTask implements Callable<NewNodeCatchUpTaskResult> {
             // 1. done
             // 2. replicate -> no response within timeout
             if (System.currentTimeMillis() - lastReplicateAt >= config.getNewNodeReadTimeout()) {
-                logger.debug("node {} not response within round timeout", endpoint.getId());
+                logger.debug("node {} not response within read timeout", endpoint.getId());
                 state = State.TIMEOUT;
                 break;
             }

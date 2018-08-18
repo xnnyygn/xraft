@@ -160,6 +160,10 @@ public class NodeGroup {
 
     /**
      * Get match index of major members.
+     * <p>
+     * To get major match index in group, sort match indices and get the middle one.
+     * </p>
+     * TODO add doc
      *
      * @return match index
      */
@@ -243,6 +247,7 @@ public class NodeGroup {
     Set<NodeEndpoint> listEndpointOfMajorExcept(NodeId selfId) {
         Set<NodeEndpoint> endpoints = new HashSet<>();
         for (GroupMember member : memberMap.values()) {
+            // TODO add isSelf
             if (member.isMajor() && !member.getId().equals(selfId)) {
                 endpoints.add(member.getEndpoint());
             }

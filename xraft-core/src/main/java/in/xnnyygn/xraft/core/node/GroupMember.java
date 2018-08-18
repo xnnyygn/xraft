@@ -4,6 +4,7 @@ import in.xnnyygn.xraft.core.node.replication.ReplicatingState;
 
 /**
  * State of group member.
+ *
  * @see ReplicatingState
  */
 class GroupMember {
@@ -100,11 +101,23 @@ class GroupMember {
         ensureReplicatingState().setReplicating(false);
     }
 
-    // TODO add test
-    boolean shouldReplicate(long minReplicationInterval) {
+    /**
+     * Test if should replicate.
+     * <p>
+     * Return true if
+     * <ol>
+     * <li>not replicating</li>
+     * <li>replicated but no response in specified timeout</li>
+     * </ol>
+     * </p>
+     *
+     * @param readTimeout read timeout
+     * @return true if should, otherwise false
+     */
+    boolean shouldReplicate(long readTimeout) {
         ReplicatingState replicatingState = ensureReplicatingState();
         return !replicatingState.isReplicating() ||
-                System.currentTimeMillis() - replicatingState.getLastReplicatedAt() > minReplicationInterval;
+                System.currentTimeMillis() - replicatingState.getLastReplicatedAt() >= readTimeout;
     }
 
     @Override
