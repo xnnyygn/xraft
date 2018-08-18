@@ -18,6 +18,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.Executors;
 
 /**
@@ -26,14 +29,14 @@ import java.util.concurrent.Executors;
 public class NodeBuilder {
 
     /**
-     * Self id.
-     */
-    private final NodeId selfId;
-
-    /**
      * Group.
      */
     private final NodeGroup group;
+
+    /**
+     * Self id.
+     */
+    private final NodeId selfId;
 
     /**
      * Event bus, INTERNAL.
@@ -91,12 +94,27 @@ public class NodeBuilder {
      */
     private NioEventLoopGroup workerNioEventLoopGroup = null;
 
+    // TODO add doc
+    public NodeBuilder(@Nonnull NodeEndpoint endpoint) {
+        this(Collections.singletonList(endpoint), endpoint.getId());
+    }
+
+    // TODO add doc
+    public NodeBuilder(@Nonnull Collection<NodeEndpoint> endpoints, @Nonnull NodeId selfId) {
+        Preconditions.checkNotNull(endpoints);
+        Preconditions.checkNotNull(selfId);
+        this.group = new NodeGroup(endpoints, selfId);
+        this.selfId = selfId;
+        this.eventBus = new EventBus(selfId.getValue());
+    }
+
     /**
      * Create.
      *
      * @param selfId self id
-     * @param group group
+     * @param group  group
      */
+    @Deprecated
     public NodeBuilder(@Nonnull NodeId selfId, @Nonnull NodeGroup group) {
         Preconditions.checkNotNull(selfId);
         Preconditions.checkNotNull(group);
@@ -261,7 +279,7 @@ public class NodeBuilder {
      */
     @Nonnull
     private NioConnector createNioConnector() {
-        int port = group.findMember(selfId).getEndpoint().getPort();
+        int port = group.findSelf().getEndpoint().getPort();
         if (workerNioEventLoopGroup != null) {
             return new NioConnector(workerNioEventLoopGroup, selfId, eventBus, port);
         }
@@ -272,14 +290,14 @@ public class NodeBuilder {
      * Evaluate mode.
      *
      * @return mode
-     * @see NodeGroup#isUniqueNode(NodeId)
+     * @see NodeGroup#isStandalone()
      */
     @Nonnull
     private NodeMode evaluateMode() {
         if (standby) {
             return NodeMode.STANDBY;
         }
-        if (group.isUniqueNode(selfId)) {
+        if (group.isStandalone()) {
             return NodeMode.STANDALONE;
         }
         return NodeMode.GROUP_MEMBER;

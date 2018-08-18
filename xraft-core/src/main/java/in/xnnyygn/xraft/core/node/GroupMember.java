@@ -1,7 +1,5 @@
 package in.xnnyygn.xraft.core.node;
 
-import in.xnnyygn.xraft.core.node.replication.ReplicatingState;
-
 /**
  * State of group member.
  *
@@ -30,6 +28,10 @@ class GroupMember {
 
     NodeId getId() {
         return endpoint.getId();
+    }
+
+    boolean idEquals(NodeId id) {
+        return endpoint.getId().equals(id);
     }
 
     void setReplicatingState(ReplicatingState replicatingState) {
@@ -91,10 +93,6 @@ class GroupMember {
 
     boolean isReplicating() {
         return ensureReplicatingState().isReplicating();
-    }
-
-    boolean isReplicationTarget() {
-        return ensureReplicatingState().isTarget();
     }
 
     void stopReplicating() {

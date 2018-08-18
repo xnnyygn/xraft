@@ -69,7 +69,7 @@ public class NodeImplTest {
     private static final AtomicInteger cachedThreadId = new AtomicInteger(0);
 
     private NodeBuilder newNodeBuilder(NodeId selfId, NodeEndpoint... endpoints) {
-        return new NodeBuilder(selfId, new NodeGroup(Arrays.asList(endpoints)))
+        return new NodeBuilder(Arrays.asList(endpoints), selfId)
                 .setScheduler(new NullScheduler())
                 .setConnector(new MockConnector())
                 .setTaskExecutor(new DirectTaskExecutor(true));
@@ -149,9 +149,6 @@ public class NodeImplTest {
         RoleState state = node.getRoleState();
         Assert.assertEquals(RoleName.LEADER, state.getRoleName());
         Assert.assertEquals(1, state.getTerm());
-
-        // replication state set
-        Assert.assertTrue(node.getContext().group().findMember(NodeId.of("A")).isReplicationStateSet());
 
         // no-op log
         EntryMeta lastEntryMeta = node.getContext().log().getLastEntryMeta();
@@ -896,7 +893,6 @@ public class NodeImplTest {
         Assert.assertEquals(1, state.getTerm());
 
         // replication state set
-        Assert.assertTrue(node.getContext().group().findMember(NodeId.of("A")).isReplicationStateSet());
         Assert.assertTrue(node.getContext().group().findMember(NodeId.of("B")).isReplicationStateSet());
         Assert.assertTrue(node.getContext().group().findMember(NodeId.of("C")).isReplicationStateSet());
 

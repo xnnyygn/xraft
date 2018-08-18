@@ -1,6 +1,9 @@
 package in.xnnyygn.xraft.kvstore.server;
 
-import in.xnnyygn.xraft.core.node.*;
+import in.xnnyygn.xraft.core.node.Node;
+import in.xnnyygn.xraft.core.node.NodeBuilder;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
+import in.xnnyygn.xraft.core.node.NodeId;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +107,7 @@ public class ServerLauncher {
         int portService = ((Long) cmdLine.getParsedOptionValue("p2")).intValue();
 
         NodeEndpoint nodeEndpoint = new NodeEndpoint(id, host, portRaftServer);
-        Node node = new NodeBuilder(nodeEndpoint.getId(), new NodeGroup(nodeEndpoint))
+        Node node = new NodeBuilder(nodeEndpoint)
                 .setStandby(standby)
                 .setDataDir(cmdLine.getOptionValue('d'))
                 .build();
@@ -127,8 +130,7 @@ public class ServerLauncher {
                 .map(this::parseNodeEndpoint)
                 .collect(Collectors.toSet());
 
-        NodeGroup nodeGroup = new NodeGroup(nodeEndpoints);
-        Node node = new NodeBuilder(new NodeId(rawNodeId), nodeGroup)
+        Node node = new NodeBuilder(nodeEndpoints, new NodeId(rawNodeId))
                 .setDataDir(cmdLine.getOptionValue('d'))
                 .build();
         Server server = new Server(node, portService);

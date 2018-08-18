@@ -1,8 +1,5 @@
 package in.xnnyygn.xraft.core.node;
 
-import in.xnnyygn.xraft.core.log.Log;
-import in.xnnyygn.xraft.core.node.replication.PeerReplicatingState;
-import in.xnnyygn.xraft.core.node.replication.SelfReplicatingState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +13,10 @@ import java.util.stream.Collectors;
  * Node group.
  */
 @NotThreadSafe
-public class NodeGroup {
+class NodeGroup {
 
     private static final Logger logger = LoggerFactory.getLogger(NodeGroup.class);
+    private final NodeId selfId;
     private Map<NodeId, GroupMember> memberMap;
 
     /**
@@ -26,17 +24,19 @@ public class NodeGroup {
      *
      * @param endpoint endpoint
      */
-    public NodeGroup(NodeEndpoint endpoint) {
-        this(Collections.singleton(endpoint));
+    NodeGroup(NodeEndpoint endpoint) {
+        this(Collections.singleton(endpoint), endpoint.getId());
     }
 
     /**
      * Create group.
      *
      * @param endpoints endpoints
+     * @param selfId    self id
      */
-    public NodeGroup(Collection<NodeEndpoint> endpoints) {
+    NodeGroup(Collection<NodeEndpoint> endpoints, NodeId selfId) {
         this.memberMap = buildMemberMap(endpoints);
+        this.selfId = selfId;
     }
 
     /**
@@ -66,6 +66,16 @@ public class NodeGroup {
      */
     int getCountOfMajor() {
         return (int) memberMap.values().stream().filter(GroupMember::isMajor).count();
+    }
+
+    /**
+     * Find self.
+     *
+     * @return self
+     */
+    @Nonnull
+    GroupMember findSelf() {
+        return findMember(selfId);
     }
 
     /**
@@ -145,15 +155,12 @@ public class NodeGroup {
     /**
      * Reset replicating state.
      *
-     * @param selfId self id
-     * @param log    log
+     * @param nextLogIndex next log index
      */
-    void resetReplicatingStates(NodeId selfId, Log log) {
+    void resetReplicatingStates(int nextLogIndex) {
         for (GroupMember member : memberMap.values()) {
-            if (member.getId().equals(selfId)) {
-                member.setReplicatingState(new SelfReplicatingState(selfId, log));
-            } else {
-                member.setReplicatingState(new PeerReplicatingState(member.getId(), log.getNextIndex()));
+            if (!member.idEquals(selfId)) {
+                member.setReplicatingState(new ReplicatingState(nextLogIndex));
             }
         }
     }
@@ -170,17 +177,17 @@ public class NodeGroup {
     int getMatchIndexOfMajor() {
         List<NodeMatchIndex> matchIndices = new ArrayList<>();
         for (GroupMember member : memberMap.values()) {
-            if (member.isMajor()) {
+            if (member.isMajor() && !member.idEquals(selfId)) {
                 matchIndices.add(new NodeMatchIndex(member.getId(), member.getMatchIndex()));
             }
         }
         int count = matchIndices.size();
         if (count == 0) {
-            throw new IllegalArgumentException("no replication state");
+            throw new IllegalStateException("standalone or no major node");
         }
         Collections.sort(matchIndices);
         logger.debug("match indices {}", matchIndices);
-        return matchIndices.get((count - 1) / 2).getMatchIndex();
+        return matchIndices.get(count / 2).getMatchIndex();
     }
 
     /**
@@ -190,9 +197,7 @@ public class NodeGroup {
      * @return replication targets.
      */
     Collection<GroupMember> listReplicationTarget() {
-        return memberMap.values().stream()
-                .filter(GroupMember::isReplicationTarget)
-                .collect(Collectors.toList());
+        return memberMap.values().stream().filter(m -> !m.idEquals(selfId)).collect(Collectors.toList());
     }
 
     /**
@@ -206,7 +211,7 @@ public class NodeGroup {
      */
     GroupMember addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex, boolean major) {
         logger.info("add node {} to group, endpoint {}", endpoint.getId(), endpoint);
-        PeerReplicatingState replicatingState = new PeerReplicatingState(endpoint.getId(), nextIndex, matchIndex);
+        ReplicatingState replicatingState = new ReplicatingState(nextIndex, matchIndex);
         GroupMember member = new GroupMember(endpoint, replicatingState, major);
         memberMap.put(endpoint.getId(), member);
         return member;
@@ -241,14 +246,12 @@ public class NodeGroup {
     /**
      * List endpoint of major members except self.
      *
-     * @param selfId self id
-     * @return endpoints
+     * @return endpoints except self
      */
-    Set<NodeEndpoint> listEndpointOfMajorExcept(NodeId selfId) {
+    Set<NodeEndpoint> listEndpointOfMajorExceptSelf() {
         Set<NodeEndpoint> endpoints = new HashSet<>();
         for (GroupMember member : memberMap.values()) {
-            // TODO add isSelf
-            if (member.isMajor() && !member.getId().equals(selfId)) {
+            if (member.isMajor() && !member.idEquals(selfId)) {
                 endpoints.add(member.getEndpoint());
             }
         }
@@ -258,11 +261,10 @@ public class NodeGroup {
     /**
      * Check if member is unique one in group, in other word, check if standalone mode.
      *
-     * @param id id
      * @return true if only one member and the id of member equals to specified id, otherwise false
      */
-    boolean isUniqueNode(NodeId id) {
-        return memberMap.size() == 1 && memberMap.containsKey(id);
+    boolean isStandalone() {
+        return memberMap.size() == 1 && memberMap.containsKey(selfId);
     }
 
     /**

@@ -291,7 +291,7 @@ public class NodeImpl implements Node {
         int newTerm = role.getTerm() + 1;
         role.cancelTimeoutOrTask();
 
-        if (context.group().isUniqueNode(context.selfId())) {
+        if (context.group().isStandalone()) {
             if (context.mode() == NodeMode.STANDBY) {
                 logger.info("starts with standby mode, skip election");
             } else {
@@ -312,7 +312,7 @@ public class NodeImpl implements Node {
             rpc.setCandidateId(context.selfId());
             rpc.setLastLogIndex(lastEntryMeta.getIndex());
             rpc.setLastLogTerm(lastEntryMeta.getTerm());
-            context.connector().sendRequestVote(rpc, context.group().listEndpointOfMajorExcept(context.selfId()));
+            context.connector().sendRequestVote(rpc, context.group().listEndpointOfMajorExceptSelf());
         }
     }
 
@@ -383,7 +383,7 @@ public class NodeImpl implements Node {
      * Reset replicating states.
      */
     private void resetReplicatingStates() {
-        context.group().resetReplicatingStates(context.selfId(), context.log());
+        context.group().resetReplicatingStates(context.log().getNextIndex());
     }
 
     /**
@@ -410,7 +410,7 @@ public class NodeImpl implements Node {
      */
     private void doReplicateLog() {
         // just advance commit index if is unique node
-        if (context.group().isUniqueNode(context.selfId())) {
+        if (context.group().isStandalone()) {
             context.log().advanceCommitIndex(context.log().getNextIndex() - 1, role.getTerm());
             return;
         }
