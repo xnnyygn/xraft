@@ -58,8 +58,7 @@ public class NodeConfig {
     /**
      * Worker thread count in nio connector.
      */
-    // TODO change to 0
-    private int nioWorkerThreads = Runtime.getRuntime().availableProcessors() * 2;
+    private int nioWorkerThreads = 0;
 
     /**
      * Max round for new node to catch up.

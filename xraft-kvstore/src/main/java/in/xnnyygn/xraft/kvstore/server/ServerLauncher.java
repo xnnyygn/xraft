@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO load config from file
 public class ServerLauncher {
 
     private static final Logger logger = LoggerFactory.getLogger(ServerLauncher.class);

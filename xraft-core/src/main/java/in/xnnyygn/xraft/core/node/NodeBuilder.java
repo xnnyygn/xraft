@@ -46,7 +46,6 @@ public class NodeBuilder {
     /**
      * Node configuration.
      */
-    // TODO load config from file
     private NodeConfig config = new NodeConfig();
 
     /**
