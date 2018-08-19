@@ -18,6 +18,7 @@ import in.xnnyygn.xraft.core.support.TaskExecutor;
 import io.netty.channel.nio.NioEventLoopGroup;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
@@ -224,8 +225,10 @@ public class NodeBuilder {
      * @param dataDirPath data directory
      * @return this
      */
-    public NodeBuilder setDataDir(@Nonnull String dataDirPath) {
-        Preconditions.checkNotNull(dataDirPath);
+    public NodeBuilder setDataDir(@Nullable String dataDirPath) {
+        if (dataDirPath == null || dataDirPath.isEmpty()) {
+            return this;
+        }
         File dataDir = new File(dataDirPath);
         if (!dataDir.isDirectory() || !dataDir.exists()) {
             throw new IllegalArgumentException("[" + dataDirPath + "] not a directory, or not exists");

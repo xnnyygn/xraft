@@ -45,7 +45,7 @@ public class NewNodeCatchUpTask implements Callable<NewNodeCatchUpTaskResult> {
 
     @Override
     public synchronized NewNodeCatchUpTaskResult call() throws Exception {
-        logger.info("task start");
+        logger.debug("task start");
         setState(State.START);
         context.replicateLog(endpoint);
         lastReplicateAt = System.currentTimeMillis();
@@ -61,7 +61,7 @@ public class NewNodeCatchUpTask implements Callable<NewNodeCatchUpTaskResult> {
                 break;
             }
         }
-        logger.info("task done");
+        logger.debug("task done");
         context.done(this);
         return mapResult(state);
     }

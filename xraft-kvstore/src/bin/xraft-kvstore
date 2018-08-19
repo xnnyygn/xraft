@@ -1,0 +1,16 @@
+#!/bin/sh
+
+SCRIPT_DIR=$(dirname $0)
+BASE_DIR=$(dirname ${SCRIPT_DIR})
+LIB_DIR=${BASE_DIR}/lib
+
+JAVA_EXECUTABLE=java
+
+CLASS_PATH=
+for file in `ls ${LIB_DIR}`; do
+    CLASS_PATH=${LIB_DIR}/${file}:${CLASS_PATH}
+done
+
+${JAVA_EXECUTABLE} -cp ${CLASS_PATH} \
+    -Dlog4j.configurationFile=${BASE_DIR}/conf/log4j2.xml \
+    in.xnnyygn.xraft.kvstore.server.ServerLauncher "$@"

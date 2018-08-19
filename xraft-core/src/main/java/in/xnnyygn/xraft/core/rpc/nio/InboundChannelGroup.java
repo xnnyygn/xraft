@@ -16,9 +16,9 @@ class InboundChannelGroup {
     private final List<NioChannel> channels = new CopyOnWriteArrayList<>();
 
     public void add(NodeId remoteId, NioChannel channel) {
-        logger.info("channel INBOUND-{} connected", remoteId);
+        logger.debug("channel INBOUND-{} connected", remoteId);
         channel.getDelegate().closeFuture().addListener((ChannelFutureListener) future -> {
-            logger.info("channel INBOUND-{} disconnected", remoteId);
+            logger.debug("channel INBOUND-{} disconnected", remoteId);
             remove(channel);
         });
     }
@@ -28,7 +28,7 @@ class InboundChannelGroup {
     }
 
     void closeAll() {
-        logger.info("close all inbound channels");
+        logger.debug("close all inbound channels");
         for (NioChannel channel : channels) {
             channel.close();
         }

@@ -210,7 +210,7 @@ class NodeGroup {
      * @return added member
      */
     GroupMember addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex, boolean major) {
-        logger.info("add node {} to group, endpoint {}", endpoint.getId(), endpoint);
+        logger.info("add node {} to group", endpoint.getId());
         ReplicatingState replicatingState = new ReplicatingState(nextIndex, matchIndex);
         GroupMember member = new GroupMember(endpoint, replicatingState, major);
         memberMap.put(endpoint.getId(), member);
@@ -224,8 +224,8 @@ class NodeGroup {
      * @param endpoints endpoints
      */
     void updateNodes(Set<NodeEndpoint> endpoints) {
-        logger.info("update nodes to {}", endpoints);
         memberMap = buildMemberMap(endpoints);
+        logger.info("group change changed -> {}", memberMap.keySet());
     }
 
     /**

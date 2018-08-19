@@ -46,6 +46,7 @@ public class Server {
     }
 
     public void stop() throws Exception {
+        logger.info("stopping server");
         this.node.stop();
         this.workerGroup.shutdownGracefully();
         this.bossGroup.shutdownGracefully();

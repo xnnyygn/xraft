@@ -22,12 +22,12 @@ abstract class AbstractGroupConfigChangeTask implements GroupConfigChangeTask {
 
     @Override
     public synchronized GroupConfigChangeTaskResult call() throws Exception {
-        logger.info("task start");
+        logger.debug("task start");
         setState(State.START);
         appendGroupConfig();
         setState(State.GROUP_CONFIG_APPENDED);
         wait();
-        logger.info("task done");
+        logger.debug("task done");
         context.done();
         return mapResult(state);
 

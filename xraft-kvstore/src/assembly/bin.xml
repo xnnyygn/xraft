@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
+    <id>bin</id>
+    <!-- output path will be target/xraft-kvstore-version-bin/xraft-kvstore-version-bin -->
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <formats>
+        <format>dir</format>
+        <!-- TODO uncomment me-->
+        <!--<format>tar.gz</format>-->
+    </formats>
+    <fileSets>
+        <fileSet>
+            <directory>src/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>xraft-kvstore</include>
+                <include>xraft-kvstore-cli</include>
+            </includes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/conf</directory>
+            <outputDirectory>conf</outputDirectory>
+            <includes>
+                <include>xraft-kvstore.properties</include>
+                <include>log4j2.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>work/log</directory>
+            <outputDirectory>log</outputDirectory>
+            <includes>
+                <include>.keep</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>work/data</directory>
+            <outputDirectory>data</outputDirectory>
+            <includes>
+                <include>.keep</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/lib</outputDirectory>
+            <!-- scope is runtime -->
+        </dependencySet>
+    </dependencySets>
+</assembly>

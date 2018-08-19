@@ -116,7 +116,6 @@ public class NodeImpl implements Node {
         if (started) {
             return;
         }
-        logger.info("start node {}", context.selfId());
         context.eventBus().register(this);
         context.connector().initialize();
 
@@ -326,6 +325,9 @@ public class NodeImpl implements Node {
      */
     private void becomeFollower(int term, NodeId votedFor, NodeId leaderId, boolean scheduleElectionTimeout) {
         role.cancelTimeoutOrTask();
+        if (leaderId != null && !leaderId.equals(role.getLeaderId(context.selfId()))) {
+            logger.info("current leader is {}", leaderId);
+        }
         ElectionTimeout electionTimeout = scheduleElectionTimeout ? scheduleElectionTimeout() : ElectionTimeout.NONE;
         changeToRole(new FollowerNodeRole(term, votedFor, leaderId, electionTimeout));
     }
@@ -549,6 +551,7 @@ public class NodeImpl implements Node {
         if (currentVotesCount > countOfMajor / 2) {
 
             // become leader
+            logger.info("become leader");
             resetReplicatingStates();
             changeToRole(new LeaderNodeRole(role.getTerm(), scheduleLogReplicationTask()));
             context.log().appendEntry(role.getTerm()); // no-op log
@@ -843,7 +846,6 @@ public class NodeImpl implements Node {
         if (!started) {
             throw new IllegalStateException("node not started");
         }
-        logger.info("stop node {}", context.selfId());
         context.scheduler().stop();
         context.log().close();
         context.connector().close();

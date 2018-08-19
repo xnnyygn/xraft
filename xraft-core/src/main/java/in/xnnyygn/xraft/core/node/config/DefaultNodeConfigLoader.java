@@ -13,6 +13,16 @@ public class DefaultNodeConfigLoader implements NodeConfigLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultNodeConfigLoader.class);
 
+    private final String propertyNamePrefix;
+
+    public DefaultNodeConfigLoader() {
+        this("");
+    }
+
+    public DefaultNodeConfigLoader(String propertyNamePrefix) {
+        this.propertyNamePrefix = propertyNamePrefix;
+    }
+
     @Nonnull
     @Override
     public NodeConfig load(@Nonnull InputStream input) throws IOException {
@@ -37,7 +47,7 @@ public class DefaultNodeConfigLoader implements NodeConfigLoader {
     }
 
     private int getIntProperty(Properties properties, String name, int defaultValue) {
-        String value = properties.getProperty(name);
+        String value = properties.getProperty(propertyNamePrefix + name);
         if (value != null) {
             try {
                 return Integer.parseInt(value);

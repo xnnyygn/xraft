@@ -74,17 +74,17 @@ class OutboundChannelGroup {
         if (!future.isSuccess()) {
             throw new ChannelException("failed to connect", future.cause());
         }
-        logger.info("channel OUTBOUND-{} connected", nodeId);
+        logger.debug("channel OUTBOUND-{} connected", nodeId);
         Channel nettyChannel = future.channel();
         nettyChannel.closeFuture().addListener((ChannelFutureListener) cf -> {
-            logger.info("channel OUTBOUND-{} disconnected", nodeId);
+            logger.debug("channel OUTBOUND-{} disconnected", nodeId);
             channelMap.remove(nodeId);
         });
         return new NioChannel(nettyChannel);
     }
 
     void closeAll() {
-        logger.info("close all outbound channels");
+        logger.debug("close all outbound channels");
         channelMap.forEach((nodeId, nioChannelFuture) -> {
             try {
                 nioChannelFuture.get().close();

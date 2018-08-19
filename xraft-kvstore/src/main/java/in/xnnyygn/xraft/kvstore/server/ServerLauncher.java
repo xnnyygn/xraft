@@ -20,6 +20,7 @@ public class ServerLauncher {
     private static final String MODE_STANDBY = "standby";
     private static final String MODE_GROUP_MEMBER = "group-member";
 
+    // TODO why volatile?
     private volatile Server server;
 
     private void execute(String[] args) throws Exception {
@@ -71,7 +72,7 @@ public class ServerLauncher {
 
         if (args.length == 0) {
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("xraft-kvstore-server [OPTION]...", options);
+            formatter.printHelp("xraft-kvstore [OPTION]...", options);
             return;
         }
 
@@ -113,7 +114,7 @@ public class ServerLauncher {
                 .setDataDir(cmdLine.getOptionValue('d'))
                 .build();
         Server server = new Server(node, portService);
-        logger.info("start with mode {}, id {}, host {}, port raft server {}, port service {}",
+        logger.info("start with mode {}, id {}, host {}, port raft node {}, port service {}",
                 (standby ? "standby" : "standalone"), id, host, portRaftServer, portService);
         startServer(server);
     }

@@ -86,7 +86,7 @@ public class Service implements StateMachine {
         }
 
         SetCommand command = commandRequest.getCommand();
-        logger.info("set {}", command.getKey());
+        logger.debug("set {}", command.getKey());
         this.pendingCommands.put(command.getRequestId(), commandRequest);
         commandRequest.addCloseListener(() -> pendingCommands.remove(command.getRequestId()));
         this.node.appendLog(command.toBytes());
@@ -94,7 +94,7 @@ public class Service implements StateMachine {
 
     public void get(CommandRequest<GetCommand> commandRequest) {
         String key = commandRequest.getCommand().getKey();
-        logger.info("get {}", key);
+        logger.debug("get {}", key);
         byte[] value = this.map.get(key);
         // TODO view from node state machine
         commandRequest.reply(new GetCommandResponse(value));
