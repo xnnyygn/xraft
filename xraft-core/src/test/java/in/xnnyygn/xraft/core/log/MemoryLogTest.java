@@ -475,7 +475,6 @@ public class MemoryLogTest {
         );
         Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
         Assert.assertEquals(2, log.getCommitIndex());
-        Assert.assertEquals(2, log.getLastApplied());
     }
 
     // follower: (1, 1), (2, 1), (3, 1, group-config, committed)

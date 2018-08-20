@@ -75,13 +75,6 @@ public interface Log {
     int getCommitIndex();
 
     /**
-     * Get last applied log index.
-     *
-     * @return last applied log index
-     */
-    int getLastApplied();
-
-    /**
      * Test if last log self is new than last log of leader.
      *
      * @param lastLogIndex last log index
