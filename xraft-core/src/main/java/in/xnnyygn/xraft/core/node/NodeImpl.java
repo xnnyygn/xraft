@@ -302,6 +302,7 @@ public class NodeImpl implements Node {
                 context.log().appendEntry(newTerm); // no-op log
             }
         } else {
+            logger.info("start election");
             changeToRole(new CandidateNodeRole(newTerm, scheduleElectionTimeout()));
 
             // request vote
