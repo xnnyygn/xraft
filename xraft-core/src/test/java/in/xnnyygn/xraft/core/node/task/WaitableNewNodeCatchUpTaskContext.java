@@ -19,6 +19,12 @@ public class WaitableNewNodeCatchUpTaskContext implements NewNodeCatchUpTaskCont
     }
 
     @Override
+    public synchronized void sendInstallSnapshot(NodeEndpoint endpoint, int offset) {
+        replicated = true;
+        notify();
+    }
+
+    @Override
     public void done(NewNodeCatchUpTask task) {
 
     }

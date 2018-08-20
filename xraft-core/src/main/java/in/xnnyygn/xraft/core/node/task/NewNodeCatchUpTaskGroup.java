@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.node.task;
 
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResultMessage;
+import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotResultMessage;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,6 +39,15 @@ public class NewNodeCatchUpTaskGroup {
             return false;
         }
         task.onReceiveAppendEntriesResult(resultMessage, nextLogIndex);
+        return true;
+    }
+
+    public boolean onReceiveInstallSnapshotResult(InstallSnapshotResultMessage resultMessage, int nextLogIndex) {
+        NewNodeCatchUpTask task = taskMap.get(resultMessage.getSourceNodeId());
+        if (task == null) {
+            return false;
+        }
+        task.onReceiveInstallSnapshotResult(resultMessage, nextLogIndex);
         return true;
     }
 

@@ -59,7 +59,7 @@ public class DefaultScheduler implements Scheduler {
     public ElectionTimeout scheduleElectionTimeout(@Nonnull Runnable task) {
         Preconditions.checkNotNull(task);
         logger.debug("schedule election timeout");
-        int timeout = electionTimeoutRandom.nextInt(minElectionTimeout) + (maxElectionTimeout - minElectionTimeout);
+        int timeout = electionTimeoutRandom.nextInt(maxElectionTimeout - minElectionTimeout) + minElectionTimeout;
         ScheduledFuture<?> scheduledFuture = scheduledExecutorService.schedule(task, timeout, TimeUnit.MILLISECONDS);
         return new ElectionTimeout(scheduledFuture);
     }

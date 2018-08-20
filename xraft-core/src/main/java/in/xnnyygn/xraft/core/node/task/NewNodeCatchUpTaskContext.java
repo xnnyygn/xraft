@@ -25,6 +25,8 @@ public interface NewNodeCatchUpTaskContext {
      */
     void doReplicateLog(NodeEndpoint endpoint, int nextIndex);
 
+    void sendInstallSnapshot(NodeEndpoint endpoint, int offset);
+
     /**
      * Done and remove current task.
      *

@@ -4,6 +4,9 @@ import in.xnnyygn.xraft.core.node.config.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResultMessage;
+import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotResult;
+import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotResultMessage;
+import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,6 +125,30 @@ public class NewNodeCatchUpTask implements Callable<NewNodeCatchUpTaskResult> {
             }
         }
         context.doReplicateLog(endpoint, nextIndex);
+        lastReplicateAt = System.currentTimeMillis();
+        notify();
+    }
+
+    // in node thread
+    synchronized void onReceiveInstallSnapshotResult(InstallSnapshotResultMessage resultMessage, int nextLogIndex) {
+        assert nodeId.equals(resultMessage.getSourceNodeId());
+        if (state != State.REPLICATING) {
+            throw new IllegalStateException("receive append entries result when state is not replicating");
+        }
+        InstallSnapshotRpc rpc = resultMessage.getRpc();
+        if (rpc.isDone()) {
+            matchIndex = rpc.getLastIndex();
+            nextIndex = rpc.getLastIndex() + 1;
+            lastAdvanceAt = System.currentTimeMillis();
+            if (nextIndex >= nextLogIndex) {
+                setStateAndNotify(State.REPLICATION_CATCH_UP);
+                return;
+            }
+            round++;
+            context.doReplicateLog(endpoint, nextIndex);
+        } else {
+            context.sendInstallSnapshot(endpoint, rpc.getOffset() + rpc.getDataLength());
+        }
         lastReplicateAt = System.currentTimeMillis();
         notify();
     }

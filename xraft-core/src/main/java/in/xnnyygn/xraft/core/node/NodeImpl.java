@@ -664,6 +664,7 @@ public class NodeImpl implements Node {
             logger.info("unexpected append entries result from node {}, node maybe removed", sourceNodeId);
             return;
         }
+
         AppendEntriesRpc rpc = resultMessage.getRpc();
         if (result.isSuccess()) {
             if (member.isMajor()) { // peer
@@ -756,14 +757,19 @@ public class NodeImpl implements Node {
             return;
         }
 
-        InstallSnapshotRpc rpc = resultMessage.getRpc();
+        // dispatch to new node catch up task by node id
+        if (newNodeCatchUpTaskGroup.onReceiveInstallSnapshotResult(resultMessage, context.log().getNextIndex())) {
+            return;
+        }
+
         NodeId sourceNodeId = resultMessage.getSourceNodeId();
         GroupMember member = context.group().getMember(sourceNodeId);
-        // TODO add test
         if (member == null) {
             logger.info("unexpected install snapshot result from node {}, node maybe removed", sourceNodeId);
             return;
         }
+
+        InstallSnapshotRpc rpc = resultMessage.getRpc();
         if (rpc.isDone()) {
 
             // change to append entries rpc
@@ -891,6 +897,12 @@ public class NodeImpl implements Node {
                 InstallSnapshotRpc rpc = context.log().createInstallSnapshotRpc(role.getTerm(), context.selfId(), 0, context.config().getSnapshotDataLength());
                 context.connector().sendInstallSnapshot(rpc, endpoint);
             }
+        }
+
+        @Override
+        public void sendInstallSnapshot(NodeEndpoint endpoint, int offset) {
+            InstallSnapshotRpc rpc = context.log().createInstallSnapshotRpc(role.getTerm(), context.selfId(), offset, context.config().getSnapshotDataLength());
+            context.connector().sendInstallSnapshot(rpc, endpoint);
         }
 
         @Override

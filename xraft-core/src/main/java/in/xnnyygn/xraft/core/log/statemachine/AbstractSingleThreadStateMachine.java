@@ -47,7 +47,7 @@ public abstract class AbstractSingleThreadStateMachine implements StateMachine {
     // run in node thread
     @Override
     public void applySnapshot(@Nonnull Snapshot snapshot) throws IOException {
-        logger.info("apply log, last included index {}", snapshot.getLastIncludedIndex());
+        logger.info("apply snapshot, last included index {}", snapshot.getLastIncludedIndex());
         doApplySnapshot(snapshot.getDataStream());
         lastApplied = snapshot.getLastIncludedIndex();
     }

@@ -7,7 +7,7 @@
     </Appenders>
     <Loggers>
         <Logger name="in.xnnyygn.xraft.kvstore" level="debug"/>
-        <Logger name="in.xnnyygn.xraft.node" level="debug"/>
+        <Logger name="in.xnnyygn.xraft.core.node" level="info"/>
         <Root level="info">
             <AppenderRef ref="STDOUT"/>
         </Root>
