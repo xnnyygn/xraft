@@ -95,8 +95,8 @@ abstract class AbstractLog implements Log {
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
         rpc.setTerm(term);
         rpc.setLeaderId(selfId);
-        rpc.setLastIncludedIndex(snapshot.getLastIncludedIndex());
-        rpc.setLastIncludedTerm(snapshot.getLastIncludedTerm());
+        rpc.setLastIndex(snapshot.getLastIncludedIndex());
+        rpc.setLastTerm(snapshot.getLastIncludedTerm());
         if (offset == 0) {
             rpc.setLastConfig(snapshot.getLastConfig());
         }
@@ -348,9 +348,9 @@ abstract class AbstractLog implements Log {
 
     @Override
     public InstallSnapshotState installSnapshot(InstallSnapshotRpc rpc) {
-        if (rpc.getLastIncludedIndex() <= snapshot.getLastIncludedIndex()) {
+        if (rpc.getLastIndex() <= snapshot.getLastIncludedIndex()) {
             logger.debug("snapshot's last included index from rpc <= current one ({} <= {}), ignore",
-                    rpc.getLastIncludedIndex(), snapshot.getLastIncludedIndex());
+                    rpc.getLastIndex(), snapshot.getLastIncludedIndex());
             return new InstallSnapshotState(InstallSnapshotState.StateName.ILLEGAL_INSTALL_SNAPSHOT_RPC);
         }
         if (rpc.getOffset() == 0) {

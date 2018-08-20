@@ -52,8 +52,8 @@ message AppendEntriesResult {
 message InstallSnapshotRpc {
     int32 term = 1;
     string leader_id = 2;
-    int32 last_included_index = 3;
-    int32 last_included_term = 4;
+    int32 last_index = 3;
+    int32 last_term = 4;
     repeated NodeEndpoint last_config = 5;
     int32 offset = 6;
     bytes data = 7;

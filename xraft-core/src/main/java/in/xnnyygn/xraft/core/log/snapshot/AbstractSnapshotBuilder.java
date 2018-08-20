@@ -16,8 +16,8 @@ abstract class AbstractSnapshotBuilder<T extends Snapshot> implements SnapshotBu
 
     AbstractSnapshotBuilder(InstallSnapshotRpc firstRpc) {
         assert firstRpc.getOffset() == 0;
-        lastIncludedIndex = firstRpc.getLastIncludedIndex();
-        lastIncludedTerm = firstRpc.getLastIncludedTerm();
+        lastIncludedIndex = firstRpc.getLastIndex();
+        lastIncludedTerm = firstRpc.getLastTerm();
         lastConfig = firstRpc.getLastConfig();
         offset = firstRpc.getDataLength();
     }
@@ -37,7 +37,7 @@ abstract class AbstractSnapshotBuilder<T extends Snapshot> implements SnapshotBu
         if (rpc.getOffset() != offset) {
             throw new IllegalArgumentException("unexpected offset, expected " + offset + ", but was " + rpc.getOffset());
         }
-        if (rpc.getLastIncludedIndex() != lastIncludedIndex || rpc.getLastIncludedTerm() != lastIncludedTerm) {
+        if (rpc.getLastIndex() != lastIncludedIndex || rpc.getLastTerm() != lastIncludedTerm) {
             throw new IllegalArgumentException("unexpected last included index or term");
         }
         write(rpc.getData());

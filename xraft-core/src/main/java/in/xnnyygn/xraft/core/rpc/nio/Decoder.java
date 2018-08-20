@@ -71,8 +71,8 @@ public class Decoder extends ByteToMessageDecoder {
                 InstallSnapshotRpc isRpc = new InstallSnapshotRpc();
                 isRpc.setTerm(protoISRpc.getTerm());
                 isRpc.setLeaderId(new NodeId(protoISRpc.getLeaderId()));
-                isRpc.setLastIncludedIndex(protoISRpc.getLastIncludedIndex());
-                isRpc.setLastIncludedTerm(protoISRpc.getLastIncludedTerm());
+                isRpc.setLastIndex(protoISRpc.getLastIndex());
+                isRpc.setLastTerm(protoISRpc.getTerm());
                 isRpc.setLastConfig(protoISRpc.getLastConfigList().stream().map(e ->
                         new NodeEndpoint(e.getId(), e.getHost(), e.getPort())
                 ).collect(Collectors.toSet()));

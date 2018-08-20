@@ -68,8 +68,8 @@ class Encoder extends MessageToByteEncoder<Object> {
             Protos.InstallSnapshotRpc protoRpc = Protos.InstallSnapshotRpc.newBuilder()
                     .setTerm(rpc.getTerm())
                     .setLeaderId(rpc.getLeaderId().getValue())
-                    .setLastIncludedIndex(rpc.getLastIncludedIndex())
-                    .setLastIncludedTerm(rpc.getLastIncludedTerm())
+                    .setLastIndex(rpc.getLastIndex())
+                    .setLastTerm(rpc.getLastTerm())
                     .addAllLastConfig(
                             rpc.getLastConfig().stream().map(e ->
                                     Protos.NodeEndpoint.newBuilder()

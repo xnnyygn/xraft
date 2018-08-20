@@ -1269,8 +1269,8 @@ public class NodeImplTest {
         node.start();
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
         rpc.setTerm(1);
-        rpc.setLastIncludedTerm(1);
-        rpc.setLastIncludedIndex(2);
+        rpc.setLastTerm(1);
+        rpc.setLastIndex(2);
         rpc.setLastConfig(ImmutableSet.of(
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),
@@ -1297,8 +1297,8 @@ public class NodeImplTest {
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
         rpc.setTerm(2);
         rpc.setLeaderId(NodeId.of("B"));
-        rpc.setLastIncludedTerm(1);
-        rpc.setLastIncludedIndex(2);
+        rpc.setLastTerm(1);
+        rpc.setLastIndex(2);
         rpc.setLastConfig(ImmutableSet.of(
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334),

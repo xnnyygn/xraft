@@ -226,8 +226,8 @@ public class MemoryLogTest {
         InstallSnapshotRpc rpc = log.createInstallSnapshotRpc(1, nodeId, 0, 10);
         Assert.assertEquals(1, rpc.getTerm());
         Assert.assertEquals(nodeId, rpc.getLeaderId());
-        Assert.assertEquals(0, rpc.getLastIncludedIndex());
-        Assert.assertEquals(0, rpc.getLastIncludedTerm());
+        Assert.assertEquals(0, rpc.getLastIndex());
+        Assert.assertEquals(0, rpc.getLastTerm());
         Assert.assertEquals(0, rpc.getOffset());
         Assert.assertArrayEquals(new byte[0], rpc.getData());
         Assert.assertTrue(rpc.isDone());
@@ -241,8 +241,8 @@ public class MemoryLogTest {
                 new EventBus()
         );
         InstallSnapshotRpc rpc = log.createInstallSnapshotRpc(4, new NodeId("A"), 0, 2);
-        Assert.assertEquals(3, rpc.getLastIncludedIndex());
-        Assert.assertEquals(4, rpc.getLastIncludedTerm());
+        Assert.assertEquals(3, rpc.getLastIndex());
+        Assert.assertEquals(4, rpc.getLastTerm());
         Assert.assertArrayEquals("te".getBytes(), rpc.getData());
         Assert.assertFalse(rpc.isDone());
     }
@@ -571,8 +571,8 @@ public class MemoryLogTest {
                 new EventBus()
         );
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
-        rpc.setLastIncludedIndex(2);
-        rpc.setLastIncludedTerm(3);
+        rpc.setLastIndex(2);
+        rpc.setLastTerm(3);
         Assert.assertEquals(InstallSnapshotState.StateName.ILLEGAL_INSTALL_SNAPSHOT_RPC, log.installSnapshot(rpc).getStateName());
     }
 
@@ -582,8 +582,8 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog();
         log.setStateMachine(stateMachine);
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
-        rpc.setLastIncludedIndex(2);
-        rpc.setLastIncludedTerm(3);
+        rpc.setLastIndex(2);
+        rpc.setLastTerm(3);
         rpc.setLastConfig(Collections.emptySet());
         rpc.setData(new byte[0]);
         rpc.setDone(true);
@@ -600,8 +600,8 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog();
         log.setStateMachine(stateMachine);
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
-        rpc.setLastIncludedIndex(2);
-        rpc.setLastIncludedTerm(3);
+        rpc.setLastIndex(2);
+        rpc.setLastTerm(3);
         rpc.setLastConfig(Collections.emptySet());
         rpc.setData(new byte[0]);
         rpc.setDone(false);

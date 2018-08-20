@@ -767,7 +767,7 @@ public class NodeImpl implements Node {
         if (rpc.isDone()) {
 
             // change to append entries rpc
-            member.advanceReplicatingState(rpc.getLastIncludedIndex());
+            member.advanceReplicatingState(rpc.getLastIndex());
             int maxEntries = member.isMajor() ? context.config().getMaxReplicationEntries() : context.config().getMaxReplicationEntriesForNewNode();
             doReplicateLog(member, maxEntries);
         } else {

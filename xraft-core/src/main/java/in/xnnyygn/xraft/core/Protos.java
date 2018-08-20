@@ -4719,14 +4719,14 @@ public final class Protos {
         getLeaderIdBytes();
 
     /**
-     * <code>int32 last_included_index = 3;</code>
+     * <code>int32 last_index = 3;</code>
      */
-    int getLastIncludedIndex();
+    int getLastIndex();
 
     /**
-     * <code>int32 last_included_term = 4;</code>
+     * <code>int32 last_term = 4;</code>
      */
-    int getLastIncludedTerm();
+    int getLastTerm();
 
     /**
      * <code>repeated .NodeEndpoint last_config = 5;</code>
@@ -4782,8 +4782,8 @@ public final class Protos {
     private InstallSnapshotRpc() {
       term_ = 0;
       leaderId_ = "";
-      lastIncludedIndex_ = 0;
-      lastIncludedTerm_ = 0;
+      lastIndex_ = 0;
+      lastTerm_ = 0;
       lastConfig_ = java.util.Collections.emptyList();
       offset_ = 0;
       data_ = com.google.protobuf.ByteString.EMPTY;
@@ -4827,12 +4827,12 @@ public final class Protos {
             }
             case 24: {
 
-              lastIncludedIndex_ = input.readInt32();
+              lastIndex_ = input.readInt32();
               break;
             }
             case 32: {
 
-              lastIncludedTerm_ = input.readInt32();
+              lastTerm_ = input.readInt32();
               break;
             }
             case 42: {
@@ -4938,22 +4938,22 @@ public final class Protos {
       }
     }
 
-    public static final int LAST_INCLUDED_INDEX_FIELD_NUMBER = 3;
-    private int lastIncludedIndex_;
+    public static final int LAST_INDEX_FIELD_NUMBER = 3;
+    private int lastIndex_;
     /**
-     * <code>int32 last_included_index = 3;</code>
+     * <code>int32 last_index = 3;</code>
      */
-    public int getLastIncludedIndex() {
-      return lastIncludedIndex_;
+    public int getLastIndex() {
+      return lastIndex_;
     }
 
-    public static final int LAST_INCLUDED_TERM_FIELD_NUMBER = 4;
-    private int lastIncludedTerm_;
+    public static final int LAST_TERM_FIELD_NUMBER = 4;
+    private int lastTerm_;
     /**
-     * <code>int32 last_included_term = 4;</code>
+     * <code>int32 last_term = 4;</code>
      */
-    public int getLastIncludedTerm() {
-      return lastIncludedTerm_;
+    public int getLastTerm() {
+      return lastTerm_;
     }
 
     public static final int LAST_CONFIG_FIELD_NUMBER = 5;
@@ -5038,11 +5038,11 @@ public final class Protos {
       if (!getLeaderIdBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, leaderId_);
       }
-      if (lastIncludedIndex_ != 0) {
-        output.writeInt32(3, lastIncludedIndex_);
+      if (lastIndex_ != 0) {
+        output.writeInt32(3, lastIndex_);
       }
-      if (lastIncludedTerm_ != 0) {
-        output.writeInt32(4, lastIncludedTerm_);
+      if (lastTerm_ != 0) {
+        output.writeInt32(4, lastTerm_);
       }
       for (int i = 0; i < lastConfig_.size(); i++) {
         output.writeMessage(5, lastConfig_.get(i));
@@ -5072,13 +5072,13 @@ public final class Protos {
       if (!getLeaderIdBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, leaderId_);
       }
-      if (lastIncludedIndex_ != 0) {
+      if (lastIndex_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, lastIncludedIndex_);
+          .computeInt32Size(3, lastIndex_);
       }
-      if (lastIncludedTerm_ != 0) {
+      if (lastTerm_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(4, lastIncludedTerm_);
+          .computeInt32Size(4, lastTerm_);
       }
       for (int i = 0; i < lastConfig_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -5116,10 +5116,10 @@ public final class Protos {
           == other.getTerm());
       result = result && getLeaderId()
           .equals(other.getLeaderId());
-      result = result && (getLastIncludedIndex()
-          == other.getLastIncludedIndex());
-      result = result && (getLastIncludedTerm()
-          == other.getLastIncludedTerm());
+      result = result && (getLastIndex()
+          == other.getLastIndex());
+      result = result && (getLastTerm()
+          == other.getLastTerm());
       result = result && getLastConfigList()
           .equals(other.getLastConfigList());
       result = result && (getOffset()
@@ -5143,10 +5143,10 @@ public final class Protos {
       hash = (53 * hash) + getTerm();
       hash = (37 * hash) + LEADER_ID_FIELD_NUMBER;
       hash = (53 * hash) + getLeaderId().hashCode();
-      hash = (37 * hash) + LAST_INCLUDED_INDEX_FIELD_NUMBER;
-      hash = (53 * hash) + getLastIncludedIndex();
-      hash = (37 * hash) + LAST_INCLUDED_TERM_FIELD_NUMBER;
-      hash = (53 * hash) + getLastIncludedTerm();
+      hash = (37 * hash) + LAST_INDEX_FIELD_NUMBER;
+      hash = (53 * hash) + getLastIndex();
+      hash = (37 * hash) + LAST_TERM_FIELD_NUMBER;
+      hash = (53 * hash) + getLastTerm();
       if (getLastConfigCount() > 0) {
         hash = (37 * hash) + LAST_CONFIG_FIELD_NUMBER;
         hash = (53 * hash) + getLastConfigList().hashCode();
@@ -5296,9 +5296,9 @@ public final class Protos {
 
         leaderId_ = "";
 
-        lastIncludedIndex_ = 0;
+        lastIndex_ = 0;
 
-        lastIncludedTerm_ = 0;
+        lastTerm_ = 0;
 
         if (lastConfigBuilder_ == null) {
           lastConfig_ = java.util.Collections.emptyList();
@@ -5342,8 +5342,8 @@ public final class Protos {
         int to_bitField0_ = 0;
         result.term_ = term_;
         result.leaderId_ = leaderId_;
-        result.lastIncludedIndex_ = lastIncludedIndex_;
-        result.lastIncludedTerm_ = lastIncludedTerm_;
+        result.lastIndex_ = lastIndex_;
+        result.lastTerm_ = lastTerm_;
         if (lastConfigBuilder_ == null) {
           if (((bitField0_ & 0x00000010) == 0x00000010)) {
             lastConfig_ = java.util.Collections.unmodifiableList(lastConfig_);
@@ -5412,11 +5412,11 @@ public final class Protos {
           leaderId_ = other.leaderId_;
           onChanged();
         }
-        if (other.getLastIncludedIndex() != 0) {
-          setLastIncludedIndex(other.getLastIncludedIndex());
+        if (other.getLastIndex() != 0) {
+          setLastIndex(other.getLastIndex());
         }
-        if (other.getLastIncludedTerm() != 0) {
-          setLastIncludedTerm(other.getLastIncludedTerm());
+        if (other.getLastTerm() != 0) {
+          setLastTerm(other.getLastTerm());
         }
         if (lastConfigBuilder_ == null) {
           if (!other.lastConfig_.isEmpty()) {
@@ -5578,54 +5578,54 @@ public final class Protos {
         return this;
       }
 
-      private int lastIncludedIndex_ ;
+      private int lastIndex_ ;
       /**
-       * <code>int32 last_included_index = 3;</code>
+       * <code>int32 last_index = 3;</code>
        */
-      public int getLastIncludedIndex() {
-        return lastIncludedIndex_;
+      public int getLastIndex() {
+        return lastIndex_;
       }
       /**
-       * <code>int32 last_included_index = 3;</code>
+       * <code>int32 last_index = 3;</code>
        */
-      public Builder setLastIncludedIndex(int value) {
+      public Builder setLastIndex(int value) {
         
-        lastIncludedIndex_ = value;
+        lastIndex_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 last_included_index = 3;</code>
+       * <code>int32 last_index = 3;</code>
        */
-      public Builder clearLastIncludedIndex() {
+      public Builder clearLastIndex() {
         
-        lastIncludedIndex_ = 0;
+        lastIndex_ = 0;
         onChanged();
         return this;
       }
 
-      private int lastIncludedTerm_ ;
+      private int lastTerm_ ;
       /**
-       * <code>int32 last_included_term = 4;</code>
+       * <code>int32 last_term = 4;</code>
        */
-      public int getLastIncludedTerm() {
-        return lastIncludedTerm_;
+      public int getLastTerm() {
+        return lastTerm_;
       }
       /**
-       * <code>int32 last_included_term = 4;</code>
+       * <code>int32 last_term = 4;</code>
        */
-      public Builder setLastIncludedTerm(int value) {
+      public Builder setLastTerm(int value) {
         
-        lastIncludedTerm_ = value;
+        lastTerm_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 last_included_term = 4;</code>
+       * <code>int32 last_term = 4;</code>
        */
-      public Builder clearLastIncludedTerm() {
+      public Builder clearLastTerm() {
         
-        lastIncludedTerm_ = 0;
+        lastTerm_ = 0;
         onChanged();
         return this;
       }
@@ -12091,27 +12091,27 @@ public final class Protos {
       "ry\022\014\n\004kind\030\001 \001(\005\022\r\n\005index\030\002 \001(\005\022\014\n\004term\030" +
       "\003 \001(\005\022\017\n\007command\030\004 \001(\014\"L\n\023AppendEntriesR" +
       "esult\022\026\n\016rpc_message_id\030\001 \001(\t\022\014\n\004term\030\002 " +
-      "\001(\005\022\017\n\007success\030\003 \001(\010\"\276\001\n\022InstallSnapshot" +
-      "Rpc\022\014\n\004term\030\001 \001(\005\022\021\n\tleader_id\030\002 \001(\t\022\033\n\023" +
-      "last_included_index\030\003 \001(\005\022\032\n\022last_includ" +
-      "ed_term\030\004 \001(\005\022\"\n\013last_config\030\005 \003(\0132\r.Nod" +
-      "eEndpoint\022\016\n\006offset\030\006 \001(\005\022\014\n\004data\030\007 \001(\014\022" +
-      "\014\n\004done\030\010 \001(\010\"%\n\025InstallSnapshotResult\022\014" +
-      "\n\004term\030\001 \001(\005\"1\n\014AddServerRpc\022!\n\nnew_serv" +
-      "er\030\001 \001(\0132\r.NodeEndpoint\"E\n\017AddServerResu" +
-      "lt\022\016\n\006status\030\001 \001(\t\022\"\n\013leader_hint\030\002 \001(\0132" +
-      "\r.NodeEndpoint\"4\n\017RemoveServerRpc\022!\n\nold" +
-      "_server\030\001 \001(\0132\r.NodeEndpoint\"H\n\022RemoveSe" +
-      "rverResult\022\016\n\006status\030\001 \001(\t\022\"\n\013leader_hin" +
-      "t\030\002 \001(\0132\r.NodeEndpoint\"a\n\016AddNodeCommand" +
-      "\022%\n\016node_endpoints\030\001 \003(\0132\r.NodeEndpoint\022" +
-      "(\n\021new_node_endpoint\030\002 \001(\0132\r.NodeEndpoin" +
-      "t\"R\n\021RemoveNodeCommand\022%\n\016node_endpoints" +
-      "\030\001 \003(\0132\r.NodeEndpoint\022\026\n\016node_to_remove\030" +
-      "\002 \001(\t\"[\n\016SnapshotHeader\022\022\n\nlast_index\030\001 " +
-      "\001(\005\022\021\n\tlast_term\030\002 \001(\005\022\"\n\013last_config\030\003 " +
-      "\003(\0132\r.NodeEndpointB\037\n\025in.xnnyygn.xraft.c" +
-      "oreB\006Protosb\006proto3"
+      "\001(\005\022\017\n\007success\030\003 \001(\010\"\254\001\n\022InstallSnapshot" +
+      "Rpc\022\014\n\004term\030\001 \001(\005\022\021\n\tleader_id\030\002 \001(\t\022\022\n\n" +
+      "last_index\030\003 \001(\005\022\021\n\tlast_term\030\004 \001(\005\022\"\n\013l" +
+      "ast_config\030\005 \003(\0132\r.NodeEndpoint\022\016\n\006offse" +
+      "t\030\006 \001(\005\022\014\n\004data\030\007 \001(\014\022\014\n\004done\030\010 \001(\010\"%\n\025I" +
+      "nstallSnapshotResult\022\014\n\004term\030\001 \001(\005\"1\n\014Ad" +
+      "dServerRpc\022!\n\nnew_server\030\001 \001(\0132\r.NodeEnd" +
+      "point\"E\n\017AddServerResult\022\016\n\006status\030\001 \001(\t" +
+      "\022\"\n\013leader_hint\030\002 \001(\0132\r.NodeEndpoint\"4\n\017" +
+      "RemoveServerRpc\022!\n\nold_server\030\001 \001(\0132\r.No" +
+      "deEndpoint\"H\n\022RemoveServerResult\022\016\n\006stat" +
+      "us\030\001 \001(\t\022\"\n\013leader_hint\030\002 \001(\0132\r.NodeEndp" +
+      "oint\"a\n\016AddNodeCommand\022%\n\016node_endpoints" +
+      "\030\001 \003(\0132\r.NodeEndpoint\022(\n\021new_node_endpoi" +
+      "nt\030\002 \001(\0132\r.NodeEndpoint\"R\n\021RemoveNodeCom" +
+      "mand\022%\n\016node_endpoints\030\001 \003(\0132\r.NodeEndpo" +
+      "int\022\026\n\016node_to_remove\030\002 \001(\t\"[\n\016SnapshotH" +
+      "eader\022\022\n\nlast_index\030\001 \001(\005\022\021\n\tlast_term\030\002" +
+      " \001(\005\022\"\n\013last_config\030\003 \003(\0132\r.NodeEndpoint" +
+      "B\037\n\025in.xnnyygn.xraft.coreB\006Protosb\006proto" +
+      "3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -12166,7 +12166,7 @@ public final class Protos {
     internal_static_InstallSnapshotRpc_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_InstallSnapshotRpc_descriptor,
-        new java.lang.String[] { "Term", "LeaderId", "LastIncludedIndex", "LastIncludedTerm", "LastConfig", "Offset", "Data", "Done", });
+        new java.lang.String[] { "Term", "LeaderId", "LastIndex", "LastTerm", "LastConfig", "Offset", "Data", "Done", });
     internal_static_InstallSnapshotResult_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_InstallSnapshotResult_fieldAccessorTable = new

@@ -9,8 +9,8 @@ public class MemorySnapshotBuilderTest {
     @Test
     public void testSimple() {
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
-        rpc.setLastIncludedIndex(3);
-        rpc.setLastIncludedTerm(2);
+        rpc.setLastIndex(3);
+        rpc.setLastTerm(2);
         rpc.setOffset(0);
         byte[] data = "test".getBytes();
         rpc.setData(data);
@@ -26,16 +26,16 @@ public class MemorySnapshotBuilderTest {
     @Test
     public void testAppend() {
         InstallSnapshotRpc firstRpc = new InstallSnapshotRpc();
-        firstRpc.setLastIncludedIndex(3);
-        firstRpc.setLastIncludedTerm(2);
+        firstRpc.setLastIndex(3);
+        firstRpc.setLastTerm(2);
         firstRpc.setOffset(0);
         firstRpc.setData("test".getBytes());
         firstRpc.setDone(false);
         MemorySnapshotBuilder builder = new MemorySnapshotBuilder(firstRpc);
 
         InstallSnapshotRpc secondRpc = new InstallSnapshotRpc();
-        secondRpc.setLastIncludedIndex(3);
-        secondRpc.setLastIncludedTerm(2);
+        secondRpc.setLastIndex(3);
+        secondRpc.setLastTerm(2);
         secondRpc.setOffset(4);
         secondRpc.setData("foo".getBytes());
         secondRpc.setDone(true);
@@ -50,16 +50,16 @@ public class MemorySnapshotBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void testAppendIllegalOffset() {
         InstallSnapshotRpc firstRpc = new InstallSnapshotRpc();
-        firstRpc.setLastIncludedIndex(3);
-        firstRpc.setLastIncludedTerm(2);
+        firstRpc.setLastIndex(3);
+        firstRpc.setLastTerm(2);
         firstRpc.setOffset(0);
         firstRpc.setData("test".getBytes());
         firstRpc.setDone(false);
         MemorySnapshotBuilder builder = new MemorySnapshotBuilder(firstRpc);
 
         InstallSnapshotRpc secondRpc = new InstallSnapshotRpc();
-        secondRpc.setLastIncludedIndex(3);
-        secondRpc.setLastIncludedTerm(2);
+        secondRpc.setLastIndex(3);
+        secondRpc.setLastTerm(2);
         secondRpc.setOffset(0);
         secondRpc.setData("foo".getBytes());
         secondRpc.setDone(true);
@@ -69,16 +69,16 @@ public class MemorySnapshotBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void testAppendIllegalLastIncludedIndexOrTerm() {
         InstallSnapshotRpc firstRpc = new InstallSnapshotRpc();
-        firstRpc.setLastIncludedIndex(3);
-        firstRpc.setLastIncludedTerm(2);
+        firstRpc.setLastIndex(3);
+        firstRpc.setLastTerm(2);
         firstRpc.setOffset(0);
         firstRpc.setData("test".getBytes());
         firstRpc.setDone(false);
         MemorySnapshotBuilder builder = new MemorySnapshotBuilder(firstRpc);
 
         InstallSnapshotRpc secondRpc = new InstallSnapshotRpc();
-        secondRpc.setLastIncludedIndex(2);
-        secondRpc.setLastIncludedTerm(2);
+        secondRpc.setLastIndex(2);
+        secondRpc.setLastTerm(2);
         secondRpc.setOffset(4);
         secondRpc.setData("foo".getBytes());
         secondRpc.setDone(true);

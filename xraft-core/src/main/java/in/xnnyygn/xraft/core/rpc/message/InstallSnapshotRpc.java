@@ -9,8 +9,8 @@ public class InstallSnapshotRpc {
 
     private int term;
     private NodeId leaderId;
-    private int lastIncludedIndex; // TODO rename to lastIndex
-    private int lastIncludedTerm; // TODO rename to lastTerm
+    private int lastIndex;
+    private int lastTerm;
     private Set<NodeEndpoint> lastConfig;
     private int offset;
     private byte[] data;
@@ -32,20 +32,20 @@ public class InstallSnapshotRpc {
         this.leaderId = leaderId;
     }
 
-    public int getLastIncludedIndex() {
-        return lastIncludedIndex;
+    public int getLastIndex() {
+        return lastIndex;
     }
 
-    public void setLastIncludedIndex(int lastIncludedIndex) {
-        this.lastIncludedIndex = lastIncludedIndex;
+    public void setLastIndex(int lastIndex) {
+        this.lastIndex = lastIndex;
     }
 
-    public int getLastIncludedTerm() {
-        return lastIncludedTerm;
+    public int getLastTerm() {
+        return lastTerm;
     }
 
-    public void setLastIncludedTerm(int lastIncludedTerm) {
-        this.lastIncludedTerm = lastIncludedTerm;
+    public void setLastTerm(int lastTerm) {
+        this.lastTerm = lastTerm;
     }
 
     public Set<NodeEndpoint> getLastConfig() {
@@ -89,8 +89,8 @@ public class InstallSnapshotRpc {
         return "InstallSnapshotRpc{" +
                 "data.size=" + (data != null ? data.length : 0) +
                 ", done=" + done +
-                ", lastIncludedIndex=" + lastIncludedIndex +
-                ", lastIncludedTerm=" + lastIncludedTerm +
+                ", lastIndex=" + lastIndex +
+                ", lastTerm=" + lastTerm +
                 ", leaderId=" + leaderId +
                 ", offset=" + offset +
                 ", term=" + term +
