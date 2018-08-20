@@ -6,12 +6,14 @@ import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 import in.xnnyygn.xraft.core.log.sequence.EntrySequence;
 import in.xnnyygn.xraft.core.log.sequence.FileEntrySequence;
 import in.xnnyygn.xraft.core.log.snapshot.*;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @NotThreadSafe
 public class FileLog extends AbstractLog {
@@ -41,10 +43,10 @@ public class FileLog extends AbstractLog {
     }
 
     @Override
-    protected Snapshot generateSnapshot(EntryMeta lastAppliedEntryMeta) {
+    protected Snapshot generateSnapshot(EntryMeta lastAppliedEntryMeta, Set<NodeEndpoint> groupConfig) {
         LogDir logDir = rootDir.getLogDirForGenerating();
         try (FileSnapshotWriter snapshotWriter = new FileSnapshotWriter(
-                logDir.getSnapshotFile(), lastAppliedEntryMeta.getIndex(), lastAppliedEntryMeta.getTerm())) {
+                logDir.getSnapshotFile(), lastAppliedEntryMeta.getIndex(), lastAppliedEntryMeta.getTerm(), groupConfig)) {
             stateMachine.generateSnapshot(snapshotWriter.getOutput());
         } catch (IOException e) {
             throw new LogException("failed to generate snapshot", e);

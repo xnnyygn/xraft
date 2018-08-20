@@ -97,6 +97,9 @@ abstract class AbstractLog implements Log {
         rpc.setLeaderId(selfId);
         rpc.setLastIncludedIndex(snapshot.getLastIncludedIndex());
         rpc.setLastIncludedTerm(snapshot.getLastIncludedTerm());
+        if (offset == 0) {
+            rpc.setLastConfig(snapshot.getLastConfig());
+        }
         rpc.setOffset(offset);
 
         SnapshotChunk chunk = snapshot.readData(offset, length);
@@ -282,7 +285,7 @@ abstract class AbstractLog implements Log {
     public void generateSnapshot(int lastIncludedIndex, Set<NodeEndpoint> groupConfig) {
         logger.info("generate snapshot, last included index {}", lastIncludedIndex);
         EntryMeta lastAppliedEntryMeta = entrySequence.getEntryMeta(lastIncludedIndex);
-        replaceSnapshot(generateSnapshot(lastAppliedEntryMeta));
+        replaceSnapshot(generateSnapshot(lastAppliedEntryMeta, groupConfig));
     }
 
     private void advanceApplyIndex() {
@@ -341,23 +344,24 @@ abstract class AbstractLog implements Log {
         return true;
     }
 
-    protected abstract Snapshot generateSnapshot(EntryMeta lastAppliedEntryMeta);
+    protected abstract Snapshot generateSnapshot(EntryMeta lastAppliedEntryMeta, Set<NodeEndpoint> groupConfig);
 
     @Override
-    public boolean installSnapshot(InstallSnapshotRpc rpc) {
+    public InstallSnapshotState installSnapshot(InstallSnapshotRpc rpc) {
         if (rpc.getLastIncludedIndex() <= snapshot.getLastIncludedIndex()) {
             logger.debug("snapshot's last included index from rpc <= current one ({} <= {}), ignore",
                     rpc.getLastIncludedIndex(), snapshot.getLastIncludedIndex());
-            return false;
+            return new InstallSnapshotState(InstallSnapshotState.StateName.ILLEGAL_INSTALL_SNAPSHOT_RPC);
         }
         if (rpc.getOffset() == 0) {
+            assert rpc.getLastConfig() != null;
             snapshotBuilder.close();
             snapshotBuilder = newSnapshotBuilder(rpc);
         } else {
             snapshotBuilder.append(rpc);
         }
         if (!rpc.isDone()) {
-            return true;
+            return new InstallSnapshotState(InstallSnapshotState.StateName.INSTALLING);
         }
         Snapshot newSnapshot = snapshotBuilder.build();
         applySnapshot(newSnapshot);
@@ -366,7 +370,7 @@ abstract class AbstractLog implements Log {
         if (commitIndex < lastIncludedIndex) {
             commitIndex = lastIncludedIndex;
         }
-        return true;
+        return new InstallSnapshotState(InstallSnapshotState.StateName.INSTALLED, newSnapshot.getLastConfig());
     }
 
     protected abstract SnapshotBuilder newSnapshotBuilder(InstallSnapshotRpc firstRpc);

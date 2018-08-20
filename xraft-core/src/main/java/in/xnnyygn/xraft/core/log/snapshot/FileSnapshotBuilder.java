@@ -16,7 +16,7 @@ public class FileSnapshotBuilder extends AbstractSnapshotBuilder<FileSnapshot> {
         this.logDir = logDir;
 
         try {
-            writer = new FileSnapshotWriter(logDir.getSnapshotFile(), firstRpc.getLastIncludedIndex(), firstRpc.getLastIncludedTerm());
+            writer = new FileSnapshotWriter(logDir.getSnapshotFile(), firstRpc.getLastIncludedIndex(), firstRpc.getLastIncludedTerm(), firstRpc.getLastConfig());
             writer.write(firstRpc.getData());
         } catch (IOException e) {
             throw new LogException("failed to write snapshot data to file", e);

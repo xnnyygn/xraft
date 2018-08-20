@@ -70,6 +70,14 @@ class Encoder extends MessageToByteEncoder<Object> {
                     .setLeaderId(rpc.getLeaderId().getValue())
                     .setLastIncludedIndex(rpc.getLastIncludedIndex())
                     .setLastIncludedTerm(rpc.getLastIncludedTerm())
+                    .addAllLastConfig(
+                            rpc.getLastConfig().stream().map(e ->
+                                    Protos.NodeEndpoint.newBuilder()
+                                            .setId(e.getId().getValue())
+                                            .setHost(e.getHost())
+                                            .setPort(e.getPort())
+                                            .build()
+                            ).collect(Collectors.toList()))
                     .setOffset(rpc.getOffset())
                     .setData(ByteString.copyFrom(rpc.getData()))
                     .setDone(rpc.isDone()).build();

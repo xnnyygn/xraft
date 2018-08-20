@@ -115,7 +115,8 @@ public class ByteArraySeekableFile implements SeekableFile {
         return new ByteArrayInputStream(content, (int) start, (int) (size - start));
     }
 
-    public int position() {
+    @Override
+    public long position() {
         return position;
     }
 

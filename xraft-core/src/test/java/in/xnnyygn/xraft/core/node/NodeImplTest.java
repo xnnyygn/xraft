@@ -1271,6 +1271,11 @@ public class NodeImplTest {
         rpc.setTerm(1);
         rpc.setLastIncludedTerm(1);
         rpc.setLastIncludedIndex(2);
+        rpc.setLastConfig(ImmutableSet.of(
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335)
+        ));
         rpc.setData(new byte[0]);
         rpc.setDone(true);
         node.onReceiveInstallSnapshotRpc(new InstallSnapshotRpcMessage(rpc, NodeId.of("B"), null));
@@ -1294,6 +1299,11 @@ public class NodeImplTest {
         rpc.setLeaderId(NodeId.of("B"));
         rpc.setLastIncludedTerm(1);
         rpc.setLastIncludedIndex(2);
+        rpc.setLastConfig(ImmutableSet.of(
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335)
+        ));
         rpc.setData(new byte[0]);
         rpc.setDone(true);
         node.onReceiveInstallSnapshotRpc(new InstallSnapshotRpcMessage(rpc, NodeId.of("B"), null));

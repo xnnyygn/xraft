@@ -6,6 +6,7 @@ import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 import in.xnnyygn.xraft.core.log.sequence.EntrySequence;
 import in.xnnyygn.xraft.core.log.sequence.MemoryEntrySequence;
 import in.xnnyygn.xraft.core.log.snapshot.*;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @NotThreadSafe
 public class MemoryLog extends AbstractLog {
@@ -35,14 +37,14 @@ public class MemoryLog extends AbstractLog {
     }
 
     @Override
-    protected Snapshot generateSnapshot(EntryMeta lastAppliedEntryMeta) {
+    protected Snapshot generateSnapshot(EntryMeta lastAppliedEntryMeta, Set<NodeEndpoint> groupConfig) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             stateMachine.generateSnapshot(output);
         } catch (IOException e) {
             throw new LogException("failed to generate snapshot", e);
         }
-        return new MemorySnapshot(lastAppliedEntryMeta.getIndex(), lastAppliedEntryMeta.getTerm(), output.toByteArray());
+        return new MemorySnapshot(lastAppliedEntryMeta.getIndex(), lastAppliedEntryMeta.getTerm(), output.toByteArray(), groupConfig);
     }
 
     @Override

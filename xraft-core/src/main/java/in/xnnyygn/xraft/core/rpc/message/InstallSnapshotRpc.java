@@ -1,13 +1,17 @@
 package in.xnnyygn.xraft.core.rpc.message;
 
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
+
+import java.util.Set;
 
 public class InstallSnapshotRpc {
 
     private int term;
     private NodeId leaderId;
-    private int lastIncludedIndex;
-    private int lastIncludedTerm;
+    private int lastIncludedIndex; // TODO rename to lastIndex
+    private int lastIncludedTerm; // TODO rename to lastTerm
+    private Set<NodeEndpoint> lastConfig;
     private int offset;
     private byte[] data;
     private boolean done;
@@ -42,6 +46,14 @@ public class InstallSnapshotRpc {
 
     public void setLastIncludedTerm(int lastIncludedTerm) {
         this.lastIncludedTerm = lastIncludedTerm;
+    }
+
+    public Set<NodeEndpoint> getLastConfig() {
+        return lastConfig;
+    }
+
+    public void setLastConfig(Set<NodeEndpoint> lastConfig) {
+        this.lastConfig = lastConfig;
     }
 
     public int getOffset() {

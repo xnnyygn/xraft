@@ -236,7 +236,7 @@ public class MemoryLogTest {
     @Test
     public void testCreateInstallSnapshotRpc() {
         MemoryLog log = new MemoryLog(
-                new MemorySnapshot(3, 4, "test".getBytes()),
+                new MemorySnapshot(3, 4, "test".getBytes(), Collections.emptySet()),
                 new MemoryEntrySequence(4),
                 new EventBus()
         );
@@ -573,7 +573,7 @@ public class MemoryLogTest {
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
         rpc.setLastIncludedIndex(2);
         rpc.setLastIncludedTerm(3);
-        Assert.assertFalse(log.installSnapshot(rpc));
+        Assert.assertEquals(InstallSnapshotState.StateName.ILLEGAL_INSTALL_SNAPSHOT_RPC, log.installSnapshot(rpc).getStateName());
     }
 
     @Test
@@ -584,6 +584,7 @@ public class MemoryLogTest {
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
         rpc.setLastIncludedIndex(2);
         rpc.setLastIncludedTerm(3);
+        rpc.setLastConfig(Collections.emptySet());
         rpc.setData(new byte[0]);
         rpc.setDone(true);
         Assert.assertEquals(0, log.commitIndex);
@@ -601,6 +602,7 @@ public class MemoryLogTest {
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
         rpc.setLastIncludedIndex(2);
         rpc.setLastIncludedTerm(3);
+        rpc.setLastConfig(Collections.emptySet());
         rpc.setData(new byte[0]);
         rpc.setDone(false);
         log.installSnapshot(rpc);

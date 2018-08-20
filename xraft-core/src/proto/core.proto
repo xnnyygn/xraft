@@ -54,9 +54,10 @@ message InstallSnapshotRpc {
     string leader_id = 2;
     int32 last_included_index = 3;
     int32 last_included_term = 4;
-    int32 offset = 5;
-    bytes data = 6;
-    bool done = 7;
+    repeated NodeEndpoint last_config = 5;
+    int32 offset = 6;
+    bytes data = 7;
+    bool done = 8;
 }
 
 message InstallSnapshotResult {
@@ -91,4 +92,10 @@ message AddNodeCommand {
 message RemoveNodeCommand {
     repeated NodeEndpoint node_endpoints = 1;
     string node_to_remove = 2;
+}
+
+message SnapshotHeader {
+    int32 last_index = 1;
+    int32 last_term = 2;
+    repeated NodeEndpoint last_config = 3;
 }

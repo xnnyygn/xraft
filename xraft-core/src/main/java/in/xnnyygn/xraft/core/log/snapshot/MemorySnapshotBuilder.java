@@ -28,7 +28,7 @@ public class MemorySnapshotBuilder extends AbstractSnapshotBuilder<MemorySnapsho
 
     @Override
     public MemorySnapshot build() {
-        return new MemorySnapshot(lastIncludedIndex, lastIncludedTerm, output.toByteArray());
+        return new MemorySnapshot(lastIncludedIndex, lastIncludedTerm, output.toByteArray(), lastConfig);
     }
 
     @Override

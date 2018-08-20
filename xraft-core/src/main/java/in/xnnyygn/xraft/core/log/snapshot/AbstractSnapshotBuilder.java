@@ -1,20 +1,24 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
 import in.xnnyygn.xraft.core.log.LogException;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 
 import java.io.IOException;
+import java.util.Set;
 
 abstract class AbstractSnapshotBuilder<T extends Snapshot> implements SnapshotBuilder<T> {
 
     int lastIncludedIndex;
     int lastIncludedTerm;
+    Set<NodeEndpoint> lastConfig;
     private int offset;
 
     AbstractSnapshotBuilder(InstallSnapshotRpc firstRpc) {
         assert firstRpc.getOffset() == 0;
         lastIncludedIndex = firstRpc.getLastIncludedIndex();
         lastIncludedTerm = firstRpc.getLastIncludedTerm();
+        lastConfig = firstRpc.getLastConfig();
         offset = firstRpc.getDataLength();
     }
 

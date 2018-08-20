@@ -2,6 +2,7 @@ package in.xnnyygn.xraft.core.rpc.nio;
 
 import in.xnnyygn.xraft.core.Protos;
 import in.xnnyygn.xraft.core.log.entry.EntryFactory;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import io.netty.buffer.ByteBuf;
@@ -72,6 +73,9 @@ public class Decoder extends ByteToMessageDecoder {
                 isRpc.setLeaderId(new NodeId(protoISRpc.getLeaderId()));
                 isRpc.setLastIncludedIndex(protoISRpc.getLastIncludedIndex());
                 isRpc.setLastIncludedTerm(protoISRpc.getLastIncludedTerm());
+                isRpc.setLastConfig(protoISRpc.getLastConfigList().stream().map(e ->
+                        new NodeEndpoint(e.getId(), e.getHost(), e.getPort())
+                ).collect(Collectors.toSet()));
                 isRpc.setOffset(protoISRpc.getOffset());
                 isRpc.setData(protoISRpc.getData().toByteArray());
                 isRpc.setDone(protoISRpc.getDone());

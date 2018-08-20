@@ -148,7 +148,7 @@ public interface Log {
      *
      * @param rpc rpc
      */
-    boolean installSnapshot(InstallSnapshotRpc rpc);
+    InstallSnapshotState installSnapshot(InstallSnapshotRpc rpc);
 
     /**
      * Generate snapshot.

@@ -64,8 +64,15 @@ public class RandomAccessFileAdapter implements SeekableFile {
     @Override
     public InputStream inputStream(long start) throws IOException {
         FileInputStream input = new FileInputStream(file);
-        input.skip(start);
+        if (start > 0) {
+            input.skip(start);
+        }
         return input;
+    }
+
+    @Override
+    public long position() throws IOException {
+        return randomAccessFile.getFilePointer();
     }
 
     @Override

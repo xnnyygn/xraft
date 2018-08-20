@@ -5,6 +5,8 @@ import java.io.InputStream;
 
 public interface SeekableFile {
 
+    long position() throws IOException;
+
     void seek(long position) throws IOException;
 
     void writeInt(int i) throws IOException;

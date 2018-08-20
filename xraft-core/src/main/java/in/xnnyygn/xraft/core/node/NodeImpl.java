@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
+import in.xnnyygn.xraft.core.log.InstallSnapshotState;
 import in.xnnyygn.xraft.core.log.statemachine.StateMachine;
 import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
@@ -725,7 +726,10 @@ public class NodeImpl implements Node {
         if (rpc.getTerm() > role.getTerm()) {
             becomeFollower(rpc.getTerm(), null, rpc.getLeaderId(), true);
         }
-        context.log().installSnapshot(rpc);
+        InstallSnapshotState state = context.log().installSnapshot(rpc);
+        if (state.getStateName() == InstallSnapshotState.StateName.INSTALLED) {
+            context.group().updateNodes(state.getLastConfig());
+        }
         // TODO role check?
         return new InstallSnapshotResult(rpc.getTerm());
     }
