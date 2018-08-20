@@ -56,7 +56,7 @@ public class MemoryLog extends AbstractLog {
     protected void replaceSnapshot(Snapshot newSnapshot) {
         int logIndexOffset = newSnapshot.getLastIncludedIndex() + 1;
         EntrySequence newEntrySequence = new MemoryEntrySequence(logIndexOffset);
-        List<Entry> remainingEntries = entrySequence.subList(logIndexOffset);
+        List<Entry> remainingEntries = entrySequence.subView(logIndexOffset);
         newEntrySequence.append(remainingEntries);
         logger.debug("snapshot -> {}", newSnapshot);
         snapshot = newSnapshot;

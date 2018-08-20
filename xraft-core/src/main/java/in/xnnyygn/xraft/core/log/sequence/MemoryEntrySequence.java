@@ -40,6 +40,12 @@ public class MemoryEntrySequence extends AbstractEntrySequence {
     }
 
     @Override
+    public int getCommitIndex() {
+        // TODO implement me
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public GroupConfigEntryList buildGroupConfigEntryList() {
         GroupConfigEntryList list = new GroupConfigEntryList();
         for (Entry entry : entries) {

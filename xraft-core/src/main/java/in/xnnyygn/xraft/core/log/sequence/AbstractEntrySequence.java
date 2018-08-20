@@ -72,15 +72,18 @@ abstract class AbstractEntrySequence implements EntrySequence {
     }
 
     @Override
-    public List<Entry> subList(int fromIndex) {
-        return subList(fromIndex, nextLogIndex);
+    public List<Entry> subView(int fromIndex) {
+        if (isEmpty() || fromIndex > doGetLastLogIndex()) {
+            return Collections.emptyList();
+        }
+        return subList(Math.max(fromIndex, doGetFirstLogIndex()), nextLogIndex);
     }
 
     // [fromIndex, toIndex)
     @Override
     public List<Entry> subList(int fromIndex, int toIndex) {
         if (isEmpty()) {
-            return Collections.emptyList();
+            throw new EmptySequenceException();
         }
         if (fromIndex < doGetFirstLogIndex() || toIndex > doGetLastLogIndex() + 1 || fromIndex > toIndex) {
             throw new IllegalArgumentException("illegal from index " + fromIndex + " or to index " + toIndex);

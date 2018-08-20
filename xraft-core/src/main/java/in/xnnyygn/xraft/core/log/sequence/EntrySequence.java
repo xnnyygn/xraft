@@ -15,7 +15,7 @@ public interface EntrySequence {
 
     int getNextLogIndex();
 
-    List<Entry> subList(int fromIndex);
+    List<Entry> subView(int fromIndex);
 
     // [fromIndex, toIndex)
     List<Entry> subList(int fromIndex, int toIndex);
@@ -35,6 +35,8 @@ public interface EntrySequence {
     void append(List<Entry> entries);
 
     void commit(int index);
+
+    int getCommitIndex();
 
     void removeAfter(int index);
 

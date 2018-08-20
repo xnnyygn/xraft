@@ -51,6 +51,7 @@ public class FileEntrySequence extends AbstractEntrySequence {
         commitIndex = entryIndexFile.getMaxEntryIndex();
     }
 
+    @Override
     public int getCommitIndex() {
         return commitIndex;
     }

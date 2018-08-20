@@ -64,13 +64,13 @@ public class FileLog extends AbstractLog {
         FileSnapshot fileSnapshot = (FileSnapshot) newSnapshot;
         int lastIncludedIndex = fileSnapshot.getLastIncludedIndex();
         int logIndexOffset = lastIncludedIndex + 1;
-        if (!entrySequence.isEmpty()) {
-            List<Entry> remainingEntries = entrySequence.subList(logIndexOffset);
-            EntrySequence newEntrySequence = new FileEntrySequence(fileSnapshot.getLogDir(), logIndexOffset);
-            newEntrySequence.append(remainingEntries);
-            newEntrySequence.commit(commitIndex);
-            newEntrySequence.close();
-        }
+
+        List<Entry> remainingEntries = entrySequence.subView(logIndexOffset);
+        EntrySequence newEntrySequence = new FileEntrySequence(fileSnapshot.getLogDir(), logIndexOffset);
+        newEntrySequence.append(remainingEntries);
+        newEntrySequence.commit(Math.max(commitIndex, lastIncludedIndex));
+        newEntrySequence.close();
+
         snapshot.close();
         entrySequence.close();
         newSnapshot.close();
@@ -78,6 +78,8 @@ public class FileLog extends AbstractLog {
         LogDir generation = rootDir.rename(fileSnapshot.getLogDir(), lastIncludedIndex);
         snapshot = new FileSnapshot(generation);
         entrySequence = new FileEntrySequence(generation, logIndexOffset);
+        groupConfigEntryList = entrySequence.buildGroupConfigEntryList();
+        commitIndex = entrySequence.getCommitIndex();
     }
 
 }

@@ -97,7 +97,7 @@ public class FileEntrySequenceTest {
         sequence.append(new NoOpEntry(sequence.getNextLogIndex(), 3)); // 3
         sequence.append(new NoOpEntry(sequence.getNextLogIndex(), 4)); // 4
 
-        List<Entry> subList = sequence.subList(1);
+        List<Entry> subList = sequence.subView(1);
         Assert.assertEquals(4, subList.size());
         Assert.assertEquals(1, subList.get(0).getIndex());
         Assert.assertEquals(4, subList.get(3).getIndex());
@@ -111,7 +111,7 @@ public class FileEntrySequenceTest {
         sequence.append(new NoOpEntry(sequence.getNextLogIndex(), 3)); // 3
         sequence.append(new NoOpEntry(sequence.getNextLogIndex(), 4)); // 4
 
-        List<Entry> subList = sequence.subList(2);
+        List<Entry> subList = sequence.subView(2);
         Assert.assertEquals(3, subList.size());
         Assert.assertEquals(2, subList.get(0).getIndex());
         Assert.assertEquals(4, subList.get(2).getIndex());
@@ -125,7 +125,7 @@ public class FileEntrySequenceTest {
         sequence.append(new NoOpEntry(sequence.getNextLogIndex(), 3)); // 3
         sequence.append(new NoOpEntry(sequence.getNextLogIndex(), 4)); // 4
 
-        List<Entry> subList = sequence.subList(3);
+        List<Entry> subList = sequence.subView(3);
         Assert.assertEquals(2, subList.size());
         Assert.assertEquals(3, subList.get(0).getIndex());
         Assert.assertEquals(4, subList.get(1).getIndex());
@@ -139,7 +139,7 @@ public class FileEntrySequenceTest {
         sequence.append(new NoOpEntry(sequence.getNextLogIndex(), 3)); // 3
         sequence.append(new NoOpEntry(sequence.getNextLogIndex(), 4)); // 4
 
-        List<Entry> subList = sequence.subList(4);
+        List<Entry> subList = sequence.subView(4);
         Assert.assertEquals(1, subList.size());
         Assert.assertEquals(4, subList.get(0).getIndex());
     }
@@ -152,7 +152,7 @@ public class FileEntrySequenceTest {
         sequence.append(new NoOpEntry(sequence.getNextLogIndex(), 3)); // 3
         sequence.append(new NoOpEntry(sequence.getNextLogIndex(), 4)); // 4
 
-        List<Entry> subList = sequence.subList(5);
+        List<Entry> subList = sequence.subView(5);
         Assert.assertEquals(0, subList.size());
     }
 

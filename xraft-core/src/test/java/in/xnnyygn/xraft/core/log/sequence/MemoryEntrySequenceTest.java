@@ -1,14 +1,15 @@
 package in.xnnyygn.xraft.core.log.sequence;
 
 import in.xnnyygn.xraft.core.log.entry.*;
-import in.xnnyygn.xraft.core.log.sequence.GroupConfigEntryList;
-import in.xnnyygn.xraft.core.log.sequence.MemoryEntrySequence;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public class MemoryEntrySequenceTest {
 
@@ -65,7 +66,7 @@ public class MemoryEntrySequenceTest {
         Assert.assertFalse(sequence.isEntryPresent(2));
     }
 
-    @Test
+    @Test(expected = EmptySequenceException.class)
     public void testSubListEmpty() {
         MemoryEntrySequence sequence = new MemoryEntrySequence(2);
         Assert.assertTrue(sequence.subList(2, 2).isEmpty());
@@ -98,16 +99,44 @@ public class MemoryEntrySequenceTest {
     }
 
     @Test
-    public void testSubListAll() {
+    public void testSubViewEmpty() {
+        MemoryEntrySequence sequence = new MemoryEntrySequence(2);
+        Assert.assertTrue(sequence.subView(2).isEmpty());
+    }
+
+    @Test
+    public void testSubView() {
         MemoryEntrySequence sequence = new MemoryEntrySequence(2);
         sequence.append(Arrays.asList(
                 new NoOpEntry(2, 1),
                 new NoOpEntry(3, 1)
         ));
-        List<Entry> subList = sequence.subList(2);
+        List<Entry> subList = sequence.subView(2);
         Assert.assertEquals(2, subList.size());
         Assert.assertEquals(2, subList.get(0).getIndex());
         Assert.assertEquals(3, subList.get(1).getIndex());
+    }
+
+    @Test
+    public void testSubView2() {
+        MemoryEntrySequence sequence = new MemoryEntrySequence(2);
+        sequence.append(Arrays.asList(
+                new NoOpEntry(2, 1),
+                new NoOpEntry(3, 1)
+        ));
+        List<Entry> subList = sequence.subView(4);
+        Assert.assertEquals(0, subList.size());
+    }
+
+    @Test
+    public void testSubView3() {
+        MemoryEntrySequence sequence = new MemoryEntrySequence(2);
+        sequence.append(Arrays.asList(
+                new NoOpEntry(2, 1),
+                new NoOpEntry(3, 1)
+        ));
+        List<Entry> subList = sequence.subView(1);
+        Assert.assertEquals(2, subList.size());
     }
 
     @Test
