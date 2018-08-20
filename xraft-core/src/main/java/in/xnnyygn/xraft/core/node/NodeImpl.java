@@ -297,7 +297,7 @@ public class NodeImpl implements Node {
             } else {
 
                 // become leader
-                logger.info("become leader");
+                logger.info("become leader, term {}", newTerm);
                 resetReplicatingStates();
                 changeToRole(new LeaderNodeRole(newTerm, scheduleLogReplicationTask()));
                 context.log().appendEntry(newTerm); // no-op log
@@ -328,7 +328,7 @@ public class NodeImpl implements Node {
     private void becomeFollower(int term, NodeId votedFor, NodeId leaderId, boolean scheduleElectionTimeout) {
         role.cancelTimeoutOrTask();
         if (leaderId != null && !leaderId.equals(role.getLeaderId(context.selfId()))) {
-            logger.info("current leader is {}", leaderId);
+            logger.info("current leader is {}, term {}", leaderId, term);
         }
         ElectionTimeout electionTimeout = scheduleElectionTimeout ? scheduleElectionTimeout() : ElectionTimeout.NONE;
         changeToRole(new FollowerNodeRole(term, votedFor, leaderId, electionTimeout));
@@ -553,7 +553,7 @@ public class NodeImpl implements Node {
         if (currentVotesCount > countOfMajor / 2) {
 
             // become leader
-            logger.info("become leader");
+            logger.info("become leader, term {}", role.getTerm());
             resetReplicatingStates();
             changeToRole(new LeaderNodeRole(role.getTerm(), scheduleLogReplicationTask()));
             context.log().appendEntry(role.getTerm()); // no-op log

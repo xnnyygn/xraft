@@ -149,7 +149,7 @@ public class Service {
 
         @Override
         public boolean shouldGenerateSnapshot(int firstLogIndex, int lastApplied) {
-            return firstLogIndex - lastApplied > 5;
+            return lastApplied - firstLogIndex > 1;
         }
 
         @Override

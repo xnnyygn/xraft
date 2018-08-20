@@ -58,7 +58,7 @@ public class MemoryLog extends AbstractLog {
         newEntrySequence.append(remainingEntries);
         logger.debug("snapshot -> {}", newSnapshot);
         snapshot = newSnapshot;
-        logger.debug("entry sequence -> {}", entrySequence);
+        logger.debug("entry sequence -> {}", newEntrySequence);
         entrySequence = newEntrySequence;
     }
 

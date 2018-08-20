@@ -33,6 +33,7 @@ public abstract class AbstractDirectStateMachine implements StateMachine {
 
     @Override
     public void applySnapshot(@Nonnull Snapshot snapshot) throws IOException {
+        logger.info("apply log, last included index {}", snapshot.getLastIncludedIndex());
         doApplySnapshot(snapshot.getDataStream());
         lastApplied = snapshot.getLastIncludedIndex();
     }
