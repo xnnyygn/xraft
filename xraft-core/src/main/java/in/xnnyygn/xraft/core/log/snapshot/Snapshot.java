@@ -3,6 +3,7 @@ package in.xnnyygn.xraft.core.log.snapshot;
 import java.io.InputStream;
 
 // TODO add group config
+// TODO add doc
 public interface Snapshot {
 
     int getLastIncludedIndex();

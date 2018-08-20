@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.kvstore.server;
 
 import com.google.protobuf.ByteString;
-import in.xnnyygn.xraft.core.log.StateMachine;
+import in.xnnyygn.xraft.core.log.statemachine.AbstractSingleThreadStateMachine;
 import in.xnnyygn.xraft.core.node.task.GroupConfigChangeTaskReference;
 import in.xnnyygn.xraft.core.node.Node;
 import in.xnnyygn.xraft.core.node.role.RoleName;
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeoutException;
 
-public class Service implements StateMachine {
+public class Service {
 
     private static final Logger logger = LoggerFactory.getLogger(Service.class);
     private final Node node;
@@ -32,7 +32,7 @@ public class Service implements StateMachine {
 
     public Service(Node node) {
         this.node = node;
-        this.node.registerStateMachine(this);
+        this.node.registerStateMachine(new StateMachineImpl());
     }
 
     public void addNode(CommandRequest<AddNodeCommand> commandRequest) {
@@ -100,27 +100,6 @@ public class Service implements StateMachine {
         commandRequest.reply(new GetCommandResponse(value));
     }
 
-    @Override
-    public void applyLog(int index, @Nonnull byte[] commandBytes) {
-        SetCommand command = SetCommand.fromBytes(commandBytes);
-        map.put(command.getKey(), command.getValue());
-        CommandRequest<?> commandRequest = pendingCommands.remove(command.getRequestId());
-        if (commandRequest != null) {
-            commandRequest.reply(Success.INSTANCE);
-        }
-    }
-
-    @Override
-    public void generateSnapshot(@Nonnull OutputStream output) throws IOException {
-        toSnapshot(map, output);
-    }
-
-    @Override
-    public void applySnapshot(@Nonnull InputStream input) throws IOException {
-        logger.info("apply snapshot");
-        this.map = fromSnapshot(input);
-    }
-
     private Redirect checkLeadership() {
         RoleNameAndLeaderId state = node.getRoleNameAndLeaderId();
         if (state.getRoleName() != RoleName.LEADER) {
@@ -149,6 +128,35 @@ public class Service implements StateMachine {
             map.put(entry.getKey(), entry.getValue().toByteArray());
         }
         return map;
+    }
+
+    private class StateMachineImpl extends AbstractSingleThreadStateMachine {
+
+        @Override
+        protected void applyCommand(@Nonnull byte[] commandBytes) {
+            SetCommand command = SetCommand.fromBytes(commandBytes);
+            map.put(command.getKey(), command.getValue());
+            CommandRequest<?> commandRequest = pendingCommands.remove(command.getRequestId());
+            if (commandRequest != null) {
+                commandRequest.reply(Success.INSTANCE);
+            }
+        }
+
+        @Override
+        protected void doApplySnapshot(@Nonnull InputStream input) throws IOException {
+            map = fromSnapshot(input);
+        }
+
+        @Override
+        public boolean shouldGenerateSnapshot(int firstLogIndex, int lastApplied) {
+            return firstLogIndex - lastApplied > 5;
+        }
+
+        @Override
+        public void generateSnapshot(@Nonnull OutputStream output) throws IOException {
+            toSnapshot(map, output);
+        }
+
     }
 
 }

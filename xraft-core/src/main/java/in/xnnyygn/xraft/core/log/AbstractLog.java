@@ -1,14 +1,17 @@
 package in.xnnyygn.xraft.core.log;
 
-import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import in.xnnyygn.xraft.core.log.entry.*;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
+import in.xnnyygn.xraft.core.log.event.SnapshotGenerateEvent;
 import in.xnnyygn.xraft.core.log.sequence.EntrySequence;
 import in.xnnyygn.xraft.core.log.sequence.GroupConfigEntryList;
 import in.xnnyygn.xraft.core.log.snapshot.*;
+import in.xnnyygn.xraft.core.log.statemachine.EmptyStateMachine;
+import in.xnnyygn.xraft.core.log.statemachine.StateMachine;
+import in.xnnyygn.xraft.core.log.statemachine.StateMachineContext;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
@@ -29,11 +32,10 @@ abstract class AbstractLog implements Log {
     protected EntrySequence entrySequence;
 
     protected SnapshotBuilder snapshotBuilder = new NullSnapshotBuilder();
-    protected SnapshotGenerateStrategy snapshotGenerateStrategy = SnapshotGenerateStrategy.DISABLED;
     protected GroupConfigEntryList groupConfigEntryList = new GroupConfigEntryList();
-    protected StateMachine stateMachine = new NullStateMachine();
+    private final StateMachineContext stateMachineContext = new StateMachineContextImpl();
+    protected StateMachine stateMachine = new EmptyStateMachine();
     protected int commitIndex = 0;
-    protected int lastApplied = 0;
 
     AbstractLog(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -244,12 +246,12 @@ abstract class AbstractLog implements Log {
         if (entrySequence.isEmpty() || index >= entrySequence.getLastLogIndex()) {
             return;
         }
+        int lastApplied = stateMachine.getLastApplied();
         if (index < lastApplied && entrySequence.subList(index + 1, lastApplied + 1).stream().anyMatch(this::isApplicable)) {
             logger.warn("applied log removed, reapply from start");
             applySnapshot(snapshot);
             logger.debug("apply log from {} to {}", entrySequence.getFirstLogIndex(), index);
             entrySequence.subList(entrySequence.getFirstLogIndex(), index + 1).forEach(this::applyEntry);
-            lastApplied = index;
         }
         logger.debug("remove entries after {}", index);
         entrySequence.removeAfter(index);
@@ -274,27 +276,24 @@ abstract class AbstractLog implements Log {
         commitIndex = newCommitIndex;
 
         advanceApplyIndex();
-        generateSnapshotIfNecessary();
     }
 
-    private void generateSnapshotIfNecessary() {
-        if (!snapshotGenerateStrategy.shouldGenerate(entrySequence.getFirstLogIndex(), lastApplied)) {
-            return;
-        }
-        logger.info("generate snapshot, last included index {}", lastApplied);
-        EntryMeta lastAppliedEntryMeta = entrySequence.getEntryMeta(lastApplied);
+    @Override
+    public void generateSnapshot(int lastIncludedIndex, Set<NodeEndpoint> groupConfig) {
+        logger.info("generate snapshot, last included index {}", lastIncludedIndex);
+        EntryMeta lastAppliedEntryMeta = entrySequence.getEntryMeta(lastIncludedIndex);
         replaceSnapshot(generateSnapshot(lastAppliedEntryMeta));
     }
 
     private void advanceApplyIndex() {
         // start up and snapshot exists
+        int lastApplied = stateMachine.getLastApplied();
         int lastIncludedIndex = snapshot.getLastIncludedIndex();
         if (lastApplied == 0 && lastIncludedIndex > 0) {
             assert commitIndex >= lastIncludedIndex;
             applySnapshot(snapshot);
             lastApplied = lastIncludedIndex;
         }
-        logger.debug("apply log from {} to {}", lastApplied + 1, commitIndex);
         for (Entry entry : entrySequence.subList(lastApplied + 1, commitIndex + 1)) {
             applyEntry(entry);
         }
@@ -303,7 +302,7 @@ abstract class AbstractLog implements Log {
     private void applySnapshot(Snapshot snapshot) {
         logger.debug("apply snapshot, last included index {}", snapshot.getLastIncludedIndex());
         try {
-            stateMachine.applySnapshot(snapshot.getDataStream());
+            stateMachine.applySnapshot(snapshot);
         } catch (IOException e) {
             throw new LogException("failed to apply snapshot", e);
         }
@@ -311,10 +310,9 @@ abstract class AbstractLog implements Log {
 
     private void applyEntry(Entry entry) {
         // skip no-op entry and membership-change entry
-        if (entry instanceof GeneralEntry) {
-            stateMachine.applyLog(entry.getIndex(), entry.getCommandBytes());
+        if (isApplicable(entry)) {
+            stateMachine.applyLog(stateMachineContext, entry.getIndex(), entry.getCommandBytes(), entrySequence.getFirstLogIndex());
         }
-        lastApplied = entry.getIndex();
     }
 
     private boolean isApplicable(Entry entry) {
@@ -364,18 +362,11 @@ abstract class AbstractLog implements Log {
         Snapshot newSnapshot = snapshotBuilder.build();
         applySnapshot(newSnapshot);
         replaceSnapshot(newSnapshot);
-        updateCommitIndexAndLastApplied(newSnapshot);
-        return true;
-    }
-
-    private void updateCommitIndexAndLastApplied(Snapshot snapshot) {
         int lastIncludedIndex = snapshot.getLastIncludedIndex();
         if (commitIndex < lastIncludedIndex) {
             commitIndex = lastIncludedIndex;
         }
-        if (lastApplied <= lastIncludedIndex) {
-            lastApplied = lastIncludedIndex;
-        }
+        return true;
     }
 
     protected abstract SnapshotBuilder newSnapshotBuilder(InstallSnapshotRpc firstRpc);
@@ -388,18 +379,21 @@ abstract class AbstractLog implements Log {
     }
 
     @Override
-    public void setSnapshotGenerateStrategy(@Nonnull SnapshotGenerateStrategy strategy) {
-        Preconditions.checkNotNull(strategy);
-        this.snapshotGenerateStrategy = strategy;
-    }
-
-    @Override
     public void close() {
         snapshot.close();
         entrySequence.close();
         snapshotBuilder.close();
+        stateMachine.shutdown();
     }
 
+    private class StateMachineContextImpl implements StateMachineContext {
+
+        @Override
+        public void generateSnapshot(int lastIncludedIndex) {
+            eventBus.post(new SnapshotGenerateEvent(lastIncludedIndex));
+        }
+
+    }
 
     private static class EntrySequenceView implements Iterable<Entry> {
 

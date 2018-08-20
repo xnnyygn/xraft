@@ -1,7 +1,7 @@
 package in.xnnyygn.xraft.core.log;
 
 import in.xnnyygn.xraft.core.log.entry.*;
-import in.xnnyygn.xraft.core.log.snapshot.SnapshotGenerateStrategy;
+import in.xnnyygn.xraft.core.log.statemachine.StateMachine;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
@@ -103,7 +103,7 @@ public interface Log {
     /**
      * Append a log entry for adding node.
      *
-     * @param term          current term
+     * @param term            current term
      * @param nodeEndpoints   current node configs
      * @param newNodeEndpoint new node config
      * @return add node entry
@@ -113,9 +113,9 @@ public interface Log {
     /**
      * Append a log entry for removing node.
      *
-     * @param term         current term
-     * @param nodeEndpoints  current node configs
-     * @param nodeToRemove node to remove
+     * @param term          current term
+     * @param nodeEndpoints current node configs
+     * @param nodeToRemove  node to remove
      * @return remove node entry
      */
     RemoveNodeEntry appendEntryForRemoveNode(int term, Set<NodeEndpoint> nodeEndpoints, NodeId nodeToRemove);
@@ -151,6 +151,11 @@ public interface Log {
     boolean installSnapshot(InstallSnapshotRpc rpc);
 
     /**
+     * Generate snapshot.
+     */
+    void generateSnapshot(int lastIncludedIndex, Set<NodeEndpoint> groupConfig);
+
+    /**
      * Set state machine.
      *
      * <p>
@@ -165,13 +170,6 @@ public interface Log {
      * @param stateMachine state machine
      */
     void setStateMachine(StateMachine stateMachine);
-
-    /**
-     * Set snapshot generate strategy.
-     *
-     * @param strategy strategy
-     */
-    void setSnapshotGenerateStrategy(@Nonnull SnapshotGenerateStrategy strategy);
 
     /**
      * Close log files.

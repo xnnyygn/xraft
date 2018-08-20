@@ -4,12 +4,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
-import in.xnnyygn.xraft.core.log.StateMachine;
+import in.xnnyygn.xraft.core.log.statemachine.StateMachine;
 import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
 import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
+import in.xnnyygn.xraft.core.log.event.SnapshotGenerateEvent;
 import in.xnnyygn.xraft.core.log.snapshot.EntryInSnapshotException;
 import in.xnnyygn.xraft.core.node.role.*;
 import in.xnnyygn.xraft.core.node.store.NodeStore;
@@ -296,7 +297,7 @@ public class NodeImpl implements Node {
             } else {
 
                 // become leader
-                logger.info("no other node, just become leader");
+                logger.info("become leader");
                 resetReplicatingStates();
                 changeToRole(new LeaderNodeRole(newTerm, scheduleLogReplicationTask()));
                 context.log().appendEntry(newTerm); // no-op log
@@ -826,6 +827,14 @@ public class NodeImpl implements Node {
         context.taskExecutor().submit(() -> {
             GroupConfigEntry entry = event.getFirstRemovedEntry();
             context.group().updateNodes(entry.getNodeEndpoints());
+        }, LOGGING_FUTURE_CALLBACK);
+    }
+
+    // TODO add test
+    @Subscribe
+    public void onGenerateSnapshot(SnapshotGenerateEvent event) {
+        context.taskExecutor().submit(() -> {
+            context.log().generateSnapshot(event.getLastIncludedIndex(), context.group().listEndpointOfMajor());
         }, LOGGING_FUTURE_CALLBACK);
     }
 

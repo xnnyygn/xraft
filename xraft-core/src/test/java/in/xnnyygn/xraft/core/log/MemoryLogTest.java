@@ -1,11 +1,14 @@
 package in.xnnyygn.xraft.core.log;
 
 import com.google.common.eventbus.EventBus;
-import in.xnnyygn.xraft.core.log.entry.*;
+import in.xnnyygn.xraft.core.log.entry.Entry;
+import in.xnnyygn.xraft.core.log.entry.EntryMeta;
+import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
+import in.xnnyygn.xraft.core.log.entry.NoOpEntry;
 import in.xnnyygn.xraft.core.log.sequence.MemoryEntrySequence;
 import in.xnnyygn.xraft.core.log.snapshot.EntryInSnapshotException;
-import in.xnnyygn.xraft.core.log.snapshot.FixedSnapshotGenerateStrategy;
 import in.xnnyygn.xraft.core.log.snapshot.MemorySnapshot;
+import in.xnnyygn.xraft.core.log.statemachine.EmptyStateMachine;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesRpc;
@@ -524,33 +527,39 @@ public class MemoryLogTest {
 
     @Test
     public void testAdvanceCommitIndexApplyEntries() {
+        EmptyStateMachine stateMachine = new EmptyStateMachine();
+
         MemoryLog log = new MemoryLog();
+        log.setStateMachine(stateMachine);
+        log.appendEntry(1, "test".getBytes());
         log.appendEntry(1);
-        log.appendEntry(1);
-        Assert.assertEquals(0, log.lastApplied);
+        Assert.assertEquals(0, stateMachine.getLastApplied());
         log.advanceCommitIndex(1, 1);
-        Assert.assertEquals(1, log.lastApplied);
+        Assert.assertEquals(1, stateMachine.getLastApplied());
     }
 
     @Test
     public void testAdvanceCommitIndexApplySnapshot() {
+        EmptyStateMachine stateMachine = new EmptyStateMachine();
+
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 4),
                 new MemoryEntrySequence(4),
                 new EventBus()
         );
-        log.appendEntry(4); // index 4
-        Assert.assertEquals(0, log.lastApplied);
+        log.setStateMachine(stateMachine);
+        log.appendEntry(4, "test".getBytes()); // index 4
+        Assert.assertEquals(0, stateMachine.getLastApplied());
         log.advanceCommitIndex(4, 4);
-        Assert.assertEquals(4, log.lastApplied);
+        Assert.assertEquals(4, stateMachine.getLastApplied());
     }
 
     @Test
     public void testAdvanceCommitIndexGenerateSnapshot() {
         MemoryLog log = new MemoryLog();
-        log.setSnapshotGenerateStrategy(new FixedSnapshotGenerateStrategy(0));
         log.appendEntry(1);
         log.advanceCommitIndex(1, 1);
+        log.generateSnapshot(1, Collections.emptySet());
         log.appendEntry(2);
     }
 
@@ -569,22 +578,26 @@ public class MemoryLogTest {
 
     @Test
     public void testInstallSnapshot() {
+        EmptyStateMachine stateMachine = new EmptyStateMachine();
         MemoryLog log = new MemoryLog();
+        log.setStateMachine(stateMachine);
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
         rpc.setLastIncludedIndex(2);
         rpc.setLastIncludedTerm(3);
         rpc.setData(new byte[0]);
         rpc.setDone(true);
         Assert.assertEquals(0, log.commitIndex);
-        Assert.assertEquals(0, log.lastApplied);
+        Assert.assertEquals(0, stateMachine.getLastApplied());
         log.installSnapshot(rpc);
         Assert.assertEquals(2, log.commitIndex);
-        Assert.assertEquals(2, log.lastApplied);
+        Assert.assertEquals(2, stateMachine.getLastApplied());
     }
 
     @Test
     public void testInstallSnapshot2() {
+        EmptyStateMachine stateMachine = new EmptyStateMachine();
         MemoryLog log = new MemoryLog();
+        log.setStateMachine(stateMachine);
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
         rpc.setLastIncludedIndex(2);
         rpc.setLastIncludedTerm(3);
@@ -592,7 +605,7 @@ public class MemoryLogTest {
         rpc.setDone(false);
         log.installSnapshot(rpc);
         Assert.assertEquals(0, log.commitIndex);
-        Assert.assertEquals(0, log.lastApplied);
+        Assert.assertEquals(0, stateMachine.getLastApplied());
     }
 
 }
