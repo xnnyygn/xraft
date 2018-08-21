@@ -1395,6 +1395,40 @@ public class NodeImplTest {
     }
 
     @Test
+    public void testOnGroupConfigEntryFromLeaderAppendRemove() {
+        NodeImpl node = (NodeImpl) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .build();
+        node.start();
+        GroupConfigEntry groupConfigEntry = new RemoveNodeEntry(1, 1,
+                node.getContext().group().listEndpointOfMajor(),
+                NodeId.of("B"));
+        node.onGroupConfigEntryFromLeaderAppend(new GroupConfigEntryFromLeaderAppendEvent(groupConfigEntry));
+        Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
+    }
+
+    @Test
+    public void testOnGroupConfigEntryFromLeaderAppendRemoveSelf() {
+        NodeImpl node = (NodeImpl) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .build();
+        node.start();
+        GroupConfigEntry groupConfigEntry = new RemoveNodeEntry(1, 1,
+                node.getContext().group().listEndpointOfMajor(),
+                NodeId.of("A"));
+        node.onGroupConfigEntryFromLeaderAppend(new GroupConfigEntryFromLeaderAppendEvent(groupConfigEntry));
+        Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
+        RoleState state = node.getRoleState();
+        Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
+    }
+
+    @Test
     public void testOnGroupConfigEntryCommittedAddNode() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),

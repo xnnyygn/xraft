@@ -5,6 +5,8 @@ import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
 import in.xnnyygn.xraft.core.log.InstallSnapshotState;
+import in.xnnyygn.xraft.core.log.entry.Entry;
+import in.xnnyygn.xraft.core.log.entry.RemoveNodeEntry;
 import in.xnnyygn.xraft.core.log.statemachine.StateMachine;
 import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
@@ -797,6 +799,10 @@ public class NodeImpl implements Node {
     public void onGroupConfigEntryFromLeaderAppend(GroupConfigEntryFromLeaderAppendEvent event) {
         context.taskExecutor().submit(() -> {
             GroupConfigEntry entry = event.getEntry();
+            if (entry.getKind() == Entry.KIND_REMOVE_NODE &&
+                    context.selfId().equals(((RemoveNodeEntry) entry).getNodeToRemove())) {
+                becomeFollower(role.getTerm(), null, null, false);
+            }
             context.group().updateNodes(entry.getResultNodeEndpoints());
         }, LOGGING_FUTURE_CALLBACK);
     }
@@ -840,7 +846,14 @@ public class NodeImpl implements Node {
         }, LOGGING_FUTURE_CALLBACK);
     }
 
-    // TODO add test
+    /**
+     * Generate snapshot.
+     * <p>
+     * Source: log.
+     * </p>
+     *
+     * @param event event
+     */
     @Subscribe
     public void onGenerateSnapshot(SnapshotGenerateEvent event) {
         context.taskExecutor().submit(() -> {
