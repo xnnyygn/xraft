@@ -655,6 +655,12 @@ public class NodeImpl implements Node {
             return;
         }
 
+        // check role
+        if (role.getName() != RoleName.LEADER) {
+            logger.warn("receive append entries result from node {} but current node is not leader, ignore", resultMessage.getSourceNodeId());
+            return;
+        }
+
         // dispatch to new node catch up task by node id
         if (newNodeCatchUpTaskGroup.onReceiveAppendEntriesResult(resultMessage, context.log().getNextIndex())) {
             return;
@@ -669,24 +675,24 @@ public class NodeImpl implements Node {
 
         AppendEntriesRpc rpc = resultMessage.getRpc();
         if (result.isSuccess()) {
-            if (member.isMajor()) { // peer
-
-                // advance commit index if major of match index changed
-                if (member.advanceReplicatingState(rpc.getLastEntryIndex())) {
-                    context.log().advanceCommitIndex(context.group().getMatchIndexOfMajor(), role.getTerm());
-                }
-
-                // node caught up
-                if (member.getNextIndex() >= context.log().getNextIndex()) {
-                    member.stopReplicating();
-                    return;
-                }
-            } else { // removing node
+            if (!member.isMajor()) {  // removing node
                 if (member.isRemoving()) {
                     logger.debug("node {} is removing, skip", sourceNodeId);
                 } else {
                     logger.warn("unexpected append entries result from node {}, not major and not removing", sourceNodeId);
                 }
+                member.stopReplicating();
+                return;
+            }
+
+            // peer
+            // advance commit index if major of match index changed
+            if (member.advanceReplicatingState(rpc.getLastEntryIndex())) {
+                context.log().advanceCommitIndex(context.group().getMatchIndexOfMajor(), role.getTerm());
+            }
+
+            // node caught up
+            if (member.getNextIndex() >= context.log().getNextIndex()) {
                 member.stopReplicating();
                 return;
             }
@@ -759,6 +765,12 @@ public class NodeImpl implements Node {
             return;
         }
 
+        // check role
+        if (role.getName() != RoleName.LEADER) {
+            logger.warn("receive install snapshot result from node {} but current node is not leader, ignore", resultMessage.getSourceNodeId());
+            return;
+        }
+
         // dispatch to new node catch up task by node id
         if (newNodeCatchUpTaskGroup.onReceiveInstallSnapshotResult(resultMessage, context.log().getNextIndex())) {
             return;
@@ -801,6 +813,7 @@ public class NodeImpl implements Node {
             GroupConfigEntry entry = event.getEntry();
             if (entry.getKind() == Entry.KIND_REMOVE_NODE &&
                     context.selfId().equals(((RemoveNodeEntry) entry).getNodeToRemove())) {
+                logger.info("current node is removed from group, step down and standby");
                 becomeFollower(role.getTerm(), null, null, false);
             }
             context.group().updateNodes(entry.getResultNodeEndpoints());

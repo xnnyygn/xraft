@@ -590,6 +590,7 @@ public class NodeImplTest {
                 .build();
         node.start();
         node.electionTimeout();
+        connector.reset();
         node.processRequestVoteResult(new RequestVoteResult(1, true)).get();
         GroupConfigChangeTaskReference reference = node.removeNode(NodeId.of("A"));
         connector.awaitAppendEntriesRpc();
@@ -1141,6 +1142,23 @@ public class NodeImplTest {
     }
 
     @Test
+    public void testOnReceiveAppendEntriesResultWhenNotLeader() {
+        NodeImpl node = (NodeImpl) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.getContext().log().appendEntry(1);
+        node.start();
+        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
+                new AppendEntriesResult("", 1, false),
+                NodeId.of("B"), createAppendEntriesRpc(1)));
+        // do nothing
+    }
+
+    @Test
     public void testOnReceiveAppendEntriesResultBackOff() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
@@ -1353,6 +1371,24 @@ public class NodeImplTest {
                 new InstallSnapshotResult(2), NodeId.of("C"), installSnapshotRpc));
         Assert.assertEquals(NodeId.of("C"), mockConnector.getDestinationNodeId());
         Assert.assertTrue(mockConnector.getRpc() instanceof AppendEntriesRpc);
+    }
+
+    @Test
+    public void testOnReceiveInstallSnapshotResultWhenNotLeader() {
+        NodeImpl node = (NodeImpl) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335))
+                .setStore(new MemoryNodeStore(1, null))
+                .build();
+        node.start();
+        node.electionTimeout();
+        InstallSnapshotRpc installSnapshotRpc = new InstallSnapshotRpc();
+        installSnapshotRpc.setDone(false);
+        installSnapshotRpc.setData(new byte[0]);
+        node.onReceiveInstallSnapshotResult(new InstallSnapshotResultMessage(
+                new InstallSnapshotResult(2), NodeId.of("C"), installSnapshotRpc));
     }
 
     @Test
