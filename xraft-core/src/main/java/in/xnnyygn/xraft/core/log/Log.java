@@ -147,17 +147,20 @@ public interface Log {
      * Install snapshot.
      *
      * @param rpc rpc
+     * @return install snapshot state
      */
     InstallSnapshotState installSnapshot(InstallSnapshotRpc rpc);
 
     /**
      * Generate snapshot.
+     *
+     * @param lastIncludedIndex last included index
+     * @param groupConfig       group config
      */
     void generateSnapshot(int lastIncludedIndex, Set<NodeEndpoint> groupConfig);
 
     /**
      * Set state machine.
-     *
      * <p>
      * It will be called when
      * <ul>
@@ -165,7 +168,6 @@ public interface Log {
      * <li>generate snapshot</li>
      * <li>apply snapshot</li>
      * </ul>
-     * </p>
      *
      * @param stateMachine state machine
      */
