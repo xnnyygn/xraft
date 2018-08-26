@@ -1,10 +1,9 @@
 package in.xnnyygn.xraft.core.node.task;
 
-import in.xnnyygn.xraft.core.node.config.NodeConfig;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.node.config.NodeConfig;
 import in.xnnyygn.xraft.core.rpc.message.AppendEntriesResultMessage;
-import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotResult;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotResultMessage;
 import in.xnnyygn.xraft.core.rpc.message.InstallSnapshotRpc;
 import org.slf4j.Logger;
