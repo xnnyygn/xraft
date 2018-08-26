@@ -6,14 +6,14 @@
 
     <artifactId>xraft-core</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
 
     <name>xraft-core</name>
 
     <parent>
         <groupId>in.xnnyygn.xraft</groupId>
         <artifactId>xraft-parent</artifactId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>0.1.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
