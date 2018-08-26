@@ -6,21 +6,21 @@
 
     <artifactId>xraft-kvstore</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.1-SNAPSHOT</version>
 
     <name>xraft-kvstore</name>
 
     <parent>
         <groupId>in.xnnyygn.xraft</groupId>
         <artifactId>xraft-parent</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.1.1-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>in.xnnyygn.xraft</groupId>
             <artifactId>xraft-core</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
