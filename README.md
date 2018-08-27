@@ -43,13 +43,13 @@ $ bin/xraft-kvstore -gc A,localhost,2333 B,localhost,2334 C,localhost,2335 -m gr
 Terminal B
 
 ```
-bin/xraft-kvstore -gc A,localhost,2333 B,localhost,2334 C,localhost,2335 -m group-member -i B -p2 3334
+$ bin/xraft-kvstore -gc A,localhost,2333 B,localhost,2334 C,localhost,2335 -m group-member -i B -p2 3334
 ```
 
 Terminal C
 
 ```
-bin/xraft-kvstore -gc A,localhost,2333 B,localhost,2334 C,localhost,2335 -m group-member -i C -p2 3335
+$ bin/xraft-kvstore -gc A,localhost,2333 B,localhost,2334 C,localhost,2335 -m group-member -i C -p2 3335
 ```
 
 Since the minimum election timeout is 3 seconds, if you cannot execute all 3 commands within 3 seconds, you will get some error like `failed to connect ....`. But after you started all nodes, the error will disapper.
@@ -67,19 +67,19 @@ $ bin/xraft-kvstore-cli -gc A,localhost,3333 B,localhost,3334 C,localhost,3335
 It will run an interative console, press TAB two times and you will get the available commands. For this demostration, firstly run 
 
 ```
-kvstore-get x
+> kvstore-get x
 ```
 
 and you should get the result `null`. Then run
 
 ```
-kvstore-set x 1
+> kvstore-set x 1
 ```
 
 nothing will be printed, now you can run get again.
 
 ```
-kvstore-get x
+> kvstore-get x
 ```
 
 `1` should be printed.
@@ -88,72 +88,14 @@ kvstore-get x
 
 How to create new service based on xraft-core?
 
-### Create Node
-
-The core component of xraft is the interface `Node`, new service should create the instance of node by `NodeBuilder`.
-
-The simplest pattern, standalone, memory log
-
-```
-Node node = new NodeBuilder(new NodeEndpoint("A", "localhost", 2333)).build();
-```
-
-Cluster, file log
-
-```
-Node node = new NodeBuilder(
-  Arrays.as(
-    new NodeEndpoint("A", "localhost", 2333),
-    new NodeEndpoint("B", "localhost", 2334),
-    new NodeEndpoint("C", "localhost", 2335)
-  ))
-  .setDataDir("/path/to/data/dir")
-  .build();
-```
-
-### Use Node
-
-API
-
-* registerStateMachine(StateMachine)
-* start()
-* getRoleNameAndLeaderId()
-* addNodeRoleListener(NodeRoleListener)
-* appendLog(byte[])
-* addNode(NodeEndpoint)
-* removeNode(NodeId)
-* stop()
-
-A service should register its statemachine by `registerStateMachine` before appending any log.
-
-`start` and `stop` should be called when service starts or stops.
-
-To check current node is leader you can call `getRoleNameAndLeaderId` or add a listener.
-
-`addNode` and `removeNode` is the api for membership change.
-
-BTW, `Node` is thread safe.
-
-### StateMachine
-
-In xraft, it's the service's responibility to manage statemachine, including `lastApplied`. xraft-core provides two abstract implementation of statemachine
-
-* AbstractDirectStateMachine
-* AbstractSingleThreadStateMachine
-
-The first one will apply the log in node's thread, and the second one will apply log in its thread, in another word, asynchronously. 
-
-### Snapshot
-
-In other's implementation of raft, there's some configuration of something like when to generate snapshot. But as a general purpose raft implementation, it's service who called `StateMachineContext#generateSnapshot` to tell xraft-core to generate snapshot. 
-
-Currently, generating snapshot will block other operations, I will try to fix this problem.
+* [Node & NodeBuilder](https://github.com/xnnyygn/xraft/wiki/Node-&-NodeBuilder)
+* [StateMachine](https://github.com/xnnyygn/xraft/wiki/StateMachine)
 
 For more detailed implementation of new service, see the source code of xraft-kvstore.
 
 ## Build
 
-xraft use `Maven` as build system.
+xraft use [Maven](https://maven.apache.org/) as build system.
 
 ```
 $ mvn clean compile install
