@@ -9,7 +9,7 @@ import java.io.IOException;
 public class FileSnapshotBuilder extends AbstractSnapshotBuilder<FileSnapshot> {
 
     private final LogDir logDir;
-    private FileSnapshotWriter writer;
+    private SnapshotWriter writer;
 
     public FileSnapshotBuilder(InstallSnapshotRpc firstRpc, LogDir logDir) {
         super(firstRpc);
@@ -38,7 +38,7 @@ public class FileSnapshotBuilder extends AbstractSnapshotBuilder<FileSnapshot> {
     public void close() {
         try {
             writer.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new LogException("failed to close writer", e);
         }
     }

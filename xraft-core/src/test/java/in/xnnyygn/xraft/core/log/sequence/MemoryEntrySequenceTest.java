@@ -147,7 +147,7 @@ public class MemoryEntrySequenceTest {
                 new NoOpEntry(3, 1),
                 new RemoveNodeEntry(4, 1, Collections.emptySet(), new NodeId("A"))
         ));
-        GroupConfigEntryList list = sequence.buildGroupConfigEntryList();
+        GroupConfigEntryList list = sequence.buildGroupConfigEntryList(Collections.emptySet());
         Iterator<GroupConfigEntry> iterator = list.iterator();
         Assert.assertEquals(2, iterator.next().getIndex());
         Assert.assertEquals(4, iterator.next().getIndex());

@@ -28,6 +28,14 @@ public interface GroupConfigChangeTaskReference {
     @Nonnull
     GroupConfigChangeTaskResult getResult(long timeout) throws InterruptedException, TimeoutException;
 
+    default void awaitDone(long timeout) throws TimeoutException, InterruptedException {
+        if (timeout == 0) {
+            getResult();
+        } else {
+            getResult(timeout);
+        }
+    }
+
     /**
      * Cancel task.
      */

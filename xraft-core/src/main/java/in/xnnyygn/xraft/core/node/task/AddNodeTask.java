@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.node.task;
 
+import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 
@@ -21,13 +22,17 @@ public class AddNodeTask extends AbstractGroupConfigChangeTask {
     }
 
     @Override
-    public boolean isTargetNode(NodeId nodeId) {
-        return endpoint.getId().equals(nodeId);
+    protected void appendGroupConfig() {
+        context.addNode(endpoint, nextIndex, matchIndex);
     }
 
     @Override
-    protected void appendGroupConfig() {
-        context.addNode(endpoint, nextIndex, matchIndex);
+    protected synchronized void doOnLogCommitted(GroupConfigEntry entry) {
+        if (state != State.GROUP_CONFIG_APPENDED) {
+            throw new IllegalStateException("log committed before log appended");
+        }
+        setState(State.GROUP_CONFIG_COMMITTED);
+        notify();
     }
 
     @Override

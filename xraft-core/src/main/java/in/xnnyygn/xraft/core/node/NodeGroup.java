@@ -129,18 +129,17 @@ class NodeGroup {
         findMember(id).setMajor(true);
     }
 
-    /**
-     * Downgrade member(set major to {@code false}).
-     *
-     * @param id id
-     * @throws IllegalArgumentException if member not found
-     */
-    void downgrade(NodeId id) {
-        logger.info("downgrade node {}", id);
-        GroupMember member = findMember(id);
-        member.setMajor(false);
-        member.setRemoving();
-    }
+//    /**
+//     * Downgrade member(set major to {@code false}).
+//     *
+//     * @param id id
+//     * @throws IllegalArgumentException if member not found
+//     */
+//    void downgrade(NodeId id) {
+//        logger.info("downgrade node {}", id);
+//        GroupMember member = findMember(id);
+//        member.setMajor(false);
+//    }
 
     /**
      * Remove member.
@@ -177,17 +176,25 @@ class NodeGroup {
     int getMatchIndexOfMajor() {
         List<NodeMatchIndex> matchIndices = new ArrayList<>();
         for (GroupMember member : memberMap.values()) {
-            if (member.isMajor() && !member.idEquals(selfId)) {
-                matchIndices.add(new NodeMatchIndex(member.getId(), member.getMatchIndex()));
+            if (member.isMajor()) {
+                if (member.idEquals(selfId)) {
+                    matchIndices.add(new NodeMatchIndex(selfId));
+                } else {
+                    matchIndices.add(new NodeMatchIndex(member.getId(), member.getMatchIndex()));
+                }
             }
         }
         int count = matchIndices.size();
         if (count == 0) {
-            throw new IllegalStateException("standalone or no major node");
+            throw new IllegalStateException("no major node");
+        }
+        if (count == 1 && matchIndices.get(0).nodeId == selfId) {
+            throw new IllegalStateException("standalone");
         }
         Collections.sort(matchIndices);
         logger.debug("match indices {}", matchIndices);
-        return matchIndices.get(count / 2).getMatchIndex();
+        int index = (count % 2 == 0 ? count / 2 - 1 : count / 2);
+        return matchIndices.get(index).getMatchIndex();
     }
 
     /**
@@ -225,7 +232,7 @@ class NodeGroup {
      */
     void updateNodes(Set<NodeEndpoint> endpoints) {
         memberMap = buildMemberMap(endpoints);
-        logger.info("group change changed -> {}", memberMap.keySet());
+        logger.info("group config changed -> {}", memberMap.keySet());
     }
 
     /**
@@ -258,6 +265,16 @@ class NodeGroup {
         return endpoints;
     }
 
+    Set<NodeId> listIdOfMajorExceptSelf() {
+        Set<NodeId> ids = new HashSet<>();
+        for(GroupMember member : memberMap.values()) {
+            if(member.isMajor() && !member.idEquals(selfId)) {
+                ids.add(member.getId());
+            }
+        }
+        return ids;
+    }
+
     /**
      * Check if member is unique one in group, in other word, check if standalone mode.
      *
@@ -276,10 +293,20 @@ class NodeGroup {
 
         private final NodeId nodeId;
         private final int matchIndex;
+        private final boolean leader;
+
+        NodeMatchIndex(NodeId nodeId) {
+            this(nodeId, Integer.MAX_VALUE, true);
+        }
 
         NodeMatchIndex(NodeId nodeId, int matchIndex) {
+            this(nodeId, matchIndex, false);
+        }
+
+        private NodeMatchIndex(NodeId nodeId, int matchIndex, boolean leader) {
             this.nodeId = nodeId;
             this.matchIndex = matchIndex;
+            this.leader = leader;
         }
 
         int getMatchIndex() {
@@ -288,12 +315,12 @@ class NodeGroup {
 
         @Override
         public int compareTo(@Nonnull NodeMatchIndex o) {
-            return -Integer.compare(o.matchIndex, this.matchIndex);
+            return Integer.compare(this.matchIndex, o.matchIndex);
         }
 
         @Override
         public String toString() {
-            return "<" + nodeId + ", " + matchIndex + ">";
+            return "<" + nodeId + ", " + (leader ? "L" : matchIndex) + ">";
         }
 
     }

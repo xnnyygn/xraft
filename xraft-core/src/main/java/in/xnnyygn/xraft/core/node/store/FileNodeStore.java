@@ -87,6 +87,7 @@ public class FileNodeStore implements NodeStore {
             seekableFile.seek(OFFSET_VOTED_FOR);
             if (votedFor == null) {
                 seekableFile.writeInt(0);
+                seekableFile.truncate(8L);
             } else {
                 byte[] bytes = votedFor.getValue().getBytes();
                 seekableFile.writeInt(bytes.length);

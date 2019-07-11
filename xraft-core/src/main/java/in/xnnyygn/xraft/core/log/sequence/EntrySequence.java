@@ -2,8 +2,10 @@ package in.xnnyygn.xraft.core.log.sequence;
 
 import in.xnnyygn.xraft.core.log.entry.Entry;
 import in.xnnyygn.xraft.core.log.entry.EntryMeta;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 
 import java.util.List;
+import java.util.Set;
 
 public interface EntrySequence {
 
@@ -20,7 +22,7 @@ public interface EntrySequence {
     // [fromIndex, toIndex)
     List<Entry> subList(int fromIndex, int toIndex);
 
-    GroupConfigEntryList buildGroupConfigEntryList();
+    GroupConfigEntryList buildGroupConfigEntryList(Set<NodeEndpoint> initialGroup);
 
     boolean isEntryPresent(int index);
 

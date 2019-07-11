@@ -50,7 +50,7 @@ public class FileEntrySequenceTest {
         appendEntryToFile(new RemoveNodeEntry(4, 1, Collections.emptySet(), new NodeId("A")));
 
         FileEntrySequence sequence = new FileEntrySequence(entriesFile, entryIndexFile, 5);
-        GroupConfigEntryList list = sequence.buildGroupConfigEntryList();
+        GroupConfigEntryList list = sequence.buildGroupConfigEntryList(Collections.emptySet());
         Iterator<GroupConfigEntry> iterator = list.iterator();
         Assert.assertEquals(3, iterator.next().getIndex());
         Assert.assertEquals(4, iterator.next().getIndex());
@@ -69,7 +69,7 @@ public class FileEntrySequenceTest {
         sequence.append(new GeneralEntry(2, 1, new byte[0]));
         sequence.append(new AddNodeEntry(3, 1, Collections.emptySet(), new NodeEndpoint("A", "localhost", 2333)));
         sequence.append(new RemoveNodeEntry(4, 1, Collections.emptySet(), new NodeId("A")));
-        GroupConfigEntryList list = sequence.buildGroupConfigEntryList();
+        GroupConfigEntryList list = sequence.buildGroupConfigEntryList(Collections.emptySet());
         Iterator<GroupConfigEntry> iterator = list.iterator();
         Assert.assertEquals(3, iterator.next().getIndex());
         Assert.assertEquals(4, iterator.next().getIndex());
@@ -82,7 +82,7 @@ public class FileEntrySequenceTest {
         appendEntryToFile(new AddNodeEntry(2, 1, Collections.emptySet(), new NodeEndpoint("A", "localhost", 2333)));
         FileEntrySequence sequence = new FileEntrySequence(entriesFile, entryIndexFile, 1);
         sequence.append(new RemoveNodeEntry(3, 1, Collections.emptySet(), new NodeId("A")));
-        GroupConfigEntryList list = sequence.buildGroupConfigEntryList();
+        GroupConfigEntryList list = sequence.buildGroupConfigEntryList(Collections.emptySet());
         Iterator<GroupConfigEntry> iterator = list.iterator();
         Assert.assertEquals(2, iterator.next().getIndex());
         Assert.assertEquals(3, iterator.next().getIndex());

@@ -58,6 +58,11 @@ abstract class AbstractHandler extends ChannelDuplexHandler {
             assert lastInstallSnapshotRpc != null;
             eventBus.post(new InstallSnapshotResultMessage(result, remoteId, lastInstallSnapshotRpc));
             lastInstallSnapshotRpc = null;
+        } else if (msg instanceof PreVoteRpc) {
+            PreVoteRpc rpc = (PreVoteRpc) msg;
+            eventBus.post(new PreVoteRpcMessage(rpc, remoteId, channel));
+        } else if (msg instanceof PreVoteResult) {
+            eventBus.post(msg);
         }
     }
 

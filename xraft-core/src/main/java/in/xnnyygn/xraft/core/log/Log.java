@@ -52,13 +52,16 @@ public interface Log {
      */
     InstallSnapshotRpc createInstallSnapshotRpc(int term, NodeId selfId, int offset, int length);
 
+    InstallSnapshotRpc createInstallSnapshotRpc(int term, int lastIncludedIndex, NodeId selfId, int offset, int length);
+
     /**
      * Get last uncommitted group config entry.
      *
      * @return last committed group config entry, maybe {@code null}
      */
-    @Nullable
-    GroupConfigEntry getLastUncommittedGroupConfigEntry();
+    Set<NodeEndpoint> getLastGroup();
+
+    GroupConfigEntry getLastGroupConfigEntry();
 
     /**
      * Get next log index.
@@ -128,7 +131,7 @@ public interface Log {
      * @param entries      entries to append
      * @return true if success, false if previous log check failed
      */
-    boolean appendEntriesFromLeader(int prevLogIndex, int prevLogTerm, List<Entry> entries);
+    AppendEntriesState appendEntriesFromLeader(int prevLogIndex, int prevLogTerm, List<Entry> entries);
 
     /**
      * Advance commit index.
@@ -141,7 +144,7 @@ public interface Log {
      * @param newCommitIndex new commit index
      * @param currentTerm    current term
      */
-    void advanceCommitIndex(int newCommitIndex, int currentTerm);
+    List<GroupConfigEntry> advanceCommitIndex(int newCommitIndex, int currentTerm);
 
     /**
      * Install snapshot.
@@ -157,7 +160,10 @@ public interface Log {
      * @param lastIncludedIndex last included index
      * @param groupConfig       group config
      */
+    @Deprecated
     void generateSnapshot(int lastIncludedIndex, Set<NodeEndpoint> groupConfig);
+
+    void snapshotGenerated(int lastIncludedIndex);
 
     /**
      * Set state machine.
@@ -172,6 +178,8 @@ public interface Log {
      * @param stateMachine state machine
      */
     void setStateMachine(StateMachine stateMachine);
+
+    StateMachine getStateMachine();
 
     /**
      * Close log files.

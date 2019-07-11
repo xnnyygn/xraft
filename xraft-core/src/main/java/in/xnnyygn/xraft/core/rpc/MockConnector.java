@@ -15,6 +15,21 @@ public class MockConnector extends ConnectorAdapter {
     private LinkedList<Message> messages = new LinkedList<>();
 
     @Override
+    public void sendPreVote(@Nonnull PreVoteRpc rpc, @Nonnull Collection<NodeEndpoint> destinationEndpoints) {
+        Message m = new Message();
+        m.rpc = rpc;
+        messages.add(m);
+    }
+
+    @Override
+    public void replyPreVote(@Nonnull PreVoteResult result, @Nonnull PreVoteRpcMessage rpcMessage) {
+        Message m = new Message();
+        m.result = result;
+        m.destinationNodeId = rpcMessage.getSourceNodeId();
+        messages.add(m);
+    }
+
+    @Override
     public void sendRequestVote(@Nonnull RequestVoteRpc rpc, @Nonnull Collection<NodeEndpoint> destinationEndpoints) {
         Message m = new Message();
         m.rpc = rpc;

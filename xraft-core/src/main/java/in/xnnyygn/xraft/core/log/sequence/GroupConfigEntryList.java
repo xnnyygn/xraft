@@ -1,21 +1,43 @@
 package in.xnnyygn.xraft.core.log.sequence;
 
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @NotThreadSafe
 public class GroupConfigEntryList implements Iterable<GroupConfigEntry> {
 
+    private final Set<NodeEndpoint> initialGroup;
     private final LinkedList<GroupConfigEntry> entries = new LinkedList<>();
+
+    public GroupConfigEntryList(Set<NodeEndpoint> initialGroup) {
+        this.initialGroup = initialGroup;
+    }
 
     public GroupConfigEntry getLast() {
         return entries.isEmpty() ? null : entries.getLast();
+    }
+
+    public Set<NodeEndpoint> getLastGroup() {
+        return entries.isEmpty() ? initialGroup : entries.getLast().getResultNodeEndpoints();
+    }
+
+    public Set<NodeEndpoint> getLastGroupBeforeOrDefault(int index) {
+        Iterator<GroupConfigEntry> iterator = entries.descendingIterator();
+        while (iterator.hasNext()) {
+            GroupConfigEntry entry = iterator.next();
+            if (entry.getIndex() <= index) {
+                return entry.getResultNodeEndpoints();
+            }
+        }
+        return initialGroup;
     }
 
     public void add(GroupConfigEntry entry) {

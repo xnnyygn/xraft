@@ -34,7 +34,7 @@ public class AddNodeTaskTest {
         );
         Future<GroupConfigChangeTaskResult> future = taskExecutor.submit(task);
         taskContext.awaitLogAppended();
-        task.onLogCommitted();
+        task.onLogCommitted(null);
         Assert.assertEquals(GroupConfigChangeTaskResult.OK, future.get());
     }
 
@@ -45,18 +45,7 @@ public class AddNodeTaskTest {
                 new NodeEndpoint("D", "localhost", 2336),
                 2, 1
         );
-        task.onLogCommitted();
-    }
-
-    @Test
-    public void testIsTargetNode() {
-        AddNodeTask task = new AddNodeTask(
-                new WaitableGroupConfigChangeTaskContext(),
-                new NodeEndpoint("D", "localhost", 2336),
-                2, 1
-        );
-        Assert.assertTrue(task.isTargetNode(NodeId.of("D")));
-        Assert.assertFalse(task.isTargetNode(NodeId.of("E")));
+        task.onLogCommitted(null);
     }
 
     @AfterClass

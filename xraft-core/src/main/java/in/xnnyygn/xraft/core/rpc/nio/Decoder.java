@@ -6,6 +6,7 @@ import in.xnnyygn.xraft.core.node.NodeEndpoint;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
@@ -84,6 +85,18 @@ public class Decoder extends ByteToMessageDecoder {
             case MessageConstants.MSG_TYPE_INSTALL_SNAPSHOT_RESULT:
                 Protos.InstallSnapshotResult protoISResult = Protos.InstallSnapshotResult.parseFrom(payload);
                 out.add(new InstallSnapshotResult(protoISResult.getTerm()));
+                break;
+            case MessageConstants.MSG_TYPE_PRE_VOTE_RPC:
+                Protos.PreVoteRpc protoPreVoteRpc = Protos.PreVoteRpc.parseFrom(payload);
+                PreVoteRpc preVoteRpc = new PreVoteRpc();
+                preVoteRpc.setTerm(protoPreVoteRpc.getTerm());
+                preVoteRpc.setLastLogIndex(protoPreVoteRpc.getLastLogIndex());
+                preVoteRpc.setLastLogTerm(protoPreVoteRpc.getLastLogTerm());
+                out.add(preVoteRpc);
+                break;
+            case MessageConstants.MSG_TYPE_PRE_VOTE_RESULT:
+                Protos.PreVoteResult protoPreVoteResult = Protos.PreVoteResult.parseFrom(payload);
+                out.add(new PreVoteResult(protoPreVoteResult.getTerm(), protoPreVoteResult.getVoteGranted()));
                 break;
         }
     }

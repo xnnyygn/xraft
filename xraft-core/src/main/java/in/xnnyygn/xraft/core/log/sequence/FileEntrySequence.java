@@ -6,13 +6,11 @@ import in.xnnyygn.xraft.core.log.entry.Entry;
 import in.xnnyygn.xraft.core.log.entry.EntryFactory;
 import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @NotThreadSafe
 public class FileEntrySequence extends AbstractEntrySequence {
@@ -57,8 +55,8 @@ public class FileEntrySequence extends AbstractEntrySequence {
     }
 
     @Override
-    public GroupConfigEntryList buildGroupConfigEntryList() {
-        GroupConfigEntryList list = new GroupConfigEntryList();
+    public GroupConfigEntryList buildGroupConfigEntryList(Set<NodeEndpoint> initialGroup) {
+        GroupConfigEntryList list = new GroupConfigEntryList(initialGroup);
 
         // check file
         try {
@@ -133,8 +131,11 @@ public class FileEntrySequence extends AbstractEntrySequence {
         if (!isEntryPresent(index)) {
             return null;
         }
-        if (entryIndexFile.isEmpty()) {
-            return pendingEntries.get(index - doGetFirstLogIndex()).getMeta();
+        if (!pendingEntries.isEmpty()) {
+            int firstPendingEntryIndex = pendingEntries.getFirst().getIndex();
+            if (index >= firstPendingEntryIndex) {
+                return pendingEntries.get(index - firstPendingEntryIndex).getMeta();
+            }
         }
         return entryIndexFile.get(index).toEntryMeta();
     }
@@ -173,13 +174,19 @@ public class FileEntrySequence extends AbstractEntrySequence {
         if (index == commitIndex) {
             return;
         }
-        if (pendingEntries.isEmpty() || pendingEntries.getLast().getIndex() < index) {
+        if (!entryIndexFile.isEmpty() && index <= entryIndexFile.getMaxEntryIndex()) {
+            commitIndex = index;
+            return;
+        }
+        if (pendingEntries.isEmpty() ||
+                pendingEntries.getFirst().getIndex() > index ||
+                pendingEntries.getLast().getIndex() < index) {
             throw new IllegalArgumentException("no entry to commit or commit index exceed");
         }
         long offset;
         Entry entry = null;
         try {
-            for (int i = commitIndex + 1; i <= index; i++) {
+            for (int i = pendingEntries.getFirst().getIndex(); i <= index; i++) {
                 entry = pendingEntries.removeFirst();
                 offset = entriesFile.appendEntry(entry);
                 entryIndexFile.appendEntryIndex(i, offset, entry.getKind(), entry.getTerm());

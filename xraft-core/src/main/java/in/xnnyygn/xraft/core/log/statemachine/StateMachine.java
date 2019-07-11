@@ -1,10 +1,12 @@
 package in.xnnyygn.xraft.core.log.statemachine;
 
 import in.xnnyygn.xraft.core.log.snapshot.Snapshot;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Set;
 
 /**
  * State machine.
@@ -13,16 +15,11 @@ public interface StateMachine {
 
     int getLastApplied();
 
-    void applyLog(StateMachineContext context, int index, @Nonnull byte[] commandBytes, int firstLogIndex);
+    void applyLog(StateMachineContext context, int index, int term, @Nonnull byte[] commandBytes, int firstLogIndex, Set<NodeEndpoint> lastGroupConfig);
 
-    /**
-     * Should generate or not.
-     *
-     * @param firstLogIndex first log index in log files, may not be {@code 0}
-     * @param lastApplied   last applied log index
-     * @return true if should generate, otherwise false
-     */
-    boolean shouldGenerateSnapshot(int firstLogIndex, int lastApplied);
+    void advanceLastApplied(int index);
+
+    void onReadIndexReached(String requestId, int readIndex);
 
     /**
      * Generate snapshot to output.

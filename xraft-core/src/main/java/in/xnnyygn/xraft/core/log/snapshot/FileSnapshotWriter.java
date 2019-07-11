@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class FileSnapshotWriter implements AutoCloseable {
+public class FileSnapshotWriter implements SnapshotWriter {
 
     private final DataOutputStream output;
 
@@ -34,10 +34,12 @@ public class FileSnapshotWriter implements AutoCloseable {
 
     }
 
+    @Override
     public OutputStream getOutput() {
         return output;
     }
 
+    @Override
     public void write(byte[] data) throws IOException {
         output.write(data);
     }

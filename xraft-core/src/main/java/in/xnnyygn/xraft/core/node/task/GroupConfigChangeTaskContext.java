@@ -25,20 +25,22 @@ public interface GroupConfigChangeTaskContext {
      */
     void addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex);
 
-    /**
-     * Downgrade node.
-     * <p>
-     * Process will be run in node task executor.
-     * </p>
-     * <ul>
-     * <li>downgrade node</li>
-     * <li>append log entry</li>
-     * <li>replicate</li>
-     * </ul>
-     *
-     * @param nodeId node id to downgrade
-     */
-    void downgradeNode(NodeId nodeId);
+//    /**
+//     * Downgrade node.
+//     * <p>
+//     * Process will be run in node task executor.
+//     * </p>
+//     * <ul>
+//     * <li>downgrade node</li>
+//     * <li>append log entry</li>
+//     * <li>replicate</li>
+//     * </ul>
+//     *
+//     * @param nodeId node id to downgrade
+//     */
+//    void downgradeNode(NodeId nodeId);
+
+    void downgradeSelf();
 
     /**
      * Remove node from group.

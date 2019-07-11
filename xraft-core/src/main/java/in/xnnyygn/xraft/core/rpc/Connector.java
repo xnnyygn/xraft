@@ -6,6 +6,7 @@ import in.xnnyygn.xraft.core.rpc.message.*;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Connector.
@@ -19,6 +20,10 @@ public interface Connector {
      * </p>
      */
     void initialize();
+
+    void sendPreVote(@Nonnull PreVoteRpc rpc, @Nonnull Collection<NodeEndpoint> destinationEndpoints);
+
+    void replyPreVote(@Nonnull PreVoteResult result, @Nonnull PreVoteRpcMessage rpcMessage);
 
     /**
      * Send request vote rpc.

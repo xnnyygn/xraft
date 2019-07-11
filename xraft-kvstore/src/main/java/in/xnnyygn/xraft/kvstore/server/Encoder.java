@@ -12,6 +12,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class Encoder extends MessageToByteEncoder<Object> {
 
@@ -25,7 +26,8 @@ public class Encoder extends MessageToByteEncoder<Object> {
             this.writeMessage(MessageConstants.MSG_TYPE_FAILURE, protoFailure, out);
         } else if (msg instanceof Redirect) {
             Redirect redirect = (Redirect) msg;
-            Protos.Redirect protoRedirect = Protos.Redirect.newBuilder().setLeaderId(redirect.getLeaderId()).build();
+            String leaderId = Objects.toString(redirect.getLeaderId(), "");
+            Protos.Redirect protoRedirect = Protos.Redirect.newBuilder().setLeaderId(leaderId).build();
             this.writeMessage(MessageConstants.MSG_TYPE_REDIRECT, protoRedirect, out);
         } else if (msg instanceof AddNodeCommand) {
             AddNodeCommand command = (AddNodeCommand) msg;

@@ -233,7 +233,7 @@ public class NodeBuilder {
         if (!dataDir.isDirectory() || !dataDir.exists()) {
             throw new IllegalArgumentException("[" + dataDirPath + "] not a directory, or not exists");
         }
-        log = new FileLog(dataDir, eventBus);
+        log = new FileLog(dataDir, eventBus, group.listEndpointOfMajor());
         store = new FileNodeStore(new File(dataDir, FileNodeStore.FILE_NAME));
         return this;
     }
@@ -258,7 +258,7 @@ public class NodeBuilder {
         NodeContext context = new NodeContext();
         context.setGroup(group);
         context.setMode(evaluateMode());
-        context.setLog(log != null ? log : new MemoryLog(eventBus));
+        context.setLog(log != null ? log : new MemoryLog(eventBus, group.listEndpointOfMajor()));
         context.setStore(store != null ? store : new MemoryNodeStore());
         context.setSelfId(selfId);
         context.setConfig(config);

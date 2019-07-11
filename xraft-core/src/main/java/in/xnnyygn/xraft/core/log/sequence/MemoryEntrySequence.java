@@ -2,10 +2,12 @@ package in.xnnyygn.xraft.core.log.sequence;
 
 import in.xnnyygn.xraft.core.log.entry.Entry;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
+import in.xnnyygn.xraft.core.node.NodeEndpoint;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @NotThreadSafe
 public class MemoryEntrySequence extends AbstractEntrySequence {
@@ -46,8 +48,8 @@ public class MemoryEntrySequence extends AbstractEntrySequence {
     }
 
     @Override
-    public GroupConfigEntryList buildGroupConfigEntryList() {
-        GroupConfigEntryList list = new GroupConfigEntryList();
+    public GroupConfigEntryList buildGroupConfigEntryList(Set<NodeEndpoint> initialGroup) {
+        GroupConfigEntryList list = new GroupConfigEntryList(initialGroup);
         for (Entry entry : entries) {
             if (entry instanceof GroupConfigEntry) {
                 list.add((GroupConfigEntry) entry);

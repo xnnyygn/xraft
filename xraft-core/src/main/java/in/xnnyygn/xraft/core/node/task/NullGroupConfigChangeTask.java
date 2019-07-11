@@ -1,21 +1,20 @@
 package in.xnnyygn.xraft.core.node.task;
 
-import in.xnnyygn.xraft.core.node.NodeId;
+import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 
 public class NullGroupConfigChangeTask implements GroupConfigChangeTask {
 
     @Override
-    public boolean isTargetNode(NodeId nodeId) {
-        return false;
-    }
-
-    @Override
-    public void onLogCommitted() {
+    public void onLogCommitted(GroupConfigEntry entry) {
     }
 
     @Override
     public GroupConfigChangeTaskResult call() throws Exception {
         return null;
+    }
+
+    @Override
+    public void setGroupConfigEntry(GroupConfigEntry entry) {
     }
 
     @Override

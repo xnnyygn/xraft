@@ -19,11 +19,14 @@ public class ServerRouter {
                 this.leaderId = nodeId;
                 return result;
             } catch (RedirectException e) {
-                logger.debug("not a leader server, redirect to server {}", e.getLeaderId());
-                this.leaderId = e.getLeaderId();
-                return doSend(e.getLeaderId(), payload);
+                logger.debug("not a leader server");
+                NodeId newLeaderId = e.getLeaderId();
+                if (newLeaderId != null) {
+                    this.leaderId = newLeaderId;
+                    return doSend(newLeaderId, payload);
+                }
             } catch (Exception e) {
-                logger.debug("failed to process with server " + nodeId + ", cause " + e.getMessage());
+                logger.debug("failed to process with server " + nodeId, e);
             }
         }
         throw new NoAvailableServerException("no available server");

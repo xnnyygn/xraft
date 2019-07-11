@@ -1,10 +1,10 @@
 package in.xnnyygn.xraft.core.log.event;
 
-public class SnapshotGenerateEvent {
+public class SnapshotGeneratedEvent {
 
     private final int lastIncludedIndex;
 
-    public SnapshotGenerateEvent(int lastIncludedIndex) {
+    public SnapshotGeneratedEvent(int lastIncludedIndex) {
         this.lastIncludedIndex = lastIncludedIndex;
     }
 

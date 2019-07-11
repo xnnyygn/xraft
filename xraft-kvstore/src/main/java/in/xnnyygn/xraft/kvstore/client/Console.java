@@ -64,6 +64,8 @@ public class Console {
                 System.err.println(e.getMessage());
             } catch (EndOfFileException ignored) {
                 break;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

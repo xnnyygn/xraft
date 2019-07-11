@@ -13,6 +13,17 @@ message NodeEndpoint {
 
 // rpc
 
+message PreVoteRpc {
+    int32 term = 1;
+    int32 last_log_index = 2;
+    int32 last_log_term = 4;
+}
+
+message PreVoteResult {
+    int32 term = 1;
+    bool vote_granted = 2;
+}
+
 message RequestVoteRpc {
     int32 term = 1;
     string candidate_id = 2;

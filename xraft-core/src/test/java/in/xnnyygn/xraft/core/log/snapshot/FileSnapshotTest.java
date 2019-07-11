@@ -12,9 +12,9 @@ import java.io.IOException;
 public class FileSnapshotTest {
 
     @Test
-    public void test() throws IOException {
+    public void test() throws Exception {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        FileSnapshotWriter writer = new FileSnapshotWriter(output, 1, 2, ImmutableSet.of(
+        SnapshotWriter writer = new FileSnapshotWriter(output, 1, 2, ImmutableSet.of(
                 new NodeEndpoint("A", "localhost", 2333),
                 new NodeEndpoint("B", "localhost", 2334)
         ));

@@ -50,16 +50,6 @@ public class NodeGroupTest {
     }
 
     @Test
-    public void testDowngrade() {
-        NodeEndpoint endpoint = new NodeEndpoint("A", "localhost", 2333);
-        NodeGroup group = new NodeGroup(endpoint);
-        Assert.assertEquals(1, group.getCountOfMajor());
-        group.downgrade(endpoint.getId());
-        Assert.assertEquals(0, group.getCountOfMajor());
-        Assert.assertTrue(group.findMember(endpoint.getId()).isRemoving());
-    }
-
-    @Test
     public void testResetReplicatingStates() {
         Set<NodeEndpoint> endpoints = new HashSet<>();
         endpoints.add(new NodeEndpoint("A", "localhost", 2333)); // self
@@ -87,20 +77,20 @@ public class NodeGroupTest {
     }
 
     // (A, self, major, 0), (B, peer, major, 10), (C, peer, not major, 0), (D, peer, major, 10)
-    @Test
-    public void testGetMatchIndexOfMajor2() {
-        Set<NodeEndpoint> endpoints = new HashSet<>();
-        endpoints.add(new NodeEndpoint("A", "localhost", 2333)); // self
-        endpoints.add(new NodeEndpoint("B", "localhost", 2334)); // peer
-        endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
-        endpoints.add(new NodeEndpoint("D", "localhost", 2336)); // peer
-        NodeGroup group = new NodeGroup(endpoints, NodeId.of("A"));
-        group.downgrade(NodeId.of("C"));
-        group.resetReplicatingStates(1); // 1
-        group.findMember(NodeId.of("B")).advanceReplicatingState(10);
-        group.findMember(NodeId.of("D")).advanceReplicatingState(10);
-        Assert.assertEquals(10, group.getMatchIndexOfMajor());
-    }
+//    @Test
+//    public void testGetMatchIndexOfMajor2() {
+//        Set<NodeEndpoint> endpoints = new HashSet<>();
+//        endpoints.add(new NodeEndpoint("A", "localhost", 2333)); // self
+//        endpoints.add(new NodeEndpoint("B", "localhost", 2334)); // peer
+//        endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
+//        endpoints.add(new NodeEndpoint("D", "localhost", 2336)); // peer
+//        NodeGroup group = new NodeGroup(endpoints, NodeId.of("A"));
+//        group.downgrade(NodeId.of("C"));
+//        group.resetReplicatingStates(1); // 1
+//        group.findMember(NodeId.of("B")).advanceReplicatingState(10);
+//        group.findMember(NodeId.of("D")).advanceReplicatingState(10);
+//        Assert.assertEquals(10, group.getMatchIndexOfMajor());
+//    }
 
     // standalone
     @Test(expected = IllegalStateException.class)
@@ -120,6 +110,53 @@ public class NodeGroupTest {
         group.resetReplicatingStates(11);
         group.findMember(NodeId.of("B")).advanceReplicatingState(9);
         Assert.assertEquals(9, group.getMatchIndexOfMajor());
+    }
+
+    // (A, self, major, 10), (B, peer, major, 10), (C, peer, major, 0), (D, peer, major, 0)
+    @Test
+    public void testGetMatchIndexOfMajor5() {
+        Set<NodeEndpoint> endpoints = new HashSet<>();
+        endpoints.add(new NodeEndpoint("A", "localhost", 2333)); // self
+        endpoints.add(new NodeEndpoint("B", "localhost", 2334)); // peer
+        endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
+        endpoints.add(new NodeEndpoint("D", "localhost", 2336)); // peer
+        NodeGroup group = new NodeGroup(endpoints, NodeId.of("A"));
+        group.resetReplicatingStates(1); // 1
+        group.findMember(NodeId.of("B")).advanceReplicatingState(10);
+        Assert.assertEquals(0, group.getMatchIndexOfMajor());
+        group.findMember(NodeId.of("C")).advanceReplicatingState(10);
+        Assert.assertEquals(10, group.getMatchIndexOfMajor());
+    }
+
+    @Test
+    public void testGetMatchIndexOfMajor6() {
+        Set<NodeEndpoint> endpoints = new HashSet<>();
+        endpoints.add(new NodeEndpoint("B", "localhost", 2334)); // peer
+        endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
+        endpoints.add(new NodeEndpoint("D", "localhost", 2336)); // peer
+        NodeGroup group = new NodeGroup(endpoints, NodeId.of("A"));
+        group.resetReplicatingStates(1); // 1
+        group.findMember(NodeId.of("B")).advanceReplicatingState(10);
+        Assert.assertEquals(0, group.getMatchIndexOfMajor());
+        group.findMember(NodeId.of("C")).advanceReplicatingState(10);
+        Assert.assertEquals(10, group.getMatchIndexOfMajor());
+    }
+
+    @Test
+    public void testGetMatchIndexOfMajor7() {
+        Set<NodeEndpoint> endpoints = new HashSet<>();
+        endpoints.add(new NodeEndpoint("B", "localhost", 2334)); // peer
+        endpoints.add(new NodeEndpoint("C", "localhost", 2335)); // peer
+        endpoints.add(new NodeEndpoint("D", "localhost", 2336)); // peer
+        endpoints.add(new NodeEndpoint("E", "localhost", 2336)); // peer
+        NodeGroup group = new NodeGroup(endpoints, NodeId.of("A"));
+        group.resetReplicatingStates(1); // 1
+        group.findMember(NodeId.of("B")).advanceReplicatingState(10);
+        Assert.assertEquals(0, group.getMatchIndexOfMajor());
+        group.findMember(NodeId.of("C")).advanceReplicatingState(10);
+        Assert.assertEquals(0, group.getMatchIndexOfMajor());
+        group.findMember(NodeId.of("D")).advanceReplicatingState(10);
+        Assert.assertEquals(10, group.getMatchIndexOfMajor());
     }
 
     @Test

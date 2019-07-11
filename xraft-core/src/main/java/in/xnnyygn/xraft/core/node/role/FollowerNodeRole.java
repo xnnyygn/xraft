@@ -11,13 +11,17 @@ public class FollowerNodeRole extends AbstractNodeRole {
 
     private final NodeId votedFor;
     private final NodeId leaderId;
+    private final int preVotesCount;
     private final ElectionTimeout electionTimeout;
+    private final long lastHeartbeat;
 
-    public FollowerNodeRole(int term, NodeId votedFor, NodeId leaderId, ElectionTimeout electionTimeout) {
+    public FollowerNodeRole(int term, NodeId votedFor, NodeId leaderId, int preVotesCount, long lastHeartbeat, ElectionTimeout electionTimeout) {
         super(RoleName.FOLLOWER, term);
         this.votedFor = votedFor;
         this.leaderId = leaderId;
+        this.preVotesCount = preVotesCount;
         this.electionTimeout = electionTimeout;
+        this.lastHeartbeat = lastHeartbeat;
     }
 
     public NodeId getVotedFor() {
@@ -26,6 +30,14 @@ public class FollowerNodeRole extends AbstractNodeRole {
 
     public NodeId getLeaderId() {
         return leaderId;
+    }
+
+    public int getPreVotesCount() {
+        return preVotesCount;
+    }
+
+    public long getLastHeartbeat() {
+        return lastHeartbeat;
     }
 
     @Override

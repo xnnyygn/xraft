@@ -36,7 +36,8 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 2),
                 new MemoryEntrySequence(4),
-                new EventBus()
+                new EventBus(),
+                Collections.emptySet()
         );
         EntryMeta lastEntryMeta = log.getLastEntryMeta();
         Assert.assertEquals(3, lastEntryMeta.getIndex());
@@ -183,7 +184,8 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 2),
                 new MemoryEntrySequence(4),
-                new EventBus()
+                new EventBus(),
+                Collections.emptySet()
         );
         AppendEntriesRpc rpc = log.createAppendEntriesRpc(
                 2, new NodeId("A"), 4, Log.ALL_ENTRIES
@@ -199,7 +201,8 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 2),
                 new MemoryEntrySequence(4),
-                new EventBus()
+                new EventBus(),
+                Collections.emptySet()
         );
         log.createAppendEntriesRpc(
                 2, new NodeId("A"), 3, Log.ALL_ENTRIES
@@ -211,7 +214,8 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 2),
                 new MemoryEntrySequence(4),
-                new EventBus()
+                new EventBus(),
+                Collections.emptySet()
         );
         log.appendEntry(1); // 4
         log.createAppendEntriesRpc(
@@ -238,7 +242,8 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 4, "test".getBytes(), Collections.emptySet()),
                 new MemoryEntrySequence(4),
-                new EventBus()
+                new EventBus(),
+                Collections.emptySet()
         );
         InstallSnapshotRpc rpc = log.createInstallSnapshotRpc(4, new NodeId("A"), 0, 2);
         Assert.assertEquals(3, rpc.getLastIndex());
@@ -252,7 +257,7 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog();
         log.appendEntryForAddNode(1, Collections.emptySet(), new NodeEndpoint("A", "localhost", 2333));
         log.appendEntryForRemoveNode(1, Collections.emptySet(), new NodeId("A"));
-        GroupConfigEntry entry = log.getLastUncommittedGroupConfigEntry();
+        GroupConfigEntry entry = log.getLastGroupConfigEntry();
         Assert.assertNotNull(entry);
         Assert.assertEquals(Entry.KIND_REMOVE_NODE, entry.getKind());
         Assert.assertEquals(2, entry.getIndex());
@@ -262,7 +267,7 @@ public class MemoryLogTest {
     @Test
     public void testGetLastUncommittedGroupConfigEntryEmpty() {
         MemoryLog log = new MemoryLog();
-        Assert.assertNull(log.getLastUncommittedGroupConfigEntry());
+        Assert.assertNull(log.getLastGroupConfigEntry());
     }
 
     @Test
@@ -270,7 +275,7 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog();
         log.appendEntryForAddNode(1, Collections.emptySet(), new NodeEndpoint("A", "localhost", 2333));
         log.advanceCommitIndex(1, 1);
-        Assert.assertNull(log.getLastUncommittedGroupConfigEntry());
+        Assert.assertNotNull(log.getLastGroupConfigEntry());
     }
 
     @Test
@@ -284,7 +289,8 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 4),
                 new MemoryEntrySequence(4),
-                new EventBus()
+                new EventBus(),
+                Collections.emptySet()
         );
         Assert.assertEquals(4, log.getNextIndex());
     }
@@ -320,26 +326,27 @@ public class MemoryLogTest {
     @Test
     public void testAppendEntryForAddNode() {
         MemoryLog log = new MemoryLog();
-        Assert.assertNull(log.getLastUncommittedGroupConfigEntry());
+        Assert.assertNull(log.getLastGroupConfigEntry());
         log.appendEntryForAddNode(1, Collections.emptySet(), new NodeEndpoint("A", "localhost", 2333));
-        Assert.assertNotNull(log.getLastUncommittedGroupConfigEntry());
+        Assert.assertNotNull(log.getLastGroupConfigEntry());
     }
 
     @Test
     public void testAppendEntryForRemoveNode() {
         MemoryLog log = new MemoryLog();
-        Assert.assertNull(log.getLastUncommittedGroupConfigEntry());
+        Assert.assertNull(log.getLastGroupConfigEntry());
         log.appendEntryForRemoveNode(1, Collections.emptySet(), new NodeId("A"));
-        Assert.assertNotNull(log.getLastUncommittedGroupConfigEntry());
+        Assert.assertNotNull(log.getLastGroupConfigEntry());
     }
 
     @Test
     public void testAppendEntriesFromLeaderNoLog() {
         MemoryLog log = new MemoryLog();
-        Assert.assertTrue(log.appendEntriesFromLeader(0, 0, Arrays.asList(
+        AppendEntriesState state = log.appendEntriesFromLeader(0, 0, Arrays.asList(
                 new NoOpEntry(1, 1),
                 new NoOpEntry(2, 1)
-        )));
+        ));
+        Assert.assertTrue(state.isSuccess());
         Assert.assertEquals(3, log.getNextIndex());
     }
 
@@ -350,9 +357,11 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 4),
                 new MemoryEntrySequence(4),
-                new EventBus()
+                new EventBus(),
+                Collections.emptySet()
         );
-        Assert.assertTrue(log.appendEntriesFromLeader(3, 4, Collections.emptyList()));
+        AppendEntriesState state = log.appendEntriesFromLeader(3, 4, Collections.emptyList());
+        Assert.assertTrue(state.isSuccess());
     }
 
     // prevLogIndex == snapshot.lastIncludedIndex
@@ -362,9 +371,11 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 4),
                 new MemoryEntrySequence(4),
-                new EventBus()
+                new EventBus(),
+                Collections.emptySet()
         );
-        Assert.assertFalse(log.appendEntriesFromLeader(3, 5, Collections.emptyList()));
+        AppendEntriesState state = log.appendEntriesFromLeader(3, 5, Collections.emptyList());
+        Assert.assertFalse(state.isSuccess());
     }
 
     // prevLogIndex < snapshot.lastIncludedIndex
@@ -373,23 +384,27 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 4),
                 new MemoryEntrySequence(4),
-                new EventBus()
+                new EventBus(),
+                Collections.emptySet()
         );
-        Assert.assertFalse(log.appendEntriesFromLeader(1, 4, Collections.emptyList()));
+        AppendEntriesState state = log.appendEntriesFromLeader(1, 4, Collections.emptyList());
+        Assert.assertFalse(state.isSuccess());
     }
 
     @Test
     public void testAppendEntriesFromLeaderPrevLogNotFound() {
         MemoryLog log = new MemoryLog();
         Assert.assertEquals(1, log.getNextIndex());
-        Assert.assertFalse(log.appendEntriesFromLeader(1, 1, Collections.emptyList()));
+        AppendEntriesState state = log.appendEntriesFromLeader(1, 1, Collections.emptyList());
+        Assert.assertFalse(state.isSuccess());
     }
 
     @Test
     public void testAppendEntriesFromLeaderPrevLogTermNotMatch() {
         MemoryLog log = new MemoryLog();
         log.appendEntry(1);
-        Assert.assertFalse(log.appendEntriesFromLeader(1, 2, Collections.emptyList()));
+        AppendEntriesState state = log.appendEntriesFromLeader(1, 2, Collections.emptyList());
+        Assert.assertFalse(state.isSuccess());
     }
 
     // (index, term)
@@ -404,7 +419,8 @@ public class MemoryLogTest {
                 new NoOpEntry(2, 1),
                 new NoOpEntry(3, 2)
         );
-        Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
+        AppendEntriesState state = log.appendEntriesFromLeader(1, 1, leaderEntries);
+        Assert.assertTrue(state.isSuccess());
     }
 
     @Test
@@ -415,7 +431,8 @@ public class MemoryLogTest {
                 new NoOpEntry(2, 1),
                 new NoOpEntry(3, 1)
         );
-        Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
+        AppendEntriesState state = log.appendEntriesFromLeader(1, 1, leaderEntries);
+        Assert.assertTrue(state.isSuccess());
     }
 
     // follower: (1, 1), (2, 1)
@@ -429,7 +446,8 @@ public class MemoryLogTest {
                 new NoOpEntry(2, 2),
                 new NoOpEntry(3, 2)
         );
-        Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
+        AppendEntriesState state = log.appendEntriesFromLeader(1, 1, leaderEntries);
+        Assert.assertTrue(state.isSuccess());
     }
 
     // follower: (1, 1), (2, 1), (3, 1)
@@ -444,7 +462,8 @@ public class MemoryLogTest {
                 new NoOpEntry(2, 1),
                 new NoOpEntry(3, 2)
         );
-        Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
+        AppendEntriesState state = log.appendEntriesFromLeader(1, 1, leaderEntries);
+        Assert.assertTrue(state.isSuccess());
     }
 
     // follower: (1, 1), (2, 1), (3, 1, no-op, committed)
@@ -460,7 +479,8 @@ public class MemoryLogTest {
                 new NoOpEntry(2, 1),
                 new NoOpEntry(3, 2)
         );
-        Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
+        AppendEntriesState state = log.appendEntriesFromLeader(1, 1, leaderEntries);
+        Assert.assertTrue(state.isSuccess());
     }
 
     // follower: (1, 1), (2, 1), (3, 1, general, committed)
@@ -476,7 +496,8 @@ public class MemoryLogTest {
                 new NoOpEntry(2, 1),
                 new NoOpEntry(3, 2)
         );
-        Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
+        AppendEntriesState state = log.appendEntriesFromLeader(1, 1, leaderEntries);
+        Assert.assertTrue(state.isSuccess());
         Assert.assertEquals(2, log.getCommitIndex());
     }
 
@@ -493,7 +514,8 @@ public class MemoryLogTest {
                 new NoOpEntry(2, 1),
                 new NoOpEntry(3, 2)
         );
-        Assert.assertTrue(log.appendEntriesFromLeader(1, 1, leaderEntries));
+        AppendEntriesState state = log.appendEntriesFromLeader(1, 1, leaderEntries);
+        Assert.assertTrue(state.isSuccess());
         Assert.assertEquals(2, log.getCommitIndex());
     }
 
@@ -545,7 +567,8 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 4),
                 new MemoryEntrySequence(4),
-                new EventBus()
+                new EventBus(),
+                Collections.emptySet()
         );
         log.setStateMachine(stateMachine);
         log.appendEntry(4, "test".getBytes()); // index 4
@@ -568,7 +591,8 @@ public class MemoryLogTest {
         MemoryLog log = new MemoryLog(
                 new MemorySnapshot(3, 4),
                 new MemoryEntrySequence(4),
-                new EventBus()
+                new EventBus(),
+                Collections.emptySet()
         );
         InstallSnapshotRpc rpc = new InstallSnapshotRpc();
         rpc.setLastIndex(2);

@@ -1,10 +1,8 @@
 package in.xnnyygn.xraft.core.node;
 
 import com.google.common.collect.ImmutableSet;
-import in.xnnyygn.xraft.core.log.entry.*;
-import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
-import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
-import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
+import in.xnnyygn.xraft.core.log.entry.Entry;
+import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 import in.xnnyygn.xraft.core.node.config.NodeConfig;
 import in.xnnyygn.xraft.core.node.role.RoleName;
 import in.xnnyygn.xraft.core.node.role.RoleState;
@@ -655,24 +653,24 @@ public class NodeImplTest {
         node.cancelGroupConfigChangeTask();
     }
 
-    @Test
-    public void testOnReceiveRequestVoteRpcNotMajor() {
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .setStore(new MemoryNodeStore(1, null))
-                .build();
-        node.start();
-        node.getContext().group().downgrade(NodeId.of("C"));
-        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(
-                new RequestVoteRpc(), NodeId.of("C"), null));
-        MockConnector mockConnector = (MockConnector) node.getContext().connector();
-        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
-        Assert.assertEquals(1, result.getTerm());
-        Assert.assertFalse(result.isVoteGranted());
-    }
+//    @Test
+//    public void testOnReceiveRequestVoteRpcNotMajor() {
+//        NodeImpl node = (NodeImpl) newNodeBuilder(
+//                NodeId.of("A"),
+//                new NodeEndpoint("A", "localhost", 2333),
+//                new NodeEndpoint("B", "localhost", 2334),
+//                new NodeEndpoint("C", "localhost", 2335))
+//                .setStore(new MemoryNodeStore(1, null))
+//                .build();
+//        node.start();
+//        node.getContext().group().downgrade(NodeId.of("C"));
+//        node.onReceiveRequestVoteRpc(new RequestVoteRpcMessage(
+//                new RequestVoteRpc(), NodeId.of("C"), null));
+//        MockConnector mockConnector = (MockConnector) node.getContext().connector();
+//        RequestVoteResult result = (RequestVoteResult) mockConnector.getResult();
+//        Assert.assertEquals(1, result.getTerm());
+//        Assert.assertFalse(result.isVoteGranted());
+//    }
 
     @Test
     public void testOnReceiveRequestVoteRpcUnknownNode() {
@@ -1117,6 +1115,25 @@ public class NodeImplTest {
     }
 
     @Test
+    public void testOnReceiveAppendEntriesNormal() {
+        NodeImpl node = (NodeImpl) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335)
+        ).build();
+        node.start();
+        node.electionTimeout(); // become candidate
+        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
+        node.replicateLog();
+        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
+                new AppendEntriesResult("", 1, true),
+                NodeId.of("B"),
+                new AppendEntriesRpc()
+        ));
+    }
+
+    @Test
     public void testOnReceiveAppendEntriesResultPeerNotCatchUp() {
         NodeImpl node = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
@@ -1237,25 +1254,25 @@ public class NodeImplTest {
                 NodeId.of("D"), createAppendEntriesRpc(1)));
     }
 
-    @Test
-    public void testOnReceiveAppendEntriesResultNodeRemoving() {
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .build();
-        node.start();
-        node.electionTimeout(); // become candidate
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        GroupMember member = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2, 0, false);
-        member.replicateNow();
-        member.setRemoving();
-        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
-                new AppendEntriesResult("", 1, true),
-                NodeId.of("D"), createAppendEntriesRpc(1)));
-        Assert.assertFalse(member.isReplicating());
-    }
+//    @Test
+//    public void testOnReceiveAppendEntriesResultNodeRemoving() {
+//        NodeImpl node = (NodeImpl) newNodeBuilder(
+//                NodeId.of("A"),
+//                new NodeEndpoint("A", "localhost", 2333),
+//                new NodeEndpoint("B", "localhost", 2334),
+//                new NodeEndpoint("C", "localhost", 2335))
+//                .build();
+//        node.start();
+//        node.electionTimeout(); // become candidate
+//        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
+//        GroupMember member = node.getContext().group().addNode(new NodeEndpoint("D", "localhost", 2336), 2, 0, false);
+//        member.replicateNow();
+//        member.setRemoving();
+//        node.onReceiveAppendEntriesResult(new AppendEntriesResultMessage(
+//                new AppendEntriesResult("", 1, true),
+//                NodeId.of("D"), createAppendEntriesRpc(1)));
+//        Assert.assertFalse(member.isReplicating());
+//    }
 
     @Test
     public void testOnReceiveInstallSnapshotRpcSmallerTerm() {
@@ -1412,92 +1429,6 @@ public class NodeImplTest {
                 new InstallSnapshotResult(2), NodeId.of("C"), installSnapshotRpc));
         Assert.assertEquals(NodeId.of("C"), mockConnector.getDestinationNodeId());
         Assert.assertTrue(mockConnector.getRpc() instanceof InstallSnapshotRpc);
-    }
-
-    @Test
-    public void testOnGroupConfigEntryFromLeaderAppend() {
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .build();
-        node.start();
-        GroupConfigEntry groupConfigEntry = new AddNodeEntry(1, 1,
-                node.getContext().group().listEndpointOfMajor(),
-                new NodeEndpoint("D", "localhost", 2336));
-        node.onGroupConfigEntryFromLeaderAppend(new GroupConfigEntryFromLeaderAppendEvent(groupConfigEntry));
-        Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
-    }
-
-    @Test
-    public void testOnGroupConfigEntryFromLeaderAppendRemove() {
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .build();
-        node.start();
-        GroupConfigEntry groupConfigEntry = new RemoveNodeEntry(1, 1,
-                node.getContext().group().listEndpointOfMajor(),
-                NodeId.of("B"));
-        node.onGroupConfigEntryFromLeaderAppend(new GroupConfigEntryFromLeaderAppendEvent(groupConfigEntry));
-        Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
-    }
-
-    @Test
-    public void testOnGroupConfigEntryFromLeaderAppendRemoveSelf() {
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .build();
-        node.start();
-        GroupConfigEntry groupConfigEntry = new RemoveNodeEntry(1, 1,
-                node.getContext().group().listEndpointOfMajor(),
-                NodeId.of("A"));
-        node.onGroupConfigEntryFromLeaderAppend(new GroupConfigEntryFromLeaderAppendEvent(groupConfigEntry));
-        Assert.assertEquals(2, node.getContext().group().getCountOfMajor());
-        RoleState state = node.getRoleState();
-        Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
-    }
-
-    @Test
-    public void testOnGroupConfigEntryCommittedAddNode() {
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .build();
-        node.start();
-        node.electionTimeout(); // become candidate
-        node.onReceiveRequestVoteResult(new RequestVoteResult(1, true)); // become leader
-        AddNodeEntry groupConfigEntry = new AddNodeEntry(2, 1,
-                node.getContext().group().listEndpointOfMajor(),
-                new NodeEndpoint("D", "localhost", 2336));
-        node.onGroupConfigEntryCommitted(new GroupConfigEntryCommittedEvent(groupConfigEntry));
-    }
-
-    @Test
-    public void testOnGroupConfigEntryBatchRemoved() {
-        NodeImpl node = (NodeImpl) newNodeBuilder(
-                NodeId.of("A"),
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335))
-                .build();
-        node.start();
-        GroupConfigEntry groupConfigEntry = new RemoveNodeEntry(1, 1, ImmutableSet.of(
-                new NodeEndpoint("A", "localhost", 2333),
-                new NodeEndpoint("B", "localhost", 2334),
-                new NodeEndpoint("C", "localhost", 2335),
-                new NodeEndpoint("D", "localhost", 2336)
-        ), NodeId.of("D"));
-        node.onGroupConfigEntryBatchRemoved(new GroupConfigEntryBatchRemovedEvent(groupConfigEntry));
-        Assert.assertEquals(4, node.getContext().group().getCountOfMajor());
     }
 
     @AfterClass

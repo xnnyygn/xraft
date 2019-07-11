@@ -1,5 +1,6 @@
 package in.xnnyygn.xraft.core.node.task;
 
+import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,7 @@ abstract class AbstractGroupConfigChangeTask implements GroupConfigChangeTask {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractGroupConfigChangeTask.class);
     protected final GroupConfigChangeTaskContext context;
+    private volatile GroupConfigEntry groupConfigEntry;
     protected State state = State.START;
 
     AbstractGroupConfigChangeTask(GroupConfigChangeTaskContext context) {
@@ -25,21 +27,38 @@ abstract class AbstractGroupConfigChangeTask implements GroupConfigChangeTask {
         logger.debug("task start");
         setState(State.START);
         appendGroupConfig();
-        setState(State.GROUP_CONFIG_APPENDED);
+        logger.debug("start waiting");
         wait();
         logger.debug("task done");
         context.done();
         return mapResult(state);
-
     }
 
-    private GroupConfigChangeTaskResult mapResult(State state) {
-        switch (state) {
-            case GROUP_CONFIG_COMMITTED:
-                return GroupConfigChangeTaskResult.OK;
-            default:
-                return GroupConfigChangeTaskResult.TIMEOUT;
+    @Override
+    public synchronized void setGroupConfigEntry(GroupConfigEntry entry) {
+        logger.debug("set group config entry {}", entry);
+        this.groupConfigEntry = entry;
+        setState(State.GROUP_CONFIG_APPENDED);
+    }
+
+    private boolean isTargetGroupConfig(GroupConfigEntry entry) {
+        return this.groupConfigEntry != null && this.groupConfigEntry.getIndex() == entry.getIndex();
+    }
+
+    @Override
+    public void onLogCommitted(GroupConfigEntry entry) {
+        if (isTargetGroupConfig(entry)) {
+            doOnLogCommitted(entry);
         }
+    }
+
+    protected abstract void doOnLogCommitted(GroupConfigEntry entry);
+
+    private GroupConfigChangeTaskResult mapResult(State state) {
+        if (state == State.GROUP_CONFIG_COMMITTED) {
+            return GroupConfigChangeTaskResult.OK;
+        }
+        return GroupConfigChangeTaskResult.TIMEOUT;
     }
 
     protected void setState(State state) {
@@ -48,14 +67,5 @@ abstract class AbstractGroupConfigChangeTask implements GroupConfigChangeTask {
     }
 
     protected abstract void appendGroupConfig();
-
-    @Override
-    public synchronized void onLogCommitted() {
-        if (state != State.GROUP_CONFIG_APPENDED) {
-            throw new IllegalStateException("log committed before log appended");
-        }
-        setState(State.GROUP_CONFIG_COMMITTED);
-        notify();
-    }
 
 }

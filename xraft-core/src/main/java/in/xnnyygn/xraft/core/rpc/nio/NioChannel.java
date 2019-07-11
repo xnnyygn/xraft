@@ -15,6 +15,16 @@ class NioChannel implements Channel {
     }
 
     @Override
+    public void writePreVoteRpc(@Nonnull PreVoteRpc rpc) {
+        nettyChannel.writeAndFlush(rpc);
+    }
+
+    @Override
+    public void writePreVoteResult(@Nonnull PreVoteResult result) {
+        nettyChannel.writeAndFlush(result);
+    }
+
+    @Override
     public void writeRequestVoteRpc(@Nonnull RequestVoteRpc rpc) {
         nettyChannel.writeAndFlush(rpc);
     }

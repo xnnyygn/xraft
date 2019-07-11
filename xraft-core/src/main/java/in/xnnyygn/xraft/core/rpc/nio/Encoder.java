@@ -6,6 +6,7 @@ import in.xnnyygn.xraft.core.Protos;
 import in.xnnyygn.xraft.core.node.NodeId;
 import in.xnnyygn.xraft.core.rpc.message.*;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
@@ -87,13 +88,29 @@ class Encoder extends MessageToByteEncoder<Object> {
             Protos.InstallSnapshotResult protoResult = Protos.InstallSnapshotResult.newBuilder()
                     .setTerm(result.getTerm()).build();
             this.writeMessage(out, MessageConstants.MSG_TYPE_INSTALL_SNAPSHOT_RESULT, protoResult);
+        } else if(msg instanceof PreVoteRpc) {
+            PreVoteRpc rpc = (PreVoteRpc) msg;
+            Protos.PreVoteRpc protoRpc = Protos.PreVoteRpc.newBuilder()
+                    .setTerm(rpc.getTerm())
+                    .setLastLogIndex(rpc.getLastLogIndex())
+                    .setLastLogTerm(rpc.getLastLogTerm())
+                    .build();
+            this.writeMessage(out, MessageConstants.MSG_TYPE_PRE_VOTE_RPC, protoRpc);
+        } else if(msg instanceof PreVoteResult) {
+            PreVoteResult result = (PreVoteResult) msg;
+            Protos.PreVoteResult protoResult = Protos.PreVoteResult.newBuilder()
+                    .setTerm(result.getTerm())
+                    .setVoteGranted(result.isVoteGranted())
+                    .build();
+            this.writeMessage(out, MessageConstants.MSG_TYPE_PRE_VOTE_RESULT, protoResult);
         }
     }
 
     private void writeMessage(ByteBuf out, int messageType, MessageLite message) throws IOException {
+        out.writeInt(messageType);
+//        message.writeDelimitedTo(new ByteBufOutputStream(out));
         ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
         message.writeTo(byteOutput);
-        out.writeInt(messageType);
         this.writeBytes(out, byteOutput.toByteArray());
     }
 

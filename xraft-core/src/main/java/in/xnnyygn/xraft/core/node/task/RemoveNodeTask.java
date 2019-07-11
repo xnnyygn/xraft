@@ -1,36 +1,33 @@
 package in.xnnyygn.xraft.core.node.task;
 
+import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
 import in.xnnyygn.xraft.core.node.NodeId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RemoveNodeTask extends AbstractGroupConfigChangeTask {
 
-    private static final Logger logger = LoggerFactory.getLogger(RemoveNodeTask.class);
     private final NodeId nodeId;
+    private final NodeId selfId;
 
-    public RemoveNodeTask(GroupConfigChangeTaskContext context, NodeId nodeId) {
+    public RemoveNodeTask(GroupConfigChangeTaskContext context, NodeId nodeId, NodeId selfId) {
         super(context);
         this.nodeId = nodeId;
-    }
-
-    @Override
-    public boolean isTargetNode(NodeId nodeId) {
-        return this.nodeId.equals(nodeId);
+        this.selfId = selfId;
     }
 
     @Override
     protected void appendGroupConfig() {
-        context.downgradeNode(nodeId);
+        context.removeNode(nodeId);
     }
 
     @Override
-    public synchronized void onLogCommitted() {
+    protected synchronized void doOnLogCommitted(GroupConfigEntry entry) {
         if (state != State.GROUP_CONFIG_APPENDED) {
             throw new IllegalStateException("log committed before log appended");
         }
         setState(State.GROUP_CONFIG_COMMITTED);
-        context.removeNode(nodeId);
+        if (nodeId.equals(selfId)) {
+            context.downgradeSelf();
+        }
         notify();
     }
 

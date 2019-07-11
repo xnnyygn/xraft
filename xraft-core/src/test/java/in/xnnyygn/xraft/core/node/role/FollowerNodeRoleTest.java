@@ -10,7 +10,7 @@ public class FollowerNodeRoleTest {
 
     @Test
     public void testGetNameAndLeaderId() {
-        FollowerNodeRole role = new FollowerNodeRole(1, null, null, ElectionTimeout.NONE);
+        FollowerNodeRole role = new FollowerNodeRole(1, null, null, 0, System.currentTimeMillis(), ElectionTimeout.NONE);
         RoleNameAndLeaderId state = role.getNameAndLeaderId(NodeId.of("B"));
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertNull(state.getLeaderId());
@@ -18,7 +18,7 @@ public class FollowerNodeRoleTest {
 
     @Test
     public void testGetNameAndLeaderId2() {
-        FollowerNodeRole role = new FollowerNodeRole(1, null, NodeId.of("A"), ElectionTimeout.NONE);
+        FollowerNodeRole role = new FollowerNodeRole(1, null, NodeId.of("A"), 0, System.currentTimeMillis(), ElectionTimeout.NONE);
         RoleNameAndLeaderId state = role.getNameAndLeaderId(NodeId.of("B"));
         Assert.assertEquals(RoleName.FOLLOWER, state.getRoleName());
         Assert.assertEquals(NodeId.of("A"), state.getLeaderId());
@@ -26,7 +26,7 @@ public class FollowerNodeRoleTest {
 
     @Test
     public void testGetState() {
-        FollowerNodeRole role = new FollowerNodeRole(1, NodeId.of("B"), NodeId.of("A"), ElectionTimeout.NONE);
+        FollowerNodeRole role = new FollowerNodeRole(1, NodeId.of("B"), NodeId.of("A"), 0, System.currentTimeMillis(), ElectionTimeout.NONE);
         RoleState state = role.getState();
         Assert.assertEquals(1, state.getTerm());
         Assert.assertEquals(NodeId.of("B"), state.getVotedFor());
@@ -35,21 +35,21 @@ public class FollowerNodeRoleTest {
 
     @Test
     public void testStateEquals() {
-        FollowerNodeRole role1 = new FollowerNodeRole(1, NodeId.of("A"), null, ElectionTimeout.NONE);
-        FollowerNodeRole role2 = new FollowerNodeRole(1, NodeId.of("A"), null, ElectionTimeout.NONE);
+        FollowerNodeRole role1 = new FollowerNodeRole(1, NodeId.of("A"), null, 0, System.currentTimeMillis(), ElectionTimeout.NONE);
+        FollowerNodeRole role2 = new FollowerNodeRole(1, NodeId.of("A"), null, 0, System.currentTimeMillis(), ElectionTimeout.NONE);
         Assert.assertTrue(role1.stateEquals(role2));
     }
 
     @Test
     public void testStateEqualsDifferentLeaderId() {
-        FollowerNodeRole role1 = new FollowerNodeRole(1, NodeId.of("A"), null, ElectionTimeout.NONE);
-        FollowerNodeRole role2 = new FollowerNodeRole(1, NodeId.of("A"), NodeId.of("A"), ElectionTimeout.NONE);
+        FollowerNodeRole role1 = new FollowerNodeRole(1, NodeId.of("A"), null, 0, System.currentTimeMillis(), ElectionTimeout.NONE);
+        FollowerNodeRole role2 = new FollowerNodeRole(1, NodeId.of("A"), NodeId.of("A"), 0, System.currentTimeMillis(), ElectionTimeout.NONE);
         Assert.assertFalse(role1.stateEquals(role2));
     }
 
     @Test
     public void testStateEqualsDifferentRoleName() {
-        FollowerNodeRole role1 = new FollowerNodeRole(1, NodeId.of("A"), null, ElectionTimeout.NONE);
+        FollowerNodeRole role1 = new FollowerNodeRole(1, NodeId.of("A"), null, 0, System.currentTimeMillis(), ElectionTimeout.NONE);
         LeaderNodeRole role2 = new LeaderNodeRole(1, LogReplicationTask.NONE);
         Assert.assertFalse(role1.stateEquals(role2));
     }

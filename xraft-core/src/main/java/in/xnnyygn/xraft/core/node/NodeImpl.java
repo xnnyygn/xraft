@@ -4,17 +4,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
+import in.xnnyygn.xraft.core.log.AppendEntriesState;
 import in.xnnyygn.xraft.core.log.InstallSnapshotState;
-import in.xnnyygn.xraft.core.log.entry.Entry;
-import in.xnnyygn.xraft.core.log.entry.RemoveNodeEntry;
-import in.xnnyygn.xraft.core.log.statemachine.StateMachine;
+import in.xnnyygn.xraft.core.log.entry.AddNodeEntry;
 import in.xnnyygn.xraft.core.log.entry.EntryMeta;
 import in.xnnyygn.xraft.core.log.entry.GroupConfigEntry;
-import in.xnnyygn.xraft.core.log.event.GroupConfigEntryBatchRemovedEvent;
-import in.xnnyygn.xraft.core.log.event.GroupConfigEntryCommittedEvent;
-import in.xnnyygn.xraft.core.log.event.GroupConfigEntryFromLeaderAppendEvent;
-import in.xnnyygn.xraft.core.log.event.SnapshotGenerateEvent;
+import in.xnnyygn.xraft.core.log.entry.RemoveNodeEntry;
+import in.xnnyygn.xraft.core.log.event.SnapshotGeneratedEvent;
 import in.xnnyygn.xraft.core.log.snapshot.EntryInSnapshotException;
+import in.xnnyygn.xraft.core.log.statemachine.StateMachine;
 import in.xnnyygn.xraft.core.node.role.*;
 import in.xnnyygn.xraft.core.node.store.NodeStore;
 import in.xnnyygn.xraft.core.node.task.*;
@@ -28,9 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
@@ -67,7 +63,12 @@ public class NodeImpl implements Node {
     private final NewNodeCatchUpTaskContext newNodeCatchUpTaskContext = new NewNodeCatchUpTaskContextImpl();
     private final NewNodeCatchUpTaskGroup newNodeCatchUpTaskGroup = new NewNodeCatchUpTaskGroup();
     private final GroupConfigChangeTaskContext groupConfigChangeTaskContext = new GroupConfigChangeTaskContextImpl();
-    private volatile GroupConfigChangeTaskHolder groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder();
+    private volatile GroupConfigChangeTask currentGroupConfigChangeTask = GroupConfigChangeTask.NONE;
+    private volatile GroupConfigChangeTaskReference currentGroupConfigChangeTaskReference
+            = new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.OK);
+
+    // Map<RequestId, ReadIndexTask>
+    private final Map<String, ReadIndexTask> readIndexTaskMap = new HashMap<>();
 
     /**
      * Create with context.
@@ -123,9 +124,12 @@ public class NodeImpl implements Node {
         context.eventBus().register(this);
         context.connector().initialize();
 
+        Set<NodeEndpoint> lastGroup = context.log().getLastGroup();
+        context.group().updateNodes(lastGroup);
+
         // load term, votedFor from store and become follower
         NodeStore store = context.store();
-        changeToRole(new FollowerNodeRole(store.getTerm(), store.getVotedFor(), null, scheduleElectionTimeout()));
+        changeToRole(new FollowerNodeRole(store.getTerm(), store.getVotedFor(), null, 0, 0, scheduleElectionTimeout()));
         started = true;
     }
 
@@ -135,6 +139,21 @@ public class NodeImpl implements Node {
         ensureLeader();
         context.taskExecutor().submit(() -> {
             context.log().appendEntry(role.getTerm(), commandBytes);
+            doReplicateLog();
+        }, LOGGING_FUTURE_CALLBACK);
+    }
+
+    @Override
+    public void enqueueReadIndex(@Nonnull String requestId) {
+        context.taskExecutor().submit(() -> {
+            ReadIndexTask task = new ReadIndexTask(
+                    context.log().getCommitIndex(),
+                    context.group().listIdOfMajorExceptSelf(),
+                    context.log().getStateMachine(),
+                    requestId
+            );
+            logger.debug("enqueue read index task {}", task);
+            readIndexTaskMap.put(requestId, task);
             doReplicateLog();
         }, LOGGING_FUTURE_CALLBACK);
     }
@@ -187,15 +206,14 @@ public class NodeImpl implements Node {
         synchronized (this) {
 
             // it will happen when try to add two or more nodes at the same time
-            if (!groupConfigChangeTaskHolder.isEmpty()) {
+            if (currentGroupConfigChangeTask != GroupConfigChangeTask.NONE) {
                 throw new IllegalStateException("group config change concurrently");
             }
 
-            AddNodeTask addNodeTask = new AddNodeTask(groupConfigChangeTaskContext, endpoint, newNodeCatchUpTaskResult);
-            Future<GroupConfigChangeTaskResult> future = context.groupConfigChangeTaskExecutor().submit(addNodeTask);
-            GroupConfigChangeTaskReference reference = new FutureGroupConfigChangeTaskReference(future);
-            groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder(addNodeTask, reference);
-            return reference;
+            currentGroupConfigChangeTask = new AddNodeTask(groupConfigChangeTaskContext, endpoint, newNodeCatchUpTaskResult);
+            Future<GroupConfigChangeTaskResult> future = context.groupConfigChangeTaskExecutor().submit(currentGroupConfigChangeTask);
+            currentGroupConfigChangeTaskReference = new FutureGroupConfigChangeTaskReference(future);
+            return currentGroupConfigChangeTaskReference;
         }
     }
 
@@ -209,7 +227,7 @@ public class NodeImpl implements Node {
     @Nullable
     private GroupConfigChangeTaskResult awaitPreviousGroupConfigChangeTask() {
         try {
-            groupConfigChangeTaskHolder.awaitDone(context.config().getPreviousGroupConfigChangeTimeout());
+            currentGroupConfigChangeTaskReference.awaitDone(context.config().getPreviousGroupConfigChangeTimeout());
             return null;
         } catch (InterruptedException ignored) {
             return GroupConfigChangeTaskResult.ERROR;
@@ -249,15 +267,14 @@ public class NodeImpl implements Node {
         synchronized (this) {
 
             // it will happen when try to remove two or more nodes at the same time
-            if (!groupConfigChangeTaskHolder.isEmpty()) {
+            if (currentGroupConfigChangeTask != GroupConfigChangeTask.NONE) {
                 throw new IllegalStateException("group config change concurrently");
             }
 
-            RemoveNodeTask task = new RemoveNodeTask(groupConfigChangeTaskContext, id);
-            Future<GroupConfigChangeTaskResult> future = context.groupConfigChangeTaskExecutor().submit(task);
-            GroupConfigChangeTaskReference reference = new FutureGroupConfigChangeTaskReference(future);
-            groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder(task, reference);
-            return reference;
+            currentGroupConfigChangeTask = new RemoveNodeTask(groupConfigChangeTaskContext, id, context.selfId());
+            Future<GroupConfigChangeTaskResult> future = context.groupConfigChangeTaskExecutor().submit(currentGroupConfigChangeTask);
+            currentGroupConfigChangeTaskReference = new FutureGroupConfigChangeTaskReference(future);
+            return currentGroupConfigChangeTaskReference;
         }
     }
 
@@ -265,12 +282,13 @@ public class NodeImpl implements Node {
      * Cancel current group config change task
      */
     synchronized void cancelGroupConfigChangeTask() {
-        if (groupConfigChangeTaskHolder.isEmpty()) {
+        if (currentGroupConfigChangeTask == GroupConfigChangeTask.NONE) {
             return;
         }
         logger.info("cancel group config change task");
-        groupConfigChangeTaskHolder.cancel();
-        groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder();
+        currentGroupConfigChangeTaskReference.cancel();
+        currentGroupConfigChangeTask = GroupConfigChangeTask.NONE;
+        currentGroupConfigChangeTaskReference = new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.OK);
     }
 
     /**
@@ -289,8 +307,6 @@ public class NodeImpl implements Node {
             return;
         }
 
-        // follower: start election
-        // candidate: restart election
         int newTerm = role.getTerm() + 1;
         role.cancelTimeoutOrTask();
 
@@ -306,18 +322,35 @@ public class NodeImpl implements Node {
                 context.log().appendEntry(newTerm); // no-op log
             }
         } else {
-            logger.info("start election");
-            changeToRole(new CandidateNodeRole(newTerm, scheduleElectionTimeout()));
+            if (role.getName() == RoleName.FOLLOWER) {
+                // pre-vote
+                changeToRole(new FollowerNodeRole(role.getTerm(), null, null, 1, 0, scheduleElectionTimeout()));
 
-            // request vote
-            EntryMeta lastEntryMeta = context.log().getLastEntryMeta();
-            RequestVoteRpc rpc = new RequestVoteRpc();
-            rpc.setTerm(newTerm);
-            rpc.setCandidateId(context.selfId());
-            rpc.setLastLogIndex(lastEntryMeta.getIndex());
-            rpc.setLastLogTerm(lastEntryMeta.getTerm());
-            context.connector().sendRequestVote(rpc, context.group().listEndpointOfMajorExceptSelf());
+                EntryMeta lastEntryMeta = context.log().getLastEntryMeta();
+                PreVoteRpc rpc = new PreVoteRpc();
+                rpc.setTerm(role.getTerm());
+                rpc.setLastLogIndex(lastEntryMeta.getIndex());
+                rpc.setLastLogTerm(lastEntryMeta.getTerm());
+                context.connector().sendPreVote(rpc, context.group().listEndpointOfMajorExceptSelf());
+            } else {
+                // candidate
+                startElection(newTerm);
+            }
         }
+    }
+
+    private void startElection(int term) {
+        logger.info("start election, term {}", term);
+        changeToRole(new CandidateNodeRole(term, scheduleElectionTimeout()));
+
+        // request vote
+        EntryMeta lastEntryMeta = context.log().getLastEntryMeta();
+        RequestVoteRpc rpc = new RequestVoteRpc();
+        rpc.setTerm(term);
+        rpc.setCandidateId(context.selfId());
+        rpc.setLastLogIndex(lastEntryMeta.getIndex());
+        rpc.setLastLogTerm(lastEntryMeta.getTerm());
+        context.connector().sendRequestVote(rpc, context.group().listEndpointOfMajorExceptSelf());
     }
 
     /**
@@ -326,15 +359,16 @@ public class NodeImpl implements Node {
      * @param term                    term
      * @param votedFor                voted for
      * @param leaderId                leader id
+     * @param lastHeartbeat           last heart beat
      * @param scheduleElectionTimeout schedule election timeout or not
      */
-    private void becomeFollower(int term, NodeId votedFor, NodeId leaderId, boolean scheduleElectionTimeout) {
+    private void becomeFollower(int term, NodeId votedFor, NodeId leaderId, long lastHeartbeat, boolean scheduleElectionTimeout) {
         role.cancelTimeoutOrTask();
         if (leaderId != null && !leaderId.equals(role.getLeaderId(context.selfId()))) {
             logger.info("current leader is {}, term {}", leaderId, term);
         }
         ElectionTimeout electionTimeout = scheduleElectionTimeout ? scheduleElectionTimeout() : ElectionTimeout.NONE;
-        changeToRole(new FollowerNodeRole(term, votedFor, leaderId, electionTimeout));
+        changeToRole(new FollowerNodeRole(term, votedFor, leaderId, 0, lastHeartbeat, electionTimeout));
     }
 
     /**
@@ -453,6 +487,43 @@ public class NodeImpl implements Node {
         }
     }
 
+    @Subscribe
+    public void onReceivePreVoteRpc(PreVoteRpcMessage rpcMessage) {
+        context.taskExecutor().submit(() ->
+                        context.connector().replyPreVote(doProcessPreVoteRpc(rpcMessage), rpcMessage),
+                LOGGING_FUTURE_CALLBACK
+        );
+    }
+
+    private PreVoteResult doProcessPreVoteRpc(PreVoteRpcMessage rpcMessage) {
+        PreVoteRpc rpc = rpcMessage.get();
+        return new PreVoteResult(role.getTerm(), !context.log().isNewerThan(rpc.getLastLogIndex(), rpc.getLastLogTerm()));
+    }
+
+    @Subscribe
+    public void onReceivePreVoteResult(PreVoteResult result) {
+        context.taskExecutor().submit(() -> doProcessPreVoteResult(result), LOGGING_FUTURE_CALLBACK);
+    }
+
+    private void doProcessPreVoteResult(PreVoteResult result) {
+        if (role.getName() != RoleName.FOLLOWER) {
+            logger.warn("receive pre vote result when current role is not follower, ignore");
+            return;
+        }
+        if (!result.isVoteGranted()) {
+            return;
+        }
+        int currentPreVotesCount = ((FollowerNodeRole) role).getPreVotesCount() + 1;
+        int countOfMajor = context.group().getCountOfMajor();
+        logger.debug("pre votes count {}, major node count {}", currentPreVotesCount, countOfMajor);
+        role.cancelTimeoutOrTask();
+        if (currentPreVotesCount > countOfMajor / 2) {
+            startElection(role.getTerm() + 1);
+        } else {
+            changeToRole(new FollowerNodeRole(role.getTerm(), null, null, currentPreVotesCount, 0, scheduleElectionTimeout()));
+        }
+    }
+
     /**
      * Receive request vote rpc.
      * <p>
@@ -464,7 +535,12 @@ public class NodeImpl implements Node {
     @Subscribe
     public void onReceiveRequestVoteRpc(RequestVoteRpcMessage rpcMessage) {
         context.taskExecutor().submit(
-                () -> context.connector().replyRequestVote(doProcessRequestVoteRpc(rpcMessage), rpcMessage),
+                () -> {
+                    RequestVoteResult result = doProcessRequestVoteRpc(rpcMessage);
+                    if (result != null) {
+                        context.connector().replyRequestVote(result, rpcMessage);
+                    }
+                },
                 LOGGING_FUTURE_CALLBACK
         );
     }
@@ -472,9 +548,14 @@ public class NodeImpl implements Node {
     private RequestVoteResult doProcessRequestVoteRpc(RequestVoteRpcMessage rpcMessage) {
 
         // skip non-major node, it maybe removed node
-        if (!context.group().isMemberOfMajor(rpcMessage.getSourceNodeId())) {
-            logger.warn("receive request vote rpc from node {} which is not major node, ignore", rpcMessage.getSourceNodeId());
-            return new RequestVoteResult(role.getTerm(), false);
+//        if (!context.group().isMemberOfMajor(rpcMessage.getSourceNodeId())) {
+//            logger.warn("receive request vote rpc from node {} which is not major node, ignore", rpcMessage.getSourceNodeId());
+//            return new RequestVoteResult(role.getTerm(), false);
+//        }
+
+        if (role.getName() == RoleName.FOLLOWER &&
+                (System.currentTimeMillis() - ((FollowerNodeRole) role).getLastHeartbeat() < context.config().getMinElectionTimeout())) {
+            return null;
         }
 
         // reply current term if result's term is smaller than current one
@@ -487,7 +568,7 @@ public class NodeImpl implements Node {
         // step down if result's term is larger than current term
         if (rpc.getTerm() > role.getTerm()) {
             boolean voteForCandidate = !context.log().isNewerThan(rpc.getLastLogIndex(), rpc.getLastLogTerm());
-            becomeFollower(rpc.getTerm(), (voteForCandidate ? rpc.getCandidateId() : null), null, true);
+            becomeFollower(rpc.getTerm(), (voteForCandidate ? rpc.getCandidateId() : null), null, 0, true);
             return new RequestVoteResult(rpc.getTerm(), voteForCandidate);
         }
 
@@ -501,7 +582,7 @@ public class NodeImpl implements Node {
                 // 2. voted for candidate
                 if ((votedFor == null && !context.log().isNewerThan(rpc.getLastLogIndex(), rpc.getLastLogTerm())) ||
                         Objects.equals(votedFor, rpc.getCandidateId())) {
-                    becomeFollower(role.getTerm(), rpc.getCandidateId(), null, true);
+                    becomeFollower(role.getTerm(), rpc.getCandidateId(), null, 0, true);
                     return new RequestVoteResult(rpc.getTerm(), true);
                 }
                 return new RequestVoteResult(role.getTerm(), false);
@@ -534,7 +615,7 @@ public class NodeImpl implements Node {
 
         // step down if result's term is larger than current term
         if (result.getTerm() > role.getTerm()) {
-            becomeFollower(result.getTerm(), null, null, true);
+            becomeFollower(result.getTerm(), null, null, 0, true);
             return;
         }
 
@@ -594,7 +675,7 @@ public class NodeImpl implements Node {
 
         // if term in rpc is larger than current term, step down and append entries
         if (rpc.getTerm() > role.getTerm()) {
-            becomeFollower(rpc.getTerm(), null, rpc.getLeaderId(), true);
+            becomeFollower(rpc.getTerm(), null, rpc.getLeaderId(), System.currentTimeMillis(), true);
             return new AppendEntriesResult(rpc.getMessageId(), rpc.getTerm(), appendEntries(rpc));
         }
 
@@ -603,12 +684,12 @@ public class NodeImpl implements Node {
             case FOLLOWER:
 
                 // reset election timeout and append entries
-                becomeFollower(rpc.getTerm(), ((FollowerNodeRole) role).getVotedFor(), rpc.getLeaderId(), true);
+                becomeFollower(rpc.getTerm(), ((FollowerNodeRole) role).getVotedFor(), rpc.getLeaderId(), System.currentTimeMillis(), true);
                 return new AppendEntriesResult(rpc.getMessageId(), rpc.getTerm(), appendEntries(rpc));
             case CANDIDATE:
 
                 // more than one candidate but another node won the election
-                becomeFollower(rpc.getTerm(), null, rpc.getLeaderId(), true);
+                becomeFollower(rpc.getTerm(), null, rpc.getLeaderId(), System.currentTimeMillis(), true);
                 return new AppendEntriesResult(rpc.getMessageId(), rpc.getTerm(), appendEntries(rpc));
             case LEADER:
                 logger.warn("receive append entries rpc from another leader {}, ignore", rpc.getLeaderId());
@@ -625,11 +706,15 @@ public class NodeImpl implements Node {
      * @return {@code true} if log appended, {@code false} if previous log check failed, etc
      */
     private boolean appendEntries(AppendEntriesRpc rpc) {
-        boolean result = context.log().appendEntriesFromLeader(rpc.getPrevLogIndex(), rpc.getPrevLogTerm(), rpc.getEntries());
-        if (result) {
+        AppendEntriesState state = context.log().appendEntriesFromLeader(rpc.getPrevLogIndex(), rpc.getPrevLogTerm(), rpc.getEntries());
+        if (state.isSuccess()) {
+            if (state.hasGroup()) {
+                context.group().updateNodes(state.getLatestGroup());
+            }
             context.log().advanceCommitIndex(Math.min(rpc.getLeaderCommit(), rpc.getLastEntryIndex()), rpc.getTerm());
+            return true;
         }
-        return result;
+        return false;
     }
 
     /**
@@ -651,7 +736,7 @@ public class NodeImpl implements Node {
 
         // step down if result's term is larger than current term
         if (result.getTerm() > role.getTerm()) {
-            becomeFollower(result.getTerm(), null, null, true);
+            becomeFollower(result.getTerm(), null, null, 0, true);
             return;
         }
 
@@ -675,20 +760,20 @@ public class NodeImpl implements Node {
 
         AppendEntriesRpc rpc = resultMessage.getRpc();
         if (result.isSuccess()) {
-            if (!member.isMajor()) {  // removing node
-                if (member.isRemoving()) {
-                    logger.debug("node {} is removing, skip", sourceNodeId);
-                } else {
-                    logger.warn("unexpected append entries result from node {}, not major and not removing", sourceNodeId);
-                }
-                member.stopReplicating();
-                return;
-            }
-
             // peer
             // advance commit index if major of match index changed
             if (member.advanceReplicatingState(rpc.getLastEntryIndex())) {
-                context.log().advanceCommitIndex(context.group().getMatchIndexOfMajor(), role.getTerm());
+                List<GroupConfigEntry> groupConfigEntries = context.log().advanceCommitIndex(context.group().getMatchIndexOfMajor(), role.getTerm());
+                for (GroupConfigEntry entry : groupConfigEntries) {
+                    currentGroupConfigChangeTask.onLogCommitted(entry);
+                }
+            }
+
+            for (ReadIndexTask task : readIndexTaskMap.values()) {
+                if (task.updateMatchIndex(member.getId(), member.getMatchIndex())) {
+                    logger.debug("remove read index task {}", task);
+                    readIndexTaskMap.remove(task.getRequestId());
+                }
             }
 
             // node caught up
@@ -733,7 +818,7 @@ public class NodeImpl implements Node {
 
         // step down if term in rpc is larger than current one
         if (rpc.getTerm() > role.getTerm()) {
-            becomeFollower(rpc.getTerm(), null, rpc.getLeaderId(), true);
+            becomeFollower(rpc.getTerm(), null, rpc.getLeaderId(), System.currentTimeMillis(), true);
         }
         InstallSnapshotState state = context.log().installSnapshot(rpc);
         if (state.getStateName() == InstallSnapshotState.StateName.INSTALLED) {
@@ -761,7 +846,7 @@ public class NodeImpl implements Node {
 
         // step down if result's term is larger than current one
         if (result.getTerm() > role.getTerm()) {
-            becomeFollower(result.getTerm(), null, null, true);
+            becomeFollower(result.getTerm(), null, null, 0, true);
             return;
         }
 
@@ -793,70 +878,11 @@ public class NodeImpl implements Node {
         } else {
 
             // transfer data
-            InstallSnapshotRpc nextRpc = context.log().createInstallSnapshotRpc(role.getTerm(), context.selfId(),
+            InstallSnapshotRpc nextRpc = context.log().createInstallSnapshotRpc(
+                    role.getTerm(), rpc.getLastIndex(), context.selfId(),
                     rpc.getOffset() + rpc.getDataLength(), context.config().getSnapshotDataLength());
             context.connector().sendInstallSnapshot(nextRpc, member.getEndpoint());
         }
-    }
-
-    /**
-     * Group config from leader appended.
-     * <p>
-     * Source: log.
-     * </p>
-     *
-     * @param event event
-     */
-    @Subscribe
-    public void onGroupConfigEntryFromLeaderAppend(GroupConfigEntryFromLeaderAppendEvent event) {
-        context.taskExecutor().submit(() -> {
-            GroupConfigEntry entry = event.getEntry();
-            if (entry.getKind() == Entry.KIND_REMOVE_NODE &&
-                    context.selfId().equals(((RemoveNodeEntry) entry).getNodeToRemove())) {
-                logger.info("current node is removed from group, step down and standby");
-                becomeFollower(role.getTerm(), null, null, false);
-            }
-            context.group().updateNodes(entry.getResultNodeEndpoints());
-        }, LOGGING_FUTURE_CALLBACK);
-    }
-
-    /**
-     * Group config entry committed.
-     * <p>
-     * Source: log.
-     * </p>
-     *
-     * @param event event
-     */
-    @Subscribe
-    public void onGroupConfigEntryCommitted(GroupConfigEntryCommittedEvent event) {
-        context.taskExecutor().submit(
-                () -> doProcessGroupConfigEntryCommittedEvent(event),
-                LOGGING_FUTURE_CALLBACK
-        );
-    }
-
-    private void doProcessGroupConfigEntryCommittedEvent(GroupConfigEntryCommittedEvent event) {
-        GroupConfigEntry entry = event.getEntry();
-
-        // dispatch to group config change task by node id
-        groupConfigChangeTaskHolder.onLogCommitted(entry);
-    }
-
-    /**
-     * Multiple group configs removed.
-     * <p>
-     * Source: log.
-     * </p>
-     *
-     * @param event event
-     */
-    @Subscribe
-    public void onGroupConfigEntryBatchRemoved(GroupConfigEntryBatchRemovedEvent event) {
-        context.taskExecutor().submit(() -> {
-            GroupConfigEntry entry = event.getFirstRemovedEntry();
-            context.group().updateNodes(entry.getNodeEndpoints());
-        }, LOGGING_FUTURE_CALLBACK);
     }
 
     /**
@@ -868,9 +894,9 @@ public class NodeImpl implements Node {
      * @param event event
      */
     @Subscribe
-    public void onGenerateSnapshot(SnapshotGenerateEvent event) {
+    public void onGenerateSnapshot(SnapshotGeneratedEvent event) {
         context.taskExecutor().submit(() -> {
-            context.log().generateSnapshot(event.getLastIncludedIndex(), context.group().listEndpointOfMajor());
+            context.log().snapshotGenerated(event.getLastIncludedIndex());
         }, LOGGING_FUTURE_CALLBACK);
     }
 
@@ -944,40 +970,37 @@ public class NodeImpl implements Node {
         @Override
         public void addNode(NodeEndpoint endpoint, int nextIndex, int matchIndex) {
             context.taskExecutor().submit(() -> {
-                context.log().appendEntryForAddNode(role.getTerm(), context.group().listEndpointOfMajor(), endpoint);
+                Set<NodeEndpoint> nodeEndpoints = context.group().listEndpointOfMajor();
+                AddNodeEntry entry = context.log().appendEntryForAddNode(role.getTerm(), nodeEndpoints, endpoint);
                 assert !context.selfId().equals(endpoint.getId());
                 context.group().addNode(endpoint, nextIndex, matchIndex, true);
+                currentGroupConfigChangeTask.setGroupConfigEntry(entry);
                 NodeImpl.this.doReplicateLog();
             }, LOGGING_FUTURE_CALLBACK);
         }
 
         @Override
-        public void downgradeNode(NodeId nodeId) {
-            context.taskExecutor().submit(() -> {
-                context.group().downgrade(nodeId);
-                Set<NodeEndpoint> nodeEndpoints = context.group().listEndpointOfMajor();
-                context.log().appendEntryForRemoveNode(role.getTerm(), nodeEndpoints, nodeId);
-                NodeImpl.this.doReplicateLog();
-            }, LOGGING_FUTURE_CALLBACK);
+        public void downgradeSelf() {
+            becomeFollower(role.getTerm(), null, null, 0, false);
         }
 
         @Override
         public void removeNode(NodeId nodeId) {
             context.taskExecutor().submit(() -> {
-                if (nodeId.equals(context.selfId())) {
-                    logger.info("remove self from group, step down and standby");
-                    becomeFollower(role.getTerm(), null, null, false);
-                }
+                Set<NodeEndpoint> nodeEndpoints = context.group().listEndpointOfMajor();
+                RemoveNodeEntry entry = context.log().appendEntryForRemoveNode(role.getTerm(), nodeEndpoints, nodeId);
                 context.group().removeNode(nodeId);
+                currentGroupConfigChangeTask.setGroupConfigEntry(entry);
+                NodeImpl.this.doReplicateLog();
             }, LOGGING_FUTURE_CALLBACK);
         }
 
+
         @Override
         public void done() {
-
-            // clear current group config change
             synchronized (NodeImpl.this) {
-                groupConfigChangeTaskHolder = new GroupConfigChangeTaskHolder();
+                currentGroupConfigChangeTask = GroupConfigChangeTask.NONE;
+                currentGroupConfigChangeTaskReference = new FixedResultGroupConfigTaskReference(GroupConfigChangeTaskResult.OK);
             }
         }
 

@@ -10,7 +10,6 @@ class GroupMember {
     private final NodeEndpoint endpoint;
     private ReplicatingState replicatingState;
     private boolean major;
-    private boolean removing = false;
 
     GroupMember(NodeEndpoint endpoint) {
         this(endpoint, null, true);
@@ -55,14 +54,6 @@ class GroupMember {
 
     void setMajor(boolean major) {
         this.major = major;
-    }
-
-    boolean isRemoving() {
-        return removing;
-    }
-
-    void setRemoving() {
-        removing = true;
     }
 
     int getNextIndex() {
@@ -123,7 +114,6 @@ class GroupMember {
         return "GroupMember{" +
                 "endpoint=" + endpoint +
                 ", major=" + major +
-                ", removing=" + removing +
                 ", replicatingState=" + replicatingState +
                 '}';
     }

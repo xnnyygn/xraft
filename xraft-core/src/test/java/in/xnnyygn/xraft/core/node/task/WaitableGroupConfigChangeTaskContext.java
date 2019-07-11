@@ -14,7 +14,7 @@ class WaitableGroupConfigChangeTaskContext implements GroupConfigChangeTaskConte
     }
 
     @Override
-    public synchronized void downgradeNode(NodeId nodeId) {
+    public void downgradeSelf() {
         logAppended = true;
         notify();
     }

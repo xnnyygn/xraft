@@ -49,7 +49,9 @@ public class SocketChannel implements Channel {
                 throw new ChannelException("error code " + protoFailure.getErrorCode() + ", message " + protoFailure.getMessage());
             case MessageConstants.MSG_TYPE_REDIRECT:
                 Protos.Redirect protoRedirect = Protos.Redirect.parseFrom(payload);
-                throw new RedirectException(new NodeId(protoRedirect.getLeaderId()));
+                String rawLeaderId = protoRedirect.getLeaderId();
+                NodeId leaderId = rawLeaderId.isEmpty() ? null : NodeId.of(rawLeaderId);
+                throw new RedirectException(leaderId);
             case MessageConstants.MSG_TYPE_GET_COMMAND_RESPONSE:
                 Protos.GetCommandResponse protoGetCommandResponse = Protos.GetCommandResponse.parseFrom(payload);
                 if (!protoGetCommandResponse.getFound()) return null;

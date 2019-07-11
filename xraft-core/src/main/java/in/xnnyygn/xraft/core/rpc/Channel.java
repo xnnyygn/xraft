@@ -9,6 +9,10 @@ import javax.annotation.Nonnull;
  */
 public interface Channel {
 
+    void writePreVoteRpc(@Nonnull PreVoteRpc rpc);
+
+    void writePreVoteResult(@Nonnull PreVoteResult result);
+
     /**
      * Write request vote rpc.
      *

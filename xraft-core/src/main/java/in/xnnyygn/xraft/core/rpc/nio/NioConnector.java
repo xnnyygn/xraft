@@ -74,6 +74,32 @@ public class NioConnector implements Connector {
     }
 
     @Override
+    public void sendPreVote(@Nonnull PreVoteRpc rpc, @Nonnull Collection<NodeEndpoint> destinationEndpoints) {
+        Preconditions.checkNotNull(rpc);
+        Preconditions.checkNotNull(destinationEndpoints);
+        for (NodeEndpoint endpoint : destinationEndpoints) {
+            logger.debug("send {} to node {}", rpc, endpoint.getId());
+            try {
+                getChannel(endpoint).writePreVoteRpc(rpc);
+            } catch (Exception e) {
+                logException(e);
+            }
+        }
+    }
+
+    @Override
+    public void replyPreVote(@Nonnull PreVoteResult result, @Nonnull PreVoteRpcMessage rpcMessage) {
+        Preconditions.checkNotNull(result);
+        Preconditions.checkNotNull(rpcMessage);
+        logger.debug("reply {} to node {}", result, rpcMessage.getSourceNodeId());
+        try {
+            rpcMessage.getChannel().writePreVoteResult(result);
+        } catch (Exception e) {
+            logException(e);
+        }
+    }
+
+    @Override
     public void sendRequestVote(@Nonnull RequestVoteRpc rpc, @Nonnull Collection<NodeEndpoint> destinationEndpoints) {
         Preconditions.checkNotNull(rpc);
         Preconditions.checkNotNull(destinationEndpoints);

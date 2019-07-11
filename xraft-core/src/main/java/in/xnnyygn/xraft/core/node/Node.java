@@ -55,6 +55,8 @@ public interface Node {
      */
     void appendLog(@Nonnull byte[] commandBytes);
 
+    void enqueueReadIndex(@Nonnull String requestId);
+
     /**
      * Add node.
      *

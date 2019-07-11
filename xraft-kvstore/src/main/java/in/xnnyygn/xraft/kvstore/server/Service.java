@@ -81,6 +81,7 @@ public class Service {
     public void set(CommandRequest<SetCommand> commandRequest) {
         Redirect redirect = checkLeadership();
         if (redirect != null) {
+            logger.info("reply {}", redirect);
             commandRequest.reply(redirect);
             return;
         }
@@ -92,12 +93,26 @@ public class Service {
         this.node.appendLog(command.toBytes());
     }
 
+//    public void get(CommandRequest<GetCommand> commandRequest) {
+//        String key = commandRequest.getCommand().getKey();
+//        logger.debug("get {}", key);
+//        byte[] value = this.map.get(key);
+//        // TODO view from node state machine
+//        commandRequest.reply(new GetCommandResponse(value));
+//    }
+
     public void get(CommandRequest<GetCommand> commandRequest) {
-        String key = commandRequest.getCommand().getKey();
-        logger.debug("get {}", key);
-        byte[] value = this.map.get(key);
-        // TODO view from node state machine
-        commandRequest.reply(new GetCommandResponse(value));
+        Redirect redirect = checkLeadership();
+        if (redirect != null) {
+            logger.info("reply {}", redirect);
+            commandRequest.reply(redirect);
+            return;
+        }
+
+        GetCommand command = commandRequest.getCommand();
+        logger.debug("get {}", command.getKey());
+        pendingCommands.put(command.getRequestId(), commandRequest);
+        this.node.enqueueReadIndex(command.getRequestId());
     }
 
     private Redirect checkLeadership() {
@@ -118,7 +133,6 @@ public class Service {
             );
         }
         entryList.build().writeTo(output);
-        entryList.build().getSerializedSize();
     }
 
     static Map<String, byte[]> fromSnapshot(InputStream input) throws IOException {
@@ -143,11 +157,19 @@ public class Service {
         }
 
         @Override
+        protected void onReadIndexReached(String requestId) {
+            CommandRequest<?> commandRequest = pendingCommands.remove(requestId);
+            if (commandRequest != null) {
+                GetCommand command = (GetCommand) commandRequest.getCommand();
+                commandRequest.reply(new GetCommandResponse(map.get(command.getKey())));
+            }
+        }
+
+        @Override
         protected void doApplySnapshot(@Nonnull InputStream input) throws IOException {
             map = fromSnapshot(input);
         }
 
-        @Override
         public boolean shouldGenerateSnapshot(int firstLogIndex, int lastApplied) {
             return lastApplied - firstLogIndex > 1;
         }
