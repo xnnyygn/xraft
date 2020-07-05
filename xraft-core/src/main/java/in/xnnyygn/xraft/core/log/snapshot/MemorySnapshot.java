@@ -1,9 +1,9 @@
 package in.xnnyygn.xraft.core.log.snapshot;
 
 import in.xnnyygn.xraft.core.node.NodeEndpoint;
-import jdk.nashorn.internal.ir.annotations.Immutable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
