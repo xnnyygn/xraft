@@ -34,20 +34,22 @@ public class NioConnector implements Connector {
     private final InboundChannelGroup inboundChannelGroup = new InboundChannelGroup();
     private final OutboundChannelGroup outboundChannelGroup;
 
-    public NioConnector(NodeId selfNodeId, EventBus eventBus, int port) {
-        this(new NioEventLoopGroup(), false, selfNodeId, eventBus, port);
+    public NioConnector(NodeId selfNodeId, EventBus eventBus, int port, int logReplicationInterval) {
+        this(new NioEventLoopGroup(), false, selfNodeId, eventBus, port, logReplicationInterval);
     }
 
-    public NioConnector(NioEventLoopGroup workerNioEventLoopGroup, NodeId selfNodeId, EventBus eventBus, int port) {
-        this(workerNioEventLoopGroup, true, selfNodeId, eventBus, port);
+    public NioConnector(NioEventLoopGroup workerNioEventLoopGroup, NodeId selfNodeId, EventBus eventBus, int port, int logReplicationInterval) {
+        this(workerNioEventLoopGroup, true, selfNodeId, eventBus, port, logReplicationInterval);
     }
 
-    public NioConnector(NioEventLoopGroup workerNioEventLoopGroup, boolean workerGroupShared, NodeId selfNodeId, EventBus eventBus, int port) {
+    public NioConnector(NioEventLoopGroup workerNioEventLoopGroup, boolean workerGroupShared,
+                        NodeId selfNodeId, EventBus eventBus,
+                        int port, int logReplicationInterval) {
         this.workerNioEventLoopGroup = workerNioEventLoopGroup;
         this.workerGroupShared = workerGroupShared;
         this.eventBus = eventBus;
         this.port = port;
-        outboundChannelGroup = new OutboundChannelGroup(workerNioEventLoopGroup, eventBus, selfNodeId);
+        outboundChannelGroup = new OutboundChannelGroup(workerNioEventLoopGroup, eventBus, selfNodeId, logReplicationInterval);
     }
 
     // should not call more than once

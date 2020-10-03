@@ -283,9 +283,10 @@ public class NodeBuilder {
     private NioConnector createNioConnector() {
         int port = group.findSelf().getEndpoint().getPort();
         if (workerNioEventLoopGroup != null) {
-            return new NioConnector(workerNioEventLoopGroup, selfId, eventBus, port);
+            return new NioConnector(workerNioEventLoopGroup, selfId, eventBus, port, config.getLogReplicationInterval());
         }
-        return new NioConnector(new NioEventLoopGroup(config.getNioWorkerThreads()), false, selfId, eventBus, port);
+        return new NioConnector(new NioEventLoopGroup(config.getNioWorkerThreads()), false,
+                selfId, eventBus, port, config.getLogReplicationInterval());
     }
 
     /**
