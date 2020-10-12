@@ -23,12 +23,14 @@ class OutboundChannelGroup {
     private final EventLoopGroup workerGroup;
     private final EventBus eventBus;
     private final NodeId selfNodeId;
+    private final int connectTimeoutMillis;
     private final ConcurrentMap<NodeId, Future<NioChannel>> channelMap = new ConcurrentHashMap<>();
 
-    OutboundChannelGroup(EventLoopGroup workerGroup, EventBus eventBus, NodeId selfNodeId) {
+    OutboundChannelGroup(EventLoopGroup workerGroup, EventBus eventBus, NodeId selfNodeId, int logReplicationInterval) {
         this.workerGroup = workerGroup;
         this.eventBus = eventBus;
         this.selfNodeId = selfNodeId;
+        this.connectTimeoutMillis = logReplicationInterval / 2;
     }
 
     NioChannel getOrConnect(NodeId nodeId, Address address) {
@@ -61,6 +63,7 @@ class OutboundChannelGroup {
                 .group(workerGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeoutMillis)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
