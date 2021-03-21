@@ -108,6 +108,10 @@ $ cd xraft-kvstore
 $ mvn package assembly:single
 ```
 
+## About PreVote
+
+If you are looking for Raft optimization `PreVote`, please check `develop` branch.
+
 ## License
 
 This project is licensed under the MIT License.
