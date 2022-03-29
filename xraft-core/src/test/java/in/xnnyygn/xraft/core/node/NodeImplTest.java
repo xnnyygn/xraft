@@ -1519,7 +1519,7 @@ public class NodeImplTest {
     }
 
     @Test
-    public void testVoteCaneled() {
+    public void testVoteCanceled() {
         NodeImpl nodeA = (NodeImpl) newNodeBuilder(
                 NodeId.of("A"),
                 new NodeEndpoint("A", "localhost", 2333),
