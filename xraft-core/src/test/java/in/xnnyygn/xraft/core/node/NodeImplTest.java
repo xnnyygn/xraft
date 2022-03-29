@@ -1518,6 +1518,26 @@ public class NodeImplTest {
         Assert.assertEquals(RoleName.CANDIDATE, state.getRoleName());
     }
 
+    @Test
+    public void testVoteCaneled() {
+        NodeImpl nodeA = (NodeImpl) newNodeBuilder(
+                NodeId.of("A"),
+                new NodeEndpoint("A", "localhost", 2333),
+                new NodeEndpoint("B", "localhost", 2334),
+                new NodeEndpoint("C", "localhost", 2335),
+                new NodeEndpoint("D", "localhost", 2336),
+                new NodeEndpoint("E", "localhost", 2337))
+                .build();
+        nodeA.start();
+        nodeA.electionTimeout(); // Become Candidate
+        nodeA.onReceiveRequestVoteResult(new RequestVoteResult(1, true, NodeId.of("B"))); // A receives vote from B
+        // Here B restarts, set votedFor as null and votes for another candidate with the same term
+        nodeA.onReceiveRequestVoteResult(new RequestVoteResult(1, false, NodeId.of("B"))); // B cancels its vote
+        nodeA.onReceiveRequestVoteResult(new RequestVoteResult(1, true, NodeId.of("C"))); // A receives vote from C
+        RoleState state = nodeA.getRoleState();
+        Assert.assertEquals(RoleName.CANDIDATE, state.getRoleName());
+    }
+
     @AfterClass
     public static void afterClass() throws Exception {
         taskExecutor.shutdown();

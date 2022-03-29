@@ -547,15 +547,18 @@ public class NodeImpl implements Node {
             return;
         }
 
+        int currentVotesCount = ((CandidateNodeRole) role).getVotesCount();
         // check if already granted
         if (votesGranted.contains(result.getReplyNode())) {
             if (!result.isVoteGranted()) {
                 votesGranted.remove(result.getReplyNode());
+                // update votes count
+                changeToRole(new CandidateNodeRole(role.getTerm(), currentVotesCount - 1, scheduleElectionTimeout()));
             }
             return;
         }
 
-        int currentVotesCount = ((CandidateNodeRole) role).getVotesCount() + 1;
+        currentVotesCount += 1;
         votesGranted.add(result.getReplyNode());
         int countOfMajor = context.group().getCountOfMajor();
         logger.debug("votes count {}, major node count {}", currentVotesCount, countOfMajor);
