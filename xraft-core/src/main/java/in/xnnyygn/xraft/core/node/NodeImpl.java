@@ -617,7 +617,11 @@ public class NodeImpl implements Node {
         if (result.getTerm() > role.getTerm()) {
             becomeFollower(result.getTerm(), null, null, 0, true);
             return;
-        }
+        } else if (result.getTerm() < role.getTerm()) {
+            // ignore stale term
+            logger.debug("receive request vote result and result term is smaller, ignore");
+            return;
+         }
 
         // check role
         if (role.getName() != RoleName.CANDIDATE) {
