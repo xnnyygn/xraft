@@ -112,6 +112,10 @@ $ mvn package assembly:single
 
 If you are looking for Raft optimization `PreVote`, please check `develop` branch.
 
+## Consistency in xraft-kvstore
+
+To make the implmenetation simple, the `xraft-kvstore` just reads the value in the concurrent hash map, which actually could be a stale value. There is an optimiation in `develop` branch called `readindex` to offer consistent read. If you need consistent read or want to know how to implement it, please refer to `develop` branch.
+
 ## License
 
 This project is licensed under the MIT License.
