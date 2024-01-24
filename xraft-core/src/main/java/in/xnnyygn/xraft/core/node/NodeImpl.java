@@ -31,6 +31,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
@@ -61,6 +62,7 @@ public class NodeImpl implements Node {
     @GuardedBy("this")
     private boolean started;
     private volatile AbstractNodeRole role;
+    private Set<NodeId> votesGranted;
     private final List<NodeRoleListener> roleListeners = new CopyOnWriteArrayList<>();
 
     // NewNodeCatchUpTask and GroupConfigChangeTask related
@@ -125,6 +127,7 @@ public class NodeImpl implements Node {
 
         // load term, votedFor from store and become follower
         NodeStore store = context.store();
+        votesGranted = new HashSet<>();
         changeToRole(new FollowerNodeRole(store.getTerm(), store.getVotedFor(), null, scheduleElectionTimeout()));
         started = true;
     }
@@ -474,21 +477,21 @@ public class NodeImpl implements Node {
         // skip non-major node, it maybe removed node
         if (!context.group().isMemberOfMajor(rpcMessage.getSourceNodeId())) {
             logger.warn("receive request vote rpc from node {} which is not major node, ignore", rpcMessage.getSourceNodeId());
-            return new RequestVoteResult(role.getTerm(), false);
+            return new RequestVoteResult(role.getTerm(), false, context.selfId());
         }
 
         // reply current term if result's term is smaller than current one
         RequestVoteRpc rpc = rpcMessage.get();
         if (rpc.getTerm() < role.getTerm()) {
             logger.debug("term from rpc < current term, don't vote ({} < {})", rpc.getTerm(), role.getTerm());
-            return new RequestVoteResult(role.getTerm(), false);
+            return new RequestVoteResult(role.getTerm(), false, context.selfId());
         }
 
         // step down if result's term is larger than current term
         if (rpc.getTerm() > role.getTerm()) {
             boolean voteForCandidate = !context.log().isNewerThan(rpc.getLastLogIndex(), rpc.getLastLogTerm());
             becomeFollower(rpc.getTerm(), (voteForCandidate ? rpc.getCandidateId() : null), null, true);
-            return new RequestVoteResult(rpc.getTerm(), voteForCandidate);
+            return new RequestVoteResult(rpc.getTerm(), voteForCandidate, context.selfId());
         }
 
         assert rpc.getTerm() == role.getTerm();
@@ -502,12 +505,12 @@ public class NodeImpl implements Node {
                 if ((votedFor == null && !context.log().isNewerThan(rpc.getLastLogIndex(), rpc.getLastLogTerm())) ||
                         Objects.equals(votedFor, rpc.getCandidateId())) {
                     becomeFollower(role.getTerm(), rpc.getCandidateId(), null, true);
-                    return new RequestVoteResult(rpc.getTerm(), true);
+                    return new RequestVoteResult(rpc.getTerm(), true, context.selfId());
                 }
-                return new RequestVoteResult(role.getTerm(), false);
+                return new RequestVoteResult(role.getTerm(), false, context.selfId());
             case CANDIDATE: // voted for self
             case LEADER:
-                return new RequestVoteResult(role.getTerm(), false);
+                return new RequestVoteResult(role.getTerm(), false, context.selfId());
             default:
                 throw new IllegalStateException("unexpected node role [" + role.getName() + "]");
         }
@@ -548,12 +551,19 @@ public class NodeImpl implements Node {
             return;
         }
 
-        // do nothing if not vote granted
-        if (!result.isVoteGranted()) {
+        int currentVotesCount = ((CandidateNodeRole) role).getVotesCount();
+        // check if already granted
+        if (votesGranted.contains(result.getReplyNode())) {
+            if (!result.isVoteGranted()) {
+                votesGranted.remove(result.getReplyNode());
+                // update votes count
+                changeToRole(new CandidateNodeRole(role.getTerm(), currentVotesCount - 1, scheduleElectionTimeout()));
+            }
             return;
         }
 
-        int currentVotesCount = ((CandidateNodeRole) role).getVotesCount() + 1;
+        currentVotesCount += 1;
+        votesGranted.add(result.getReplyNode());
         int countOfMajor = context.group().getCountOfMajor();
         logger.debug("votes count {}, major node count {}", currentVotesCount, countOfMajor);
         role.cancelTimeoutOrTask();

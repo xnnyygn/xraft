@@ -20,33 +20,38 @@ public final class Protos {
 
     /**
      * <code>string id = 1;</code>
+     * @return The id.
      */
     java.lang.String getId();
     /**
      * <code>string id = 1;</code>
+     * @return The bytes for id.
      */
     com.google.protobuf.ByteString
         getIdBytes();
 
     /**
      * <code>string host = 2;</code>
+     * @return The host.
      */
     java.lang.String getHost();
     /**
      * <code>string host = 2;</code>
+     * @return The bytes for host.
      */
     com.google.protobuf.ByteString
         getHostBytes();
 
     /**
      * <code>int32 port = 3;</code>
+     * @return The port.
      */
     int getPort();
   }
   /**
    * Protobuf type {@code NodeEndpoint}
    */
-  public  static final class NodeEndpoint extends
+  public static final class NodeEndpoint extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:NodeEndpoint)
       NodeEndpointOrBuilder {
@@ -58,7 +63,13 @@ public final class Protos {
     private NodeEndpoint() {
       id_ = "";
       host_ = "";
-      port_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new NodeEndpoint();
     }
 
     @java.lang.Override
@@ -74,7 +85,6 @@ public final class Protos {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -103,7 +113,7 @@ public final class Protos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -138,7 +148,9 @@ public final class Protos {
     private volatile java.lang.Object id_;
     /**
      * <code>string id = 1;</code>
+     * @return The id.
      */
+    @java.lang.Override
     public java.lang.String getId() {
       java.lang.Object ref = id_;
       if (ref instanceof java.lang.String) {
@@ -153,7 +165,9 @@ public final class Protos {
     }
     /**
      * <code>string id = 1;</code>
+     * @return The bytes for id.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getIdBytes() {
       java.lang.Object ref = id_;
@@ -172,7 +186,9 @@ public final class Protos {
     private volatile java.lang.Object host_;
     /**
      * <code>string host = 2;</code>
+     * @return The host.
      */
+    @java.lang.Override
     public java.lang.String getHost() {
       java.lang.Object ref = host_;
       if (ref instanceof java.lang.String) {
@@ -187,7 +203,9 @@ public final class Protos {
     }
     /**
      * <code>string host = 2;</code>
+     * @return The bytes for host.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getHostBytes() {
       java.lang.Object ref = host_;
@@ -206,7 +224,9 @@ public final class Protos {
     private int port_;
     /**
      * <code>int32 port = 3;</code>
+     * @return The port.
      */
+    @java.lang.Override
     public int getPort() {
       return port_;
     }
@@ -268,15 +288,14 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.NodeEndpoint other = (in.xnnyygn.xraft.core.Protos.NodeEndpoint) obj;
 
-      boolean result = true;
-      result = result && getId()
-          .equals(other.getId());
-      result = result && getHost()
-          .equals(other.getHost());
-      result = result && (getPort()
-          == other.getPort());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getId()
+          .equals(other.getId())) return false;
+      if (!getHost()
+          .equals(other.getHost())) return false;
+      if (getPort()
+          != other.getPort()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -466,35 +485,35 @@ public final class Protos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -551,6 +570,7 @@ public final class Protos {
       private java.lang.Object id_ = "";
       /**
        * <code>string id = 1;</code>
+       * @return The id.
        */
       public java.lang.String getId() {
         java.lang.Object ref = id_;
@@ -566,6 +586,7 @@ public final class Protos {
       }
       /**
        * <code>string id = 1;</code>
+       * @return The bytes for id.
        */
       public com.google.protobuf.ByteString
           getIdBytes() {
@@ -582,6 +603,8 @@ public final class Protos {
       }
       /**
        * <code>string id = 1;</code>
+       * @param value The id to set.
+       * @return This builder for chaining.
        */
       public Builder setId(
           java.lang.String value) {
@@ -595,6 +618,7 @@ public final class Protos {
       }
       /**
        * <code>string id = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearId() {
         
@@ -604,6 +628,8 @@ public final class Protos {
       }
       /**
        * <code>string id = 1;</code>
+       * @param value The bytes for id to set.
+       * @return This builder for chaining.
        */
       public Builder setIdBytes(
           com.google.protobuf.ByteString value) {
@@ -620,6 +646,7 @@ public final class Protos {
       private java.lang.Object host_ = "";
       /**
        * <code>string host = 2;</code>
+       * @return The host.
        */
       public java.lang.String getHost() {
         java.lang.Object ref = host_;
@@ -635,6 +662,7 @@ public final class Protos {
       }
       /**
        * <code>string host = 2;</code>
+       * @return The bytes for host.
        */
       public com.google.protobuf.ByteString
           getHostBytes() {
@@ -651,6 +679,8 @@ public final class Protos {
       }
       /**
        * <code>string host = 2;</code>
+       * @param value The host to set.
+       * @return This builder for chaining.
        */
       public Builder setHost(
           java.lang.String value) {
@@ -664,6 +694,7 @@ public final class Protos {
       }
       /**
        * <code>string host = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearHost() {
         
@@ -673,6 +704,8 @@ public final class Protos {
       }
       /**
        * <code>string host = 2;</code>
+       * @param value The bytes for host to set.
+       * @return This builder for chaining.
        */
       public Builder setHostBytes(
           com.google.protobuf.ByteString value) {
@@ -689,12 +722,16 @@ public final class Protos {
       private int port_ ;
       /**
        * <code>int32 port = 3;</code>
+       * @return The port.
        */
+      @java.lang.Override
       public int getPort() {
         return port_;
       }
       /**
        * <code>int32 port = 3;</code>
+       * @param value The port to set.
+       * @return This builder for chaining.
        */
       public Builder setPort(int value) {
         
@@ -704,6 +741,7 @@ public final class Protos {
       }
       /**
        * <code>int32 port = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPort() {
         
@@ -714,7 +752,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -770,33 +808,38 @@ public final class Protos {
 
     /**
      * <code>int32 term = 1;</code>
+     * @return The term.
      */
     int getTerm();
 
     /**
      * <code>string candidate_id = 2;</code>
+     * @return The candidateId.
      */
     java.lang.String getCandidateId();
     /**
      * <code>string candidate_id = 2;</code>
+     * @return The bytes for candidateId.
      */
     com.google.protobuf.ByteString
         getCandidateIdBytes();
 
     /**
      * <code>int32 last_log_index = 3;</code>
+     * @return The lastLogIndex.
      */
     int getLastLogIndex();
 
     /**
      * <code>int32 last_log_term = 4;</code>
+     * @return The lastLogTerm.
      */
     int getLastLogTerm();
   }
   /**
    * Protobuf type {@code RequestVoteRpc}
    */
-  public  static final class RequestVoteRpc extends
+  public static final class RequestVoteRpc extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:RequestVoteRpc)
       RequestVoteRpcOrBuilder {
@@ -806,10 +849,14 @@ public final class Protos {
       super(builder);
     }
     private RequestVoteRpc() {
-      term_ = 0;
       candidateId_ = "";
-      lastLogIndex_ = 0;
-      lastLogTerm_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new RequestVoteRpc();
     }
 
     @java.lang.Override
@@ -825,7 +872,6 @@ public final class Protos {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -858,7 +904,7 @@ public final class Protos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -893,7 +939,9 @@ public final class Protos {
     private int term_;
     /**
      * <code>int32 term = 1;</code>
+     * @return The term.
      */
+    @java.lang.Override
     public int getTerm() {
       return term_;
     }
@@ -902,7 +950,9 @@ public final class Protos {
     private volatile java.lang.Object candidateId_;
     /**
      * <code>string candidate_id = 2;</code>
+     * @return The candidateId.
      */
+    @java.lang.Override
     public java.lang.String getCandidateId() {
       java.lang.Object ref = candidateId_;
       if (ref instanceof java.lang.String) {
@@ -917,7 +967,9 @@ public final class Protos {
     }
     /**
      * <code>string candidate_id = 2;</code>
+     * @return The bytes for candidateId.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getCandidateIdBytes() {
       java.lang.Object ref = candidateId_;
@@ -936,7 +988,9 @@ public final class Protos {
     private int lastLogIndex_;
     /**
      * <code>int32 last_log_index = 3;</code>
+     * @return The lastLogIndex.
      */
+    @java.lang.Override
     public int getLastLogIndex() {
       return lastLogIndex_;
     }
@@ -945,7 +999,9 @@ public final class Protos {
     private int lastLogTerm_;
     /**
      * <code>int32 last_log_term = 4;</code>
+     * @return The lastLogTerm.
      */
+    @java.lang.Override
     public int getLastLogTerm() {
       return lastLogTerm_;
     }
@@ -1015,17 +1071,16 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.RequestVoteRpc other = (in.xnnyygn.xraft.core.Protos.RequestVoteRpc) obj;
 
-      boolean result = true;
-      result = result && (getTerm()
-          == other.getTerm());
-      result = result && getCandidateId()
-          .equals(other.getCandidateId());
-      result = result && (getLastLogIndex()
-          == other.getLastLogIndex());
-      result = result && (getLastLogTerm()
-          == other.getLastLogTerm());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (getTerm()
+          != other.getTerm()) return false;
+      if (!getCandidateId()
+          .equals(other.getCandidateId())) return false;
+      if (getLastLogIndex()
+          != other.getLastLogIndex()) return false;
+      if (getLastLogTerm()
+          != other.getLastLogTerm()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -1220,35 +1275,35 @@ public final class Protos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1307,12 +1362,16 @@ public final class Protos {
       private int term_ ;
       /**
        * <code>int32 term = 1;</code>
+       * @return The term.
        */
+      @java.lang.Override
       public int getTerm() {
         return term_;
       }
       /**
        * <code>int32 term = 1;</code>
+       * @param value The term to set.
+       * @return This builder for chaining.
        */
       public Builder setTerm(int value) {
         
@@ -1322,6 +1381,7 @@ public final class Protos {
       }
       /**
        * <code>int32 term = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearTerm() {
         
@@ -1333,6 +1393,7 @@ public final class Protos {
       private java.lang.Object candidateId_ = "";
       /**
        * <code>string candidate_id = 2;</code>
+       * @return The candidateId.
        */
       public java.lang.String getCandidateId() {
         java.lang.Object ref = candidateId_;
@@ -1348,6 +1409,7 @@ public final class Protos {
       }
       /**
        * <code>string candidate_id = 2;</code>
+       * @return The bytes for candidateId.
        */
       public com.google.protobuf.ByteString
           getCandidateIdBytes() {
@@ -1364,6 +1426,8 @@ public final class Protos {
       }
       /**
        * <code>string candidate_id = 2;</code>
+       * @param value The candidateId to set.
+       * @return This builder for chaining.
        */
       public Builder setCandidateId(
           java.lang.String value) {
@@ -1377,6 +1441,7 @@ public final class Protos {
       }
       /**
        * <code>string candidate_id = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearCandidateId() {
         
@@ -1386,6 +1451,8 @@ public final class Protos {
       }
       /**
        * <code>string candidate_id = 2;</code>
+       * @param value The bytes for candidateId to set.
+       * @return This builder for chaining.
        */
       public Builder setCandidateIdBytes(
           com.google.protobuf.ByteString value) {
@@ -1402,12 +1469,16 @@ public final class Protos {
       private int lastLogIndex_ ;
       /**
        * <code>int32 last_log_index = 3;</code>
+       * @return The lastLogIndex.
        */
+      @java.lang.Override
       public int getLastLogIndex() {
         return lastLogIndex_;
       }
       /**
        * <code>int32 last_log_index = 3;</code>
+       * @param value The lastLogIndex to set.
+       * @return This builder for chaining.
        */
       public Builder setLastLogIndex(int value) {
         
@@ -1417,6 +1488,7 @@ public final class Protos {
       }
       /**
        * <code>int32 last_log_index = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLastLogIndex() {
         
@@ -1428,12 +1500,16 @@ public final class Protos {
       private int lastLogTerm_ ;
       /**
        * <code>int32 last_log_term = 4;</code>
+       * @return The lastLogTerm.
        */
+      @java.lang.Override
       public int getLastLogTerm() {
         return lastLogTerm_;
       }
       /**
        * <code>int32 last_log_term = 4;</code>
+       * @param value The lastLogTerm to set.
+       * @return This builder for chaining.
        */
       public Builder setLastLogTerm(int value) {
         
@@ -1443,6 +1519,7 @@ public final class Protos {
       }
       /**
        * <code>int32 last_log_term = 4;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLastLogTerm() {
         
@@ -1453,7 +1530,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -1509,18 +1586,32 @@ public final class Protos {
 
     /**
      * <code>int32 term = 1;</code>
+     * @return The term.
      */
     int getTerm();
 
     /**
      * <code>bool vote_granted = 2;</code>
+     * @return The voteGranted.
      */
     boolean getVoteGranted();
+
+    /**
+     * <code>string reply_node = 3;</code>
+     * @return The replyNode.
+     */
+    java.lang.String getReplyNode();
+    /**
+     * <code>string reply_node = 3;</code>
+     * @return The bytes for replyNode.
+     */
+    com.google.protobuf.ByteString
+        getReplyNodeBytes();
   }
   /**
    * Protobuf type {@code RequestVoteResult}
    */
-  public  static final class RequestVoteResult extends
+  public static final class RequestVoteResult extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:RequestVoteResult)
       RequestVoteResultOrBuilder {
@@ -1530,8 +1621,14 @@ public final class Protos {
       super(builder);
     }
     private RequestVoteResult() {
-      term_ = 0;
-      voteGranted_ = false;
+      replyNode_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new RequestVoteResult();
     }
 
     @java.lang.Override
@@ -1547,7 +1644,6 @@ public final class Protos {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -1568,8 +1664,14 @@ public final class Protos {
               voteGranted_ = input.readBool();
               break;
             }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              replyNode_ = s;
+              break;
+            }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -1604,7 +1706,9 @@ public final class Protos {
     private int term_;
     /**
      * <code>int32 term = 1;</code>
+     * @return The term.
      */
+    @java.lang.Override
     public int getTerm() {
       return term_;
     }
@@ -1613,9 +1717,49 @@ public final class Protos {
     private boolean voteGranted_;
     /**
      * <code>bool vote_granted = 2;</code>
+     * @return The voteGranted.
      */
+    @java.lang.Override
     public boolean getVoteGranted() {
       return voteGranted_;
+    }
+
+    public static final int REPLY_NODE_FIELD_NUMBER = 3;
+    private volatile java.lang.Object replyNode_;
+    /**
+     * <code>string reply_node = 3;</code>
+     * @return The replyNode.
+     */
+    @java.lang.Override
+    public java.lang.String getReplyNode() {
+      java.lang.Object ref = replyNode_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        replyNode_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string reply_node = 3;</code>
+     * @return The bytes for replyNode.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getReplyNodeBytes() {
+      java.lang.Object ref = replyNode_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        replyNode_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     private byte memoizedIsInitialized = -1;
@@ -1638,6 +1782,9 @@ public final class Protos {
       if (voteGranted_ != false) {
         output.writeBool(2, voteGranted_);
       }
+      if (!getReplyNodeBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, replyNode_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -1655,6 +1802,9 @@ public final class Protos {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(2, voteGranted_);
       }
+      if (!getReplyNodeBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, replyNode_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -1670,13 +1820,14 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.RequestVoteResult other = (in.xnnyygn.xraft.core.Protos.RequestVoteResult) obj;
 
-      boolean result = true;
-      result = result && (getTerm()
-          == other.getTerm());
-      result = result && (getVoteGranted()
-          == other.getVoteGranted());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (getTerm()
+          != other.getTerm()) return false;
+      if (getVoteGranted()
+          != other.getVoteGranted()) return false;
+      if (!getReplyNode()
+          .equals(other.getReplyNode())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -1691,6 +1842,8 @@ public final class Protos {
       hash = (37 * hash) + VOTE_GRANTED_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getVoteGranted());
+      hash = (37 * hash) + REPLY_NODE_FIELD_NUMBER;
+      hash = (53 * hash) + getReplyNode().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1828,6 +1981,8 @@ public final class Protos {
 
         voteGranted_ = false;
 
+        replyNode_ = "";
+
         return this;
       }
 
@@ -1856,41 +2011,42 @@ public final class Protos {
         in.xnnyygn.xraft.core.Protos.RequestVoteResult result = new in.xnnyygn.xraft.core.Protos.RequestVoteResult(this);
         result.term_ = term_;
         result.voteGranted_ = voteGranted_;
+        result.replyNode_ = replyNode_;
         onBuilt();
         return result;
       }
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1909,6 +2065,10 @@ public final class Protos {
         }
         if (other.getVoteGranted() != false) {
           setVoteGranted(other.getVoteGranted());
+        }
+        if (!other.getReplyNode().isEmpty()) {
+          replyNode_ = other.replyNode_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1942,12 +2102,16 @@ public final class Protos {
       private int term_ ;
       /**
        * <code>int32 term = 1;</code>
+       * @return The term.
        */
+      @java.lang.Override
       public int getTerm() {
         return term_;
       }
       /**
        * <code>int32 term = 1;</code>
+       * @param value The term to set.
+       * @return This builder for chaining.
        */
       public Builder setTerm(int value) {
         
@@ -1957,6 +2121,7 @@ public final class Protos {
       }
       /**
        * <code>int32 term = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearTerm() {
         
@@ -1968,12 +2133,16 @@ public final class Protos {
       private boolean voteGranted_ ;
       /**
        * <code>bool vote_granted = 2;</code>
+       * @return The voteGranted.
        */
+      @java.lang.Override
       public boolean getVoteGranted() {
         return voteGranted_;
       }
       /**
        * <code>bool vote_granted = 2;</code>
+       * @param value The voteGranted to set.
+       * @return This builder for chaining.
        */
       public Builder setVoteGranted(boolean value) {
         
@@ -1983,6 +2152,7 @@ public final class Protos {
       }
       /**
        * <code>bool vote_granted = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearVoteGranted() {
         
@@ -1990,10 +2160,86 @@ public final class Protos {
         onChanged();
         return this;
       }
+
+      private java.lang.Object replyNode_ = "";
+      /**
+       * <code>string reply_node = 3;</code>
+       * @return The replyNode.
+       */
+      public java.lang.String getReplyNode() {
+        java.lang.Object ref = replyNode_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          replyNode_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string reply_node = 3;</code>
+       * @return The bytes for replyNode.
+       */
+      public com.google.protobuf.ByteString
+          getReplyNodeBytes() {
+        java.lang.Object ref = replyNode_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          replyNode_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string reply_node = 3;</code>
+       * @param value The replyNode to set.
+       * @return This builder for chaining.
+       */
+      public Builder setReplyNode(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        replyNode_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string reply_node = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearReplyNode() {
+        
+        replyNode_ = getDefaultInstance().getReplyNode();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string reply_node = 3;</code>
+       * @param value The bytes for replyNode to set.
+       * @return This builder for chaining.
+       */
+      public Builder setReplyNodeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        replyNode_ = value;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -2049,41 +2295,49 @@ public final class Protos {
 
     /**
      * <code>string message_id = 1;</code>
+     * @return The messageId.
      */
     java.lang.String getMessageId();
     /**
      * <code>string message_id = 1;</code>
+     * @return The bytes for messageId.
      */
     com.google.protobuf.ByteString
         getMessageIdBytes();
 
     /**
      * <code>int32 term = 2;</code>
+     * @return The term.
      */
     int getTerm();
 
     /**
      * <code>string leader_id = 3;</code>
+     * @return The leaderId.
      */
     java.lang.String getLeaderId();
     /**
      * <code>string leader_id = 3;</code>
+     * @return The bytes for leaderId.
      */
     com.google.protobuf.ByteString
         getLeaderIdBytes();
 
     /**
      * <code>int32 prev_log_index = 4;</code>
+     * @return The prevLogIndex.
      */
     int getPrevLogIndex();
 
     /**
      * <code>int32 prev_log_term = 5;</code>
+     * @return The prevLogTerm.
      */
     int getPrevLogTerm();
 
     /**
      * <code>int32 leader_commit = 6;</code>
+     * @return The leaderCommit.
      */
     int getLeaderCommit();
 
@@ -2114,7 +2368,7 @@ public final class Protos {
   /**
    * Protobuf type {@code AppendEntriesRpc}
    */
-  public  static final class AppendEntriesRpc extends
+  public static final class AppendEntriesRpc extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:AppendEntriesRpc)
       AppendEntriesRpcOrBuilder {
@@ -2125,12 +2379,15 @@ public final class Protos {
     }
     private AppendEntriesRpc() {
       messageId_ = "";
-      term_ = 0;
       leaderId_ = "";
-      prevLogIndex_ = 0;
-      prevLogTerm_ = 0;
-      leaderCommit_ = 0;
       entries_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new AppendEntriesRpc();
     }
 
     @java.lang.Override
@@ -2190,16 +2447,16 @@ public final class Protos {
               break;
             }
             case 58: {
-              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 entries_ = new java.util.ArrayList<in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.Entry>();
-                mutable_bitField0_ |= 0x00000040;
+                mutable_bitField0_ |= 0x00000001;
               }
               entries_.add(
                   input.readMessage(in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.Entry.parser(), extensionRegistry));
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -2213,7 +2470,7 @@ public final class Protos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           entries_ = java.util.Collections.unmodifiableList(entries_);
         }
         this.unknownFields = unknownFields.build();
@@ -2239,28 +2496,32 @@ public final class Protos {
 
       /**
        * <code>int32 kind = 1;</code>
+       * @return The kind.
        */
       int getKind();
 
       /**
        * <code>int32 index = 2;</code>
+       * @return The index.
        */
       int getIndex();
 
       /**
        * <code>int32 term = 3;</code>
+       * @return The term.
        */
       int getTerm();
 
       /**
        * <code>bytes command = 4;</code>
+       * @return The command.
        */
       com.google.protobuf.ByteString getCommand();
     }
     /**
      * Protobuf type {@code AppendEntriesRpc.Entry}
      */
-    public  static final class Entry extends
+    public static final class Entry extends
         com.google.protobuf.GeneratedMessageV3 implements
         // @@protoc_insertion_point(message_implements:AppendEntriesRpc.Entry)
         EntryOrBuilder {
@@ -2270,10 +2531,14 @@ public final class Protos {
         super(builder);
       }
       private Entry() {
-        kind_ = 0;
-        index_ = 0;
-        term_ = 0;
         command_ = com.google.protobuf.ByteString.EMPTY;
+      }
+
+      @java.lang.Override
+      @SuppressWarnings({"unused"})
+      protected java.lang.Object newInstance(
+          UnusedPrivateParameter unused) {
+        return new Entry();
       }
 
       @java.lang.Override
@@ -2289,7 +2554,6 @@ public final class Protos {
         if (extensionRegistry == null) {
           throw new java.lang.NullPointerException();
         }
-        int mutable_bitField0_ = 0;
         com.google.protobuf.UnknownFieldSet.Builder unknownFields =
             com.google.protobuf.UnknownFieldSet.newBuilder();
         try {
@@ -2321,7 +2585,7 @@ public final class Protos {
                 break;
               }
               default: {
-                if (!parseUnknownFieldProto3(
+                if (!parseUnknownField(
                     input, unknownFields, extensionRegistry, tag)) {
                   done = true;
                 }
@@ -2356,7 +2620,9 @@ public final class Protos {
       private int kind_;
       /**
        * <code>int32 kind = 1;</code>
+       * @return The kind.
        */
+      @java.lang.Override
       public int getKind() {
         return kind_;
       }
@@ -2365,7 +2631,9 @@ public final class Protos {
       private int index_;
       /**
        * <code>int32 index = 2;</code>
+       * @return The index.
        */
+      @java.lang.Override
       public int getIndex() {
         return index_;
       }
@@ -2374,7 +2642,9 @@ public final class Protos {
       private int term_;
       /**
        * <code>int32 term = 3;</code>
+       * @return The term.
        */
+      @java.lang.Override
       public int getTerm() {
         return term_;
       }
@@ -2383,7 +2653,9 @@ public final class Protos {
       private com.google.protobuf.ByteString command_;
       /**
        * <code>bytes command = 4;</code>
+       * @return The command.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString getCommand() {
         return command_;
       }
@@ -2454,17 +2726,16 @@ public final class Protos {
         }
         in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.Entry other = (in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.Entry) obj;
 
-        boolean result = true;
-        result = result && (getKind()
-            == other.getKind());
-        result = result && (getIndex()
-            == other.getIndex());
-        result = result && (getTerm()
-            == other.getTerm());
-        result = result && getCommand()
-            .equals(other.getCommand());
-        result = result && unknownFields.equals(other.unknownFields);
-        return result;
+        if (getKind()
+            != other.getKind()) return false;
+        if (getIndex()
+            != other.getIndex()) return false;
+        if (getTerm()
+            != other.getTerm()) return false;
+        if (!getCommand()
+            .equals(other.getCommand())) return false;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
       }
 
       @java.lang.Override
@@ -2659,35 +2930,35 @@ public final class Protos {
 
         @java.lang.Override
         public Builder clone() {
-          return (Builder) super.clone();
+          return super.clone();
         }
         @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return (Builder) super.setField(field, value);
+          return super.setField(field, value);
         }
         @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return (Builder) super.clearField(field);
+          return super.clearField(field);
         }
         @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return (Builder) super.clearOneof(oneof);
+          return super.clearOneof(oneof);
         }
         @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             int index, java.lang.Object value) {
-          return (Builder) super.setRepeatedField(field, index, value);
+          return super.setRepeatedField(field, index, value);
         }
         @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return (Builder) super.addRepeatedField(field, value);
+          return super.addRepeatedField(field, value);
         }
         @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2745,12 +3016,16 @@ public final class Protos {
         private int kind_ ;
         /**
          * <code>int32 kind = 1;</code>
+         * @return The kind.
          */
+        @java.lang.Override
         public int getKind() {
           return kind_;
         }
         /**
          * <code>int32 kind = 1;</code>
+         * @param value The kind to set.
+         * @return This builder for chaining.
          */
         public Builder setKind(int value) {
           
@@ -2760,6 +3035,7 @@ public final class Protos {
         }
         /**
          * <code>int32 kind = 1;</code>
+         * @return This builder for chaining.
          */
         public Builder clearKind() {
           
@@ -2771,12 +3047,16 @@ public final class Protos {
         private int index_ ;
         /**
          * <code>int32 index = 2;</code>
+         * @return The index.
          */
+        @java.lang.Override
         public int getIndex() {
           return index_;
         }
         /**
          * <code>int32 index = 2;</code>
+         * @param value The index to set.
+         * @return This builder for chaining.
          */
         public Builder setIndex(int value) {
           
@@ -2786,6 +3066,7 @@ public final class Protos {
         }
         /**
          * <code>int32 index = 2;</code>
+         * @return This builder for chaining.
          */
         public Builder clearIndex() {
           
@@ -2797,12 +3078,16 @@ public final class Protos {
         private int term_ ;
         /**
          * <code>int32 term = 3;</code>
+         * @return The term.
          */
+        @java.lang.Override
         public int getTerm() {
           return term_;
         }
         /**
          * <code>int32 term = 3;</code>
+         * @param value The term to set.
+         * @return This builder for chaining.
          */
         public Builder setTerm(int value) {
           
@@ -2812,6 +3097,7 @@ public final class Protos {
         }
         /**
          * <code>int32 term = 3;</code>
+         * @return This builder for chaining.
          */
         public Builder clearTerm() {
           
@@ -2823,12 +3109,16 @@ public final class Protos {
         private com.google.protobuf.ByteString command_ = com.google.protobuf.ByteString.EMPTY;
         /**
          * <code>bytes command = 4;</code>
+         * @return The command.
          */
+        @java.lang.Override
         public com.google.protobuf.ByteString getCommand() {
           return command_;
         }
         /**
          * <code>bytes command = 4;</code>
+         * @param value The command to set.
+         * @return This builder for chaining.
          */
         public Builder setCommand(com.google.protobuf.ByteString value) {
           if (value == null) {
@@ -2841,6 +3131,7 @@ public final class Protos {
         }
         /**
          * <code>bytes command = 4;</code>
+         * @return This builder for chaining.
          */
         public Builder clearCommand() {
           
@@ -2851,7 +3142,7 @@ public final class Protos {
         @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return super.setUnknownFieldsProto3(unknownFields);
+          return super.setUnknownFields(unknownFields);
         }
 
         @java.lang.Override
@@ -2901,12 +3192,13 @@ public final class Protos {
 
     }
 
-    private int bitField0_;
     public static final int MESSAGE_ID_FIELD_NUMBER = 1;
     private volatile java.lang.Object messageId_;
     /**
      * <code>string message_id = 1;</code>
+     * @return The messageId.
      */
+    @java.lang.Override
     public java.lang.String getMessageId() {
       java.lang.Object ref = messageId_;
       if (ref instanceof java.lang.String) {
@@ -2921,7 +3213,9 @@ public final class Protos {
     }
     /**
      * <code>string message_id = 1;</code>
+     * @return The bytes for messageId.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getMessageIdBytes() {
       java.lang.Object ref = messageId_;
@@ -2940,7 +3234,9 @@ public final class Protos {
     private int term_;
     /**
      * <code>int32 term = 2;</code>
+     * @return The term.
      */
+    @java.lang.Override
     public int getTerm() {
       return term_;
     }
@@ -2949,7 +3245,9 @@ public final class Protos {
     private volatile java.lang.Object leaderId_;
     /**
      * <code>string leader_id = 3;</code>
+     * @return The leaderId.
      */
+    @java.lang.Override
     public java.lang.String getLeaderId() {
       java.lang.Object ref = leaderId_;
       if (ref instanceof java.lang.String) {
@@ -2964,7 +3262,9 @@ public final class Protos {
     }
     /**
      * <code>string leader_id = 3;</code>
+     * @return The bytes for leaderId.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getLeaderIdBytes() {
       java.lang.Object ref = leaderId_;
@@ -2983,7 +3283,9 @@ public final class Protos {
     private int prevLogIndex_;
     /**
      * <code>int32 prev_log_index = 4;</code>
+     * @return The prevLogIndex.
      */
+    @java.lang.Override
     public int getPrevLogIndex() {
       return prevLogIndex_;
     }
@@ -2992,7 +3294,9 @@ public final class Protos {
     private int prevLogTerm_;
     /**
      * <code>int32 prev_log_term = 5;</code>
+     * @return The prevLogTerm.
      */
+    @java.lang.Override
     public int getPrevLogTerm() {
       return prevLogTerm_;
     }
@@ -3001,7 +3305,9 @@ public final class Protos {
     private int leaderCommit_;
     /**
      * <code>int32 leader_commit = 6;</code>
+     * @return The leaderCommit.
      */
+    @java.lang.Override
     public int getLeaderCommit() {
       return leaderCommit_;
     }
@@ -3011,12 +3317,14 @@ public final class Protos {
     /**
      * <code>repeated .AppendEntriesRpc.Entry entries = 7;</code>
      */
+    @java.lang.Override
     public java.util.List<in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.Entry> getEntriesList() {
       return entries_;
     }
     /**
      * <code>repeated .AppendEntriesRpc.Entry entries = 7;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.EntryOrBuilder> 
         getEntriesOrBuilderList() {
       return entries_;
@@ -3024,18 +3332,21 @@ public final class Protos {
     /**
      * <code>repeated .AppendEntriesRpc.Entry entries = 7;</code>
      */
+    @java.lang.Override
     public int getEntriesCount() {
       return entries_.size();
     }
     /**
      * <code>repeated .AppendEntriesRpc.Entry entries = 7;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.Entry getEntries(int index) {
       return entries_.get(index);
     }
     /**
      * <code>repeated .AppendEntriesRpc.Entry entries = 7;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.EntryOrBuilder getEntriesOrBuilder(
         int index) {
       return entries_.get(index);
@@ -3126,23 +3437,22 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.AppendEntriesRpc other = (in.xnnyygn.xraft.core.Protos.AppendEntriesRpc) obj;
 
-      boolean result = true;
-      result = result && getMessageId()
-          .equals(other.getMessageId());
-      result = result && (getTerm()
-          == other.getTerm());
-      result = result && getLeaderId()
-          .equals(other.getLeaderId());
-      result = result && (getPrevLogIndex()
-          == other.getPrevLogIndex());
-      result = result && (getPrevLogTerm()
-          == other.getPrevLogTerm());
-      result = result && (getLeaderCommit()
-          == other.getLeaderCommit());
-      result = result && getEntriesList()
-          .equals(other.getEntriesList());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getMessageId()
+          .equals(other.getMessageId())) return false;
+      if (getTerm()
+          != other.getTerm()) return false;
+      if (!getLeaderId()
+          .equals(other.getLeaderId())) return false;
+      if (getPrevLogIndex()
+          != other.getPrevLogIndex()) return false;
+      if (getPrevLogTerm()
+          != other.getPrevLogTerm()) return false;
+      if (getLeaderCommit()
+          != other.getLeaderCommit()) return false;
+      if (!getEntriesList()
+          .equals(other.getEntriesList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -3316,7 +3626,7 @@ public final class Protos {
 
         if (entriesBuilder_ == null) {
           entries_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           entriesBuilder_.clear();
         }
@@ -3347,7 +3657,6 @@ public final class Protos {
       public in.xnnyygn.xraft.core.Protos.AppendEntriesRpc buildPartial() {
         in.xnnyygn.xraft.core.Protos.AppendEntriesRpc result = new in.xnnyygn.xraft.core.Protos.AppendEntriesRpc(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.messageId_ = messageId_;
         result.term_ = term_;
         result.leaderId_ = leaderId_;
@@ -3355,50 +3664,49 @@ public final class Protos {
         result.prevLogTerm_ = prevLogTerm_;
         result.leaderCommit_ = leaderCommit_;
         if (entriesBuilder_ == null) {
-          if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             entries_ = java.util.Collections.unmodifiableList(entries_);
-            bitField0_ = (bitField0_ & ~0x00000040);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.entries_ = entries_;
         } else {
           result.entries_ = entriesBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3436,7 +3744,7 @@ public final class Protos {
           if (!other.entries_.isEmpty()) {
             if (entries_.isEmpty()) {
               entries_ = other.entries_;
-              bitField0_ = (bitField0_ & ~0x00000040);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureEntriesIsMutable();
               entries_.addAll(other.entries_);
@@ -3449,7 +3757,7 @@ public final class Protos {
               entriesBuilder_.dispose();
               entriesBuilder_ = null;
               entries_ = other.entries_;
-              bitField0_ = (bitField0_ & ~0x00000040);
+              bitField0_ = (bitField0_ & ~0x00000001);
               entriesBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getEntriesFieldBuilder() : null;
@@ -3491,6 +3799,7 @@ public final class Protos {
       private java.lang.Object messageId_ = "";
       /**
        * <code>string message_id = 1;</code>
+       * @return The messageId.
        */
       public java.lang.String getMessageId() {
         java.lang.Object ref = messageId_;
@@ -3506,6 +3815,7 @@ public final class Protos {
       }
       /**
        * <code>string message_id = 1;</code>
+       * @return The bytes for messageId.
        */
       public com.google.protobuf.ByteString
           getMessageIdBytes() {
@@ -3522,6 +3832,8 @@ public final class Protos {
       }
       /**
        * <code>string message_id = 1;</code>
+       * @param value The messageId to set.
+       * @return This builder for chaining.
        */
       public Builder setMessageId(
           java.lang.String value) {
@@ -3535,6 +3847,7 @@ public final class Protos {
       }
       /**
        * <code>string message_id = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearMessageId() {
         
@@ -3544,6 +3857,8 @@ public final class Protos {
       }
       /**
        * <code>string message_id = 1;</code>
+       * @param value The bytes for messageId to set.
+       * @return This builder for chaining.
        */
       public Builder setMessageIdBytes(
           com.google.protobuf.ByteString value) {
@@ -3560,12 +3875,16 @@ public final class Protos {
       private int term_ ;
       /**
        * <code>int32 term = 2;</code>
+       * @return The term.
        */
+      @java.lang.Override
       public int getTerm() {
         return term_;
       }
       /**
        * <code>int32 term = 2;</code>
+       * @param value The term to set.
+       * @return This builder for chaining.
        */
       public Builder setTerm(int value) {
         
@@ -3575,6 +3894,7 @@ public final class Protos {
       }
       /**
        * <code>int32 term = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearTerm() {
         
@@ -3586,6 +3906,7 @@ public final class Protos {
       private java.lang.Object leaderId_ = "";
       /**
        * <code>string leader_id = 3;</code>
+       * @return The leaderId.
        */
       public java.lang.String getLeaderId() {
         java.lang.Object ref = leaderId_;
@@ -3601,6 +3922,7 @@ public final class Protos {
       }
       /**
        * <code>string leader_id = 3;</code>
+       * @return The bytes for leaderId.
        */
       public com.google.protobuf.ByteString
           getLeaderIdBytes() {
@@ -3617,6 +3939,8 @@ public final class Protos {
       }
       /**
        * <code>string leader_id = 3;</code>
+       * @param value The leaderId to set.
+       * @return This builder for chaining.
        */
       public Builder setLeaderId(
           java.lang.String value) {
@@ -3630,6 +3954,7 @@ public final class Protos {
       }
       /**
        * <code>string leader_id = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLeaderId() {
         
@@ -3639,6 +3964,8 @@ public final class Protos {
       }
       /**
        * <code>string leader_id = 3;</code>
+       * @param value The bytes for leaderId to set.
+       * @return This builder for chaining.
        */
       public Builder setLeaderIdBytes(
           com.google.protobuf.ByteString value) {
@@ -3655,12 +3982,16 @@ public final class Protos {
       private int prevLogIndex_ ;
       /**
        * <code>int32 prev_log_index = 4;</code>
+       * @return The prevLogIndex.
        */
+      @java.lang.Override
       public int getPrevLogIndex() {
         return prevLogIndex_;
       }
       /**
        * <code>int32 prev_log_index = 4;</code>
+       * @param value The prevLogIndex to set.
+       * @return This builder for chaining.
        */
       public Builder setPrevLogIndex(int value) {
         
@@ -3670,6 +4001,7 @@ public final class Protos {
       }
       /**
        * <code>int32 prev_log_index = 4;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPrevLogIndex() {
         
@@ -3681,12 +4013,16 @@ public final class Protos {
       private int prevLogTerm_ ;
       /**
        * <code>int32 prev_log_term = 5;</code>
+       * @return The prevLogTerm.
        */
+      @java.lang.Override
       public int getPrevLogTerm() {
         return prevLogTerm_;
       }
       /**
        * <code>int32 prev_log_term = 5;</code>
+       * @param value The prevLogTerm to set.
+       * @return This builder for chaining.
        */
       public Builder setPrevLogTerm(int value) {
         
@@ -3696,6 +4032,7 @@ public final class Protos {
       }
       /**
        * <code>int32 prev_log_term = 5;</code>
+       * @return This builder for chaining.
        */
       public Builder clearPrevLogTerm() {
         
@@ -3707,12 +4044,16 @@ public final class Protos {
       private int leaderCommit_ ;
       /**
        * <code>int32 leader_commit = 6;</code>
+       * @return The leaderCommit.
        */
+      @java.lang.Override
       public int getLeaderCommit() {
         return leaderCommit_;
       }
       /**
        * <code>int32 leader_commit = 6;</code>
+       * @param value The leaderCommit to set.
+       * @return This builder for chaining.
        */
       public Builder setLeaderCommit(int value) {
         
@@ -3722,6 +4063,7 @@ public final class Protos {
       }
       /**
        * <code>int32 leader_commit = 6;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLeaderCommit() {
         
@@ -3733,9 +4075,9 @@ public final class Protos {
       private java.util.List<in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.Entry> entries_ =
         java.util.Collections.emptyList();
       private void ensureEntriesIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           entries_ = new java.util.ArrayList<in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.Entry>(entries_);
-          bitField0_ |= 0x00000040;
+          bitField0_ |= 0x00000001;
          }
       }
 
@@ -3885,7 +4227,7 @@ public final class Protos {
       public Builder clearEntries() {
         if (entriesBuilder_ == null) {
           entries_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           entriesBuilder_.clear();
@@ -3962,7 +4304,7 @@ public final class Protos {
           entriesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.Entry, in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.Entry.Builder, in.xnnyygn.xraft.core.Protos.AppendEntriesRpc.EntryOrBuilder>(
                   entries_,
-                  ((bitField0_ & 0x00000040) == 0x00000040),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           entries_ = null;
@@ -3972,7 +4314,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -4028,28 +4370,32 @@ public final class Protos {
 
     /**
      * <code>string rpc_message_id = 1;</code>
+     * @return The rpcMessageId.
      */
     java.lang.String getRpcMessageId();
     /**
      * <code>string rpc_message_id = 1;</code>
+     * @return The bytes for rpcMessageId.
      */
     com.google.protobuf.ByteString
         getRpcMessageIdBytes();
 
     /**
      * <code>int32 term = 2;</code>
+     * @return The term.
      */
     int getTerm();
 
     /**
      * <code>bool success = 3;</code>
+     * @return The success.
      */
     boolean getSuccess();
   }
   /**
    * Protobuf type {@code AppendEntriesResult}
    */
-  public  static final class AppendEntriesResult extends
+  public static final class AppendEntriesResult extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:AppendEntriesResult)
       AppendEntriesResultOrBuilder {
@@ -4060,8 +4406,13 @@ public final class Protos {
     }
     private AppendEntriesResult() {
       rpcMessageId_ = "";
-      term_ = 0;
-      success_ = false;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new AppendEntriesResult();
     }
 
     @java.lang.Override
@@ -4077,7 +4428,6 @@ public final class Protos {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -4105,7 +4455,7 @@ public final class Protos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -4140,7 +4490,9 @@ public final class Protos {
     private volatile java.lang.Object rpcMessageId_;
     /**
      * <code>string rpc_message_id = 1;</code>
+     * @return The rpcMessageId.
      */
+    @java.lang.Override
     public java.lang.String getRpcMessageId() {
       java.lang.Object ref = rpcMessageId_;
       if (ref instanceof java.lang.String) {
@@ -4155,7 +4507,9 @@ public final class Protos {
     }
     /**
      * <code>string rpc_message_id = 1;</code>
+     * @return The bytes for rpcMessageId.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getRpcMessageIdBytes() {
       java.lang.Object ref = rpcMessageId_;
@@ -4174,7 +4528,9 @@ public final class Protos {
     private int term_;
     /**
      * <code>int32 term = 2;</code>
+     * @return The term.
      */
+    @java.lang.Override
     public int getTerm() {
       return term_;
     }
@@ -4183,7 +4539,9 @@ public final class Protos {
     private boolean success_;
     /**
      * <code>bool success = 3;</code>
+     * @return The success.
      */
+    @java.lang.Override
     public boolean getSuccess() {
       return success_;
     }
@@ -4246,15 +4604,14 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.AppendEntriesResult other = (in.xnnyygn.xraft.core.Protos.AppendEntriesResult) obj;
 
-      boolean result = true;
-      result = result && getRpcMessageId()
-          .equals(other.getRpcMessageId());
-      result = result && (getTerm()
-          == other.getTerm());
-      result = result && (getSuccess()
-          == other.getSuccess());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getRpcMessageId()
+          .equals(other.getRpcMessageId())) return false;
+      if (getTerm()
+          != other.getTerm()) return false;
+      if (getSuccess()
+          != other.getSuccess()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -4445,35 +4802,35 @@ public final class Protos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -4529,6 +4886,7 @@ public final class Protos {
       private java.lang.Object rpcMessageId_ = "";
       /**
        * <code>string rpc_message_id = 1;</code>
+       * @return The rpcMessageId.
        */
       public java.lang.String getRpcMessageId() {
         java.lang.Object ref = rpcMessageId_;
@@ -4544,6 +4902,7 @@ public final class Protos {
       }
       /**
        * <code>string rpc_message_id = 1;</code>
+       * @return The bytes for rpcMessageId.
        */
       public com.google.protobuf.ByteString
           getRpcMessageIdBytes() {
@@ -4560,6 +4919,8 @@ public final class Protos {
       }
       /**
        * <code>string rpc_message_id = 1;</code>
+       * @param value The rpcMessageId to set.
+       * @return This builder for chaining.
        */
       public Builder setRpcMessageId(
           java.lang.String value) {
@@ -4573,6 +4934,7 @@ public final class Protos {
       }
       /**
        * <code>string rpc_message_id = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearRpcMessageId() {
         
@@ -4582,6 +4944,8 @@ public final class Protos {
       }
       /**
        * <code>string rpc_message_id = 1;</code>
+       * @param value The bytes for rpcMessageId to set.
+       * @return This builder for chaining.
        */
       public Builder setRpcMessageIdBytes(
           com.google.protobuf.ByteString value) {
@@ -4598,12 +4962,16 @@ public final class Protos {
       private int term_ ;
       /**
        * <code>int32 term = 2;</code>
+       * @return The term.
        */
+      @java.lang.Override
       public int getTerm() {
         return term_;
       }
       /**
        * <code>int32 term = 2;</code>
+       * @param value The term to set.
+       * @return This builder for chaining.
        */
       public Builder setTerm(int value) {
         
@@ -4613,6 +4981,7 @@ public final class Protos {
       }
       /**
        * <code>int32 term = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearTerm() {
         
@@ -4624,12 +4993,16 @@ public final class Protos {
       private boolean success_ ;
       /**
        * <code>bool success = 3;</code>
+       * @return The success.
        */
+      @java.lang.Override
       public boolean getSuccess() {
         return success_;
       }
       /**
        * <code>bool success = 3;</code>
+       * @param value The success to set.
+       * @return This builder for chaining.
        */
       public Builder setSuccess(boolean value) {
         
@@ -4639,6 +5012,7 @@ public final class Protos {
       }
       /**
        * <code>bool success = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearSuccess() {
         
@@ -4649,7 +5023,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -4705,26 +5079,31 @@ public final class Protos {
 
     /**
      * <code>int32 term = 1;</code>
+     * @return The term.
      */
     int getTerm();
 
     /**
      * <code>string leader_id = 2;</code>
+     * @return The leaderId.
      */
     java.lang.String getLeaderId();
     /**
      * <code>string leader_id = 2;</code>
+     * @return The bytes for leaderId.
      */
     com.google.protobuf.ByteString
         getLeaderIdBytes();
 
     /**
      * <code>int32 last_index = 3;</code>
+     * @return The lastIndex.
      */
     int getLastIndex();
 
     /**
      * <code>int32 last_term = 4;</code>
+     * @return The lastTerm.
      */
     int getLastTerm();
 
@@ -4754,23 +5133,26 @@ public final class Protos {
 
     /**
      * <code>int32 offset = 6;</code>
+     * @return The offset.
      */
     int getOffset();
 
     /**
      * <code>bytes data = 7;</code>
+     * @return The data.
      */
     com.google.protobuf.ByteString getData();
 
     /**
      * <code>bool done = 8;</code>
+     * @return The done.
      */
     boolean getDone();
   }
   /**
    * Protobuf type {@code InstallSnapshotRpc}
    */
-  public  static final class InstallSnapshotRpc extends
+  public static final class InstallSnapshotRpc extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:InstallSnapshotRpc)
       InstallSnapshotRpcOrBuilder {
@@ -4780,14 +5162,16 @@ public final class Protos {
       super(builder);
     }
     private InstallSnapshotRpc() {
-      term_ = 0;
       leaderId_ = "";
-      lastIndex_ = 0;
-      lastTerm_ = 0;
       lastConfig_ = java.util.Collections.emptyList();
-      offset_ = 0;
       data_ = com.google.protobuf.ByteString.EMPTY;
-      done_ = false;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new InstallSnapshotRpc();
     }
 
     @java.lang.Override
@@ -4836,9 +5220,9 @@ public final class Protos {
               break;
             }
             case 42: {
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 lastConfig_ = new java.util.ArrayList<in.xnnyygn.xraft.core.Protos.NodeEndpoint>();
-                mutable_bitField0_ |= 0x00000010;
+                mutable_bitField0_ |= 0x00000001;
               }
               lastConfig_.add(
                   input.readMessage(in.xnnyygn.xraft.core.Protos.NodeEndpoint.parser(), extensionRegistry));
@@ -4860,7 +5244,7 @@ public final class Protos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -4874,7 +5258,7 @@ public final class Protos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           lastConfig_ = java.util.Collections.unmodifiableList(lastConfig_);
         }
         this.unknownFields = unknownFields.build();
@@ -4894,12 +5278,13 @@ public final class Protos {
               in.xnnyygn.xraft.core.Protos.InstallSnapshotRpc.class, in.xnnyygn.xraft.core.Protos.InstallSnapshotRpc.Builder.class);
     }
 
-    private int bitField0_;
     public static final int TERM_FIELD_NUMBER = 1;
     private int term_;
     /**
      * <code>int32 term = 1;</code>
+     * @return The term.
      */
+    @java.lang.Override
     public int getTerm() {
       return term_;
     }
@@ -4908,7 +5293,9 @@ public final class Protos {
     private volatile java.lang.Object leaderId_;
     /**
      * <code>string leader_id = 2;</code>
+     * @return The leaderId.
      */
+    @java.lang.Override
     public java.lang.String getLeaderId() {
       java.lang.Object ref = leaderId_;
       if (ref instanceof java.lang.String) {
@@ -4923,7 +5310,9 @@ public final class Protos {
     }
     /**
      * <code>string leader_id = 2;</code>
+     * @return The bytes for leaderId.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getLeaderIdBytes() {
       java.lang.Object ref = leaderId_;
@@ -4942,7 +5331,9 @@ public final class Protos {
     private int lastIndex_;
     /**
      * <code>int32 last_index = 3;</code>
+     * @return The lastIndex.
      */
+    @java.lang.Override
     public int getLastIndex() {
       return lastIndex_;
     }
@@ -4951,7 +5342,9 @@ public final class Protos {
     private int lastTerm_;
     /**
      * <code>int32 last_term = 4;</code>
+     * @return The lastTerm.
      */
+    @java.lang.Override
     public int getLastTerm() {
       return lastTerm_;
     }
@@ -4961,12 +5354,14 @@ public final class Protos {
     /**
      * <code>repeated .NodeEndpoint last_config = 5;</code>
      */
+    @java.lang.Override
     public java.util.List<in.xnnyygn.xraft.core.Protos.NodeEndpoint> getLastConfigList() {
       return lastConfig_;
     }
     /**
      * <code>repeated .NodeEndpoint last_config = 5;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder> 
         getLastConfigOrBuilderList() {
       return lastConfig_;
@@ -4974,18 +5369,21 @@ public final class Protos {
     /**
      * <code>repeated .NodeEndpoint last_config = 5;</code>
      */
+    @java.lang.Override
     public int getLastConfigCount() {
       return lastConfig_.size();
     }
     /**
      * <code>repeated .NodeEndpoint last_config = 5;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpoint getLastConfig(int index) {
       return lastConfig_.get(index);
     }
     /**
      * <code>repeated .NodeEndpoint last_config = 5;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder getLastConfigOrBuilder(
         int index) {
       return lastConfig_.get(index);
@@ -4995,7 +5393,9 @@ public final class Protos {
     private int offset_;
     /**
      * <code>int32 offset = 6;</code>
+     * @return The offset.
      */
+    @java.lang.Override
     public int getOffset() {
       return offset_;
     }
@@ -5004,7 +5404,9 @@ public final class Protos {
     private com.google.protobuf.ByteString data_;
     /**
      * <code>bytes data = 7;</code>
+     * @return The data.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString getData() {
       return data_;
     }
@@ -5013,7 +5415,9 @@ public final class Protos {
     private boolean done_;
     /**
      * <code>bool done = 8;</code>
+     * @return The done.
      */
+    @java.lang.Override
     public boolean getDone() {
       return done_;
     }
@@ -5111,25 +5515,24 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.InstallSnapshotRpc other = (in.xnnyygn.xraft.core.Protos.InstallSnapshotRpc) obj;
 
-      boolean result = true;
-      result = result && (getTerm()
-          == other.getTerm());
-      result = result && getLeaderId()
-          .equals(other.getLeaderId());
-      result = result && (getLastIndex()
-          == other.getLastIndex());
-      result = result && (getLastTerm()
-          == other.getLastTerm());
-      result = result && getLastConfigList()
-          .equals(other.getLastConfigList());
-      result = result && (getOffset()
-          == other.getOffset());
-      result = result && getData()
-          .equals(other.getData());
-      result = result && (getDone()
-          == other.getDone());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (getTerm()
+          != other.getTerm()) return false;
+      if (!getLeaderId()
+          .equals(other.getLeaderId())) return false;
+      if (getLastIndex()
+          != other.getLastIndex()) return false;
+      if (getLastTerm()
+          != other.getLastTerm()) return false;
+      if (!getLastConfigList()
+          .equals(other.getLastConfigList())) return false;
+      if (getOffset()
+          != other.getOffset()) return false;
+      if (!getData()
+          .equals(other.getData())) return false;
+      if (getDone()
+          != other.getDone()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -5302,7 +5705,7 @@ public final class Protos {
 
         if (lastConfigBuilder_ == null) {
           lastConfig_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           lastConfigBuilder_.clear();
         }
@@ -5339,15 +5742,14 @@ public final class Protos {
       public in.xnnyygn.xraft.core.Protos.InstallSnapshotRpc buildPartial() {
         in.xnnyygn.xraft.core.Protos.InstallSnapshotRpc result = new in.xnnyygn.xraft.core.Protos.InstallSnapshotRpc(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.term_ = term_;
         result.leaderId_ = leaderId_;
         result.lastIndex_ = lastIndex_;
         result.lastTerm_ = lastTerm_;
         if (lastConfigBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             lastConfig_ = java.util.Collections.unmodifiableList(lastConfig_);
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.lastConfig_ = lastConfig_;
         } else {
@@ -5356,42 +5758,41 @@ public final class Protos {
         result.offset_ = offset_;
         result.data_ = data_;
         result.done_ = done_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -5422,7 +5823,7 @@ public final class Protos {
           if (!other.lastConfig_.isEmpty()) {
             if (lastConfig_.isEmpty()) {
               lastConfig_ = other.lastConfig_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureLastConfigIsMutable();
               lastConfig_.addAll(other.lastConfig_);
@@ -5435,7 +5836,7 @@ public final class Protos {
               lastConfigBuilder_.dispose();
               lastConfigBuilder_ = null;
               lastConfig_ = other.lastConfig_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000001);
               lastConfigBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getLastConfigFieldBuilder() : null;
@@ -5486,12 +5887,16 @@ public final class Protos {
       private int term_ ;
       /**
        * <code>int32 term = 1;</code>
+       * @return The term.
        */
+      @java.lang.Override
       public int getTerm() {
         return term_;
       }
       /**
        * <code>int32 term = 1;</code>
+       * @param value The term to set.
+       * @return This builder for chaining.
        */
       public Builder setTerm(int value) {
         
@@ -5501,6 +5906,7 @@ public final class Protos {
       }
       /**
        * <code>int32 term = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearTerm() {
         
@@ -5512,6 +5918,7 @@ public final class Protos {
       private java.lang.Object leaderId_ = "";
       /**
        * <code>string leader_id = 2;</code>
+       * @return The leaderId.
        */
       public java.lang.String getLeaderId() {
         java.lang.Object ref = leaderId_;
@@ -5527,6 +5934,7 @@ public final class Protos {
       }
       /**
        * <code>string leader_id = 2;</code>
+       * @return The bytes for leaderId.
        */
       public com.google.protobuf.ByteString
           getLeaderIdBytes() {
@@ -5543,6 +5951,8 @@ public final class Protos {
       }
       /**
        * <code>string leader_id = 2;</code>
+       * @param value The leaderId to set.
+       * @return This builder for chaining.
        */
       public Builder setLeaderId(
           java.lang.String value) {
@@ -5556,6 +5966,7 @@ public final class Protos {
       }
       /**
        * <code>string leader_id = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLeaderId() {
         
@@ -5565,6 +5976,8 @@ public final class Protos {
       }
       /**
        * <code>string leader_id = 2;</code>
+       * @param value The bytes for leaderId to set.
+       * @return This builder for chaining.
        */
       public Builder setLeaderIdBytes(
           com.google.protobuf.ByteString value) {
@@ -5581,12 +5994,16 @@ public final class Protos {
       private int lastIndex_ ;
       /**
        * <code>int32 last_index = 3;</code>
+       * @return The lastIndex.
        */
+      @java.lang.Override
       public int getLastIndex() {
         return lastIndex_;
       }
       /**
        * <code>int32 last_index = 3;</code>
+       * @param value The lastIndex to set.
+       * @return This builder for chaining.
        */
       public Builder setLastIndex(int value) {
         
@@ -5596,6 +6013,7 @@ public final class Protos {
       }
       /**
        * <code>int32 last_index = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLastIndex() {
         
@@ -5607,12 +6025,16 @@ public final class Protos {
       private int lastTerm_ ;
       /**
        * <code>int32 last_term = 4;</code>
+       * @return The lastTerm.
        */
+      @java.lang.Override
       public int getLastTerm() {
         return lastTerm_;
       }
       /**
        * <code>int32 last_term = 4;</code>
+       * @param value The lastTerm to set.
+       * @return This builder for chaining.
        */
       public Builder setLastTerm(int value) {
         
@@ -5622,6 +6044,7 @@ public final class Protos {
       }
       /**
        * <code>int32 last_term = 4;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLastTerm() {
         
@@ -5633,9 +6056,9 @@ public final class Protos {
       private java.util.List<in.xnnyygn.xraft.core.Protos.NodeEndpoint> lastConfig_ =
         java.util.Collections.emptyList();
       private void ensureLastConfigIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           lastConfig_ = new java.util.ArrayList<in.xnnyygn.xraft.core.Protos.NodeEndpoint>(lastConfig_);
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000001;
          }
       }
 
@@ -5785,7 +6208,7 @@ public final class Protos {
       public Builder clearLastConfig() {
         if (lastConfigBuilder_ == null) {
           lastConfig_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           lastConfigBuilder_.clear();
@@ -5862,7 +6285,7 @@ public final class Protos {
           lastConfigBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               in.xnnyygn.xraft.core.Protos.NodeEndpoint, in.xnnyygn.xraft.core.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder>(
                   lastConfig_,
-                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           lastConfig_ = null;
@@ -5873,12 +6296,16 @@ public final class Protos {
       private int offset_ ;
       /**
        * <code>int32 offset = 6;</code>
+       * @return The offset.
        */
+      @java.lang.Override
       public int getOffset() {
         return offset_;
       }
       /**
        * <code>int32 offset = 6;</code>
+       * @param value The offset to set.
+       * @return This builder for chaining.
        */
       public Builder setOffset(int value) {
         
@@ -5888,6 +6315,7 @@ public final class Protos {
       }
       /**
        * <code>int32 offset = 6;</code>
+       * @return This builder for chaining.
        */
       public Builder clearOffset() {
         
@@ -5899,12 +6327,16 @@ public final class Protos {
       private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
       /**
        * <code>bytes data = 7;</code>
+       * @return The data.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString getData() {
         return data_;
       }
       /**
        * <code>bytes data = 7;</code>
+       * @param value The data to set.
+       * @return This builder for chaining.
        */
       public Builder setData(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -5917,6 +6349,7 @@ public final class Protos {
       }
       /**
        * <code>bytes data = 7;</code>
+       * @return This builder for chaining.
        */
       public Builder clearData() {
         
@@ -5928,12 +6361,16 @@ public final class Protos {
       private boolean done_ ;
       /**
        * <code>bool done = 8;</code>
+       * @return The done.
        */
+      @java.lang.Override
       public boolean getDone() {
         return done_;
       }
       /**
        * <code>bool done = 8;</code>
+       * @param value The done to set.
+       * @return This builder for chaining.
        */
       public Builder setDone(boolean value) {
         
@@ -5943,6 +6380,7 @@ public final class Protos {
       }
       /**
        * <code>bool done = 8;</code>
+       * @return This builder for chaining.
        */
       public Builder clearDone() {
         
@@ -5953,7 +6391,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -6009,13 +6447,14 @@ public final class Protos {
 
     /**
      * <code>int32 term = 1;</code>
+     * @return The term.
      */
     int getTerm();
   }
   /**
    * Protobuf type {@code InstallSnapshotResult}
    */
-  public  static final class InstallSnapshotResult extends
+  public static final class InstallSnapshotResult extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:InstallSnapshotResult)
       InstallSnapshotResultOrBuilder {
@@ -6025,7 +6464,13 @@ public final class Protos {
       super(builder);
     }
     private InstallSnapshotResult() {
-      term_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new InstallSnapshotResult();
     }
 
     @java.lang.Override
@@ -6041,7 +6486,6 @@ public final class Protos {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -6058,7 +6502,7 @@ public final class Protos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -6093,7 +6537,9 @@ public final class Protos {
     private int term_;
     /**
      * <code>int32 term = 1;</code>
+     * @return The term.
      */
+    @java.lang.Override
     public int getTerm() {
       return term_;
     }
@@ -6143,11 +6589,10 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.InstallSnapshotResult other = (in.xnnyygn.xraft.core.Protos.InstallSnapshotResult) obj;
 
-      boolean result = true;
-      result = result && (getTerm()
-          == other.getTerm());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (getTerm()
+          != other.getTerm()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -6327,35 +6772,35 @@ public final class Protos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -6404,12 +6849,16 @@ public final class Protos {
       private int term_ ;
       /**
        * <code>int32 term = 1;</code>
+       * @return The term.
        */
+      @java.lang.Override
       public int getTerm() {
         return term_;
       }
       /**
        * <code>int32 term = 1;</code>
+       * @param value The term to set.
+       * @return This builder for chaining.
        */
       public Builder setTerm(int value) {
         
@@ -6419,6 +6868,7 @@ public final class Protos {
       }
       /**
        * <code>int32 term = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearTerm() {
         
@@ -6429,7 +6879,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -6485,10 +6935,12 @@ public final class Protos {
 
     /**
      * <code>.NodeEndpoint new_server = 1;</code>
+     * @return Whether the newServer field is set.
      */
     boolean hasNewServer();
     /**
      * <code>.NodeEndpoint new_server = 1;</code>
+     * @return The newServer.
      */
     in.xnnyygn.xraft.core.Protos.NodeEndpoint getNewServer();
     /**
@@ -6499,7 +6951,7 @@ public final class Protos {
   /**
    * Protobuf type {@code AddServerRpc}
    */
-  public  static final class AddServerRpc extends
+  public static final class AddServerRpc extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:AddServerRpc)
       AddServerRpcOrBuilder {
@@ -6509,6 +6961,13 @@ public final class Protos {
       super(builder);
     }
     private AddServerRpc() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new AddServerRpc();
     }
 
     @java.lang.Override
@@ -6524,7 +6983,6 @@ public final class Protos {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -6549,7 +7007,7 @@ public final class Protos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -6584,19 +7042,24 @@ public final class Protos {
     private in.xnnyygn.xraft.core.Protos.NodeEndpoint newServer_;
     /**
      * <code>.NodeEndpoint new_server = 1;</code>
+     * @return Whether the newServer field is set.
      */
+    @java.lang.Override
     public boolean hasNewServer() {
       return newServer_ != null;
     }
     /**
      * <code>.NodeEndpoint new_server = 1;</code>
+     * @return The newServer.
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpoint getNewServer() {
       return newServer_ == null ? in.xnnyygn.xraft.core.Protos.NodeEndpoint.getDefaultInstance() : newServer_;
     }
     /**
      * <code>.NodeEndpoint new_server = 1;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder getNewServerOrBuilder() {
       return getNewServer();
     }
@@ -6646,14 +7109,13 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.AddServerRpc other = (in.xnnyygn.xraft.core.Protos.AddServerRpc) obj;
 
-      boolean result = true;
-      result = result && (hasNewServer() == other.hasNewServer());
+      if (hasNewServer() != other.hasNewServer()) return false;
       if (hasNewServer()) {
-        result = result && getNewServer()
-            .equals(other.getNewServer());
+        if (!getNewServer()
+            .equals(other.getNewServer())) return false;
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -6843,35 +7305,35 @@ public final class Protos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -6917,17 +7379,19 @@ public final class Protos {
         return this;
       }
 
-      private in.xnnyygn.xraft.core.Protos.NodeEndpoint newServer_ = null;
+      private in.xnnyygn.xraft.core.Protos.NodeEndpoint newServer_;
       private com.google.protobuf.SingleFieldBuilderV3<
           in.xnnyygn.xraft.core.Protos.NodeEndpoint, in.xnnyygn.xraft.core.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder> newServerBuilder_;
       /**
        * <code>.NodeEndpoint new_server = 1;</code>
+       * @return Whether the newServer field is set.
        */
       public boolean hasNewServer() {
         return newServerBuilder_ != null || newServer_ != null;
       }
       /**
        * <code>.NodeEndpoint new_server = 1;</code>
+       * @return The newServer.
        */
       public in.xnnyygn.xraft.core.Protos.NodeEndpoint getNewServer() {
         if (newServerBuilder_ == null) {
@@ -7036,7 +7500,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -7092,20 +7556,24 @@ public final class Protos {
 
     /**
      * <code>string status = 1;</code>
+     * @return The status.
      */
     java.lang.String getStatus();
     /**
      * <code>string status = 1;</code>
+     * @return The bytes for status.
      */
     com.google.protobuf.ByteString
         getStatusBytes();
 
     /**
      * <code>.NodeEndpoint leader_hint = 2;</code>
+     * @return Whether the leaderHint field is set.
      */
     boolean hasLeaderHint();
     /**
      * <code>.NodeEndpoint leader_hint = 2;</code>
+     * @return The leaderHint.
      */
     in.xnnyygn.xraft.core.Protos.NodeEndpoint getLeaderHint();
     /**
@@ -7116,7 +7584,7 @@ public final class Protos {
   /**
    * Protobuf type {@code AddServerResult}
    */
-  public  static final class AddServerResult extends
+  public static final class AddServerResult extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:AddServerResult)
       AddServerResultOrBuilder {
@@ -7127,6 +7595,13 @@ public final class Protos {
     }
     private AddServerResult() {
       status_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new AddServerResult();
     }
 
     @java.lang.Override
@@ -7142,7 +7617,6 @@ public final class Protos {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -7173,7 +7647,7 @@ public final class Protos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -7208,7 +7682,9 @@ public final class Protos {
     private volatile java.lang.Object status_;
     /**
      * <code>string status = 1;</code>
+     * @return The status.
      */
+    @java.lang.Override
     public java.lang.String getStatus() {
       java.lang.Object ref = status_;
       if (ref instanceof java.lang.String) {
@@ -7223,7 +7699,9 @@ public final class Protos {
     }
     /**
      * <code>string status = 1;</code>
+     * @return The bytes for status.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getStatusBytes() {
       java.lang.Object ref = status_;
@@ -7242,19 +7720,24 @@ public final class Protos {
     private in.xnnyygn.xraft.core.Protos.NodeEndpoint leaderHint_;
     /**
      * <code>.NodeEndpoint leader_hint = 2;</code>
+     * @return Whether the leaderHint field is set.
      */
+    @java.lang.Override
     public boolean hasLeaderHint() {
       return leaderHint_ != null;
     }
     /**
      * <code>.NodeEndpoint leader_hint = 2;</code>
+     * @return The leaderHint.
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpoint getLeaderHint() {
       return leaderHint_ == null ? in.xnnyygn.xraft.core.Protos.NodeEndpoint.getDefaultInstance() : leaderHint_;
     }
     /**
      * <code>.NodeEndpoint leader_hint = 2;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder getLeaderHintOrBuilder() {
       return getLeaderHint();
     }
@@ -7310,16 +7793,15 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.AddServerResult other = (in.xnnyygn.xraft.core.Protos.AddServerResult) obj;
 
-      boolean result = true;
-      result = result && getStatus()
-          .equals(other.getStatus());
-      result = result && (hasLeaderHint() == other.hasLeaderHint());
+      if (!getStatus()
+          .equals(other.getStatus())) return false;
+      if (hasLeaderHint() != other.hasLeaderHint()) return false;
       if (hasLeaderHint()) {
-        result = result && getLeaderHint()
-            .equals(other.getLeaderHint());
+        if (!getLeaderHint()
+            .equals(other.getLeaderHint())) return false;
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -7514,35 +7996,35 @@ public final class Protos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -7595,6 +8077,7 @@ public final class Protos {
       private java.lang.Object status_ = "";
       /**
        * <code>string status = 1;</code>
+       * @return The status.
        */
       public java.lang.String getStatus() {
         java.lang.Object ref = status_;
@@ -7610,6 +8093,7 @@ public final class Protos {
       }
       /**
        * <code>string status = 1;</code>
+       * @return The bytes for status.
        */
       public com.google.protobuf.ByteString
           getStatusBytes() {
@@ -7626,6 +8110,8 @@ public final class Protos {
       }
       /**
        * <code>string status = 1;</code>
+       * @param value The status to set.
+       * @return This builder for chaining.
        */
       public Builder setStatus(
           java.lang.String value) {
@@ -7639,6 +8125,7 @@ public final class Protos {
       }
       /**
        * <code>string status = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearStatus() {
         
@@ -7648,6 +8135,8 @@ public final class Protos {
       }
       /**
        * <code>string status = 1;</code>
+       * @param value The bytes for status to set.
+       * @return This builder for chaining.
        */
       public Builder setStatusBytes(
           com.google.protobuf.ByteString value) {
@@ -7661,17 +8150,19 @@ public final class Protos {
         return this;
       }
 
-      private in.xnnyygn.xraft.core.Protos.NodeEndpoint leaderHint_ = null;
+      private in.xnnyygn.xraft.core.Protos.NodeEndpoint leaderHint_;
       private com.google.protobuf.SingleFieldBuilderV3<
           in.xnnyygn.xraft.core.Protos.NodeEndpoint, in.xnnyygn.xraft.core.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder> leaderHintBuilder_;
       /**
        * <code>.NodeEndpoint leader_hint = 2;</code>
+       * @return Whether the leaderHint field is set.
        */
       public boolean hasLeaderHint() {
         return leaderHintBuilder_ != null || leaderHint_ != null;
       }
       /**
        * <code>.NodeEndpoint leader_hint = 2;</code>
+       * @return The leaderHint.
        */
       public in.xnnyygn.xraft.core.Protos.NodeEndpoint getLeaderHint() {
         if (leaderHintBuilder_ == null) {
@@ -7780,7 +8271,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -7836,10 +8327,12 @@ public final class Protos {
 
     /**
      * <code>.NodeEndpoint old_server = 1;</code>
+     * @return Whether the oldServer field is set.
      */
     boolean hasOldServer();
     /**
      * <code>.NodeEndpoint old_server = 1;</code>
+     * @return The oldServer.
      */
     in.xnnyygn.xraft.core.Protos.NodeEndpoint getOldServer();
     /**
@@ -7850,7 +8343,7 @@ public final class Protos {
   /**
    * Protobuf type {@code RemoveServerRpc}
    */
-  public  static final class RemoveServerRpc extends
+  public static final class RemoveServerRpc extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:RemoveServerRpc)
       RemoveServerRpcOrBuilder {
@@ -7860,6 +8353,13 @@ public final class Protos {
       super(builder);
     }
     private RemoveServerRpc() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new RemoveServerRpc();
     }
 
     @java.lang.Override
@@ -7875,7 +8375,6 @@ public final class Protos {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -7900,7 +8399,7 @@ public final class Protos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -7935,19 +8434,24 @@ public final class Protos {
     private in.xnnyygn.xraft.core.Protos.NodeEndpoint oldServer_;
     /**
      * <code>.NodeEndpoint old_server = 1;</code>
+     * @return Whether the oldServer field is set.
      */
+    @java.lang.Override
     public boolean hasOldServer() {
       return oldServer_ != null;
     }
     /**
      * <code>.NodeEndpoint old_server = 1;</code>
+     * @return The oldServer.
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpoint getOldServer() {
       return oldServer_ == null ? in.xnnyygn.xraft.core.Protos.NodeEndpoint.getDefaultInstance() : oldServer_;
     }
     /**
      * <code>.NodeEndpoint old_server = 1;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder getOldServerOrBuilder() {
       return getOldServer();
     }
@@ -7997,14 +8501,13 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.RemoveServerRpc other = (in.xnnyygn.xraft.core.Protos.RemoveServerRpc) obj;
 
-      boolean result = true;
-      result = result && (hasOldServer() == other.hasOldServer());
+      if (hasOldServer() != other.hasOldServer()) return false;
       if (hasOldServer()) {
-        result = result && getOldServer()
-            .equals(other.getOldServer());
+        if (!getOldServer()
+            .equals(other.getOldServer())) return false;
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -8194,35 +8697,35 @@ public final class Protos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -8268,17 +8771,19 @@ public final class Protos {
         return this;
       }
 
-      private in.xnnyygn.xraft.core.Protos.NodeEndpoint oldServer_ = null;
+      private in.xnnyygn.xraft.core.Protos.NodeEndpoint oldServer_;
       private com.google.protobuf.SingleFieldBuilderV3<
           in.xnnyygn.xraft.core.Protos.NodeEndpoint, in.xnnyygn.xraft.core.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder> oldServerBuilder_;
       /**
        * <code>.NodeEndpoint old_server = 1;</code>
+       * @return Whether the oldServer field is set.
        */
       public boolean hasOldServer() {
         return oldServerBuilder_ != null || oldServer_ != null;
       }
       /**
        * <code>.NodeEndpoint old_server = 1;</code>
+       * @return The oldServer.
        */
       public in.xnnyygn.xraft.core.Protos.NodeEndpoint getOldServer() {
         if (oldServerBuilder_ == null) {
@@ -8387,7 +8892,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -8443,20 +8948,24 @@ public final class Protos {
 
     /**
      * <code>string status = 1;</code>
+     * @return The status.
      */
     java.lang.String getStatus();
     /**
      * <code>string status = 1;</code>
+     * @return The bytes for status.
      */
     com.google.protobuf.ByteString
         getStatusBytes();
 
     /**
      * <code>.NodeEndpoint leader_hint = 2;</code>
+     * @return Whether the leaderHint field is set.
      */
     boolean hasLeaderHint();
     /**
      * <code>.NodeEndpoint leader_hint = 2;</code>
+     * @return The leaderHint.
      */
     in.xnnyygn.xraft.core.Protos.NodeEndpoint getLeaderHint();
     /**
@@ -8467,7 +8976,7 @@ public final class Protos {
   /**
    * Protobuf type {@code RemoveServerResult}
    */
-  public  static final class RemoveServerResult extends
+  public static final class RemoveServerResult extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:RemoveServerResult)
       RemoveServerResultOrBuilder {
@@ -8478,6 +8987,13 @@ public final class Protos {
     }
     private RemoveServerResult() {
       status_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new RemoveServerResult();
     }
 
     @java.lang.Override
@@ -8493,7 +9009,6 @@ public final class Protos {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -8524,7 +9039,7 @@ public final class Protos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -8559,7 +9074,9 @@ public final class Protos {
     private volatile java.lang.Object status_;
     /**
      * <code>string status = 1;</code>
+     * @return The status.
      */
+    @java.lang.Override
     public java.lang.String getStatus() {
       java.lang.Object ref = status_;
       if (ref instanceof java.lang.String) {
@@ -8574,7 +9091,9 @@ public final class Protos {
     }
     /**
      * <code>string status = 1;</code>
+     * @return The bytes for status.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getStatusBytes() {
       java.lang.Object ref = status_;
@@ -8593,19 +9112,24 @@ public final class Protos {
     private in.xnnyygn.xraft.core.Protos.NodeEndpoint leaderHint_;
     /**
      * <code>.NodeEndpoint leader_hint = 2;</code>
+     * @return Whether the leaderHint field is set.
      */
+    @java.lang.Override
     public boolean hasLeaderHint() {
       return leaderHint_ != null;
     }
     /**
      * <code>.NodeEndpoint leader_hint = 2;</code>
+     * @return The leaderHint.
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpoint getLeaderHint() {
       return leaderHint_ == null ? in.xnnyygn.xraft.core.Protos.NodeEndpoint.getDefaultInstance() : leaderHint_;
     }
     /**
      * <code>.NodeEndpoint leader_hint = 2;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder getLeaderHintOrBuilder() {
       return getLeaderHint();
     }
@@ -8661,16 +9185,15 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.RemoveServerResult other = (in.xnnyygn.xraft.core.Protos.RemoveServerResult) obj;
 
-      boolean result = true;
-      result = result && getStatus()
-          .equals(other.getStatus());
-      result = result && (hasLeaderHint() == other.hasLeaderHint());
+      if (!getStatus()
+          .equals(other.getStatus())) return false;
+      if (hasLeaderHint() != other.hasLeaderHint()) return false;
       if (hasLeaderHint()) {
-        result = result && getLeaderHint()
-            .equals(other.getLeaderHint());
+        if (!getLeaderHint()
+            .equals(other.getLeaderHint())) return false;
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -8865,35 +9388,35 @@ public final class Protos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -8946,6 +9469,7 @@ public final class Protos {
       private java.lang.Object status_ = "";
       /**
        * <code>string status = 1;</code>
+       * @return The status.
        */
       public java.lang.String getStatus() {
         java.lang.Object ref = status_;
@@ -8961,6 +9485,7 @@ public final class Protos {
       }
       /**
        * <code>string status = 1;</code>
+       * @return The bytes for status.
        */
       public com.google.protobuf.ByteString
           getStatusBytes() {
@@ -8977,6 +9502,8 @@ public final class Protos {
       }
       /**
        * <code>string status = 1;</code>
+       * @param value The status to set.
+       * @return This builder for chaining.
        */
       public Builder setStatus(
           java.lang.String value) {
@@ -8990,6 +9517,7 @@ public final class Protos {
       }
       /**
        * <code>string status = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearStatus() {
         
@@ -8999,6 +9527,8 @@ public final class Protos {
       }
       /**
        * <code>string status = 1;</code>
+       * @param value The bytes for status to set.
+       * @return This builder for chaining.
        */
       public Builder setStatusBytes(
           com.google.protobuf.ByteString value) {
@@ -9012,17 +9542,19 @@ public final class Protos {
         return this;
       }
 
-      private in.xnnyygn.xraft.core.Protos.NodeEndpoint leaderHint_ = null;
+      private in.xnnyygn.xraft.core.Protos.NodeEndpoint leaderHint_;
       private com.google.protobuf.SingleFieldBuilderV3<
           in.xnnyygn.xraft.core.Protos.NodeEndpoint, in.xnnyygn.xraft.core.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder> leaderHintBuilder_;
       /**
        * <code>.NodeEndpoint leader_hint = 2;</code>
+       * @return Whether the leaderHint field is set.
        */
       public boolean hasLeaderHint() {
         return leaderHintBuilder_ != null || leaderHint_ != null;
       }
       /**
        * <code>.NodeEndpoint leader_hint = 2;</code>
+       * @return The leaderHint.
        */
       public in.xnnyygn.xraft.core.Protos.NodeEndpoint getLeaderHint() {
         if (leaderHintBuilder_ == null) {
@@ -9131,7 +9663,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -9211,10 +9743,12 @@ public final class Protos {
 
     /**
      * <code>.NodeEndpoint new_node_endpoint = 2;</code>
+     * @return Whether the newNodeEndpoint field is set.
      */
     boolean hasNewNodeEndpoint();
     /**
      * <code>.NodeEndpoint new_node_endpoint = 2;</code>
+     * @return The newNodeEndpoint.
      */
     in.xnnyygn.xraft.core.Protos.NodeEndpoint getNewNodeEndpoint();
     /**
@@ -9225,7 +9759,7 @@ public final class Protos {
   /**
    * Protobuf type {@code AddNodeCommand}
    */
-  public  static final class AddNodeCommand extends
+  public static final class AddNodeCommand extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:AddNodeCommand)
       AddNodeCommandOrBuilder {
@@ -9236,6 +9770,13 @@ public final class Protos {
     }
     private AddNodeCommand() {
       nodeEndpoints_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new AddNodeCommand();
     }
 
     @java.lang.Override
@@ -9263,7 +9804,7 @@ public final class Protos {
               done = true;
               break;
             case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 nodeEndpoints_ = new java.util.ArrayList<in.xnnyygn.xraft.core.Protos.NodeEndpoint>();
                 mutable_bitField0_ |= 0x00000001;
               }
@@ -9285,7 +9826,7 @@ public final class Protos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -9299,7 +9840,7 @@ public final class Protos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           nodeEndpoints_ = java.util.Collections.unmodifiableList(nodeEndpoints_);
         }
         this.unknownFields = unknownFields.build();
@@ -9319,18 +9860,19 @@ public final class Protos {
               in.xnnyygn.xraft.core.Protos.AddNodeCommand.class, in.xnnyygn.xraft.core.Protos.AddNodeCommand.Builder.class);
     }
 
-    private int bitField0_;
     public static final int NODE_ENDPOINTS_FIELD_NUMBER = 1;
     private java.util.List<in.xnnyygn.xraft.core.Protos.NodeEndpoint> nodeEndpoints_;
     /**
      * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<in.xnnyygn.xraft.core.Protos.NodeEndpoint> getNodeEndpointsList() {
       return nodeEndpoints_;
     }
     /**
      * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder> 
         getNodeEndpointsOrBuilderList() {
       return nodeEndpoints_;
@@ -9338,18 +9880,21 @@ public final class Protos {
     /**
      * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
+    @java.lang.Override
     public int getNodeEndpointsCount() {
       return nodeEndpoints_.size();
     }
     /**
      * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpoint getNodeEndpoints(int index) {
       return nodeEndpoints_.get(index);
     }
     /**
      * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder getNodeEndpointsOrBuilder(
         int index) {
       return nodeEndpoints_.get(index);
@@ -9359,19 +9904,24 @@ public final class Protos {
     private in.xnnyygn.xraft.core.Protos.NodeEndpoint newNodeEndpoint_;
     /**
      * <code>.NodeEndpoint new_node_endpoint = 2;</code>
+     * @return Whether the newNodeEndpoint field is set.
      */
+    @java.lang.Override
     public boolean hasNewNodeEndpoint() {
       return newNodeEndpoint_ != null;
     }
     /**
      * <code>.NodeEndpoint new_node_endpoint = 2;</code>
+     * @return The newNodeEndpoint.
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpoint getNewNodeEndpoint() {
       return newNodeEndpoint_ == null ? in.xnnyygn.xraft.core.Protos.NodeEndpoint.getDefaultInstance() : newNodeEndpoint_;
     }
     /**
      * <code>.NodeEndpoint new_node_endpoint = 2;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder getNewNodeEndpointOrBuilder() {
       return getNewNodeEndpoint();
     }
@@ -9428,16 +9978,15 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.AddNodeCommand other = (in.xnnyygn.xraft.core.Protos.AddNodeCommand) obj;
 
-      boolean result = true;
-      result = result && getNodeEndpointsList()
-          .equals(other.getNodeEndpointsList());
-      result = result && (hasNewNodeEndpoint() == other.hasNewNodeEndpoint());
+      if (!getNodeEndpointsList()
+          .equals(other.getNodeEndpointsList())) return false;
+      if (hasNewNodeEndpoint() != other.hasNewNodeEndpoint()) return false;
       if (hasNewNodeEndpoint()) {
-        result = result && getNewNodeEndpoint()
-            .equals(other.getNewNodeEndpoint());
+        if (!getNewNodeEndpoint()
+            .equals(other.getNewNodeEndpoint())) return false;
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -9628,9 +10177,8 @@ public final class Protos {
       public in.xnnyygn.xraft.core.Protos.AddNodeCommand buildPartial() {
         in.xnnyygn.xraft.core.Protos.AddNodeCommand result = new in.xnnyygn.xraft.core.Protos.AddNodeCommand(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         if (nodeEndpointsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             nodeEndpoints_ = java.util.Collections.unmodifiableList(nodeEndpoints_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
@@ -9643,42 +10191,41 @@ public final class Protos {
         } else {
           result.newNodeEndpoint_ = newNodeEndpointBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -9754,7 +10301,7 @@ public final class Protos {
       private java.util.List<in.xnnyygn.xraft.core.Protos.NodeEndpoint> nodeEndpoints_ =
         java.util.Collections.emptyList();
       private void ensureNodeEndpointsIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           nodeEndpoints_ = new java.util.ArrayList<in.xnnyygn.xraft.core.Protos.NodeEndpoint>(nodeEndpoints_);
           bitField0_ |= 0x00000001;
          }
@@ -9983,7 +10530,7 @@ public final class Protos {
           nodeEndpointsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               in.xnnyygn.xraft.core.Protos.NodeEndpoint, in.xnnyygn.xraft.core.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder>(
                   nodeEndpoints_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           nodeEndpoints_ = null;
@@ -9991,17 +10538,19 @@ public final class Protos {
         return nodeEndpointsBuilder_;
       }
 
-      private in.xnnyygn.xraft.core.Protos.NodeEndpoint newNodeEndpoint_ = null;
+      private in.xnnyygn.xraft.core.Protos.NodeEndpoint newNodeEndpoint_;
       private com.google.protobuf.SingleFieldBuilderV3<
           in.xnnyygn.xraft.core.Protos.NodeEndpoint, in.xnnyygn.xraft.core.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder> newNodeEndpointBuilder_;
       /**
        * <code>.NodeEndpoint new_node_endpoint = 2;</code>
+       * @return Whether the newNodeEndpoint field is set.
        */
       public boolean hasNewNodeEndpoint() {
         return newNodeEndpointBuilder_ != null || newNodeEndpoint_ != null;
       }
       /**
        * <code>.NodeEndpoint new_node_endpoint = 2;</code>
+       * @return The newNodeEndpoint.
        */
       public in.xnnyygn.xraft.core.Protos.NodeEndpoint getNewNodeEndpoint() {
         if (newNodeEndpointBuilder_ == null) {
@@ -10110,7 +10659,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -10190,10 +10739,12 @@ public final class Protos {
 
     /**
      * <code>string node_to_remove = 2;</code>
+     * @return The nodeToRemove.
      */
     java.lang.String getNodeToRemove();
     /**
      * <code>string node_to_remove = 2;</code>
+     * @return The bytes for nodeToRemove.
      */
     com.google.protobuf.ByteString
         getNodeToRemoveBytes();
@@ -10201,7 +10752,7 @@ public final class Protos {
   /**
    * Protobuf type {@code RemoveNodeCommand}
    */
-  public  static final class RemoveNodeCommand extends
+  public static final class RemoveNodeCommand extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:RemoveNodeCommand)
       RemoveNodeCommandOrBuilder {
@@ -10213,6 +10764,13 @@ public final class Protos {
     private RemoveNodeCommand() {
       nodeEndpoints_ = java.util.Collections.emptyList();
       nodeToRemove_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new RemoveNodeCommand();
     }
 
     @java.lang.Override
@@ -10240,7 +10798,7 @@ public final class Protos {
               done = true;
               break;
             case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 nodeEndpoints_ = new java.util.ArrayList<in.xnnyygn.xraft.core.Protos.NodeEndpoint>();
                 mutable_bitField0_ |= 0x00000001;
               }
@@ -10255,7 +10813,7 @@ public final class Protos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -10269,7 +10827,7 @@ public final class Protos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           nodeEndpoints_ = java.util.Collections.unmodifiableList(nodeEndpoints_);
         }
         this.unknownFields = unknownFields.build();
@@ -10289,18 +10847,19 @@ public final class Protos {
               in.xnnyygn.xraft.core.Protos.RemoveNodeCommand.class, in.xnnyygn.xraft.core.Protos.RemoveNodeCommand.Builder.class);
     }
 
-    private int bitField0_;
     public static final int NODE_ENDPOINTS_FIELD_NUMBER = 1;
     private java.util.List<in.xnnyygn.xraft.core.Protos.NodeEndpoint> nodeEndpoints_;
     /**
      * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<in.xnnyygn.xraft.core.Protos.NodeEndpoint> getNodeEndpointsList() {
       return nodeEndpoints_;
     }
     /**
      * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder> 
         getNodeEndpointsOrBuilderList() {
       return nodeEndpoints_;
@@ -10308,18 +10867,21 @@ public final class Protos {
     /**
      * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
+    @java.lang.Override
     public int getNodeEndpointsCount() {
       return nodeEndpoints_.size();
     }
     /**
      * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpoint getNodeEndpoints(int index) {
       return nodeEndpoints_.get(index);
     }
     /**
      * <code>repeated .NodeEndpoint node_endpoints = 1;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder getNodeEndpointsOrBuilder(
         int index) {
       return nodeEndpoints_.get(index);
@@ -10329,7 +10891,9 @@ public final class Protos {
     private volatile java.lang.Object nodeToRemove_;
     /**
      * <code>string node_to_remove = 2;</code>
+     * @return The nodeToRemove.
      */
+    @java.lang.Override
     public java.lang.String getNodeToRemove() {
       java.lang.Object ref = nodeToRemove_;
       if (ref instanceof java.lang.String) {
@@ -10344,7 +10908,9 @@ public final class Protos {
     }
     /**
      * <code>string node_to_remove = 2;</code>
+     * @return The bytes for nodeToRemove.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getNodeToRemoveBytes() {
       java.lang.Object ref = nodeToRemove_;
@@ -10410,13 +10976,12 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.RemoveNodeCommand other = (in.xnnyygn.xraft.core.Protos.RemoveNodeCommand) obj;
 
-      boolean result = true;
-      result = result && getNodeEndpointsList()
-          .equals(other.getNodeEndpointsList());
-      result = result && getNodeToRemove()
-          .equals(other.getNodeToRemove());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getNodeEndpointsList()
+          .equals(other.getNodeEndpointsList())) return false;
+      if (!getNodeToRemove()
+          .equals(other.getNodeToRemove())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -10601,9 +11166,8 @@ public final class Protos {
       public in.xnnyygn.xraft.core.Protos.RemoveNodeCommand buildPartial() {
         in.xnnyygn.xraft.core.Protos.RemoveNodeCommand result = new in.xnnyygn.xraft.core.Protos.RemoveNodeCommand(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         if (nodeEndpointsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             nodeEndpoints_ = java.util.Collections.unmodifiableList(nodeEndpoints_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
@@ -10612,42 +11176,41 @@ public final class Protos {
           result.nodeEndpoints_ = nodeEndpointsBuilder_.build();
         }
         result.nodeToRemove_ = nodeToRemove_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -10724,7 +11287,7 @@ public final class Protos {
       private java.util.List<in.xnnyygn.xraft.core.Protos.NodeEndpoint> nodeEndpoints_ =
         java.util.Collections.emptyList();
       private void ensureNodeEndpointsIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           nodeEndpoints_ = new java.util.ArrayList<in.xnnyygn.xraft.core.Protos.NodeEndpoint>(nodeEndpoints_);
           bitField0_ |= 0x00000001;
          }
@@ -10953,7 +11516,7 @@ public final class Protos {
           nodeEndpointsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               in.xnnyygn.xraft.core.Protos.NodeEndpoint, in.xnnyygn.xraft.core.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder>(
                   nodeEndpoints_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           nodeEndpoints_ = null;
@@ -10964,6 +11527,7 @@ public final class Protos {
       private java.lang.Object nodeToRemove_ = "";
       /**
        * <code>string node_to_remove = 2;</code>
+       * @return The nodeToRemove.
        */
       public java.lang.String getNodeToRemove() {
         java.lang.Object ref = nodeToRemove_;
@@ -10979,6 +11543,7 @@ public final class Protos {
       }
       /**
        * <code>string node_to_remove = 2;</code>
+       * @return The bytes for nodeToRemove.
        */
       public com.google.protobuf.ByteString
           getNodeToRemoveBytes() {
@@ -10995,6 +11560,8 @@ public final class Protos {
       }
       /**
        * <code>string node_to_remove = 2;</code>
+       * @param value The nodeToRemove to set.
+       * @return This builder for chaining.
        */
       public Builder setNodeToRemove(
           java.lang.String value) {
@@ -11008,6 +11575,7 @@ public final class Protos {
       }
       /**
        * <code>string node_to_remove = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearNodeToRemove() {
         
@@ -11017,6 +11585,8 @@ public final class Protos {
       }
       /**
        * <code>string node_to_remove = 2;</code>
+       * @param value The bytes for nodeToRemove to set.
+       * @return This builder for chaining.
        */
       public Builder setNodeToRemoveBytes(
           com.google.protobuf.ByteString value) {
@@ -11032,7 +11602,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -11088,11 +11658,13 @@ public final class Protos {
 
     /**
      * <code>int32 last_index = 1;</code>
+     * @return The lastIndex.
      */
     int getLastIndex();
 
     /**
      * <code>int32 last_term = 2;</code>
+     * @return The lastTerm.
      */
     int getLastTerm();
 
@@ -11123,7 +11695,7 @@ public final class Protos {
   /**
    * Protobuf type {@code SnapshotHeader}
    */
-  public  static final class SnapshotHeader extends
+  public static final class SnapshotHeader extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:SnapshotHeader)
       SnapshotHeaderOrBuilder {
@@ -11133,9 +11705,14 @@ public final class Protos {
       super(builder);
     }
     private SnapshotHeader() {
-      lastIndex_ = 0;
-      lastTerm_ = 0;
       lastConfig_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new SnapshotHeader();
     }
 
     @java.lang.Override
@@ -11173,16 +11750,16 @@ public final class Protos {
               break;
             }
             case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 lastConfig_ = new java.util.ArrayList<in.xnnyygn.xraft.core.Protos.NodeEndpoint>();
-                mutable_bitField0_ |= 0x00000004;
+                mutable_bitField0_ |= 0x00000001;
               }
               lastConfig_.add(
                   input.readMessage(in.xnnyygn.xraft.core.Protos.NodeEndpoint.parser(), extensionRegistry));
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -11196,7 +11773,7 @@ public final class Protos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           lastConfig_ = java.util.Collections.unmodifiableList(lastConfig_);
         }
         this.unknownFields = unknownFields.build();
@@ -11216,12 +11793,13 @@ public final class Protos {
               in.xnnyygn.xraft.core.Protos.SnapshotHeader.class, in.xnnyygn.xraft.core.Protos.SnapshotHeader.Builder.class);
     }
 
-    private int bitField0_;
     public static final int LAST_INDEX_FIELD_NUMBER = 1;
     private int lastIndex_;
     /**
      * <code>int32 last_index = 1;</code>
+     * @return The lastIndex.
      */
+    @java.lang.Override
     public int getLastIndex() {
       return lastIndex_;
     }
@@ -11230,7 +11808,9 @@ public final class Protos {
     private int lastTerm_;
     /**
      * <code>int32 last_term = 2;</code>
+     * @return The lastTerm.
      */
+    @java.lang.Override
     public int getLastTerm() {
       return lastTerm_;
     }
@@ -11240,12 +11820,14 @@ public final class Protos {
     /**
      * <code>repeated .NodeEndpoint last_config = 3;</code>
      */
+    @java.lang.Override
     public java.util.List<in.xnnyygn.xraft.core.Protos.NodeEndpoint> getLastConfigList() {
       return lastConfig_;
     }
     /**
      * <code>repeated .NodeEndpoint last_config = 3;</code>
      */
+    @java.lang.Override
     public java.util.List<? extends in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder> 
         getLastConfigOrBuilderList() {
       return lastConfig_;
@@ -11253,18 +11835,21 @@ public final class Protos {
     /**
      * <code>repeated .NodeEndpoint last_config = 3;</code>
      */
+    @java.lang.Override
     public int getLastConfigCount() {
       return lastConfig_.size();
     }
     /**
      * <code>repeated .NodeEndpoint last_config = 3;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpoint getLastConfig(int index) {
       return lastConfig_.get(index);
     }
     /**
      * <code>repeated .NodeEndpoint last_config = 3;</code>
      */
+    @java.lang.Override
     public in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder getLastConfigOrBuilder(
         int index) {
       return lastConfig_.get(index);
@@ -11329,15 +11914,14 @@ public final class Protos {
       }
       in.xnnyygn.xraft.core.Protos.SnapshotHeader other = (in.xnnyygn.xraft.core.Protos.SnapshotHeader) obj;
 
-      boolean result = true;
-      result = result && (getLastIndex()
-          == other.getLastIndex());
-      result = result && (getLastTerm()
-          == other.getLastTerm());
-      result = result && getLastConfigList()
-          .equals(other.getLastConfigList());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (getLastIndex()
+          != other.getLastIndex()) return false;
+      if (getLastTerm()
+          != other.getLastTerm()) return false;
+      if (!getLastConfigList()
+          .equals(other.getLastConfigList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -11495,7 +12079,7 @@ public final class Protos {
 
         if (lastConfigBuilder_ == null) {
           lastConfig_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           lastConfigBuilder_.clear();
         }
@@ -11526,54 +12110,52 @@ public final class Protos {
       public in.xnnyygn.xraft.core.Protos.SnapshotHeader buildPartial() {
         in.xnnyygn.xraft.core.Protos.SnapshotHeader result = new in.xnnyygn.xraft.core.Protos.SnapshotHeader(this);
         int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
         result.lastIndex_ = lastIndex_;
         result.lastTerm_ = lastTerm_;
         if (lastConfigBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             lastConfig_ = java.util.Collections.unmodifiableList(lastConfig_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
           result.lastConfig_ = lastConfig_;
         } else {
           result.lastConfig_ = lastConfigBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -11597,7 +12179,7 @@ public final class Protos {
           if (!other.lastConfig_.isEmpty()) {
             if (lastConfig_.isEmpty()) {
               lastConfig_ = other.lastConfig_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
             } else {
               ensureLastConfigIsMutable();
               lastConfig_.addAll(other.lastConfig_);
@@ -11610,7 +12192,7 @@ public final class Protos {
               lastConfigBuilder_.dispose();
               lastConfigBuilder_ = null;
               lastConfig_ = other.lastConfig_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000001);
               lastConfigBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getLastConfigFieldBuilder() : null;
@@ -11652,12 +12234,16 @@ public final class Protos {
       private int lastIndex_ ;
       /**
        * <code>int32 last_index = 1;</code>
+       * @return The lastIndex.
        */
+      @java.lang.Override
       public int getLastIndex() {
         return lastIndex_;
       }
       /**
        * <code>int32 last_index = 1;</code>
+       * @param value The lastIndex to set.
+       * @return This builder for chaining.
        */
       public Builder setLastIndex(int value) {
         
@@ -11667,6 +12253,7 @@ public final class Protos {
       }
       /**
        * <code>int32 last_index = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLastIndex() {
         
@@ -11678,12 +12265,16 @@ public final class Protos {
       private int lastTerm_ ;
       /**
        * <code>int32 last_term = 2;</code>
+       * @return The lastTerm.
        */
+      @java.lang.Override
       public int getLastTerm() {
         return lastTerm_;
       }
       /**
        * <code>int32 last_term = 2;</code>
+       * @param value The lastTerm to set.
+       * @return This builder for chaining.
        */
       public Builder setLastTerm(int value) {
         
@@ -11693,6 +12284,7 @@ public final class Protos {
       }
       /**
        * <code>int32 last_term = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearLastTerm() {
         
@@ -11704,9 +12296,9 @@ public final class Protos {
       private java.util.List<in.xnnyygn.xraft.core.Protos.NodeEndpoint> lastConfig_ =
         java.util.Collections.emptyList();
       private void ensureLastConfigIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           lastConfig_ = new java.util.ArrayList<in.xnnyygn.xraft.core.Protos.NodeEndpoint>(lastConfig_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000001;
          }
       }
 
@@ -11856,7 +12448,7 @@ public final class Protos {
       public Builder clearLastConfig() {
         if (lastConfigBuilder_ == null) {
           lastConfig_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
           lastConfigBuilder_.clear();
@@ -11933,7 +12525,7 @@ public final class Protos {
           lastConfigBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               in.xnnyygn.xraft.core.Protos.NodeEndpoint, in.xnnyygn.xraft.core.Protos.NodeEndpoint.Builder, in.xnnyygn.xraft.core.Protos.NodeEndpointOrBuilder>(
                   lastConfig_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           lastConfig_ = null;
@@ -11943,7 +12535,7 @@ public final class Protos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -12081,50 +12673,42 @@ public final class Protos {
       "eEndpoint\022\n\n\002id\030\001 \001(\t\022\014\n\004host\030\002 \001(\t\022\014\n\004p" +
       "ort\030\003 \001(\005\"c\n\016RequestVoteRpc\022\014\n\004term\030\001 \001(" +
       "\005\022\024\n\014candidate_id\030\002 \001(\t\022\026\n\016last_log_inde" +
-      "x\030\003 \001(\005\022\025\n\rlast_log_term\030\004 \001(\005\"7\n\021Reques" +
+      "x\030\003 \001(\005\022\025\n\rlast_log_term\030\004 \001(\005\"K\n\021Reques" +
       "tVoteResult\022\014\n\004term\030\001 \001(\005\022\024\n\014vote_grante" +
-      "d\030\002 \001(\010\"\374\001\n\020AppendEntriesRpc\022\022\n\nmessage_" +
-      "id\030\001 \001(\t\022\014\n\004term\030\002 \001(\005\022\021\n\tleader_id\030\003 \001(" +
-      "\t\022\026\n\016prev_log_index\030\004 \001(\005\022\025\n\rprev_log_te" +
-      "rm\030\005 \001(\005\022\025\n\rleader_commit\030\006 \001(\005\022(\n\007entri" +
-      "es\030\007 \003(\0132\027.AppendEntriesRpc.Entry\032C\n\005Ent" +
-      "ry\022\014\n\004kind\030\001 \001(\005\022\r\n\005index\030\002 \001(\005\022\014\n\004term\030" +
-      "\003 \001(\005\022\017\n\007command\030\004 \001(\014\"L\n\023AppendEntriesR" +
-      "esult\022\026\n\016rpc_message_id\030\001 \001(\t\022\014\n\004term\030\002 " +
-      "\001(\005\022\017\n\007success\030\003 \001(\010\"\254\001\n\022InstallSnapshot" +
-      "Rpc\022\014\n\004term\030\001 \001(\005\022\021\n\tleader_id\030\002 \001(\t\022\022\n\n" +
-      "last_index\030\003 \001(\005\022\021\n\tlast_term\030\004 \001(\005\022\"\n\013l" +
-      "ast_config\030\005 \003(\0132\r.NodeEndpoint\022\016\n\006offse" +
-      "t\030\006 \001(\005\022\014\n\004data\030\007 \001(\014\022\014\n\004done\030\010 \001(\010\"%\n\025I" +
-      "nstallSnapshotResult\022\014\n\004term\030\001 \001(\005\"1\n\014Ad" +
-      "dServerRpc\022!\n\nnew_server\030\001 \001(\0132\r.NodeEnd" +
-      "point\"E\n\017AddServerResult\022\016\n\006status\030\001 \001(\t" +
-      "\022\"\n\013leader_hint\030\002 \001(\0132\r.NodeEndpoint\"4\n\017" +
-      "RemoveServerRpc\022!\n\nold_server\030\001 \001(\0132\r.No" +
-      "deEndpoint\"H\n\022RemoveServerResult\022\016\n\006stat" +
-      "us\030\001 \001(\t\022\"\n\013leader_hint\030\002 \001(\0132\r.NodeEndp" +
-      "oint\"a\n\016AddNodeCommand\022%\n\016node_endpoints" +
-      "\030\001 \003(\0132\r.NodeEndpoint\022(\n\021new_node_endpoi" +
-      "nt\030\002 \001(\0132\r.NodeEndpoint\"R\n\021RemoveNodeCom" +
-      "mand\022%\n\016node_endpoints\030\001 \003(\0132\r.NodeEndpo" +
-      "int\022\026\n\016node_to_remove\030\002 \001(\t\"[\n\016SnapshotH" +
-      "eader\022\022\n\nlast_index\030\001 \001(\005\022\021\n\tlast_term\030\002" +
-      " \001(\005\022\"\n\013last_config\030\003 \003(\0132\r.NodeEndpoint" +
-      "B\037\n\025in.xnnyygn.xraft.coreB\006Protosb\006proto" +
-      "3"
+      "d\030\002 \001(\010\022\022\n\nreply_node\030\003 \001(\t\"\374\001\n\020AppendEn" +
+      "triesRpc\022\022\n\nmessage_id\030\001 \001(\t\022\014\n\004term\030\002 \001" +
+      "(\005\022\021\n\tleader_id\030\003 \001(\t\022\026\n\016prev_log_index\030" +
+      "\004 \001(\005\022\025\n\rprev_log_term\030\005 \001(\005\022\025\n\rleader_c" +
+      "ommit\030\006 \001(\005\022(\n\007entries\030\007 \003(\0132\027.AppendEnt" +
+      "riesRpc.Entry\032C\n\005Entry\022\014\n\004kind\030\001 \001(\005\022\r\n\005" +
+      "index\030\002 \001(\005\022\014\n\004term\030\003 \001(\005\022\017\n\007command\030\004 \001" +
+      "(\014\"L\n\023AppendEntriesResult\022\026\n\016rpc_message" +
+      "_id\030\001 \001(\t\022\014\n\004term\030\002 \001(\005\022\017\n\007success\030\003 \001(\010" +
+      "\"\254\001\n\022InstallSnapshotRpc\022\014\n\004term\030\001 \001(\005\022\021\n" +
+      "\tleader_id\030\002 \001(\t\022\022\n\nlast_index\030\003 \001(\005\022\021\n\t" +
+      "last_term\030\004 \001(\005\022\"\n\013last_config\030\005 \003(\0132\r.N" +
+      "odeEndpoint\022\016\n\006offset\030\006 \001(\005\022\014\n\004data\030\007 \001(" +
+      "\014\022\014\n\004done\030\010 \001(\010\"%\n\025InstallSnapshotResult" +
+      "\022\014\n\004term\030\001 \001(\005\"1\n\014AddServerRpc\022!\n\nnew_se" +
+      "rver\030\001 \001(\0132\r.NodeEndpoint\"E\n\017AddServerRe" +
+      "sult\022\016\n\006status\030\001 \001(\t\022\"\n\013leader_hint\030\002 \001(" +
+      "\0132\r.NodeEndpoint\"4\n\017RemoveServerRpc\022!\n\no" +
+      "ld_server\030\001 \001(\0132\r.NodeEndpoint\"H\n\022Remove" +
+      "ServerResult\022\016\n\006status\030\001 \001(\t\022\"\n\013leader_h" +
+      "int\030\002 \001(\0132\r.NodeEndpoint\"a\n\016AddNodeComma" +
+      "nd\022%\n\016node_endpoints\030\001 \003(\0132\r.NodeEndpoin" +
+      "t\022(\n\021new_node_endpoint\030\002 \001(\0132\r.NodeEndpo" +
+      "int\"R\n\021RemoveNodeCommand\022%\n\016node_endpoin" +
+      "ts\030\001 \003(\0132\r.NodeEndpoint\022\026\n\016node_to_remov" +
+      "e\030\002 \001(\t\"[\n\016SnapshotHeader\022\022\n\nlast_index\030" +
+      "\001 \001(\005\022\021\n\tlast_term\030\002 \001(\005\022\"\n\013last_config\030" +
+      "\003 \003(\0132\r.NodeEndpointB\037\n\025in.xnnyygn.xraft" +
+      ".coreB\006Protosb\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
+        });
     internal_static_NodeEndpoint_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_NodeEndpoint_fieldAccessorTable = new
@@ -12142,7 +12726,7 @@ public final class Protos {
     internal_static_RequestVoteResult_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RequestVoteResult_descriptor,
-        new java.lang.String[] { "Term", "VoteGranted", });
+        new java.lang.String[] { "Term", "VoteGranted", "ReplyNode", });
     internal_static_AppendEntriesRpc_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_AppendEntriesRpc_fieldAccessorTable = new
