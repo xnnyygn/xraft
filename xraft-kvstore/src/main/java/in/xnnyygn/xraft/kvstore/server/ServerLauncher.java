@@ -163,10 +163,12 @@ public class ServerLauncher {
     }
 
     private void stopServer() {
-        try {
-            server.stop();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (server != null) {
+            try {
+                server.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
